@@ -35,8 +35,8 @@
 
 - [x] **GEN-01**: Reader sees a worked variant-matrix example (concepts × sizes × channels × locales × audiences × tests × feed items, with applicable-fraction inputs) that reaches 10,000+ without double counting
 - [x] **GEN-02**: Reader sees the "derive, do not generate" principle: a few human-directed master concepts derived into the full set
-- [ ] **GEN-03**: Reader sees a neutral imagery-sourcing decision table (retrieve approved / license / generate) with rights, indemnity and copyrightability notes
-- [ ] **GEN-04**: Reader sees a personalisation/DCO and product/catalog-feed block, including the graded NYU/Emory CTR finding and the −31.5% AI-disclosure penalty
+- [x] **GEN-03**: Reader sees a neutral imagery-sourcing decision table (retrieve approved / license / generate) with rights, indemnity and copyrightability notes
+- [x] **GEN-04**: Reader sees a personalisation/DCO and product/catalog-feed block, including the graded NYU/Emory CTR finding and the −31.5% AI-disclosure penalty
 - [x] **GEN-05**: Reader sees inline SVG figures for the factory model, the content supply chain, and the brief-to-approved-asset flow, each with `<title>`/`<desc>`
 
 ### Build-and-Review Spine
@@ -146,8 +146,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CALC-08 | Phase 1 | Complete |
 | GEN-01 | Phase 2 | Complete |
 | GEN-02 | Phase 2 | Complete |
-| GEN-03 | Phase 2 | Pending |
-| GEN-04 | Phase 2 | Pending |
+| GEN-03 | Phase 2 | Complete |
+| GEN-04 | Phase 2 | Complete |
 | GEN-05 | Phase 2 | Complete |
 | SPINE-01 | Phase 2 | Complete |
 | SPINE-02 | Phase 2 | Pending |

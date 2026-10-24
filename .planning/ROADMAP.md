@@ -94,7 +94,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-04-PLAN.md — s05 imagery sourcing (COI note, neutral table, Getty line) and personalisation/feeds with NYU/Emory (Benchmark)
+- [x] 02-04-PLAN.md — s05 imagery sourcing (COI note, neutral table, Getty line) and personalisation/feeds with NYU/Emory (Benchmark)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 3/8 | In Progress|  |
+| 2. Factory & Spine Slice | 4/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
