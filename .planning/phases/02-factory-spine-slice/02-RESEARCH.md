@@ -404,20 +404,25 @@ Not a rename/refactor/migration phase. Omitted.
 | A7 | Getty appeal status (no judgment, hearing not listed) as at 2026-10-24 | Imagery facts | Stale or wrong legal line; re-check cause list before publishing |
 | A8 | Typical indemnity conditions are representative across providers | Imagery facts | Wrong generalisation; law-firm commentary only; wording kept generic |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Will the author confirm the NYU/Emory SSRN paper in a browser?**
    - Known: figures are stated by the authors' institutions; SSRN is 403 to automation.
    - Unclear: sample, design detail, where the disclosure effect was measured, exact date.
    - Recommendation: one `checkpoint:human-verify` in the data.js/source plan; ship Modelled + secondary-source note if not confirmed (the UI-SPEC copy is ready).
+   - RESOLVED: user confirmed both figures on SSRN 2026-10-24 → Benchmark (02-CONTEXT post-research decisions). No checkpoint needed.
 2. **Getty v Stability appeal status**
    - Known: permission granted December 2025; trackers show pending in October 2026.
    - Unclear: hearing date, any Stability cross-appeal outcome, US action progress.
    - Recommendation: keep the line to the verified facts plus "pending"; re-check judiciary.uk and the Court of Appeal listing at the end-of-phase checkpoint; full treatment in Phase 4 legal review.
+   - RESOLVED: one dated line with "pending"; re-check at the end-of-phase approve-push checkpoint.
 3. **Include the reference's 19.2% / 28.4% auto-approval datum on the page?**
    - Recommendation: yes, one sentence, Modelled + `company-reported`, generic wording ("the one public reference"), because it is the honest anchor against 60%. Needs a source row and one or two claims. If the user prefers, descope and keep only the 41% and 29% claims.
+   - RESOLVED: include, in s06 with the single Intercom mention (user choice, 02-CONTEXT).
 4. **Annual vs per-quarter capacity columns (C4).** Recommendation: annual; needs the UI-SPEC column label amended.
+   - RESOLVED: annual, hours labelled "before rework".
 5. **Does the s03 title follow UI-SPEC (C1)?** Recommendation: yes.
+   - RESOLVED: yes; update TITLES, TOC and test together.
 
 ## Environment Availability
 
