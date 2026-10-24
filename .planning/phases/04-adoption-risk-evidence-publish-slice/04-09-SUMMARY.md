@@ -98,4 +98,18 @@ Push approval: pending user reply
 ## Notes for Task 3
 
 - The live grep for `id="s14-getty"` must be dropped (expect 0): the Getty content was removed by quick task 261024-s14. The remaining live greps in the plan still apply.
-- Plan text about "the legal-review flag under the COI note" is outdated: the COI note was removed; the legal flag (`class="callout legal-flag"`) remains.
+- Plan text about the legal-review flag is superseded by the author decision below: the flag is removed, so the live grep for `class="callout legal-flag"` must now expect 0.
+
+## Author decision: legal review and UAT dropped
+
+Author, verbatim: "Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that"
+
+Scope: counsel legal review, and the human-only UAT list (screen reader, zoom, real devices, grayscale print, tone, incident wording, vendor statements, failed re-checks, pinned exceptions, label fit). None was performed and none is marked passed.
+
+Files changed (commit `fix(04-09): remove legal-review flag per author decision`): site/index.html (flag callout removed), site/assets/style.css (screen and print `.legal-flag` rules removed), test/legal.test.js, test/style.test.js, test/a11y-static.test.js (flag tests inverted to absence guards or removed), scripts/print.mjs and scripts/a11y.mjs (checks now assert the flag is absent). No other copy or numbers changed. The reader-facing advice to have counsel confirm rules (s14 mitigations, s15 gap) is page content and stays.
+
+Planning files (commit `docs(04-09): record legal review and human UAT dropped by author`): .planning/LEGAL-REVIEW.md (dropped note, file kept), 04-HUMAN-UAT.md (all 11 items "dropped by author (not performed)", status dropped), STATE.md blocker, REQUIREMENTS.md QA-03, PROJECT.md Key Decisions.
+
+Re-run gates: node --test 372 pass, 0 fail; crosscheck exit 0 (0 failures); smoke exit 0; a11y exit 0; print exit 0 (83 pages, page 1 has no flag). Pre-flight greps: script 1, script-src 'self' 1, inline handlers/styles 0, base64 0, root-relative links 0, storage/innerHTML 0 per file, site/.nojekyll present, counsel-flag grep 0, branch main, `git status --porcelain -- site test scripts .github` empty.
+
+Note for Task 3: the live-verify grep for `class="callout legal-flag"` now expects 0 (and the plan's automated check `grep -c ... | ...` will exit 1 on a count of 0; read it as the expected result).

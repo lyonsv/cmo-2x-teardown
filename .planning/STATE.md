@@ -116,7 +116,7 @@ Progress: [██████████] 95%
 - No independent benchmarks for cost per asset, approval times, incident rates, auto-approval share; these must be Modelled, reader-overridable defaults
 - Phase 2: review live Intercom reference sections 05-14 before locking tiers/harness/Backlog 0
 - Phase 3: vendor claims need primary-page re-verification
-- Phase 4: EU AI Act Art. 50 and legal review needed before publish
+- Phase 4: legal review dropped by the author 2026-10-24 (counsel review not performed; page flag removed). EU AI Act Art. 50 content was re-verified in 04-05 and stays on the page as content.
 
 ## Session Continuity
 

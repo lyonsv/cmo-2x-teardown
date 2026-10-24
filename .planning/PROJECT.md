@@ -71,6 +71,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 |----------|-----------|---------|
 | Generic enterprise CMO, not a named org | Any CMO should be able to map onto it | — Pending |
 | Modelled + graded numbers (Benchmark / Modelled / Speculative) | Mirrors the reference's rigour while staying honest that this is a projection | — Pending |
+| Legal-review flag and counsel review dropped | Author decision 2026-10-24: "Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that". Page flag removed; counsel review and the human UAT list were not performed | Dropped by author decision 2026-10-24 |
 | Review/approval gate is the central spine | Without governance, 2x volume means 2x risk; this is the "review" in build-and-review | — Pending |
 | Include an interactive calculator | Puts the reader's own numbers into the model, which strengthens the CFO case | — Pending |
 | Candid risks section | Credibility with a sceptical CMO/CFO reader | — Pending |

@@ -1,3 +1,5 @@
+> Dropped by the author on 2026-10-24 (author decision: "Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that"). Counsel review was not performed; the page flag was removed. The inventory below is kept for reference only. The ids on the page still match it (test/legal.test.js).
+
 # Legal review inventory
 
 This file lists every legal statement on the published page (`site/index.html`), so counsel can work from one list. Each row's id is an anchor on the page (`id="legal-..."`). A test (`test/legal.test.js`) fails if the ids on the page and the ids below differ.
