@@ -33,9 +33,43 @@ test('every in-page href resolves to an id', () => {
   }
 });
 
+function registerRow(id) {
+  const start = html.indexOf(`<tr id="${id}">`);
+  assert.ok(start >= 0, `missing register row ${id}`);
+  return html.slice(start, html.indexOf('</tr>', start) + '</tr>'.length);
+}
+
+const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
+
 test('registers cover every source and assumption', () => {
   for (const id of Object.keys(assumptions)) assert.ok(html.includes(`<tr id="${id}">`), id);
   for (const k of Object.keys(sources)) assert.ok(html.includes(`<tr id="src-${k}">`), k);
+});
+
+// Code review WR-06: register text is duplicated by hand from data.js, so every
+// field a reader relies on (who, when, where, why) is compared with data.js.
+test('source register rows match data.js field by field', () => {
+  for (const [k, src] of Object.entries(sources)) {
+    const row = registerRow(`src-${k}`);
+    const text = decode(row);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'bias', 'read_via']) {
+      assert.ok(text.includes(src[f]), `src-${k}: ${f} drifted`);
+    }
+    assert.ok(row.includes(`<td>${src.accessed}</td>`), `src-${k}: accessed cell`);
+    assert.ok(row.includes(`<td>${src.publisher}</td>`), `src-${k}: publisher cell`);
+    assert.ok(row.includes(`href="${src.url}"`), `src-${k}: url drifted`);
+  }
+});
+
+test('assumption register rows match data.js label, display, grade and basis', () => {
+  for (const [id, e] of Object.entries(assumptions)) {
+    const row = registerRow(id);
+    const text = decode(row);
+    assert.ok(row.includes(`<td>${e.label}</td>`), `${id}: label drifted`);
+    assert.ok(text.includes(e.basis), `${id}: basis drifted`);
+    assert.ok(row.includes(`<span data-fig="${id}">`), `${id}: value is not a data-fig span`);
+    assert.ok(row.includes(`<td><a class="chip ${CHIP_CLASS[e.grade]}" href="#${id}">${e.grade}</a></td>`), `${id}: grade cell`);
+  }
 });
 
 test('static page guards', () => {
@@ -182,14 +216,33 @@ test('vendor names stay inside s12 and s15', () => {
   assert.ok(!/gradial|airops|profound/i.test(rest));
 });
 
-test('numeric gate: no ungraded numerals in the frame', () => {
-  const parts = [metaHtml(), sectionHtml('answer'), sectionHtml('s01'), sectionHtml('s02')];
+function regionHtml(open, close) {
+  const start = html.indexOf(open);
+  assert.ok(start >= 0, `missing ${open}`);
+  return html.slice(start, html.indexOf(close, start) + close.length);
+}
+
+// The gate covers every reader-facing region: masthead, meta, answer, legend, all
+// fifteen sections and the footer (code review WR-06). The nav is excluded: its
+// numbers are section numbers, checked by the TOC test.
+// Exemption: register rows in s15 quote source titles, IDs, labels and bases that
+// contain numerals ("15.3%", "2,080", "asm-lever-01"). Those rows are compared
+// field by field with data.js by the register tests above, and their value cells
+// are data-fig spans checked by the data-fig test, so they are removed here.
+test('numeric gate: no ungraded numerals anywhere on the page', () => {
+  const parts = [
+    regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
+    regionHtml('<div class="legend">', '</dl>'),
+    ...SECTION_IDS.map((id) => sectionHtml(id).replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
+    regionHtml('<footer>', '</footer>'),
+  ];
   for (const part of parts) {
     const cleaned = strip(
       part
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
         .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
+        .replace(/<h2 id="s\d\d-h">[^<]*<\/h2>/g, ' ') // section titles are locked by the TITLES test
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
     );
