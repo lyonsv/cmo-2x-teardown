@@ -132,6 +132,17 @@ export const sources = {
     grade: 'Modelled',
     flag: 'company-reported',
   },
+  'mmm-geox': {
+    title: 'Meridian: GeoX geo experiments for MMM calibration',
+    publisher: 'Google (open-source marketing-mix framework documentation)',
+    published: 'undated on the page',
+    accessed: '2026-10-24',
+    url: 'https://developers.google.com/meridian/geox',
+    bias: 'Vendor documentation of its own open-source tool; describes a method, reports no outcomes',
+    read_via: 'Search summary and the page banner read 2026-10-24; the calibration guide was not opened',
+    grade: 'Modelled',
+    flag: null,
+  },
 };
 
 // Negative values format the absolute value and put a true minus sign (U+2212)

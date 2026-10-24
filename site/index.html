@@ -666,6 +666,20 @@
       <p>The arithmetic is expected winners equal tests run times the win rate. At an illustrative cadence of <span data-fig="asm-tests-per-quarter">20</span> <a class="chip c-m" href="#asm-tests-per-quarter">Modelled</a> experiments a quarter, one team should expect roughly <span data-fig="tests-winners-lo">2</span> to <span data-fig="tests-winners-hi">7</span> winners a quarter, depending on which definition you believe. The cadence is a placeholder to replace with your own.</p>
       <p>Test volume is bounded by traffic. Each test needs enough visitors in every arm to separate a real effect from noise, so running more tests on the same traffic means each one is underpowered or they queue behind each other. The plain consequence is that more tests do not always mean more wins, and a team that doubles its test count without doubling its audience mostly buys more inconclusive results.</p>
       <p>Extra output helps in two narrower ways. It replaces fatigued winners faster, because a fresh variant is ready when performance decays, and it raises the share of tests that reach a conclusive result when the added variants go to channels with enough traffic to read. The outcome metric is therefore winners rolled out and time from fatigue to replacement, not the number of tests started. We read <a href="#src-kohavi-2013">the paper's own conclusion</a> as a reason to measure before scaling a change: most ideas do not move the metric, so a doubled output without a doubled measurement discipline adds cost faster than it adds results.</p>
+      <h3 id="s09-insight">Insight and reporting</h3>
+      <p>More output only improves outcomes if measurement keeps pace, and for this lever the evidence is thin, so it stays Modelled. The point of the lever is that a larger programme produces more to measure, and the measurement has to be as quick and as honest as the production.</p>
+      <div class="table-scroll" role="region" aria-label="Insight and reporting table" tabindex="0">
+        <table>
+          <caption>Insight and reporting: output, outcome and evidence</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Metric</th><th scope="col">Evidence grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Output</th><td>Time to insight; share of reports automated; marketing-mix model refresh cadence.</td><td><a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td></tr>
+            <tr><th scope="row">Outcome</th><td>Faster budget reallocation; earlier creative-fatigue detection.</td><td><a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The method we point to is a marketing-mix model calibrated by incrementality experiments. An open-source marketing-mix framework documents calibrating the model with geo experiments, using the experiment results as priors <a class="chip c-m" href="#src-mmm-geox">Modelled</a>. That is a description of a method, not a measured result, and we did not open its calibration guide.</p>
+      <p>Faster, asset-level telemetry, described in <a href="#s08">the eval harness and telemetry section</a>, shortens the time from a change in performance to a person noticing it. That is the plausible route from more output to better outcomes: budget moves sooner and fatigued creative is caught earlier. This is an evidence gap rather than a finding. We did not find independent evidence that faster reporting alone lifts revenue, so the claim stays Modelled until your own holdouts show it.</p>
     </section>
     <section id="s10" aria-labelledby="s10-h">
       <div class="sec-head"><span class="sec-num">10</span><h2 id="s10-h">The outcome case</h2></div>
@@ -736,6 +750,15 @@
               <td><span class="chip c-m">Modelled</span></td>
               <td>company-reported</td>
               <td><a href="https://exp-platform.com/Documents/2013%20controlledExperimentsAtScale.pdf">https://exp-platform.com/Documents/2013%20controlledExperimentsAtScale.pdf</a></td>
+            </tr>
+            <tr id="src-mmm-geox">
+              <th scope="row" class="id">src-mmm-geox</th>
+              <td>Meridian: GeoX geo experiments for MMM calibration<br>Published undated on the page. Vendor documentation of its own open-source tool; describes a method, reports no outcomes. Read via: Search summary and the page banner read 2026-10-24; the calibration guide was not opened.</td>
+              <td>Google (open-source marketing-mix framework documentation)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>none</td>
+              <td><a href="https://developers.google.com/meridian/geox">https://developers.google.com/meridian/geox</a></td>
             </tr>
             <tr id="src-gartner-2025-cmo-spend">
               <th scope="row" class="id">src-gartner-2025-cmo-spend</th>
