@@ -80,13 +80,36 @@ Plans:
 **Plans**: 8 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 02-01-PLAN.md — Phase 1 UI-review fixes and test-contract evolution (governing-chip rule, register chips, numeric-gate pre-strips, s03 title, vendor list)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 02-02-PLAN.md — s03 factory model (Figures 2, 3) and s04 layered architecture; diagram contract and CSS
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 02-03-PLAN.md — variantMatrix() with tests; s05 derive lead, Figure 4 and the 12,000-variant matrix
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
 - [ ] 02-04-PLAN.md — s05 imagery sourcing (COI note, neutral table, Getty line) and personalisation/feeds with NYU/Emory (Benchmark)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
 - [ ] 02-05-PLAN.md — s06 review agent (Figure 5, single Intercom mention, reference datum) and s07 tier ladder (Figure 6, tier table, legal note, Always human)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
 - [ ] 02-06-PLAN.md — s07 reviewer capacity and fatigue controls; s08 eval harness (Figure 7), metrics table and telemetry
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
 - [ ] 02-07-PLAN.md — Local preview checkpoint (widths and print) and fixes
+
+**Wave 8** *(blocked on Wave 7 completion)*
+
 - [ ] 02-08-PLAN.md — Getty re-check, approve-push checkpoint, W3C, push and live verification
 
 **UI hint**: yes
