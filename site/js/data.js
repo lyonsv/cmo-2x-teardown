@@ -499,7 +499,7 @@ lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies', 'V
 lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Vendor-biased anchors', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
 lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap', 'Almost entirely an evidence gap; kept brief and modelled.');
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
-lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative. Independent traffic studies from October 2026 find AI-assistant referrals a small share of search traffic; visibility has not been shown to move pipeline.');
+lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative. Non-vendor traffic studies from October 2026 (two of the three by authors who sell search or visibility services) find AI-assistant referrals a small share of search traffic; visibility has not been shown to move pipeline.');
 
 assumptions['asm-tests-per-quarter'] = a('asm-tests-per-quarter', 'Experiments run per team per quarter', 'context', null, 20, 'experiments', '20',
   'An illustrative test cadence for one team; replace with your own. No published benchmark.');
@@ -835,7 +835,7 @@ assumptions['asm-incident-rate'] = { id: 'asm-incident-rate', label: 'Rights inc
   ops('ops-exposure-wilful', incidents * claims['stat-wilful-max'].value, 'USD illustrative statutory exposure a year, wilful ceiling', 'usd0');
 }
 
-// ---- Plan 03-03: answer-engine visibility claims (independent traffic studies, one benchmark) ----
+// ---- Plan 03-03: answer-engine visibility claims (non-vendor traffic studies, one benchmark) ----
 
 for (const [id, value, unit, display, ref] of [
   ['aeo-chatgpt-share', 0.0062, 'share of search-engine organic volume from one assistant, 12 months of analytics across 100 sites', '0.62%', 'src-haynes-2026'],

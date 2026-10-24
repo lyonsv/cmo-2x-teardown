@@ -1148,6 +1148,12 @@ test('ops block: statutory table, callout, reader-owned incident rate, per-work 
 
 // ---- Plan 03-03: answer-engine visibility block and s09 completion (LEVER-05) ----
 
+test('traffic studies by sell-side authors are not called independent (IN-08)', () => {
+  assert.ok(!/Independent traffic studies/i.test(html));
+  assert.ok(!/Independent traffic studies/i.test(assumptions['asm-lever-06-evidence'].basis));
+  assert.match(sectionHtml('s09'), /Non-vendor traffic studies published up to/);
+});
+
 test('aeo block: Speculative, we-did-not-find, independent studies, refresh link to s03', () => {
   const s = sectionHtml('s09');
   assert.ok(s.includes('<h3 id="s09-aeo">Answer-engine visibility (AEO/GEO)</h3>'));
