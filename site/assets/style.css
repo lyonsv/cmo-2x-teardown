@@ -34,7 +34,7 @@ p { margin: 0 0 var(--s-md); }
 .callout .lbl { display: block; font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
 .callout.coi { background: var(--paper-2); }
 .legend { background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-lg); margin: var(--s-2xl) 0 var(--s-lg); }
-.legend h3 { margin-top: 0; }
+.legend .legend-title { font-size: 17px; font-weight: 600; line-height: 1.6; letter-spacing: 0; margin: 0 0 var(--s-sm); }
 .legend dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); align-items: baseline; }
 .legend dt, .legend dd { margin: 0; }
 .toc { margin: var(--s-2xl) 0; }
