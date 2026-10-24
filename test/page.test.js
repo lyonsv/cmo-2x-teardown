@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { claims, assumptions, sources } from '../site/js/data.js';
+import { SENSITIVITY_STEP } from '../site/js/model.js';
+import { formatValue } from '../site/js/format.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 
@@ -233,8 +235,15 @@ const ALLOWED_NUMERIC_TOKENS = [
   '2026-10-24', // page date
   '10,000', // the s05 title phrase if echoed
   '1', // Figure 1 label
-  '20%', // sensitivity step (method parameter, UI-SPEC)
 ];
+
+// The sensitivity step (a method parameter, UI-SPEC) is exempt only in s11 and only
+// in its four fixed phrasings, built from SENSITIVITY_STEP (IN-02, IN-03).
+const STEP = formatValue(SENSITIVITY_STEP, 'pct0');
+const stripStep = (h) => h
+  .replace(`each input moved ${STEP} down and up`, ' ')
+  .replaceAll(`at −${STEP}`, ' ').replaceAll(`at +${STEP}`, ' ')
+  .replace(`A ${STEP} rise moves`, ' ');
 
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
@@ -434,7 +443,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
     // the leading "Default N" of each field hint (calc-page.test pins N to data.js
     // via toText) and the change-management sentence, built here from data.js so a
     // changed assumption fails the gate. Any other numeral in the form fails.
-    ...SECTION_IDS.map((id) => sectionHtml(id)
+    ...SECTION_IDS.map((id) => (id === 's11' ? stripStep(sectionHtml(id)) : sectionHtml(id))
       .replace(/<p class="hint" id="hint-[a-z0-9]+">Default [\d.,]+%?/g, ' ')
       .replace(`Change-management cost: ${assumptions['asm-change-mgmt'].display}, included`, ' ')
       .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
