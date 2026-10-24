@@ -129,7 +129,7 @@ export const assumptions = {
     'A round figure for a generic enterprise; there is no published source for this organisation.'),
   'asm-marketing-budget': a('asm-marketing-budget', 'Marketing budget', 'input', 'marketing_budget', 78000000, 'USD', '~$78M',
     'Revenue multiplied by the budget share below.'),
-  'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 7.8, '% of revenue', '7.8%',
+  'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 0.078, 'share of revenue', '7.8%',
     'Set equal to the Gartner 2026 average; the subject org is an average respondent, not a benchmark.'),
   'asm-marketing-fte': a('asm-marketing-fte', 'Marketing headcount', 'input', 'marketing_fte', 120, 'FTE', '~120',
     'A modelled team size for the subject organisation; there is no published source.'),
@@ -248,13 +248,15 @@ assumptions['asm-matrix-independence'] = a('asm-matrix-independence', 'Independe
   'Factors treated as independent; an upper-bound sketch',
   'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent for illustration. Real campaigns have correlated factors: sizes follow channel placement specs, so not every channel takes every size. The total is therefore an upper-bound sketch, not a count of distinct valid variants; the applies fractions stand in only roughly for those exclusions.');
 
+// Shares and percentage changes are stored as fractions throughout (code review
+// IN-08), so 0.19 displays as 19% via its format.
 export const claims = {
   'gartner-share-2025': {
-    id: 'gartner-share-2025', value: 7.7, unit: '% of revenue', display: '7.7%',
+    id: 'gartner-share-2025', value: 0.077, unit: 'share of revenue', display: '7.7%', format: 'pct1',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
   },
   'gartner-share-2026': {
-    id: 'gartner-share-2026', value: 7.8, unit: '% of revenue', display: '7.8%',
+    id: 'gartner-share-2026', value: 0.078, unit: 'share of revenue', display: '7.8%', format: 'pct1',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2026-cmo-spend',
   },
   'gartner-sample-2025': {
@@ -262,11 +264,11 @@ export const claims = {
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
   },
   'nyu-ctr-lift': {
-    id: 'nyu-ctr-lift', value: 19, unit: '% click-through lift, fully AI-created ads (up to)', display: '19%',
+    id: 'nyu-ctr-lift', value: 0.19, unit: 'click-through lift as a fraction, fully AI-created ads (up to)', display: '19%', format: 'pct0',
     grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
   },
   'nyu-disclosure-drop': {
-    id: 'nyu-disclosure-drop', value: -31.5, unit: '% change in click-through when AI involvement is disclosed', display: '\u221231.5%',
+    id: 'nyu-disclosure-drop', value: -0.315, unit: 'change in click-through as a fraction when AI involvement is disclosed', display: '\u221231.5%', format: 'pct1',
     grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
   },
   'output-per-head-base': {

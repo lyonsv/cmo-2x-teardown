@@ -176,7 +176,7 @@ test('formatValue applies', () => {
 
 // The user confirmed both figures on the SSRN primary page on 2026-10-24 (02-CONTEXT post-research decisions).
 test('NYU/Emory grade matches the 2026-10-24 browser confirmation (02-CONTEXT post-research decisions)', () => {
-  const want = { 'nyu-ctr-lift': [19, '19%'], 'nyu-disclosure-drop': [-31.5, '\u221231.5%'] };
+  const want = { 'nyu-ctr-lift': [0.19, '19%'], 'nyu-disclosure-drop': [-0.315, '\u221231.5%'] };
   for (const [id, [value, display]] of Object.entries(want)) {
     const c = claims[id];
     assert.ok(c, id);
@@ -350,4 +350,16 @@ test('every source has a valid grade and flag, and claims citing a source share 
     assert.equal(c.grade, src.grade, `${c.id}: grade differs from its source row`);
     if (src.flag) assert.equal(c.flag, src.flag, `${c.id}: source flag ${src.flag} missing`);
   }
+});
+
+// ---- Code review IN-08: percentages are stored as fractions ----
+
+test('percentage claims store fractions and display through their format', () => {
+  for (const c of Object.values(claims)) {
+    if (/%/.test(c.display) && !/^\d+\u2013\d+%$/.test(c.display)) {
+      assert.ok(Math.abs(c.value) <= 2, `${c.id}: ${c.value} looks like a percent, not a fraction`);
+      if (c.format) assert.equal(formatValue(c.value, c.format), c.display, `${c.id} display`);
+    }
+  }
+  assert.equal(assumptions['asm-budget-share'].value, claims['gartner-share-2026'].value);
 });
