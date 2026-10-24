@@ -185,6 +185,16 @@ test('steps and captions carry no digits', () => {
   }
 });
 
+// IN-06: the page's numeric gate strips every <svg>, so diagram text (labels,
+// <title>, <desc>) is checked here: tier names aside, it carries no numerals.
+test('diagram text, titles and descriptions carry no digits', () => {
+  for (const f of figures()) {
+    const texts = [...f.svg.matchAll(/<(text|title|desc)\b[^>]*>([\s\S]*?)<\/\1>/g)].map((m) => strip(m[2]));
+    assert.ok(texts.length > 0, `Figure ${f.n} has text`);
+    for (const t of texts) assert.ok(!/\d/.test(t.replace(/\bT[0-3]\b/g, ' ')), `Figure ${f.n} text contains digits: ${t}`);
+  }
+});
+
 test('Figure 4 has a two-way fork', () => {
   const f = figures().find((x) => x.n === 4);
   assert.ok(f, 'Figure 4 present');

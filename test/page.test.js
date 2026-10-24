@@ -410,6 +410,14 @@ test('time elements carry ISO dates that appear in a source register row', () =>
     assert.ok(Number.isFinite(Date.parse(d)), `bad date ${d}`);
     assert.ok(rows.some((r) => r.includes(d)), `${d} is not in a source register row`);
   }
+  // IN-06: the numeric gate strips <time> with its text, so the text must be the date itself.
+  const times = [...html.matchAll(/<time\b([^>]*)>([^<]*)<\/time>/g)];
+  assert.equal(times.length, (html.match(/<time\b/g) || []).length, 'a <time> element the check cannot parse');
+  for (const [, attrs, text] of times) {
+    const d = attrs.match(/^ datetime="([^"]*)"$/);
+    assert.ok(d, `<time> must carry only a datetime attribute: ${attrs}`);
+    assert.equal(text, d[1], `<time> text "${text}" differs from its datetime`);
+  }
 });
 
 test('numeric gate: no ungraded numerals anywhere on the page', () => {
