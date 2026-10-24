@@ -59,6 +59,7 @@ async function focusChecks(send, evalJs) {
   const stops = [];
   const key = (type) => send('Input.dispatchKeyEvent', { type, key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
   const describe = `(() => { const e = document.activeElement; if (!e || e === document.body) return null;
+    if (window.__first === e) return null; if (!window.__first) window.__first = e;
     let cs = getComputedStyle(e);
     // The calculator inputs draw the ring on .control:focus-within (style.css line 138).
     const ring = e.closest('.control');
