@@ -3,7 +3,7 @@ phase: 04-adoption-risk-evidence-publish-slice
 plan: 08
 subsystem: testing
 tags: [checkpoint, local-preview, human-uat]
-status: partial (Task 1 done; Task 2 preview awaiting user)
+status: complete
 requirements: [QA-01, QA-02, QA-03, QA-04]
 key-files:
   created: [.planning/phases/04-adoption-risk-evidence-publish-slice/04-HUMAN-UAT.md]
@@ -40,6 +40,12 @@ Also: `grep -c 'class="callout legal-flag"' site/index.html` = 1; `git status --
 
 ## Preview review
 
-pending user reply (local preview at http://127.0.0.1:8000/, server already running, HTTP 200 confirmed)
+User reply (verbatim, a human reviewed the local preview at http://127.0.0.1:8000/):
+
+> approved
+
+## Task 3: Preview fixes
+
+No changes requested. No site edits. Gates from Task 1 (on a41ba92) stand: node --test 372/372, crosscheck 0 failures, smoke 17/17, a11y 23/23, print 11/11. The serif panel label in the live chart (a41ba92) was shown to the user in the checkpoint and accepted with the approval. Local server stopped.
 
 ## Self-Check: PASSED (Task 1 only)
