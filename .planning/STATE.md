@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 04-07-PLAN.md
-last_updated: "2026-10-24T19:06:21.726Z"
+last_updated: "2026-10-24T19:43:04.506Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 36
-  completed_plans: 34
+  total_plans: 43
+  completed_plans: 35
   percent: 60
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-24)
 
 **Core value:** A CMO and their CFO finish the page convinced, through transparent and graded reasoning plus their own numbers, that a 2x marketing programme is credible, governable, and improves business outcomes rather than just adding volume.
-**Current focus:** Phase 4 — Adoption, Risk, Evidence & Publish Slice
+**Current focus:** Phase 03.1 — Headline Metric Reframe
 
 ## Current Position
 
-Phase: 4 (Adoption, Risk, Evidence & Publish Slice) — EXECUTING
-Plan: 7 of 9
+Phase: 03.1 (Headline Metric Reframe) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
 Last activity: 2026-10-24
 
-Progress: [█████████░] 94%
+Progress: [████████░░] 81%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [█████████░] 94%
 | Phase 4 P04 | 30min | 2 tasks | 4 files |
 | Phase 4 P05 | 40min | 2 tasks | 8 files |
 | Phase 4 P07 | 40min | 2 tasks | 7 files |
+| Phase 03.1 P01 | 20min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,7 @@ Progress: [█████████░] 94%
 - [Phase 3]: Post-editing range 9.26-59.74% graded Modelled with scope caveats; vendor case anonymised and flagged vendor-claimed
 - [Phase 3]: 03-06: #s11? hash counts as restored even if all values invalid; summary debounced 400ms, table 250ms
 - [Phase 4]: s11 shows one grade chip per group with a shared-grade guard test; s12 matrix dates collapse into the caption
+- [Phase 03.1]: calc.test.js inlines page defaults rather than importing data.js (red until 03.1-05)
 
 ### Pending Todos
 
@@ -115,7 +117,7 @@ Progress: [█████████░] 94%
 
 ## Session Continuity
 
-Last session: 2026-10-24T19:06:21.720Z
+Last session: 2026-10-24T19:43:00.309Z
 Stopped at: Completed 04-07-PLAN.md
 Resume file: None
 

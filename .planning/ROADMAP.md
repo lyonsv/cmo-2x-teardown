@@ -195,12 +195,12 @@ Plans:
   3. s02 Figure 1 and its data table, and the calculator's results, summary sentence, chart and "what you must believe" panel, report the new headline metric(s); variant counts remain only in s05/s07 (factory and review capacity) and the s15 registers, labelled as internal throughput.
   4. data.js, calc/model code and all drift, crosscheck and smoke tests are updated so every new number is graded, registered and traced; no test is loosened to make the change pass.
   5. The reason for the change (no CMO benchmark for assets per head; Goodhart risk from mechanical variants) is recorded in PROJECT.md Key Decisions.
-**Plans:** 7 plans
+**Plans:** 1/7 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 03.1-01-PLAN.md — TDD campaign-market engine in calc.js (campaigns x markets, growth route, cost per campaign-market, brief-to-live)
+- [x] 03.1-01-PLAN.md — TDD campaign-market engine in calc.js (campaigns x markets, growth route, cost per campaign-market, brief-to-live)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
