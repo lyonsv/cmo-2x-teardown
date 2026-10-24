@@ -304,6 +304,9 @@ test('capacity claims recompute under their own scenario', () => {
   for (const row of ['1x-nogate', '1x-gate', '2x-nogate', '2x-gate']) {
     for (const f of ['hours', 'util']) assert.ok(claims[`cap-${row}-${f}`], `cap-${row}-${f}`);
   }
+  // IN-05: the reference-rate scenarios use the reference claims themselves
+  assert.equal(claims['cap-2x-ref-low-util'].override.auto_approval_share, claims['ref-auto-approved-share'].value);
+  assert.equal(claims['cap-2x-ref-high-util'].override.auto_approval_share, claims['ref-bot-approval-rate'].value);
   // capacity is reviewer headcount times review hours per reviewer
   assert.equal(claims['cap-capacity-hours'].value, assumptions['asm-reviewer-fte'].value * assumptions['asm-reviewer-hours'].value);
 });

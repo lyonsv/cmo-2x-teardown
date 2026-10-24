@@ -424,10 +424,12 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
   put('cap-1x-variants', 40000, 'approved-live variants per year at 1x', 'baseline.variants_per_year', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-variants-per-concept');
   put('cap-2x-variants', 80000, 'approved-live variants per year at 2x', 'scenario.variants_per_year', 0, 'int', { multiplier: 2, auto_approval_share: 0.6 }, 'asm-variants-per-concept');
   put('cap-capacity-hours', 14400, 'reviewer capacity, hours per year', 'baseline.review_capacity_hours', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-reviewer-hours');
+  // IN-05: read the reference rates from their claims, so a corrected reference
+  // figure flows through (data.test then flags the stale utilisation literal).
   put('cap-2x-ref-low-util', 1.113, '2x utilisation at the reference low clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
-    { multiplier: 2, auto_approval_share: 0.192 }, 'src-intercom-2x-teardown', 'company-reported');
+    { multiplier: 2, auto_approval_share: claims['ref-auto-approved-share'].value }, 'src-intercom-2x-teardown', 'company-reported');
   put('cap-2x-ref-high-util', 1.001, '2x utilisation at the reference high clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
-    { multiplier: 2, auto_approval_share: 0.284 }, 'src-intercom-2x-teardown', 'company-reported');
+    { multiplier: 2, auto_approval_share: claims['ref-bot-approval-rate'].value }, 'src-intercom-2x-teardown', 'company-reported');
 }
 
 function evidence(id, label, grade, display, basis) {
