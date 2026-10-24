@@ -86,13 +86,13 @@
 
 - [x] **CLOSE-01**: Reader sees a candid "what goes wrong" section: a documented incident list (established vs alleged), slop and sameness, reviewer fatigue, Goodhart, IP/copyrightability, and regulation (EU AI Act Art. 50, ASA, FTC) with date-stamped callouts
 - [x] **CLOSE-02**: Reader sees an adoption section (pulling up the floor across creative, brand and regional teams) and Backlog 0 defined as a queue-age SLA for unserved demand
-- [ ] **CLOSE-03**: Reader sees a source register (with publisher bias flags), an evidence-gaps section, and an assumptions register that matches `data.js`
+- [x] **CLOSE-03**: Reader sees a source register (with publisher bias flags), an evidence-gaps section, and an assumptions register that matches `data.js`
 
 ### Quality & Publish
 
 - [ ] **QA-01**: The page meets WCAG 2.2 AA: labelled inputs, `aria-live` outputs, data-table equivalents for charts, and grades not conveyed by colour alone
 - [ ] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet
-- [ ] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, EU AI Act Art. 50, and Getty v Stability status are re-verified, and the page's legal wording is flagged for review
+- [x] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, EU AI Act Art. 50, and Getty v Stability status are re-verified, and the page's legal wording is flagged for review
 - [ ] **QA-04**: An automated or scripted cross-check confirms every graded number on the page has a register entry and every calculator default matches the prose
 
 ## v2 Requirements
@@ -177,10 +177,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-05 | Phase 3 | Complete |
 | CLOSE-01 | Phase 4 | Complete |
 | CLOSE-02 | Phase 4 | Complete |
-| CLOSE-03 | Phase 4 | Pending |
+| CLOSE-03 | Phase 4 | Complete |
 | QA-01 | Phase 4 | Pending |
 | QA-02 | Phase 4 | Pending |
-| QA-03 | Phase 4 | Pending |
+| QA-03 | Phase 4 | Complete |
 | QA-04 | Phase 4 | Pending |
 
 **Coverage:**
