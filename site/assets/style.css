@@ -72,6 +72,14 @@ th, td { padding: var(--s-sm) var(--s-md) var(--s-sm) 0; vertical-align: baselin
 td { line-height: 1.5; }
 tr.total th, tr.total td { font-weight: 600; border-top: 1px solid var(--ink); }
 thead th { border-bottom: 2px solid var(--ink); }
+/* s12 comparison matrix (03-09): sticky row header is scoped to .matrix only. */
+.matrix { min-width: 960px; }
+.matrix td, .matrix th { vertical-align: top; padding-right: var(--s-md); min-width: 200px; }
+.matrix tbody th[scope=row] { position: sticky; left: 0; background: var(--paper); border-right: 1px solid var(--rule); min-width: 160px; }
+.matrix .spine { background: var(--paper-2); }
+.cite { font: 400 12px/1.6 var(--mono); color: var(--muted); display: inline-block; min-height: 24px; margin-right: var(--s-xs); }
+.cite-date { font: 400 12px/1.6 var(--mono); color: var(--muted); }
+.nd { color: var(--muted); }
 .register tr { scroll-margin-top: 16px; }
 .register a { overflow-wrap: anywhere; }
 .register tr:target { background: var(--paper-2); box-shadow: inset 3px 0 0 var(--ink); }
@@ -206,6 +214,8 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   section { break-inside: auto; }
   .later { background: none; }
   .table-scroll, .fig-scroll { overflow: visible; }
+  .matrix tbody th[scope=row] { position: static; }
+  .cite { color: inherit; }
   .bar-base { fill: #bbb; }
   .bar-scaled { fill: #000; }
   .masthead, .meta, section + section, footer, th, td, figure, .legend { border-color: #ccc; }

@@ -313,10 +313,10 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s12', 's13', 's14'];
+const SKELETON_IDS = ['s13', 's14'];
 
 test('skeleton ids are s10 to s14', () => {
-  assert.deepEqual(SKELETON_IDS, ['s12', 's13', 's14']);
+  assert.deepEqual(SKELETON_IDS, ['s13', 's14']);
 });
 
 test('skeleton sections carry a scope sentence and the later note', () => {
@@ -326,12 +326,6 @@ test('skeleton sections carry a scope sentence and the later note', () => {
     const others = [...s.matchAll(/<p(?![^>]*class="later")[^>]*>/g)];
     assert.ok(others.length >= 1, `${id} has no scope sentence`);
   }
-});
-
-test('s12 stub', () => {
-  const s = strip(sectionHtml('s12'));
-  assert.ok(s.includes('This section will compare tool categories and, in this section only, named vendors, with every claim sourced and dated.'));
-  assert.ok(!s.includes('without naming them here'));
 });
 
 test('copy nits from the Phase 1 UI review', () => {
