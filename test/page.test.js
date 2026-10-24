@@ -1361,11 +1361,19 @@ test('s13 Backlog 0 definition block', () => {
 
 const INCIDENT_ROWS = [
   ['2025-12-10', '10 December 2025', 'Established', 'src-incident-mcdonalds-nl-2025'],
-  ['2025-11-03', '3 November 2025', 'Disputed', 'src-incident-cocacola-2025'],
-  ['2025-08', 'August 2025', 'Established', 'src-incident-guess-vogue-2025'],
+  ['2025-11-03', '3 November 2025', 'Established', 'src-incident-cocacola-2025'],
+  ['2025-08', 'August 2025', 'Alleged', 'src-incident-guess-vogue-2025'],
   ['2024-02-14', '14 February 2024', 'Established', 'src-moffatt-air-canada-2024'],
   ['2023-03-22', '22 March 2023', 'Established', 'src-incident-levis-2023'],
 ];
+
+// Legend: Established = confirmed by a court, a regulator or the party concerned;
+// Alleged = reported but not confirmed; Disputed = the parties disagree on the facts.
+const STATUS_EVIDENCE = {
+  Established: /Tribunal decision|company confirmed|Company's own announcement|the company says/,
+  Alleged: /No statement from/,
+  Disputed: /parties disagree on the facts/,
+};
 
 test('s14 lead, status legend and incident table', () => {
   const s = sectionHtml('s14');
@@ -1399,6 +1407,10 @@ test('s14 lead, status legend and incident table', () => {
     const cites = [...r.matchAll(/class="cite" href="#(src-[^"]+)"/g)].map((m) => m[1]);
     assert.ok(cites.includes(src));
     for (const c of cites) assert.equal(sources[c.slice(4)].event, dt, c);
+    // WR-05: the status follows the legend, read from the evidence the register records.
+    const ev = `${sources[src.slice(4)].bias} ${sources[src.slice(4)].read_via}`;
+    assert.match(ev, STATUS_EVIDENCE[status], `${src}: ${status} needs matching evidence in data.js`);
+    if (status !== 'Alleged') assert.doesNotMatch(ev, /No statement from/, `${src}: no statement from the party, so not ${status}`);
   });
   assert.ok(!strip(s).includes('Intercom'));
 });
