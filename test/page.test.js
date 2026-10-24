@@ -11,19 +11,34 @@ function figEntry(id) {
   return null;
 }
 
-const figRe = /<span data-fig="([^"]+)">([^<]*)<\/span>(\s*<a class="chip c-[bms]" href="#([^"]+)">([^<]+)<\/a>)?/g;
+const figRe = /<span data-fig="([^"]+)">([^<]*)<\/span>(\s*<a class="chip (c-[a-z]+)" href="#([^"]+)">([^<]+)<\/a>)?/g;
+const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 
 test('every data-fig matches data.js and is followed by its chip', () => {
   const found = [...html.matchAll(figRe)];
   assert.ok(found.length > 0, 'no data-fig spans');
-  for (const [, id, text, chip, href, word] of found) {
+  for (const [, id, text, chip, cls, href, word] of found) {
     const e = figEntry(id);
     assert.ok(e, `unknown data-fig ${id}`);
     assert.equal(text, e.display, `${id} display drifted`);
     assert.ok(chip, `${id}: no chip after number`);
     assert.equal(word, e.grade, `${id}: chip word`);
+    assert.equal(cls, CHIP_CLASS[e.grade], `${id}: chip colour class does not match grade ${e.grade}`);
     assert.equal(href, e.ref, `${id}: chip href`);
   }
+  // Code review WR-07: a data-fig the regex cannot parse (extra attributes,
+  // nested markup) must fail, not be silently skipped. Every data-fig is either a
+  // plain span matched above or an SVG <text> label checked in figure.test.js.
+  const all = (html.match(/\bdata-fig="/g) || []).length;
+  const svgText = (html.match(/<text [^>]*\bdata-fig="/g) || []).length;
+  assert.equal(found.length + svgText, all, 'some data-fig elements were not checked');
+});
+
+test('every chip colour class matches its grade word', () => {
+  const chips = [...html.matchAll(/<(a|span) class="chip ([^"]+)"[^>]*>([^<]+)<\/\1>/g)];
+  assert.ok(chips.length > 0);
+  for (const [, , cls, word] of chips) assert.equal(cls, CHIP_CLASS[word], `chip "${word}" has class ${cls}`);
+  assert.equal(chips.length, (html.match(/class="chip /g) || []).length, 'a chip has markup the check cannot parse');
 });
 
 test('every in-page href resolves to an id', () => {
@@ -39,7 +54,6 @@ function registerRow(id) {
   return html.slice(start, html.indexOf('</tr>', start) + '</tr>'.length);
 }
 
-const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 
 test('registers cover every source and assumption', () => {
   for (const id of Object.keys(assumptions)) assert.ok(html.includes(`<tr id="${id}">`), id);
