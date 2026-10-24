@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-10-24T14:51:18.849Z"
-last_activity: 2026-10-24 -- Phase 2 planning complete
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-10-24T14:54:41.707Z"
+last_activity: 2026-10-24
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 15
-  completed_plans: 7
+  completed_plans: 8
   percent: 25
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-24)
 
 **Core value:** A CMO and their CFO finish the page convinced, through transparent and graded reasoning plus their own numbers, that a 2x marketing programme is credible, governable, and improves business outcomes rather than just adding volume.
-**Current focus:** Phase 2 — factory & spine slice
+**Current focus:** Phase 2 — Factory & Spine Slice
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 2 (Factory & Spine Slice) — EXECUTING
+Plan: 2 of 8
 Status: Ready to execute
-Last activity: 2026-10-24 -- Phase 2 planning complete
+Last activity: 2026-10-24
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 53%
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 7 | - | - |
+| Phase 2 P01 | 25min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,7 @@ Progress: [██████████] 100%
 - [Phase 1]: 01-05: Gartner 2026 graded Benchmark; s02 prose numeral-free via data-fig spans
 - [Phase 01]: 01-06: Figure bar widths use claim values (rounded output 83/167), tested within 0.5
 - [Phase 1]: 01-07: legend heading is h2.legend-title for W3C heading-level rule; Phase 1 live at lyonsv.github.io/cmo-2x-teardown
+- [Phase ?]: 02-01: chip adjacency replaced by governing-chip rule; register chips unlinked; numeric gate pre-strips T0-T3, section links, time
 
 ### Pending Todos
 
@@ -79,6 +81,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-10-24T09:45:51.315Z
-Stopped at: Phase 1 UI-SPEC approved
+Last session: 2026-10-24T14:54:41.700Z
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None

@@ -82,7 +82,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Phase 1 UI-review fixes and test-contract evolution (governing-chip rule, register chips, numeric-gate pre-strips, s03 title, vendor list)
+- [x] 02-01-PLAN.md — Phase 1 UI-review fixes and test-contract evolution (governing-chip rule, register chips, numeric-gate pre-strips, s03 title, vendor list)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 0/TBD | Not started | - |
+| 2. Factory & Spine Slice | 1/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
