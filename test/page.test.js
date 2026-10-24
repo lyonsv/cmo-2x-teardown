@@ -970,3 +970,27 @@ test('s08 links the reference it describes (IN-07)', () => {
   assert.ok(p);
   assert.ok(p.includes('<a href="#src-intercom-2x-teardown">the one public reference</a>'));
 });
+
+// ---- Plan 03-01: Phase 2 UI-review carry-over ----
+
+test('tier table shows the default first, then the range on its own line', () => {
+  const s = sectionHtml('s07');
+  for (const n of [0, 1, 2, 3]) {
+    assert.match(s, new RegExp(`<td><span data-fig="tier-default-t${n}">[^<]*</span> <b class="default-mark">model default</b><br><span data-fig="asm-tier-range-t${n}">[^<]*</span></td>`));
+  }
+});
+
+test('s07 capacity prose says over capacity beside 100.1% and 111.3%', () => {
+  const s = sectionHtml('s07');
+  for (const id of ['cap-2x-ref-high-util', 'cap-2x-ref-low-util']) {
+    const i = s.indexOf(`data-fig="${id}"`);
+    assert.ok(i > 0, id);
+    assert.ok(/over capacity/.test(s.slice(i, i + 260).replace(/<[^>]+>/g, ' ').slice(0, 60 + 40)), `${id} lacks over capacity`);
+  }
+});
+
+test('s02 says budgets have flattened', () => {
+  const s = sectionHtml('s02');
+  assert.ok(s.includes('budgets have flattened'));
+  assert.ok(!s.includes('not rising to meet the ambition'));
+});

@@ -68,8 +68,9 @@ caption { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spac
 th { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); text-align: left; }
 tbody th[scope=row] { font: 400 17px/1.5 var(--serif); text-transform: none; letter-spacing: 0; color: var(--ink); }
 tbody th[scope=row].id { font: 400 12px/1.6 var(--mono); }
-th, td { padding: var(--s-sm) var(--s-md) var(--s-sm) 0; vertical-align: top; border-bottom: 1px solid var(--rule); }
+th, td { padding: var(--s-sm) var(--s-md) var(--s-sm) 0; vertical-align: baseline; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--rule); }
 td { line-height: 1.5; }
+tr.total th, tr.total td { font-weight: 600; border-top: 1px solid var(--ink); }
 thead th { border-bottom: 2px solid var(--ink); }
 .register tr { scroll-margin-top: 16px; }
 .register a { overflow-wrap: anywhere; }
@@ -106,7 +107,7 @@ svg.fig-d { display: block; width: 100%; max-width: 360px; height: auto; margin:
 .steps-h { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 var(--s-sm); }
 .fig-steps { margin: 0; padding-left: var(--s-lg); max-width: 44em; }
 .fig-steps li + li { margin-top: var(--s-sm); }
-th.tier { font: 400 12px/1.6 var(--mono); }
+tbody th[scope=row].tier { font: 400 12px/1.6 var(--mono); }
 .default-mark { display: inline-block; font: 600 12px/1.6 var(--mono); color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; padding: var(--s-xs) var(--s-sm); margin-left: var(--s-xs); }
 tr.shared th { box-shadow: inset 3px 0 0 var(--ink); padding-left: var(--s-md); }
 @media (max-width: 960px) {

@@ -128,7 +128,7 @@
     <section id="s02" aria-labelledby="s02-h">
       <div class="sec-head"><span class="sec-num">02</span><h2 id="s02-h">The CFO answer</h2></div>
       <h3>Budget: flat in total, not in production</h3>
-      <p>Gartner reports marketing budgets at <span data-fig="gartner-share-2025">7.7%</span> <a class="chip c-b" href="#src-gartner-2025-cmo-spend">Benchmark</a> of company revenue in its earlier survey and <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> in its latest, from a self-reported survey of <span data-fig="gartner-sample-2025">402</span> CMOs in North America, the UK and Europe, mostly at large companies. That is an average across respondents, not a rule for any one organisation. The consequence is the same either way: budgets are not rising to meet the ambition, so 2x has to come from what each approved asset costs, not from new money.</p>
+      <p>Gartner reports marketing budgets at <span data-fig="gartner-share-2025">7.7%</span> <a class="chip c-b" href="#src-gartner-2025-cmo-spend">Benchmark</a> of company revenue in its earlier survey and <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> in its latest, from a self-reported survey of <span data-fig="gartner-sample-2025">402</span> CMOs in North America, the UK and Europe, mostly at large companies. That is an average across respondents, not a rule for any one organisation. The consequence is the same either way: budgets have flattened, so 2x has to come from what each approved asset costs, not from new money.</p>
       <h3>Cost per approved, live asset</h3>
       <p>Fully loaded, an approved, live asset falls from <span data-fig="cpa-base">$64.71</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$41.18</span>, a change of <span data-fig="cpa-change">−36%</span>. The cost is built from six components: generation, review, rework, tooling, rights and storage. It includes the cost of variants that were derived and reviewed but rejected at the gate, at the approval yield of <span data-fig="asm-approval-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a>. Rejected variants are costed but never counted as output.</p>
       <p>The scope is production-attributable cost only: <span data-fig="total-cost-base">$2.59M</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> a year today and <span data-fig="total-cost-scaled">$3.29M</span> at 2x, or <span data-fig="budget-share-base">3.3%</span> <a class="chip c-m" href="#asm-marketing-budget">Modelled</a> and <span data-fig="budget-share-scaled">4.2%</span> of the marketing budget. It excludes media and non-production headcount.</p>
@@ -348,7 +348,7 @@
         <line class="edge edge-review" x1="150" y1="256" x2="150" y2="280" marker-end="url(#fd4-arrow-review)"/>
         <line class="edge edge-review" x1="150" y1="320" x2="150" y2="344" marker-end="url(#fd4-arrow-review)"/>
         <line class="edge edge-review" x1="150" y1="384" x2="86" y2="408" marker-end="url(#fd4-arrow-review)"/>
-        <line class="edge" x1="150" y1="384" x2="214" y2="408" marker-end="url(#fd4-arrow)"/>
+        <line class="edge edge-review" x1="150" y1="384" x2="214" y2="408" marker-end="url(#fd4-arrow-review)"/>
         <text class="note" x="150" y="472" text-anchor="middle">Illustrative</text>
         <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Brief</tspan><tspan x="150" dy="16">audience, offer, goal</tspan></text></g>
         <g class="node"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Master concept</tspan><tspan x="150" dy="16">human-directed idea</tspan></text></g>
@@ -423,7 +423,7 @@
       <p>An independent review agent checks every variant against the versioned policy before any approval, and records what it found and what it could not check.</p>
       <figure>
         <div class="fig-grid">
-      <svg class="fig-d" role="img" aria-labelledby="fd5-t fd5-d" viewBox="0 0 300 288">
+      <svg class="fig-d" role="img" aria-labelledby="fd5-t fd5-d" viewBox="0 0 300 304">
         <title id="fd5-t">The review loop</title>
         <desc id="fd5-d">An asset from the manifest goes to the review agent. The agent passes it to the gate, sends it into a bounded fix loop that returns to the agent, or escalates it to a person, directly when something could not be checked or once the fix loop runs out. It can raise a tier but never lower one.</desc>
         <defs>
@@ -433,15 +433,17 @@
         <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd5-arrow)"/>
         <line class="edge edge-review" x1="150" y1="112" x2="86" y2="136" marker-end="url(#fd5-arrow-review)"/>
         <line class="edge" x1="150" y1="112" x2="214" y2="136" marker-end="url(#fd5-arrow)"/>
-        <line class="edge" x1="214" y1="176" x2="150" y2="200" marker-end="url(#fd5-arrow)"/>
+        <line class="edge" x1="214" y1="176" x2="150" y2="216" marker-end="url(#fd5-arrow)"/>
+        <line class="edge" x1="86" y1="176" x2="86" y2="200" marker-end="url(#fd5-arrow)"/>
+        <text class="note" x="96" y="196">to the gate</text>
         <path class="edge edge-review" d="M270 156 L288 156 L288 92 L272 92" marker-end="url(#fd5-arrow-review)"/>
-        <path class="edge edge-review" d="M30 92 L14 92 L14 228 L28 228" marker-end="url(#fd5-arrow-review)"/>
-        <text class="note" x="150" y="280" text-anchor="middle">Illustrative</text>
+        <path class="edge edge-review" d="M30 92 L14 92 L14 244 L28 244" marker-end="url(#fd5-arrow-review)"/>
+        <text class="note" x="150" y="296" text-anchor="middle">Illustrative</text>
         <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Asset in</tspan><tspan x="150" dy="16">from the manifest</tspan></text></g>
         <g class="node node-review"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Review agent</tspan><tspan x="150" dy="16">checks policy rules</tspan></text></g>
         <g class="node"><rect x="30" y="136" width="112" height="40" rx="2"/><text x="86" y="152" text-anchor="middle"><tspan class="node-t" x="86" y="152">Pass</tspan><tspan x="86" dy="16">to the gate</tspan></text></g>
         <g class="node"><rect x="158" y="136" width="112" height="40" rx="2"/><text x="214" y="152" text-anchor="middle"><tspan class="node-t" x="214" y="152">Fix</tspan><tspan x="214" dy="16">bounded loop</tspan></text></g>
-        <g class="node node-review"><rect x="30" y="200" width="240" height="56" rx="2"/><text x="150" y="216" text-anchor="middle"><tspan class="node-t" x="150" y="216">Escalate to review</tspan><tspan x="150" dy="16">can raise a tier,</tspan><tspan x="150" dy="16">never lower</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="216" width="240" height="56" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Escalate to review</tspan><tspan x="150" dy="16">can raise a tier,</tspan><tspan x="150" dy="16">never lower</tspan></text></g>
       </svg>
           <div>
           <h3 class="steps-h">Steps in Figure 5</h3>
@@ -475,7 +477,7 @@
       <div class="sec-head"><span class="sec-num">07</span><h2 id="s07-h">The auto-approval gate</h2></div>
       <p>The gate assigns every variant a tier by asset class and content, and only the lowest-risk tiers can be approved without a full human review.</p>
       <figure>
-      <svg class="fig-d" role="img" aria-labelledby="fd6-t fd6-d" viewBox="0 0 300 288">
+      <svg class="fig-d" role="img" aria-labelledby="fd6-t fd6-d" viewBox="0 0 300 276">
         <title id="fd6-t">The tier ladder</title>
         <desc id="fd6-d">Four tiers from lowest to highest risk. T0, resizes and swaps, clears on a policy match with a human sample. T1, new executions of already-approved claims, clears on an agent pass with a human sample. T2, new claims or newly generated imagery, goes to a human reviewer. T3, hero work and endorsements, goes to a senior human and legal.</desc>
         <defs>
@@ -485,7 +487,7 @@
         <line class="edge edge-soft" x1="30" y1="124" x2="270" y2="124"/>
         <line class="edge" x1="150" y1="196" x2="150" y2="216" marker-end="url(#fd6-arrow)"/>
         <text class="note" x="150" y="144" text-anchor="middle">auto above, human below</text>
-        <text class="note" x="150" y="280" text-anchor="middle">Illustrative</text>
+        <text class="note" x="150" y="268" text-anchor="middle">Illustrative</text>
         <g class="node node-review"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">T0 · resizes and swaps</tspan><tspan x="150" dy="16">gate: policy match + sample</tspan></text></g>
         <g class="node node-review"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">T1 · approved claims reused</tspan><tspan x="150" dy="16">gate: agent pass + sample</tspan></text></g>
         <g class="node"><rect x="30" y="156" width="240" height="40" rx="2"/><text x="150" y="172" text-anchor="middle"><tspan class="node-t" x="150" y="172">T2 · new claims or imagery</tspan><tspan x="150" dy="16">human reviewer</tspan></text></g>
@@ -498,10 +500,10 @@
           <caption>Approval tiers (illustrative)</caption>
           <thead><tr><th scope="col">Tier</th><th scope="col">Example assets</th><th scope="col">Who approves</th><th scope="col">Share of assets</th><th scope="col">Grade</th></tr></thead>
           <tbody>
-            <tr><th scope="row" class="tier">T0</th><td>Resizes, crops, locale swaps of pre-approved strings, feed tiles from approved templates.</td><td>Policy match; human sample.</td><td><span data-fig="asm-tier-range-t0">45–65%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t0">55%</span></td><td><a class="chip c-m" href="#asm-tier-range-t0">Modelled</a></td></tr>
-            <tr><th scope="row" class="tier">T1</th><td>New executions that reuse already-approved claims (no new claims); templates with retrieved approved imagery; audience variants built from existing segments.</td><td>Agent pass; human sample.</td><td><span data-fig="asm-tier-range-t1">25–35%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t1">30%</span></td><td><a class="chip c-m" href="#asm-tier-range-t1">Modelled</a></td></tr>
-            <tr><th scope="row" class="tier">T2</th><td>Newly generated imagery, any new claim or new claim phrasing, regulated-category copy, newly defined audience segments.</td><td>A human reviewer.</td><td><span data-fig="asm-tier-range-t2">8–16%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t2">12%</span></td><td><a class="chip c-m" href="#asm-tier-range-t2">Modelled</a></td></tr>
-            <tr><th scope="row" class="tier">T3</th><td>Hero work, testimonials and endorsements, likeness or voice, comparative, health or finance claims.</td><td>Senior human plus legal.</td><td><span data-fig="asm-tier-range-t3">2–5%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t3">3%</span></td><td><a class="chip c-m" href="#asm-tier-range-t3">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T0</th><td>Resizes, crops, locale swaps of pre-approved strings, feed tiles from approved templates.</td><td>Policy match; human sample.</td><td><span data-fig="tier-default-t0">55%</span> <b class="default-mark">model default</b><br><span data-fig="asm-tier-range-t0">45–65%</span></td><td><a class="chip c-m" href="#asm-tier-range-t0">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T1</th><td>New executions that reuse already-approved claims (no new claims); templates with retrieved approved imagery; audience variants built from existing segments.</td><td>Agent pass; human sample.</td><td><span data-fig="tier-default-t1">30%</span> <b class="default-mark">model default</b><br><span data-fig="asm-tier-range-t1">25–35%</span></td><td><a class="chip c-m" href="#asm-tier-range-t1">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T2</th><td>Newly generated imagery, any new claim or new claim phrasing, regulated-category copy, newly defined audience segments.</td><td>A human reviewer.</td><td><span data-fig="tier-default-t2">12%</span> <b class="default-mark">model default</b><br><span data-fig="asm-tier-range-t2">8–16%</span></td><td><a class="chip c-m" href="#asm-tier-range-t2">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T3</th><td>Hero work, testimonials and endorsements, likeness or voice, comparative, health or finance claims.</td><td>Senior human plus legal.</td><td><span data-fig="tier-default-t3">3%</span> <b class="default-mark">model default</b><br><span data-fig="asm-tier-range-t3">2–5%</span></td><td><a class="chip c-m" href="#asm-tier-range-t3">Modelled</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -527,13 +529,13 @@
           <tbody>
             <tr><th scope="row">1x without gate</th><td class="num"><span data-fig="cap-1x-nogate-hours">8,421</span></td><td class="num"><span data-fig="cap-1x-nogate-util">67.3%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
             <tr><th scope="row">1x with gate</th><td class="num"><span data-fig="cap-1x-gate-hours">6,905</span></td><td class="num"><span data-fig="cap-1x-gate-util">55.1%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
-            <tr><th scope="row">2x without gate</th><td class="num"><span data-fig="cap-2x-nogate-hours">16,842</span></td><td class="num"><span data-fig="cap-2x-nogate-util">134.5%</span> over capacity</td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
+            <tr><th scope="row">2x without gate</th><td class="num"><span data-fig="cap-2x-nogate-hours">16,842</span></td><td class="num"><span data-fig="cap-2x-nogate-util">134.5%</span> <b>over capacity</b></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
             <tr><th scope="row">2x with gate</th><td class="num"><span data-fig="cap-2x-gate-hours">7,747</span></td><td class="num"><span data-fig="cap-2x-gate-util">61.9%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
           </tbody>
         </table>
       </div>
       <p>With the gate, human review hours fall; without it, 2x volume exceeds reviewer capacity. Utilisation is the binding constraint, not generation.</p>
-      <p>At flat reviewers the model needs at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants auto-approved, and below about <span data-fig="capacity-auto-approval">29%</span> capacity is exceeded outright. At the clearance rates published by the one public reference (see <a href="#s06">the review agent</a>), 2x utilisation would be <span data-fig="cap-2x-ref-high-util">100.1%</span> <a class="chip c-m" href="#src-intercom-2x-teardown">Modelled</a> <span class="flag">company-reported</span> and <span data-fig="cap-2x-ref-low-util">111.3%</span> <span class="flag">company-reported</span>, using rates the reference company reported for code review, not marketing. At 2x without the gate there is no cycle time to show, because the queue never clears.</p>
+      <p>At flat reviewers the model needs at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants auto-approved, and below about <span data-fig="capacity-auto-approval">29%</span> capacity is exceeded outright. At the clearance rates published by the one public reference (see <a href="#s06">the review agent</a>), 2x utilisation would be <span data-fig="cap-2x-ref-high-util">100.1%</span> <a class="chip c-m" href="#src-intercom-2x-teardown">Modelled</a> <span class="flag">company-reported</span> over capacity and <span data-fig="cap-2x-ref-low-util">111.3%</span> <span class="flag">company-reported</span> over capacity, using rates the reference company reported for code review, not marketing. At 2x without the gate there is no cycle time to show, because the queue never clears.</p>
       <h3>Guarding against reviewer fatigue</h3>
       <ul>
         <li><b>Blind-first review.</b> The reviewer decides before seeing the agent's verdict, so agreement is evidence and not anchoring.</li>

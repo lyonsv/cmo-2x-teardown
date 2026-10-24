@@ -177,3 +177,23 @@ test('.default-mark is a bordered mono tag and prints with a black border', () =
   for (const d of ['font: 600 12px/1.6 var(--mono)', 'border: 1px solid var(--ink)', 'padding: var(--s-xs) var(--s-sm)', 'border-radius: 2px', 'color: var(--ink)']) assert.ok(r.includes(d), d);
   assert.ok(css.match(/@media print {[\s\S]*$/)[0].includes('.default-mark'));
 });
+
+// Phase 3 Plan 1: Phase 2 UI-review fixes.
+test('table cells align on the baseline with tabular numerals', () => {
+  const rule = css.match(/(?:^|\n)th, td \{([^}]*)\}/);
+  assert.ok(rule, 'th, td rule');
+  assert.match(rule[1], /vertical-align:\s*baseline/);
+  assert.match(css, /table \{[^}]*font-variant-numeric:\s*tabular-nums/);
+});
+
+test('total row has 600 weight and a 1px ink top rule', () => {
+  const rule = css.match(/tr\.total th, tr\.total td \{([^}]*)\}/);
+  assert.ok(rule, 'tr.total rule');
+  assert.match(rule[1], /font-weight:\s*600/);
+  assert.match(rule[1], /border-top:\s*1px solid var\(--ink\)/);
+});
+
+test('tier row headers use the specific selector', () => {
+  assert.match(css, /tbody th\[scope=row\]\.tier \{/);
+  assert.ok(!/^th\.tier/m.test(css));
+});
