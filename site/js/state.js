@@ -1,6 +1,6 @@
 // Calculator input state: strict text coercion, cross-field validation and the
 // URL hash contract. Pure and DOM-free; imports only fields.js and model.js.
-import { FIELDS, SCENARIOS } from './fields.js';
+import { FIELDS, ROUTES, SCENARIOS } from './fields.js';
 import { defaultValues, run } from './model.js';
 
 const PLAIN = /^(\d+(\.\d+)?|\.\d+)$/; // a leading '.5' is accepted (IN-10)
@@ -8,6 +8,7 @@ const THOUSANDS = /^\d{1,3}(,\d{3})+(\.\d+)?$/;
 const MAX = 1e9;
 const HASH_PREFIX = '#s11?';
 const SCENARIO_LABEL = 'Headcount scenario';
+const ROUTE_LABEL = 'How you get to 2x';
 
 const whole = (v) => Number((v * 100).toPrecision(12));
 
@@ -79,6 +80,12 @@ export function parseHash(hash, ctx) {
     if (r.ok) values[field.key] = r.value;
     else notices.push(field.label);
   }
+  // Allow-list only: a route outside ROUTES keeps the default and is reported.
+  const route = params.get('route');
+  if (route !== null) {
+    if (ROUTES.includes(route)) values.route = route;
+    else notices.push(ROUTE_LABEL);
+  }
   const sc = params.get('scenario');
   if (sc !== null) {
     if (SCENARIOS.includes(sc)) values.scenario = sc;
@@ -93,6 +100,7 @@ export function serialiseHash(values, ctx) {
   for (const field of FIELDS) {
     if (!Object.is(values[field.key], defaults[field.key])) parts.push(`${field.key}=${toText(field, values[field.key])}`);
   }
+  if (values.route !== defaults.route) parts.push(`route=${values.route}`);
   if (values.scenario !== defaults.scenario) parts.push(`scenario=${values.scenario}`);
   return parts.length === 0 ? '' : HASH_PREFIX + parts.join('&');
 }
@@ -100,6 +108,7 @@ export function serialiseHash(values, ctx) {
 export function changedCount(values, ctx) {
   const defaults = defaultValues(ctx);
   let n = FIELDS.filter((f) => !Object.is(values[f.key], defaults[f.key])).length;
+  if (values.route !== defaults.route) n += 1;
   if (values.scenario !== defaults.scenario) n += 1;
   return n;
 }

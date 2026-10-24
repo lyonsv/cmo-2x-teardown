@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compute } from '../site/js/calc.js';
 import { formatValue } from '../site/js/format.js';
-import { FIELDS, SCENARIOS, COMPUTE_FIELD_TO_KEY } from '../site/js/fields.js';
+import { FIELDS, ROUTES, SCENARIOS, COMPUTE_FIELD_TO_KEY } from '../site/js/fields.js';
 import {
-  defaultValues, toCompute, run, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity, SENSITIVITY_STEP,
+  defaultValues, toCompute, run, ROUTE_SHARE, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity, SENSITIVITY_STEP,
 } from '../site/js/model.js';
 import { modelContext, assumptions, defaultInputs, defaultAssumptions } from '../site/js/data.js';
 
@@ -23,7 +23,7 @@ test('format.js: new kinds days1 and pctchg1', () => {
 
 test('FIELDS: 12 rows in order, unique keys, every asm id exists', () => {
   assert.deepEqual(FIELDS.map((x) => x.key), [
-    'campaigns', 'concepts', 'locales', 'marketers', 'reviewers', 'minutes', 'vcost', 'mconcept', 'yield', 'rework', 'auto1', 'auto2',
+    'campaigns', 'concepts', 'markets', 'marketers', 'reviewers', 'minutes', 'vcost', 'mconcept', 'yield', 'rework', 'auto1', 'auto2',
   ]);
   assert.equal(new Set(FIELDS.map((x) => x.key)).size, 12);
   for (const x of FIELDS) assert.ok(assumptions[x.asm], `${x.key}: ${x.asm} missing`);
@@ -33,16 +33,25 @@ test('FIELDS: 12 rows in order, unique keys, every asm id exists', () => {
   for (const k of Object.values(COMPUTE_FIELD_TO_KEY)) assert.ok(FIELDS.some((x) => x.key === k));
 });
 
-test('locales are folded: formats per locale x default locales = variants per concept', () => {
-  assert.equal(ctx.fixed.formats_per_locale * ctx.fixed.default_locales, assumptions['asm-variants-per-concept'].value);
-  assert.equal(ctx.fixed.formats_per_locale, 8);
-  assert.equal(ctx.fixed.default_locales, 5);
+test('markets and formats per market reproduce forty variants per concept', () => {
+  assert.equal(assumptions['asm-formats-per-market'].value * assumptions['asm-markets'].value, 40);
+  assert.equal(ctx.inputs.formats_per_market, 8);
+  assert.equal(ctx.inputs.markets_per_campaign, 5);
+  assert.equal('formats_per_locale' in ctx.fixed, false);
+  assert.equal('default_locales' in ctx.fixed, false);
+});
+
+test('defaultValues route maps to asm-growth-route through ROUTE_SHARE', () => {
+  assert.deepEqual(ROUTE_SHARE, { both: 0.5, campaigns: 1, markets: 0 });
+  assert.deepEqual(ROUTES, ['both', 'campaigns', 'markets']);
+  assert.equal(ROUTE_SHARE[defaultValues(ctx).route], assumptions['asm-growth-route'].value);
+  assert.equal(defaultValues(ctx).route, 'both');
 });
 
 test('defaultValues reads the data.js defaults', () => {
   assert.deepEqual(defaultValues(ctx), {
-    campaigns: 40, concepts: 25, locales: 5, marketers: 120, reviewers: 12, minutes: 12, vcost: 0.8, mconcept: 1200,
-    yield: 0.95, rework: 0.15, auto1: 0.2, auto2: 0.6, scenario: 'redeploy',
+    campaigns: 40, concepts: 25, markets: 5, marketers: 120, reviewers: 12, minutes: 12, vcost: 0.8, mconcept: 1200,
+    yield: 0.95, rework: 0.15, auto1: 0.2, auto2: 0.6, route: 'both', scenario: 'redeploy',
   });
 });
 
@@ -51,20 +60,28 @@ test('identity: run(defaults) equals compute(defaultInputs(), defaultAssumptions
   assert.equal(r.ok, true);
   const direct = compute(defaultInputs(), defaultAssumptions());
   assert.deepEqual(r.result, direct);
-  assert.equal(r.result.scenario.cost_per_asset.toFixed(2), '41.18');
+  assert.equal(r.result.scenario.cost_per_asset.toFixed(2), '45.26');
   assert.equal(r.result.scenario.utilisation.toFixed(3), '0.619');
 });
 
-test('toCompute folds locales and the variant cost pair', () => {
-  const { inputs, assumptions: a } = toCompute({ ...defaultValues(ctx), locales: 6, vcost: 1.5, auto1: 0.1, auto2: 0.5 }, ctx);
-  assert.equal(inputs.variants_per_concept, 48);
+test('toCompute maps markets, route and the variant cost pair', () => {
+  const { inputs, assumptions: a } = toCompute({ ...defaultValues(ctx), markets: 6, vcost: 1.5, auto1: 0.1, auto2: 0.5 }, ctx);
+  assert.equal(inputs.markets_per_campaign, 6);
+  assert.equal(inputs.formats_per_market, 8);
+  assert.equal('variants_per_concept' in inputs, false);
+  assert.equal(a.campaign_growth_share, 0.5);
+  assert.equal(toCompute({ ...defaultValues(ctx), route: 'campaigns' }, ctx).assumptions.campaign_growth_share, 1);
+  assert.equal(toCompute({ ...defaultValues(ctx), route: 'markets' }, ctx).assumptions.campaign_growth_share, 0);
+  for (const bad of ['evil', '__proto__', 'constructor', '', undefined, 3]) {
+    assert.equal(toCompute({ ...defaultValues(ctx), route: bad }, ctx).assumptions.campaign_growth_share, 0.5, String(bad));
+  }
   assert.deepEqual(a.variant_cost, { baseline: 4, scaled: 1.5 });
   assert.deepEqual(a.auto_approval_share, { baseline: 0.1, scaled: 0.5 });
 });
 
-test('monotonicity: more locales gives more variants and more total cost', () => {
+test('monotonicity: more markets gives more variants and more total cost', () => {
   const a = run(defaultValues(ctx), ctx).result;
-  const b = run({ ...defaultValues(ctx), locales: 6 }, ctx).result;
+  const b = run({ ...defaultValues(ctx), markets: 6 }, ctx).result;
   assert.ok(b.scenario.variants_per_year > a.scenario.variants_per_year);
   assert.ok(b.scenario.cost.total > a.scenario.cost.total);
 });
@@ -83,8 +100,14 @@ test('run maps compute errors to field keys', () => {
   assert.ok(keyOf({ reviewers: 0 }).includes('reviewers'));
   assert.ok(keyOf({ auto2: 0.9 }).includes('auto2'));
   assert.ok(keyOf({ yield: 0 }).includes('yield'));
-  assert.ok(keyOf({ marketers: 0 }).includes('marketers'));
-  assert.ok(keyOf({ locales: 0 }).includes('locales'));
+  assert.ok(keyOf({ markets: 0 }).includes('markets'));
+  // marketing FTE is not a compute() input, so it has no error key (the field itself rejects 0).
+  assert.equal(run({ ...defaultValues(ctx), marketers: 0 }, ctx).ok, true);
+  assert.equal(Object.values(COMPUTE_FIELD_TO_KEY).includes('marketers'), false);
+  // keyFor maps the growth share error to the route field when an unknown route falls back to an invalid default share.
+  const badRoute = run({ ...defaultValues(ctx), route: 'evil' }, { ...ctx, assumptions: { ...ctx.assumptions, campaign_growth_share: 2 } });
+  assert.equal(badRoute.ok, false);
+  assert.ok(badRoute.errors.some((e) => e.key === 'route'));
   for (const e of run({ ...defaultValues(ctx), reviewers: 0 }, ctx).errors) assert.equal(typeof e.message, 'string');
 });
 
@@ -209,7 +232,7 @@ test('fuzz: present() never emits NaN, Infinity, undefined or null', () => {
   const BAD = /NaN|Infinity|undefined|null/;
   for (let i = 0; i < 200; i++) {
     const v = {
-      campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), locales: Math.ceil(between(1, 20)),
+      campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), markets: Math.ceil(between(1, 20)), route: ROUTES[Math.floor(rand() * 3)],
       marketers: between(1, 500), reviewers: between(0.5, 100), minutes: between(1, 60), vcost: between(0.01, 10),
       mconcept: between(1, 5000), yield: between(0.1, 1), rework: between(0, 1), auto1: between(0, 0.75), auto2: between(0, 0.85),
       scenario: 'redeploy',
@@ -367,7 +390,7 @@ test('fuzz: scenario and sensitivity never emit NaN, Infinity, undefined or null
   const BAD = /NaN|Infinity|undefined|null/;
   for (let i = 0; i < 200; i++) {
     const v = {
-      campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), locales: Math.ceil(between(1, 20)),
+      campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), markets: Math.ceil(between(1, 20)), route: ROUTES[Math.floor(rand() * 3)],
       marketers: between(1, 500), reviewers: between(0.5, 100), minutes: between(1, 60), vcost: between(0.01, 10),
       mconcept: between(1, 5000), yield: between(0.1, 1), rework: between(0, 1), auto1: between(0, 0.75), auto2: between(0, 0.85),
       scenario: ['redeploy', 'hold', 'reduce'][i % 3],

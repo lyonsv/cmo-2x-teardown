@@ -54,7 +54,7 @@ export function toCompute(values, ctx) {
     approval_yield: values.yield,
     rework_rate: values.rework,
     auto_approval_share: { baseline: values.auto1, scaled: values.auto2 },
-    campaign_growth_share: ROUTES.includes(values.route) ? ROUTE_SHARE[values.route] : ROUTE_SHARE[defaultRoute(ctx)],
+    campaign_growth_share: ROUTES.includes(values.route) ? ROUTE_SHARE[values.route] : ctx.assumptions.campaign_growth_share,
   };
   return { inputs, assumptions };
 }

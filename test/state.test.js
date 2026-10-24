@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { modelContext } from '../site/js/data.js';
-import { FIELDS, SCENARIOS } from '../site/js/fields.js';
+import { FIELDS, ROUTES, SCENARIOS } from '../site/js/fields.js';
 import { present, defaultValues } from '../site/js/model.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from '../site/js/state.js';
 
@@ -73,13 +73,13 @@ test('validate: overflow becomes a key-null message', () => {
   // Reader inputs are capped at 1e9, so at the shipped assumptions even every
   // volume at its limit still computes. The overflow branch is defensive; it is
   // driven here with a context whose capacity is so small utilisation is Infinity.
-  assert.deepEqual(validate({ ...defaults, campaigns: 1e9, concepts: 1e9, locales: 1e9 }, ctx), []);
+  assert.deepEqual(validate({ ...defaults, campaigns: 1e9, concepts: 1e9, markets: 1e9 }, ctx), []);
   const big = { ...ctx, assumptions: { ...ctx.assumptions, reviewer_hours_per_fte_year: Number.MIN_VALUE } };
   assert.deepEqual(validate(defaults, big), [{ key: null, message: 'These inputs are too large to calculate.' }]);
 });
 
 test('parseHash: non-calculator hashes give defaults and restored false', () => {
-  for (const h of ['', '#s11', '#src-gartner-2025-cmo-spend', '#s10?locales=3', undefined]) {
+  for (const h of ['', '#s11', '#src-gartner-2025-cmo-spend', '#s10?markets=3', undefined]) {
     const r = parseHash(h, ctx);
     assert.deepEqual(r.values, defaults);
     assert.equal(r.restored, false);
@@ -88,20 +88,33 @@ test('parseHash: non-calculator hashes give defaults and restored false', () => 
 });
 
 test('parseHash: restores valid values and reports invalid ones by label', () => {
-  const ok = parseHash('#s11?locales=6&auto2=70', ctx);
-  assert.equal(ok.values.locales, 6);
+  const ok = parseHash('#s11?markets=6&auto2=70', ctx);
+  assert.equal(ok.values.markets, 6);
   assert.equal(ok.values.auto2, 0.7);
   assert.equal(ok.restored, true);
   assert.deepEqual(ok.notices, []);
-  const bad = parseHash('#s11?locales=abc', ctx);
-  assert.equal(bad.values.locales, defaults.locales);
-  assert.deepEqual(bad.notices, ['Locales']);
+  const bad = parseHash('#s11?markets=abc', ctx);
+  assert.equal(bad.values.markets, defaults.markets);
+  assert.deepEqual(bad.notices, ['Markets per campaign']);
   assert.deepEqual(parseHash('#s11?reviewers=0', ctx).notices, ['Reviewer FTE']);
-  assert.equal(parseHash('#s11?locales=6&locales=9', ctx).values.locales, 6);
+  assert.equal(parseHash('#s11?markets=6&markets=9', ctx).values.markets, 6);
   assert.equal(parseHash('#s11?scenario=hold', ctx).values.scenario, 'hold');
   const evil = parseHash('#s11?scenario=evil', ctx);
   assert.equal(evil.values.scenario, defaults.scenario);
   assert.deepEqual(evil.notices, ['Headcount scenario']);
+});
+
+test('parseHash: route restores only from the allow-list (T-03.1-04, T-03.1-05)', () => {
+  assert.equal(defaults.route, 'both');
+  assert.equal(parseHash('#s11?route=markets', ctx).values.route, 'markets');
+  assert.equal(parseHash('#s11?route=campaigns', ctx).values.route, 'campaigns');
+  assert.deepEqual(parseHash('#s11?route=markets', ctx).notices, []);
+  for (const t of ['evil', '__proto__', 'constructor', 'toString', '']) {
+    const r = parseHash(`#s11?route=${t}`, ctx);
+    assert.equal(r.values.route, 'both', t);
+    assert.deepEqual(r.notices, ['How you get to 2x'], t);
+  }
+  assert.equal(parseHash('#s11?route=markets&route=campaigns', ctx).values.route, 'markets');
 });
 
 test('parseHash: hostile keys cannot pollute prototypes', () => {
@@ -110,18 +123,22 @@ test('parseHash: hostile keys cannot pollute prototypes', () => {
   assert.deepEqual(r.values, defaults);
   assert.deepEqual(Object.getOwnPropertyNames(Object.prototype).sort(), before);
   assert.equal({}.polluted, undefined);
-  const r2 = parseHash('#s11?__proto__[polluted]=1&locales=4', ctx);
-  assert.equal(r2.values.locales, 4);
+  const r2 = parseHash('#s11?__proto__[polluted]=1&markets=4', ctx);
+  assert.equal(r2.values.markets, 4);
   assert.equal({}.polluted, undefined);
 });
 
 test('serialiseHash: defaults give an empty string, order follows FIELDS', () => {
   assert.equal(serialiseHash(defaults, ctx), '');
-  assert.equal(serialiseHash({ ...defaults, auto2: 0.7, locales: 6 }, ctx), '#s11?locales=6&auto2=70');
-  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', locales: 6 }, ctx), '#s11?locales=6&scenario=hold');
+  assert.equal(serialiseHash({ ...defaults, auto2: 0.7, markets: 6 }, ctx), '#s11?markets=6&auto2=70');
+  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', markets: 6 }, ctx), '#s11?markets=6&scenario=hold');
+  assert.equal(serialiseHash({ ...defaults, route: 'campaigns' }, ctx), '#s11?route=campaigns');
+  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', markets: 6, route: 'markets' }, ctx), '#s11?markets=6&route=markets&scenario=hold');
   assert.equal(changedCount(defaults, ctx), 0);
-  assert.equal(changedCount({ ...defaults, auto2: 0.7, locales: 6 }, ctx), 2);
+  assert.equal(changedCount({ ...defaults, auto2: 0.7, markets: 6 }, ctx), 2);
   assert.equal(changedCount({ ...defaults, scenario: 'reduce' }, ctx), 1);
+  assert.equal(changedCount({ ...defaults, route: 'markets' }, ctx), 1);
+  assert.equal(changedCount({ ...defaults, route: 'markets', scenario: 'hold', markets: 6 }, ctx), 3);
 });
 
 test('toText: whole percents, no separators, no exponent', () => {
@@ -140,7 +157,7 @@ function rng(seed) {
 test('round trip over 200 random valid value sets', () => {
   const r = rng(7);
   for (let i = 0; i < 200; i++) {
-    const v = { scenario: SCENARIOS[Math.floor(r() * 3)] };
+    const v = { scenario: SCENARIOS[Math.floor(r() * 3)], route: ROUTES[Math.floor(r() * 3)] };
     for (const f of FIELDS) {
       if (r() < 0.3) { v[f.key] = defaults[f.key]; continue; }
       if (f.kind === 'int') v[f.key] = 1 + Math.floor(r() * 500);
