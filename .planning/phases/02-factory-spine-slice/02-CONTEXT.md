@@ -82,3 +82,11 @@ Requirements: GEN-01..05, SPINE-01..07.
 - Interactive variant matrix — Phase 3 calculator.
 
 </deferred>
+
+## Post-research decisions (2026-10-24)
+
+- NYU/Emory (SSRN 5638311): user opened the primary paper in a browser on 2026-10-24 and **confirmed** the up-to-19% CTR lift for fully AI-created ads and the 31.5% CTR drop on AI disclosure → grade **Benchmark** (accessed 2026-10-24). Sample sizes / CTR pairs not confirmed by the user stay out or Modelled.
+- 60% auto-approval default: keep as a **Modelled target**; cite the reference teardown's 19.2% auto-approved PRs (goal >50%) and 28.4% bot approval rate once, in s06 alongside the single Intercom mention (source row + claims); s07 shows the 41% break-even, the ~29% capacity floor, and utilisation at the reference rate (≈100–111% at 2x).
+- Reviewer-capacity table uses **annual** figures (matches compute()); hours column labelled "before rework".
+- s03 title follows UI-SPEC ("The factory model"); update TITLES, TOC and test together.
+- Every tier row shows its calc default.
