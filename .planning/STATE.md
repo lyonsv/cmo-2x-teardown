@@ -80,7 +80,6 @@ Progress: [██████████] 100%
 
 ### Pending Todos
 
-- Phase 1 UI review (16/24, advisory): Figure 1 text ~7px on phones (raise svg min-width / narrower viewBox); add `strong,b{font-weight:600}` and style `.metric-trio .lbl`; restyle `tbody th[scope=row]` (ink, normal case); reduce chip saturation (one unlinked chip per register row, once per source per paragraph); dedupe lever-evidence Value/Basis; copy nits (h3 "Flat budget", s12 stub, "not rising"). See 01-UI-REVIEW.md. Fold into Phase 2 plans.
 - Phase 2 UI review (18/24, advisory): table number alignment + total row style, tier default-mark layout, `th.tier` specificity, s05/s07/s08 length, capacity 'over capacity' wording + chips for 28.4%/111.3%, Figure 4/5 arrows, s02 'not rising'. See 02-UI-REVIEW.md. Fold into Phase 3 first plan.
 - Phase 2 HUMAN-UAT deferred (user away): visual/print check, author COI check of stock-licence indemnity wording, Getty tracker facts/date. See 02-HUMAN-UAT.md.
 
