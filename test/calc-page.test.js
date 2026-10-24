@@ -145,11 +145,11 @@ test('no result, table, figure, details, believe panel or summary sits inside a 
   }
 });
 
-test('form: four groups, twelve fields in order with label, input, unit, chip and hint', () => {
+test('form: five groups, twelve fields in order with label, input, unit, chip and hint', () => {
   const wrap = calcLiveWrappers()[0].inner;
   assert.match(wrap, /^\s*<form class="calc-form" novalidate>[\s\S]*<\/form>\s*$/);
   const groups = [...wrap.matchAll(/<fieldset class="calc-group">\s*<legend>([^<]*)<\/legend>([\s\S]*?)<\/fieldset>/g)];
-  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'People', 'Cost and quality', 'Automation']);
+  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'People', 'Cost and quality', 'Automation', 'Headcount scenario']);
   const fields = groups.flatMap((g) => g[2].split('<div class="field">').slice(1));
   fields.forEach((html_, i) => {
     const f = FIELDS[i];
@@ -166,7 +166,7 @@ test('form: four groups, twelve fields in order with label, input, unit, chip an
     if (f.key === 'marketers') assert.match(hint[1], /output per head only/);
     assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
   });
-  assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2]);
+  assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2, 0]);
   assert.deepEqual(FIELDS.map((f) => f.group), ['volume', 'volume', 'volume', 'people', 'people', 'people', 'cost', 'cost', 'cost', 'cost', 'automation', 'automation']);
   assert.ok(!/<h2[^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
 });
@@ -205,4 +205,79 @@ test('every import specifier in site/js is a same-folder relative path', () => {
 test('ui.js stays thin', () => {
   const lines = readFileSync(new URL('../site/js/ui.js', import.meta.url), 'utf8').split('\n').length;
   assert.ok(lines < 300, `ui.js is ${lines} lines`);
+});
+
+// ---- Plan 03-07: headcount scenario radios, scenario table, sensitivity table ----
+
+const decodeAll = (x) => decode(x);
+
+test('Headcount scenario group: three radios, redeploy checked, change-cost line with chip', () => {
+  const wrap = calcLiveWrappers()[0].inner;
+  const group = wrap.match(/<fieldset class="calc-group">\s*<legend>Headcount scenario<\/legend>([\s\S]*?)<\/fieldset>/);
+  assert.ok(group, 'scenario fieldset');
+  const labels = [...group[1].matchAll(/<label class="radio"><input type="radio" name="scenario" value="(redeploy|hold|reduce)"( checked)?><span class="radio-text"><span class="radio-title">([^<]*)<\/span><span class="radio-desc">([^<]*)<\/span><\/span><\/label>/g)];
+  assert.deepEqual(labels.map((m) => [m[1], !!m[2], m[3], decodeAll(m[4])]), [
+    ['redeploy', true, 'Redeploy', 'Keep the team and move freed capacity to new work.'],
+    ['hold', false, 'Hold', "Keep the team and today's volume; take any saving as lower cost."],
+    ['reduce', false, 'Reduce', 'Cut reviewer headcount to the capacity the 2x output needs.'],
+  ]);
+  assert.match(group[1], /Change-management cost: [^<]*, included in every scenario\. <a class="chip c-m" href="#asm-change-mgmt">Modelled<\/a>/);
+  assert.equal((html.match(/name="scenario"/g) || []).length, 3);
+});
+
+function tableAfter(caption) {
+  const i = s11.indexOf(`<caption>${caption}</caption>`);
+  assert.ok(i >= 0, caption);
+  const start = s11.lastIndexOf('<table>', i);
+  return { table: s11.slice(start, s11.indexOf('</table>', i)), after: s11.slice(s11.indexOf('</table>', i)), start };
+}
+
+test('scenario table: six rows equal present(defaults).scenario with one chip per row', () => {
+  const { table } = tableAfter('Headcount scenario: Redeploy');
+  assert.equal(p.scenario.name, 'Redeploy');
+  const trs = table.slice(table.indexOf('<tbody>')).match(/<tr>[\s\S]*?<\/tr>/g);
+  assert.equal(trs.length, 6);
+  trs.forEach((tr, i) => {
+    const row = p.scenario.rows[i];
+    assert.equal(strip(tr.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]), row.label);
+    const fig = tr.match(new RegExp(`<td class="num"><span data-fig="calc-scen-${row.id}">([^<]*)</span></td>`));
+    assert.ok(fig, row.id);
+    assert.equal(decode(fig[1]), row.text);
+    assert.equal(claims[`calc-scen-${row.id}`].display, row.text);
+    assert.ok(tr.includes(`<a class="chip ${CHIP_CLASS[row.grade]}" href="#${row.ref}">${row.grade}</a>`), `${row.id} chip`);
+  });
+  assert.ok(/Hold saves little, because higher tooling cost offsets cheaper variants\./.test(s11));
+  assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-([a-z_]+)/)[1]), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
+});
+
+test('sensitivity table: header, five ranked rows equal present(defaults), capped marked and footnoted', () => {
+  const { table, after } = tableAfter('Sensitivity: each input moved 20% down and up, others unchanged');
+  assert.ok(table.includes('<th scope="colgroup" colspan="2">Cost per approved-live asset</th>'));
+  assert.ok(table.includes('<th scope="colgroup" colspan="2">Reviewer utilisation</th>'));
+  assert.equal((table.match(/<th scope="col">at \u221220%<\/th>/g) || []).length, 2);
+  assert.equal((table.match(/<th scope="col">at \+20%<\/th>/g) || []).length, 2);
+  const trs = table.slice(table.indexOf('<tbody>')).match(/<tr>[\s\S]*?<\/tr>/g);
+  assert.equal(trs.length, 5);
+  trs.forEach((tr, i) => {
+    const row = p.sensitivity[i];
+    assert.equal(strip(tr.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]), row.label);
+    for (const c of ['costDown', 'costUp', 'utilDown', 'utilUp']) {
+      const dir = c.endsWith('Down') ? 'down' : 'up';
+      const m = tr.match(new RegExp(`<span data-fig="calc-sens-${row.key}-${c}">([^<]*)</span> <span class="capped">([^<]*)</span>`));
+      assert.ok(m, `${row.key} ${c}`);
+      assert.equal(decode(m[1]), row.cells[c].text);
+      assert.equal(m[2], row.capped[dir] ? 'capped' : '');
+      assert.equal(claims[`calc-sens-${row.key}-${c}`].display, row.cells[c].text);
+    }
+    assert.ok(tr.includes(`<a class="chip ${CHIP_CLASS[row.grade]}" href="#${row.ref}">${row.grade}</a>`));
+  });
+  assert.ok(trs.some((tr) => tr.includes('capped</span>')), 'at least one capped cell at defaults');
+  assert.ok(after.includes('<p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>'));
+});
+
+test('scenario and sensitivity tables sit before the share panel and outside .calc-live', () => {
+  const share = s11.indexOf('<div class="calc-live" id="calc-share-wrap">');
+  assert.ok(s11.indexOf('Headcount scenario: Redeploy</caption>') > s11.indexOf('Each output carries the weakest grade'));
+  assert.ok(s11.indexOf('Sensitivity: each input moved') > s11.indexOf('Headcount scenario: Redeploy</caption>'));
+  assert.ok(s11.indexOf('Capped: the input cannot move further') < share);
 });

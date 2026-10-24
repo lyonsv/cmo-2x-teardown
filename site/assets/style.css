@@ -146,6 +146,13 @@ fieldset.calc-group legend { grid-column: 1 / -1; font: 600 12px/1.6 var(--mono)
 .share-actions { display: flex; flex-wrap: wrap; gap: var(--s-sm); margin: var(--s-md) 0 var(--s-sm); }
 .share-status { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0; min-height: 1.6em; }
 input[type=radio] { accent-color: var(--ink); }
+.radio { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: var(--s-md); min-height: 48px; padding: var(--s-sm) 0; cursor: pointer; }
+.radio input { margin-top: var(--s-xs); flex: none; }
+.radio-text { display: block; }
+.radio-title { display: block; font-weight: 600; }
+.radio-desc { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); }
+.radio-note { grid-column: 1 / -1; }
+.capped { font: 400 12px/1.6 var(--mono); color: var(--muted); }
 ol.proof-steps { padding-left: var(--s-lg); max-width: 44em; }
 ol.proof-steps li + li { margin-top: var(--s-md); }
 @media (max-width: 960px) {

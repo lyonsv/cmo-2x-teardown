@@ -513,7 +513,9 @@ test('calc claims equal present(defaults)', () => {
   const calcClaims = Object.values(claims).filter((c) => c.calc);
   assert.ok(calcClaims.length >= 20, `only ${calcClaims.length} calc claims`);
   for (const c of calcClaims) {
-    const [head, rowId, cellName] = c.calc.split('.');
+    const parts = c.calc.split('.');
+    const head = parts[0];
+    const [rowId, cellName] = head === 'scenario' ? [parts[2]] : parts.slice(1);
     let row;
     let node;
     if (head === 'scenario') {

@@ -233,6 +233,7 @@ const ALLOWED_NUMERIC_TOKENS = [
   '2026-10-24', // page date
   '10,000', // the s05 title phrase if echoed
   '1', // Figure 1 label
+  '20%', // sensitivity step (method parameter, UI-SPEC)
 ];
 
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');

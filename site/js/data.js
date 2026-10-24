@@ -672,4 +672,19 @@ export function modelContext() {
       claims[id] = claim;
     }
   }
+  // Headcount scenario (default: Redeploy) and sensitivity cells, from the same presenter.
+  for (const row of p.scenario.rows) {
+    const id = `calc-scen-${row.id}`;
+    claims[id] = { id, value: row.value, unit: `Headcount scenario ${p.scenario.name}: ${row.label}`, display: row.text, grade: row.grade, flag: null, ref: row.ref, calc: `scenario.rows.${row.id}` };
+  }
+  for (const row of p.sensitivity) {
+    for (const [cellName, node] of Object.entries(row.cells)) {
+      if (node.value === undefined) continue;
+      const id = `calc-sens-${row.key}-${cellName}`;
+      claims[id] = {
+        id, value: node.value, unit: `Sensitivity of ${row.label}, ${cellName}`, display: node.text, grade: row.grade, flag: null, ref: row.ref,
+        calc: `sensitivity.${row.key}.${cellName}`,
+      };
+    }
+  }
 }

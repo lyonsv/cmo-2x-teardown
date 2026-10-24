@@ -871,6 +871,13 @@
                 <p class="hint" id="hint-auto2">Default 60%.</p>
               </div>
             </fieldset>
+            <fieldset class="calc-group">
+              <legend>Headcount scenario</legend>
+              <label class="radio"><input type="radio" name="scenario" value="redeploy" checked><span class="radio-text"><span class="radio-title">Redeploy</span><span class="radio-desc">Keep the team and move freed capacity to new work.</span></span></label>
+              <label class="radio"><input type="radio" name="scenario" value="hold"><span class="radio-text"><span class="radio-title">Hold</span><span class="radio-desc">Keep the team and today&#39;s volume; take any saving as lower cost.</span></span></label>
+              <label class="radio"><input type="radio" name="scenario" value="reduce"><span class="radio-text"><span class="radio-title">Reduce</span><span class="radio-desc">Cut reviewer headcount to the capacity the 2x output needs.</span></span></label>
+              <p class="hint radio-note">Change-management cost: $3,000 per affected FTE, included in every scenario. <a class="chip c-m" href="#asm-change-mgmt">Modelled</a></p>
+            </fieldset>
           </form>
         </div>
         <div class="calc-live" id="calc-errors-wrap">
@@ -950,6 +957,97 @@
         </div>
         <p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>
         <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
+        <div class="table-scroll" role="region" aria-label="Headcount scenario" tabindex="0">
+          <table>
+            <caption>Headcount scenario: Redeploy</caption>
+            <thead><tr><th scope="col">Measure</th><th scope="col">Value</th><th scope="col">Grade</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row">Reviewer FTE required at target utilisation</th>
+                <td class="num"><span data-fig="calc-scen-reviewer_fte_required">8.7</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Reviewer FTE freed (or needed)</th>
+                <td class="num"><span data-fig="calc-scen-reviewer_fte_delta">3.3 freed</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Annual people cost change</th>
+                <td class="num"><span data-fig="calc-scen-people_cost_change">$0</span></td>
+                <td><a class="chip c-m" href="#asm-loaded-fte-cost">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Annual production cost change</th>
+                <td class="num"><span data-fig="calc-scen-production_cost_change">$705,782</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">One-off change cost (year one)</th>
+                <td class="num"><span data-fig="calc-scen-change_mgmt_one_off">$396,000</span></td>
+                <td><a class="chip c-m" href="#asm-change-mgmt">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">First-year net cost change</th>
+                <td class="num"><span data-fig="calc-scen-first_year_net">$1,101,782</span></td>
+                <td><a class="chip c-m" href="#asm-change-mgmt">Modelled</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">Hold saves little, because higher tooling cost offsets cheaper variants. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
+        <div class="table-scroll" role="region" aria-label="Sensitivity" tabindex="0">
+          <table>
+            <caption>Sensitivity: each input moved 20% down and up, others unchanged</caption>
+            <thead>
+              <tr><th scope="col" rowspan="2">Input</th><th scope="colgroup" colspan="2">Cost per approved-live asset</th><th scope="colgroup" colspan="2">Reviewer utilisation</th><th scope="col" rowspan="2">Grade</th></tr>
+              <tr><th scope="col">at −20%</th><th scope="col">at +20%</th><th scope="col">at −20%</th><th scope="col">at +20%</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Locales</th>
+                <td class="num"><span data-fig="calc-sens-locales-costDown">+17.6%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-locales-costUp">−11.8%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-locales-utilDown">−20.0%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-locales-utilUp">+20.0%</span> <span class="capped"></span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Cost per master concept</th>
+                <td class="num"><span data-fig="calc-sens-mconcept-costDown">−8.7%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-mconcept-costUp">+8.7%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-mconcept-utilDown">0.0%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-mconcept-utilUp">0.0%</span> <span class="capped"></span></td>
+                <td><a class="chip c-m" href="#asm-master-concept-cost">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Auto-approval share at 2x</th>
+                <td class="num"><span data-fig="calc-sens-auto2-costDown">+6.3%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-auto2-costUp">−6.3%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-auto2-utilDown">+23.5%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-auto2-utilUp">−23.5%</span> <span class="capped"></span></td>
+                <td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Minutes per review</th>
+                <td class="num"><span data-fig="calc-sens-minutes-costDown">−5.4%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-minutes-costUp">+5.4%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-minutes-utilDown">−20.0%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-minutes-utilUp">+20.0%</span> <span class="capped"></span></td>
+                <td><a class="chip c-m" href="#asm-review-minutes">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Approval yield</th>
+                <td class="num"><span data-fig="calc-sens-yield-costDown">+7.3%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-yield-costUp">−1.5%</span> <span class="capped">capped</span></td>
+                <td class="num"><span data-fig="calc-sens-yield-utilDown">+25.0%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-yield-utilUp">−5.0%</span> <span class="capped">capped</span></td>
+                <td><a class="chip c-m" href="#asm-approval-yield">Modelled</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>
         <div class="calc-live" id="calc-share-wrap">
           <div class="share">
             <h3>Share these numbers</h3>

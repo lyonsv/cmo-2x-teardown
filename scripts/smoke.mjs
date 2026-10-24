@@ -90,6 +90,34 @@ async function cases(base) {
     check('cost', span(dom, 'calc-cost_per_asset-scaled') === expected(d, 'cost_per_asset', 'scaled'), 'defaults not shown');
   });
 
+  await run('f scenario in the link', () => withPage(async ({ send, evalJs }) => {
+    await send('Page.enable');
+    await send('Page.navigate', { url: `${base}#s11?scenario=hold` });
+    for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+    await sleep(500);
+    const cap = await evalJs("document.querySelector('[aria-label=\"Headcount scenario\"] caption').textContent");
+    check('caption', cap === 'Headcount scenario: Hold', `caption "${cap}"`);
+    const want = present({ ...d, scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change').text;
+    const cell = await evalJs("document.querySelector('[data-fig=\"calc-scen-production_cost_change\"]').textContent");
+    check('cell', cell === want, `cell ${cell} vs ${want}`);
+    check('radio', (await evalJs("document.querySelector('input[name=scenario]:checked').value")) === 'hold', 'hold radio not checked');
+    await evalJs("(() => { const r = document.querySelector('input[name=scenario][value=reduce]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); })()");
+    await sleep(300);
+    const hash = await evalJs('location.hash');
+    check('hash', hash === '#s11?scenario=reduce', `hash "${hash}"`);
+    return `${cap}, ${want}, ${hash}`;
+  }));
+
+  await run('g sensitivity ranks live', () => {
+    const dom = dump(`${base}#s11?locales=8`);
+    const first = decode((dom.match(/aria-label="Sensitivity"[\s\S]*?<tbody>\s*<tr>\s*<th scope="row">([^<]*)<\/th>/) || [])[1] || '');
+    const top = present({ ...d, locales: 8 }, ctx).sensitivity[0];
+    check('label', first === top.label, `first row "${first}" vs "${top.label}"`);
+    check('cell', span(dom, `calc-sens-${top.key}-costDown`) === top.cells.costDown.text, 'first-row cost cell differs');
+    check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
+    return first;
+  });
+
   // --dump-dom cannot run with scripts disabled, so this case drives Chrome over CDP.
   await run('d JS off', () => withPage(async ({ send, evalJs }) => {
     await send('Emulation.setScriptExecutionDisabled', { value: true });
@@ -109,7 +137,7 @@ async function cases(base) {
     check('notice', statusOf(dom).includes('defaults were used for: Reviewer FTE'), `status "${statusOf(dom)}"`);
   });
 
-  await run('f typed zero shows a field message and no stale numbers', () => withPage(async ({ send, evalJs }) => {
+  await run('h typed zero shows a field message and no stale numbers', () => withPage(async ({ send, evalJs }) => {
     await send('Page.enable');
     await send('Page.navigate', { url: base });
     for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);

@@ -19,7 +19,12 @@ const shareStatus = document.querySelector('.share-status');
 const rows = [...document.querySelectorAll('[aria-label="Calculator results"] tbody tr')];
 const inputs = Object.fromEntries(FIELDS.map((f) => [f.key, $(`in-${f.key}`)]));
 
-let scenario = defaults.scenario;
+const radios = [...document.querySelectorAll('input[name="scenario"]')];
+const scenTable = document.querySelector('[aria-label="Headcount scenario"]');
+const scenRows = [...scenTable.querySelectorAll('tbody tr')];
+const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody tr')];
+const CHIP = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
+const SENS_CELLS = ['costDown', 'costUp', 'utilDown', 'utilUp'];
 const touched = new Set();
 let tableTimer = 0;
 let summaryTimer = 0;
@@ -32,7 +37,7 @@ function el(tag, className, text) {
 }
 
 function read() {
-  const values = { ...defaults, scenario };
+  const values = { ...defaults, scenario: (radios.find((r) => r.checked) || radios[0]).value };
   const errors = [];
   for (const f of FIELDS) {
     const r = coerce(f, inputs[f.key].value);
@@ -44,6 +49,7 @@ function read() {
 
 function fillInputs(values) {
   for (const f of FIELDS) inputs[f.key].value = toText(f, values[f.key]);
+  for (const r of radios) r.checked = r.value === values.scenario;
 }
 
 function setCell(td, node, withValue) {
@@ -71,8 +77,34 @@ function writeResults(p) {
   });
 }
 
+function writeScenario(sc) {
+  scenTable.querySelector('caption').textContent = `Headcount scenario: ${sc.name}`;
+  sc.rows.forEach((row, i) => { scenRows[i].querySelector('[data-fig]').textContent = row.text; });
+}
+
+// Rewrites the five static sensitivity rows in the live ranking order.
+function writeSensitivity(list) {
+  list.forEach((row, i) => {
+    const tr = sensRows[i];
+    tr.querySelector('th').textContent = row.label;
+    const chip = tr.querySelector('a.chip');
+    chip.setAttribute('href', `#${row.ref}`);
+    chip.className = `chip ${CHIP[row.grade]}`;
+    chip.textContent = row.grade;
+    [...tr.querySelectorAll('td.num')].forEach((td, c) => {
+      const node = row.cells[SENS_CELLS[c]];
+      const fig = td.querySelector('[data-fig]');
+      fig.textContent = node.text;
+      fig.setAttribute('data-fig', `calc-sens-${row.key}-${SENS_CELLS[c]}`);
+      td.querySelector('.capped').textContent = row.capped[c % 2 === 0 ? 'down' : 'up'] ? 'capped' : '';
+    });
+  });
+}
+
 function dashResults() {
   for (const tr of rows) [...tr.querySelectorAll('td')].slice(0, 3).forEach((td) => setCell(td, null, 'dash'));
+  for (const el_ of [...scenRows, ...sensRows].flatMap((tr) => [...tr.querySelectorAll('[data-fig]')])) el_.textContent = '—';
+  for (const el_ of document.querySelectorAll('.capped')) el_.textContent = '';
 }
 
 function showFieldErrors(errors) {
@@ -145,6 +177,8 @@ function update(commit, immediateSummary) {
   }
   const p = present(values, ctx);
   writeResults(p);
+  writeScenario(p.scenario);
+  writeSensitivity(p.sensitivity);
   const writeSummary = () => { summary.textContent = p.summary; };
   if (immediateSummary) writeSummary();
   else summaryTimer = setTimeout(writeSummary, 400);
@@ -157,7 +191,6 @@ function update(commit, immediateSummary) {
 function restore() {
   const parsed = parseHash(location.hash, ctx);
   fillInputs(parsed.values);
-  scenario = parsed.values.scenario;
   touched.clear();
   pendingNotice = parsed.notices.length > 0
     ? `Some values in the link were not valid, so defaults were used for: ${parsed.notices.join(', ')}.` : '';
@@ -199,7 +232,6 @@ $('copy-link').addEventListener('click', () => {
 
 $('reset-calc').addEventListener('click', () => {
   fillInputs(defaults);
-  scenario = defaults.scenario;
   touched.clear();
   pendingNotice = '';
   update(true, true);
