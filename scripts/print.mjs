@@ -1,5 +1,5 @@
 // Print check (QA-02): print-media computed styles, table clipping, printToPDF page count and page-1 text.
-// Usage: node scripts/print.mjs [baseUrl]   (without a base URL it serves site/ itself). Node built-ins plus pdftotext.
+// Usage: node scripts/print.mjs [baseUrl]   (without a base URL it serves site/ itself). Node built-ins plus pdftotext and pdfinfo (poppler).
 // Grayscale print and a real printer are not covered: those stay on the human UAT list.
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -22,8 +22,8 @@ function pdftotext(path) {
 }
 
 async function main(base) {
-  if (spawnSync('pdftotext', ['-v']).error) {
-    fail('pdftotext', 'pdftotext missing: install poppler to run the print check');
+  if (spawnSync('pdftotext', ['-v']).error || spawnSync('pdfinfo', ['-v']).error) {
+    fail('poppler', 'pdftotext or pdfinfo missing: install poppler to run the print check');
     return;
   }
   const dir = mkdtempSync(join(tmpdir(), 'print-check-'));
@@ -59,8 +59,9 @@ async function main(base) {
       const pdf = (await send('Page.printToPDF', { printBackground: true, preferCSSPageSize: true })).result.data;
       const path = join(dir, 'page.pdf');
       writeFileSync(path, Buffer.from(pdf, 'base64'));
-      const raw = Buffer.from(pdf, 'base64').toString('latin1');
-      const count = (raw.match(/\/Type\s*\/Page(?![s\w])/g) || []).length;
+      // IN-05: pdfinfo gives an exact count even when page objects sit in object streams.
+      const info = spawnSync('pdfinfo', [path], { encoding: 'utf8' });
+      const count = info.error || info.status !== 0 ? 0 : Number((info.stdout.match(/^Pages:\s+(\d+)/m) || [])[1] || 0);
       test('page count under ceiling', count > 0 && count <= CEILING, `${count} pages, ceiling ${CEILING}`);
       const text = pdftotext(path);
       if (text === null) { fail('pdftotext', 'pdftotext failed to read the PDF'); return; }
