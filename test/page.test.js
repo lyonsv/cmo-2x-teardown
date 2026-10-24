@@ -366,11 +366,11 @@ test('fifteen anchored sections with the fixed snippet', () => {
   }
 });
 
-// Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s13', 's14'];
+// Plans 04-03 onward remove the sections they fill; s14 is still a skeleton until Task 2.
+const SKELETON_IDS = ['s14'];
 
-test('skeleton ids are s10 to s14', () => {
-  assert.deepEqual(SKELETON_IDS, ['s13', 's14']);
+test('skeleton ids are s14 only', () => {
+  assert.deepEqual(SKELETON_IDS, ['s14']);
 });
 
 test('skeleton sections carry a scope sentence and the later note', () => {
@@ -555,7 +555,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
         .replace(/<h2 id="s\d\d-h">[^<]*<\/h2>/g, ' ') // section titles are locked by the TITLES test
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
-    ).replace(/\bT[0-3]\b/g, ' '); // tier names
+    ).replace(/\bT[0-3]\b/g, ' ').replace(/\bBacklog 0\b/g, ' '); // tier names and the programme end-state name
     for (const tok of cleaned.match(/\d[\d,.–-]*%?x?/g) || []) {
       const t = tok.replace(/[.,–-]+$/, '');
       assert.ok(ALLOWED_NUMERIC_TOKENS.includes(t), `ungraded numeral "${tok}" in: ${cleaned.slice(0, 80)}`);
@@ -666,7 +666,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -1334,4 +1334,43 @@ test('Run your own numbers CTA is identical in s02 and s10', () => {
     assert.ok(s.includes(cta), id);
     assert.ok(s.replace(/\s*<\/section>$/, '').endsWith(`<p>${cta}</p>`), `${id} CTA is last`);
   }
+});
+
+// ---- Plan 04-03: s13 adoption and Backlog 0 ----
+
+test('s13 adoption and Backlog 0', () => {
+  const s = sectionHtml('s13');
+  assert.ok(!s.includes('class="later"'));
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'Adoption starts with the work that is safest to automate, and success is measured by how long approved demand waits.');
+  assert.equal((s.match(/<table>/g) || []).length, 1);
+  assert.ok(s.includes('<caption>Adoption stages by team: first move and guardrail</caption>'));
+  const head = [...s.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Stage', 'Team', 'First move', 'Guardrail', 'Grade']);
+  const rows = s.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  assert.ok(rows.length >= 4 && rows.length <= 5);
+  for (const r of rows) {
+    assert.match(r, /<th scope="row">/);
+    for (const c of r.match(/<td>[\s\S]*?<\/td>/g).slice(0, 3)) assert.ok(strip(c).split(' ').length <= 20, strip(c));
+    assert.equal((r.match(/class="chip /g) || []).length, 1);
+  }
+  assert.ok(s.includes('<a href="#s11">section 11</a>'));
+  assert.ok(/<h3>What stays human<\/h3>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
+  const t = strip(s);
+  assert.ok(!t.includes('Intercom'));
+  assert.ok(!VENDOR_RE.test(t));
+  assert.ok(!/does not have|does not exist/.test(t));
+  assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 11 .'));
+});
+
+test('s13 Backlog 0 definition block', () => {
+  const s = sectionHtml('s13');
+  assert.equal((s.match(/<h3>Backlog 0, defined<\/h3>/g) || []).length, 1);
+  const blk = s.match(/<div class="backlog0">[\s\S]*?<\/div>/)[0];
+  const p = blk.match(/<p>([\s\S]*?)<\/p>/)[1];
+  assert.equal(p, 'Backlog 0 means no approved brief waits longer than <span data-fig="asm-backlog0-days">5 working days</span> <a class="chip c-m" href="#asm-backlog0-days">Modelled</a> for its first derived set. Replace this with your own service level.');
+  assert.ok(!blk.match(/<dl>[\s\S]*<\/dl>/)[0].includes('data-fig'));
+  const dts = [...blk.matchAll(/<dt>([\s\S]*?)<\/dt>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(dts, ['Measure', 'Target', "Reader's number"]);
+  assert.equal(assumptions['asm-backlog0-days'].display, '5 working days');
 });

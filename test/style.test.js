@@ -259,3 +259,11 @@ test('table numbers match their 17px row labels; Not applicable is muted', () =>
   const m = css.match(/@media \(max-width: 720px\) {([\s\S]*?)\n}/);
   assert.ok(/td\.num, td\.na { font-size: 16px; }/.test(m[1]));
 });
+
+// ---- Phase 4 plan 03: Backlog 0 block ----
+
+test('.backlog0 is a paper-2 panel with tokens only', () => {
+  const r = rule('.backlog0');
+  for (const d of ['background: var(--paper-2)', 'border: 1px solid var(--rule)', 'padding: var(--s-lg)', 'max-width: 44em']) assert.ok(r.includes(d), d);
+  assert.ok(!/--verified|--low/.test(r));
+});
