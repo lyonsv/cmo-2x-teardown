@@ -86,7 +86,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md — s03 factory model (Figures 2, 3) and s04 layered architecture; diagram contract and CSS
+- [x] 02-02-PLAN.md — s03 factory model (Figures 2, 3) and s04 layered architecture; diagram contract and CSS
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 1/8 | In Progress|  |
+| 2. Factory & Spine Slice | 2/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
