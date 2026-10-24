@@ -131,7 +131,7 @@ test('table note and fixed-assumptions sentence follow the table', () => {
 });
 
 test('calculator assumptions have register rows', () => {
-  for (const id of ['asm-locales', 'asm-formats-per-locale']) {
+  for (const id of ['asm-markets', 'asm-formats-per-market', 'asm-growth-route']) {
     assert.ok(html.includes(`<tr id="${id}">`), id);
   }
 });
@@ -181,11 +181,11 @@ test('no result, table, figure, details, believe panel or summary sits inside a 
   }
 });
 
-test('form: five groups, twelve fields in order with label, input, unit, chip and hint', () => {
+test('form: six groups, twelve fields in order with label, input, unit, chip and hint', () => {
   const wrap = calcLiveWrappers()[0].inner;
   assert.match(wrap, /^\s*<form class="calc-form" novalidate>[\s\S]*<\/form>\s*$/);
   const groups = [...wrap.matchAll(/<fieldset class="calc-group">\s*<legend>([^<]*)<\/legend>([\s\S]*?)<\/fieldset>/g)];
-  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'People', 'Cost and quality', 'Automation', 'Headcount scenario']);
+  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'How you get to 2x', 'People', 'Cost and quality', 'Automation', 'Headcount scenario']);
   const fields = groups.flatMap((g) => g[2].split('<div class="field">').slice(1));
   fields.forEach((html_, i) => {
     const f = FIELDS[i];
@@ -204,13 +204,17 @@ test('form: five groups, twelve fields in order with label, input, unit, chip an
     // WR-02: hints must not claim an input changes "only" some outputs; both FTE
     // inputs also feed the scenario table (change cost, required and freed FTE).
     assert.ok(!/\bonly\b/.test(hint[1]), `${f.key} hint makes an "only" claim`);
-    if (f.key === 'reviewers') assert.match(hint[1], /utilisation, cycle time, break-even, the capacity floor and the headcount scenario, but not production cost\./);
-    if (f.key === 'marketers') assert.match(hint[1], /output per head and the one-off change cost\./);
+    if (f.key === 'reviewers') assert.match(hint[1], /utilisation, brief-to-live time, break-even, the capacity floor and the headcount scenario, but not production cost\./);
+    if (f.key === 'marketers') assert.match(hint[1], /the one-off change cost and the headcount scenario; the headline has no per-head denominator\./);
     assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
   });
-  assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2, 0]);
+  assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 0, 3, 4, 2, 0]);
   // Group grade rule: each of the four field groups opens with one note and one chip.
-  groups.slice(0, 4).forEach((g, i) => {
+  const fieldGroups = groups.filter((g) => g[1] !== 'How you get to 2x').slice(0, 4);
+  const routeGroup = groups[1];
+  assert.equal(routeGroup[2].match(/^\s*<p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-growth-route">Modelled<\/a>\.<\/p>/) !== null, true);
+  assert.equal((routeGroup[2].match(/class="chip /g) || []).length, 1, 'route group has one chip');
+  fieldGroups.forEach((g, i) => {
     assert.equal(g[1], Object.values(GROUPED.fieldsets)[i]);
     const key = Object.keys(GROUPED.fieldsets)[i];
     const note = g[2].match(/^\s*(<p class="grade-note">[\s\S]*?<\/p>)/);
@@ -285,6 +289,19 @@ test('Headcount scenario group: three radios, redeploy checked, change-cost line
   assert.ok(group[1].includes(`<p class="hint radio-note">Change-management cost: ${chg.display}, included in every scenario. <a class="chip ${CHIP_CLASS[chg.grade]}" href="#asm-change-mgmt">${chg.grade}</a></p>`), 'change cost is the asm-change-mgmt display');
   assert.equal(chg.display, `${formatValue(chg.value, 'usd0')} per affected FTE`);
   assert.equal((html.match(/name="scenario"/g) || []).length, 3);
+});
+
+test('How you get to 2x group: three radios, both checked, name="route" three times', () => {
+  const wrap = calcLiveWrappers()[0].inner;
+  const group = wrap.match(/<fieldset class="calc-group">\s*<legend>How you get to 2x<\/legend>([\s\S]*?)<\/fieldset>/);
+  assert.ok(group, 'route fieldset');
+  const labels = [...group[1].matchAll(/<label class="radio"><input type="radio" name="route" value="(both|campaigns|markets)"( checked)?><span class="radio-text"><span class="radio-title">([^<]*)<\/span><span class="radio-desc">([^<]*)<\/span><\/span><\/label>/g)];
+  assert.deepEqual(labels.map((m) => [m[1], !!m[2], m[3], decodeAll(m[4])]), [
+    ['both', true, 'Both', 'More campaigns and more markets, each grown by the same factor.'],
+    ['campaigns', false, 'More campaigns', 'Same markets; every new campaign needs its own master concepts.'],
+    ['markets', false, 'More markets', 'Same campaigns launched in more markets; master concepts are reused.'],
+  ]);
+  assert.equal((html.match(/name="route"/g) || []).length, 3);
 });
 
 function tableAfter(caption) {

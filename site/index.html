@@ -789,7 +789,7 @@
     <section id="s11" aria-labelledby="s11-h">
       <div class="sec-head"><span class="sec-num">11</span><h2 id="s11-h">Your numbers</h2></div>
       <div class="calc">
-        <p>Replace the defaults with your own numbers. The page recomputes cost per approved-live asset, reviewer load and the auto-approval share you would need.</p>
+        <p>Replace the defaults with your own numbers. The page recomputes campaign-markets per quarter, brief-to-live time, cost per approved asset and per campaign-market, reviewer load and the auto-approval share you would need.</p>
         <p role="status" class="calc-status">Showing: page defaults</p>
         <p class="calc-nojs">The interactive calculator needs JavaScript. Below is the default scenario, calculated in advance from the same model.</p>
         <div class="calc-live" id="calc-form-wrap">
@@ -805,13 +805,20 @@
               <div class="field">
                 <div class="field-head"><label for="in-concepts">Concepts per campaign</label></div>
                 <div class="control"><input id="in-concepts" name="concepts" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-concepts" value="25"><span class="unit">concepts</span></div>
-                <p class="hint" id="hint-concepts">Default 25. With locales, this gives the page's average campaign. Register row: <a href="#asm-concepts-per-campaign">asm-concepts-per-campaign</a>.</p>
+                <p class="hint" id="hint-concepts">Default 25. With markets, this gives the page's average campaign. Register row: <a href="#asm-concepts-per-campaign">asm-concepts-per-campaign</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-locales">Locales</label></div>
-                <div class="control"><input id="in-locales" name="locales" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-locales" value="5"><span class="unit">locales</span></div>
-                <p class="hint" id="hint-locales">Default 5. Register row: <a href="#asm-locales">asm-locales</a>.</p>
+                <div class="field-head"><label for="in-markets">Markets per campaign</label></div>
+                <div class="control"><input id="in-markets" name="markets" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-markets" value="5"><span class="unit">markets</span></div>
+                <p class="hint" id="hint-markets">Default 5. One market is one country or language market. Register row: <a href="#asm-markets">asm-markets</a>.</p>
               </div>
+            </fieldset>
+            <fieldset class="calc-group">
+              <legend>How you get to 2x</legend>
+              <p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-growth-route">Modelled</a>.</p>
+              <label class="radio"><input type="radio" name="route" value="both" checked><span class="radio-text"><span class="radio-title">Both</span><span class="radio-desc">More campaigns and more markets, each grown by the same factor.</span></span></label>
+              <label class="radio"><input type="radio" name="route" value="campaigns"><span class="radio-text"><span class="radio-title">More campaigns</span><span class="radio-desc">Same markets; every new campaign needs its own master concepts.</span></span></label>
+              <label class="radio"><input type="radio" name="route" value="markets"><span class="radio-text"><span class="radio-title">More markets</span><span class="radio-desc">Same campaigns launched in more markets; master concepts are reused.</span></span></label>
             </fieldset>
             <fieldset class="calc-group">
               <legend>People</legend>
@@ -819,12 +826,12 @@
               <div class="field">
                 <div class="field-head"><label for="in-marketers">Marketing FTE</label></div>
                 <div class="control"><input id="in-marketers" name="marketers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-marketers" value="120"><span class="unit">FTE</span></div>
-                <p class="hint" id="hint-marketers">Default 120. Changes output per head and the one-off change cost. Register row: <a href="#asm-marketing-fte">asm-marketing-fte</a>.</p>
+                <p class="hint" id="hint-marketers">Default 120. Changes the one-off change cost and the headcount scenario; the headline has no per-head denominator. Register row: <a href="#asm-marketing-fte">asm-marketing-fte</a>.</p>
               </div>
               <div class="field">
                 <div class="field-head"><label for="in-reviewers">Reviewer FTE</label></div>
                 <div class="control"><input id="in-reviewers" name="reviewers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-reviewers" value="12"><span class="unit">FTE</span></div>
-                <p class="hint" id="hint-reviewers">Default 12. Changes utilisation, cycle time, break-even, the capacity floor and the headcount scenario, but not production cost. Register row: <a href="#asm-reviewer-fte">asm-reviewer-fte</a>.</p>
+                <p class="hint" id="hint-reviewers">Default 12. Changes utilisation, brief-to-live time, break-even, the capacity floor and the headcount scenario, but not production cost. Register row: <a href="#asm-reviewer-fte">asm-reviewer-fte</a>.</p>
               </div>
               <div class="field">
                 <div class="field-head"><label for="in-minutes">Minutes per review</label></div>
@@ -1905,26 +1912,19 @@
               <td><span class="chip c-m">Modelled</span></td>
               <td>A modelled creative breadth per campaign; there is no published source.</td>
             </tr>
-            <tr id="asm-variants-per-concept">
-              <th scope="row" class="id">asm-variants-per-concept</th>
-              <td>Variants per concept</td>
-              <td><span data-fig="asm-variants-per-concept">40</span></td>
+            <tr id="asm-markets">
+              <th scope="row" class="id">asm-markets</th>
+              <td>Markets per campaign</td>
+              <td><span data-fig="asm-markets">5</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>A modelled count of sizes, locales and channel cuts per concept; there is no published source.</td>
+              <td>One market is one country or language market with its own launch. A modelled count with no published benchmark; with eight formats per market it reproduces the forty variants per concept used for review load.</td>
             </tr>
-            <tr id="asm-locales">
-              <th scope="row" class="id">asm-locales</th>
-              <td>Locales per concept</td>
-              <td><span data-fig="asm-locales">5</span></td>
+            <tr id="asm-formats-per-market">
+              <th scope="row" class="id">asm-formats-per-market</th>
+              <td>Formats per market</td>
+              <td><span data-fig="asm-formats-per-market">8</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>A modelled locale count; with eight formats per locale it reproduces the forty variants per concept used across the page. No published benchmark.</td>
-            </tr>
-            <tr id="asm-formats-per-locale">
-              <th scope="row" class="id">asm-formats-per-locale</th>
-              <td>Formats per locale</td>
-              <td><span data-fig="asm-formats-per-locale">8</span></td>
-              <td><span class="chip c-m">Modelled</span></td>
-              <td>Sizes and channel cuts per locale; fixed in the calculator. No published benchmark.</td>
+              <td>Sizes and channel cuts per market: derived variants that are internal throughput and not the claim. Fixed in the calculator; no published benchmark.</td>
             </tr>
             <tr id="asm-loaded-fte-cost">
               <th scope="row" class="id">asm-loaded-fte-cost</th>
@@ -1947,12 +1947,12 @@
               <td><span class="chip c-m">Modelled</span></td>
               <td>A modelled review capacity; there is no published source.</td>
             </tr>
-            <tr id="asm-concept-growth">
-              <th scope="row" class="id">asm-concept-growth</th>
-              <td>Concept growth exponent</td>
-              <td><span data-fig="asm-concept-growth">0.25</span></td>
+            <tr id="asm-growth-route">
+              <th scope="row" class="id">asm-growth-route</th>
+              <td>How you get to 2x</td>
+              <td><span data-fig="asm-growth-route">Both: campaigns and markets each about 1.41x</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>Share of growth from new concepts in log terms; 0 means pure derivation.</td>
+              <td>Splits the doubling of campaign-markets between more campaigns and more markets in log terms: 1 means more campaigns only, 0 means more markets only, 0.5 means both, each grown by the square root of the multiplier. The page chose the default; there is no published benchmark.</td>
             </tr>
             <tr id="asm-approval-yield">
               <th scope="row" class="id">asm-approval-yield</th>
@@ -1967,13 +1967,6 @@
               <td><span data-fig="asm-tier-mix">T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td>Illustrative tier shares; no published benchmark exists</td>
-            </tr>
-            <tr id="asm-tier-weights">
-              <th scope="row" class="id">asm-tier-weights</th>
-              <td>Relative review effort per tier</td>
-              <td><span data-fig="asm-tier-weights">1 / 2 / 4 / 8</span></td>
-              <td><span class="chip c-m">Modelled</span></td>
-              <td>Relative review effort per tier; used only for the weighted sensitivity because weights are arbitrary and gameable</td>
             </tr>
             <tr id="asm-auto-approval">
               <th scope="row" class="id">asm-auto-approval</th>

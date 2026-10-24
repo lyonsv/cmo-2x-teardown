@@ -20,7 +20,8 @@ const copyBtn = $('copy-link');
 const rows = [...document.querySelectorAll('[aria-label="Calculator results"] tbody tr')];
 const inputs = Object.fromEntries(FIELDS.map((f) => [f.key, $(`in-${f.key}`)]));
 
-const radios = [...document.querySelectorAll('input[name="scenario"]')];
+const GROUPS = ['scenario', 'route'];
+const radios = Object.fromEntries(GROUPS.map((g) => [g, [...document.querySelectorAll(`input[name="${g}"]`)]]));
 const scenTable = document.querySelector('[aria-label="Headcount scenario"]');
 const scenRows = [...scenTable.querySelectorAll('tbody tr')];
 const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody tr')];
@@ -42,7 +43,8 @@ function el(tag, className, text) {
 }
 
 function read() {
-  const values = { ...defaults, scenario: (radios.find((r) => r.checked) || radios[0]).value };
+  const values = { ...defaults };
+  for (const g of GROUPS) values[g] = (radios[g].find((r) => r.checked) || radios[g][0]).value;
   const errors = [];
   for (const f of FIELDS) {
     const r = coerce(f, inputs[f.key].value);
@@ -54,7 +56,7 @@ function read() {
 
 function fillInputs(values) {
   for (const f of FIELDS) inputs[f.key].value = toText(f, values[f.key]);
-  for (const r of radios) r.checked = r.value === values.scenario;
+  for (const g of GROUPS) for (const r of radios[g]) r.checked = r.value === values[g];
 }
 
 function setCell(td, node, withValue) {
