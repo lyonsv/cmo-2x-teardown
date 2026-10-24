@@ -197,7 +197,7 @@ Plans:
   4. Reader can use the page with a keyboard and screen reader (labelled inputs, aria-live outputs, data-table equivalents, grades not by colour alone), at 320 CSS px with tables scrolling in their own regions, and can print it cleanly.
   5. Primary sources, vendor facts, EU AI Act Art. 50 and Getty v Stability status are re-verified and date-stamped, the legal wording is flagged for review, and the production deploy is live.
 
-**Plans:** 3/9 plans executed
+**Plans:** 4/9 plans executed
 
 Plans:
 **Wave 1**
@@ -214,7 +214,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 04-04-PLAN.md — s14 risk blocks with as-at callouts, Getty v Stability neutral treatment, regulation, risk register
+- [x] 04-04-PLAN.md — s14 risk blocks with as-at callouts, Getty v Stability neutral treatment, regulation, risk register
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -245,4 +245,4 @@ Plans:
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete    | 2026-10-24 |
-| 4. Adoption, Risk, Evidence & Publish Slice | 3/9 | In Progress|  |
+| 4. Adoption, Risk, Evidence & Publish Slice | 4/9 | In Progress|  |

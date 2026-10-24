@@ -84,8 +84,8 @@
 
 ### Closing Sections
 
-- [ ] **CLOSE-01**: Reader sees a candid "what goes wrong" section: a documented incident list (established vs alleged), slop and sameness, reviewer fatigue, Goodhart, IP/copyrightability, and regulation (EU AI Act Art. 50, ASA, FTC) with date-stamped callouts
-- [ ] **CLOSE-02**: Reader sees an adoption section (pulling up the floor across creative, brand and regional teams) and Backlog 0 defined as a queue-age SLA for unserved demand
+- [x] **CLOSE-01**: Reader sees a candid "what goes wrong" section: a documented incident list (established vs alleged), slop and sameness, reviewer fatigue, Goodhart, IP/copyrightability, and regulation (EU AI Act Art. 50, ASA, FTC) with date-stamped callouts
+- [x] **CLOSE-02**: Reader sees an adoption section (pulling up the floor across creative, brand and regional teams) and Backlog 0 defined as a queue-age SLA for unserved demand
 - [ ] **CLOSE-03**: Reader sees a source register (with publisher bias flags), an evidence-gaps section, and an assumptions register that matches `data.js`
 
 ### Quality & Publish
@@ -175,8 +175,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-03 | Phase 3 | Complete |
 | COMP-04 | Phase 3 | Complete |
 | COMP-05 | Phase 3 | Complete |
-| CLOSE-01 | Phase 4 | Pending |
-| CLOSE-02 | Phase 4 | Pending |
+| CLOSE-01 | Phase 4 | Complete |
+| CLOSE-02 | Phase 4 | Complete |
 | CLOSE-03 | Phase 4 | Pending |
 | QA-01 | Phase 4 | Pending |
 | QA-02 | Phase 4 | Pending |
