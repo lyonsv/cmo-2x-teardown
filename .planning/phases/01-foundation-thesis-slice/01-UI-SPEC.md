@@ -100,7 +100,7 @@ Accent (`--verified`) reserved for: (1) hyperlink text colour (`a`), including t
 Chart palette (SVG, all declared as CSS custom properties so print can override):
 - Baseline series: `--muted` `#62665F`.
 - 2x series: `--verified` `#17554A`.
-- Cost component stack (generation, review, rework, tooling, rights, storage), in order, using fills that stay distinguishable in greyscale and are separated by a 1px `--paper` stroke plus direct text labels: `#1A1C1B`, `#4A4E48`, `#7C8077`, `#A3A69C`, `#C4C6BC`, `#DCDDD5`. Never rely on fill alone; every segment is labelled in the data table.
+- Cost component stack (generation, review, rework, tooling, rights, storage), in order: `#1A1C1B`, `#3A3D38`, `#4A4E48`, `#5A5E57`, `#6C7068`, `#7C8077`, each >= 3:1 against `--paper`, separated by a 1.5px `--paper` stroke, with review, tooling and storage hatched (SVG `<pattern>`, paper-coloured diagonal lines) so neighbours differ by texture as well as shade. Changed after code review WR-09: the original light end (`#A3A69C`, `#C4C6BC`, `#DCDDD5`) was below 3:1 against paper. Never rely on fill alone; every segment is labelled in the data table.
 - Chart text: Label size, fill `--ink`; gridlines `--rule`.
 
 Contrast: all text/background pairs must be >= 4.5:1 (chips, tags and captions included); non-text graphics >= 3:1. Grades are never conveyed by colour alone: the chip always carries the words Benchmark / Modelled / Speculative.

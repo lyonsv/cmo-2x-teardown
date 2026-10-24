@@ -48,3 +48,21 @@ test('muted text (meta, captions, flags, later notes) is at least 4.5:1 on paper
     assert.ok(c >= 4.5, `--muted on ${bg} is ${c.toFixed(2)}:1`);
   }
 });
+
+test('cost-stack fills are at least 3:1 against paper and white (WR-09)', () => {
+  for (let i = 1; i <= 6; i++) {
+    for (const [bg, hex] of [['paper', token('paper')], ['print', '#FFFFFF']]) {
+      const c = contrast(token(`seg-${i}`), hex);
+      assert.ok(c >= 3, `--seg-${i} on ${bg} is ${c.toFixed(2)}:1`);
+    }
+  }
+});
+
+test('cost segments are separated by a paper gap and alternate segments are hatched', () => {
+  assert.match(css, /\.seg\s*{\s*stroke:\s*var\(--paper\);\s*stroke-width:\s*1\.5;/);
+  for (const i of [1, 3, 5]) assert.match(css, new RegExp(`\\.seg-${i} { fill: var\\(--seg-${i}\\); }`));
+  for (const i of [2, 4, 6]) {
+    assert.match(css, new RegExp(`\\.hatch-bg-${i} { fill: var\\(--seg-${i}\\); }`));
+    assert.ok(!new RegExp(`\\.seg-${i}\\s*{`).test(css), `.seg-${i} must not set a CSS fill (it would override the hatch)`);
+  }
+});

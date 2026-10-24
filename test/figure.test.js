@@ -124,3 +124,17 @@ test('svg desc numbers equal the panel claim displays and nothing else', () => {
   assert.equal(tokens.length, ids.length, `desc numerals: ${tokens.join(' ')}`);
   for (const t of tokens) assert.ok(displays.includes(t), `desc numeral ${t} is not a panel claim display`);
 });
+
+// Code review WR-09: neighbouring cost segments differ by texture, not grey shade alone.
+test('alternate cost segments and their legend swatches are hatched, the others solid', () => {
+  const segs = [...svg.matchAll(/<rect class="seg seg-(\d)"([^>]*)\/>/g)];
+  assert.equal(segs.length, 18, '12 bar segments plus 6 legend swatches');
+  for (const [, n, rest] of segs) {
+    if (Number(n) % 2 === 0) {
+      assert.ok(rest.includes(`fill="url(#hatch-${n})"`), `seg-${n} not hatched`);
+      assert.match(svg, new RegExp(`<pattern id="hatch-${n}"[^>]*>\\s*<rect class="hatch-bg-${n}"`));
+    } else {
+      assert.ok(!/fill=/.test(rest), `seg-${n} should be solid`);
+    }
+  }
+});

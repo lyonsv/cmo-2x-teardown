@@ -1,7 +1,7 @@
 :root {
   --paper: #F4F4F0; --paper-2: #EDEDE6; --ink: #1A1C1B; --ink-2: #2C2F2C;
   --muted: #62665F; --rule: #D5D6CE;
-  --seg-1: #1A1C1B; --seg-2: #4A4E48; --seg-3: #7C8077; --seg-4: #A3A69C; --seg-5: #C4C6BC; --seg-6: #DCDDD5;
+  --seg-1: #1A1C1B; --seg-2: #3A3D38; --seg-3: #4A4E48; --seg-4: #5A5E57; --seg-5: #6C7068; --seg-6: #7C8077;
   --verified: #17554A; --inferred: #7A5D0F; --low: #7A3B34;
   --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-2xl: 48px; --s-3xl: 64px;
   --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Charter","Source Serif 4",Georgia,serif;
@@ -77,9 +77,13 @@ svg.fig { display: block; width: 100%; height: auto; }
 .fig .gridline { stroke: var(--rule); stroke-width: 1; }
 .bar-base { fill: var(--muted); }
 .bar-scaled { fill: var(--verified); }
-.seg { stroke: var(--paper); stroke-width: 1; }
-.seg-1 { fill: var(--seg-1); } .seg-2 { fill: var(--seg-2); } .seg-3 { fill: var(--seg-3); }
-.seg-4 { fill: var(--seg-4); } .seg-5 { fill: var(--seg-5); } .seg-6 { fill: var(--seg-6); }
+/* Cost stack: every fill is >= 3:1 against --paper, segments are separated by a
+   paper gap, and alternate segments (2, 4, 6) are hatched via fill="url(#hatch-N)"
+   in the SVG, so neighbours differ by texture as well as shade (WR-09). */
+.seg { stroke: var(--paper); stroke-width: 1.5; }
+.seg-1 { fill: var(--seg-1); } .seg-3 { fill: var(--seg-3); } .seg-5 { fill: var(--seg-5); }
+.hatch-bg-2 { fill: var(--seg-2); } .hatch-bg-4 { fill: var(--seg-4); } .hatch-bg-6 { fill: var(--seg-6); }
+.hatch-line { stroke: var(--paper); stroke-width: 2; }
 .fig-scroll { overflow-x: auto; }
 .fig-scroll:focus-visible { outline: 2px solid var(--verified); outline-offset: 2px; }
 @media (max-width: 720px) {
