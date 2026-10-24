@@ -411,12 +411,33 @@ const F = [
   { id: 'feeds', count: 4, applies: 0.5 },
 ];
 
-// Independent enumerator: expands round(items x applies) items by the factor count.
-function enumerate(concepts, factors) {
-  return factors.reduce((items, f) => {
-    const k = Math.round(items * f.applies);
-    return k * f.count + (items - k);
-  }, concepts);
+// Real enumerator (code review IN-01): builds every variant as an explicit tuple.
+// Each factor picks a stated share of the current variants (by the `pick` rule,
+// not necessarily the first ones) and expands each picked variant into one
+// tuple per level of the factor; unpicked variants keep the factor unset. It
+// requires items x applies to be a whole number at every step, so it only runs
+// on hand-built cases where the answer is an exact count, not an expectation.
+function enumerateVariants(concepts, factors, pick = (i, n, k) => i < k) {
+  let items = Array.from({ length: concepts }, (_, c) => ({ concept: c }));
+  for (const f of factors) {
+    const k = items.length * f.applies;
+    assert.ok(Number.isInteger(Math.round(k * 1e9) / 1e9), `${f.id}: ${items.length} x ${f.applies} is not a whole number of items`);
+    const kk = Math.round(k);
+    const next = [];
+    items.forEach((it, i) => {
+      if (pick(i, items.length, kk)) for (let level = 0; level < f.count; level++) next.push({ ...it, [f.id]: level });
+      else next.push({ ...it, [f.id]: null });
+    });
+    items = next;
+  }
+  return items;
+}
+
+function enumerate(concepts, factors, pick) {
+  const items = enumerateVariants(concepts, factors, pick);
+  const keys = new Set(items.map((x) => JSON.stringify(x)));
+  assert.equal(keys.size, items.length, 'the enumeration produced a duplicate variant');
+  return items.length;
 }
 
 test('variantMatrix golden: default set gives 12,000 over 4 concepts', () => {
@@ -429,14 +450,22 @@ test('variantMatrix golden: default set gives 12,000 over 4 concepts', () => {
   assert.equal(r.concepts, 4);
 });
 
-test('variantMatrix equals an independent enumerator', () => {
-  const small = [{ id: 'a', count: 3, applies: 0.5 }, { id: 'b', count: 2, applies: 0.5 }];
-  const r = variantMatrix(2, small);
-  close(r.total, 6);
-  close(r.total, enumerate(2, small));
-  close(variantMatrix(4, F).total, enumerate(4, F), 1e-6);
+test('variantMatrix equals a real enumeration of distinct variants', () => {
+  // Hand-built case with non-trivial fractions: 4 concepts; a: half of 4 items
+  // take 3 levels -> 2 x 3 + 2 = 8; b: a quarter of 8 items take 2 levels -> 2 x 2 + 6 = 10.
+  const small = [{ id: 'a', count: 3, applies: 0.5 }, { id: 'b', count: 2, applies: 0.25 }];
+  assert.equal(enumerate(4, small), 10);
+  close(variantMatrix(4, small).total, 10);
+  // which items are picked does not change the count (every other item, not the first k)
+  const everyOther = (i, n, k) => i % 2 === 0 && i / 2 < k;
+  assert.equal(enumerate(4, small, everyOther), 10);
+  // the worked campaign: 12,000 explicit, pairwise distinct tuples
+  assert.equal(enumerate(4, F), 12000);
+  close(variantMatrix(4, F).total, 12000);
 });
 
+// The formula is a product, so this only guards the implementation against an
+// order-dependent bug; the enumeration test above is the real check (IN-01).
 test('variantMatrix is order independent', () => {
   const perms = [[...F].reverse(), [F[2], F[0], F[5], F[1], F[4], F[3]], [F[4], F[5], F[3], F[2], F[1], F[0]]];
   for (const p of perms) close(variantMatrix(4, p).total, 12000);
