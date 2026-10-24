@@ -33,6 +33,8 @@ async function main(base) {
       await send('Emulation.setDeviceMetricsOverride', { width: 700, height: 900, deviceScaleFactor: 1, mobile: false });
       await send('Page.navigate', { url: base });
       for (let i = 0; i < 80 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+      // IN-01: the print checks assume the live page, so fail loudly if the module never loaded.
+      if ((await evalJs("document.documentElement.classList.contains('js')")) !== true) throw new Error('module did not load');
       await sleep(500);
       await send('Emulation.setEmulatedMedia', { media: 'print' });
       // ui.js opens details.maths on beforeprint only; printToPDF fires it, but the computed-style

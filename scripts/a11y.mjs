@@ -16,6 +16,8 @@ async function load(send, evalJs, url, w, h) {
   await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
   await send('Page.navigate', { url });
   for (let i = 0; i < 80 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+  // IN-01: checks against the no-JS page would look like real failures, so stop here.
+  if ((await evalJs("document.documentElement.classList.contains('js')")) !== true) throw new Error('module did not load');
   await sleep(500);
 }
 
