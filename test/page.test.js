@@ -593,10 +593,11 @@ test('s02 states flat budget, scope, six components, AI-spend floor and review c
   assert.ok(text.includes('excludes media'));
   for (const c of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) assert.ok(text.includes(c), c);
   for (const id of ['gartner-share-2025', 'gartner-share-2026', 'gartner-sample-2025', 'cpa-base', 'cpa-scaled', 'cpa-change',
-    'total-cost-base', 'total-cost-scaled', 'budget-share-base', 'budget-share-scaled', 'ai-spend-base', 'ai-spend-scaled',
+    'cpcm-base', 'cpcm-scaled', 'cpcm-change', 'total-cost-base', 'total-cost-scaled', 'budget-share-base', 'budget-share-scaled', 'ai-spend-base', 'ai-spend-scaled',
     'ai-spend-ratio', 'break-even-auto-approval', 'asm-approval-yield', 'asm-auto-approval']) {
     assert.ok(s.includes(`data-fig="${id}"`), id);
   }
+  assert.match(s, /<h3>Cost per campaign-market<\/h3>/);
   assert.match(s, /class="callout/);
   if (claims['gartner-share-2026'].grade === 'Modelled') assert.ok(text.includes(GARTNER_CAVEAT));
   else assert.ok(!text.includes(GARTNER_CAVEAT));

@@ -19,14 +19,15 @@ test('s02 has exactly one accessible svg with title and desc', () => {
   assert.match(svg, /<desc id="f2-d">[^<]+<\/desc>/);
 });
 
-test('three panels in order output, cost, ai', () => {
+test('four panels in order output, cost, cpcm, ai', () => {
   const panels = [...svg.matchAll(/<g data-panel="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(panels, ['output', 'cost', 'ai']);
+  assert.deepEqual(panels, ['output', 'cost', 'cpcm', 'ai']);
 });
 
 function panelMax(panel) {
-  if (panel === 'output') return claims['output-per-head-scaled'].value;
+  if (panel === 'output') return claims['cm-scaled'].value;
   if (panel === 'cost') return claims['cpa-base'].value;
+  if (panel === 'cpcm') return claims['cpcm-base'].value;
   return claims['ai-spend-scaled'].value;
 }
 
@@ -59,7 +60,7 @@ test('every bar names a claim and its width is value / panel max * 600', () => {
       }
     }
   }
-  assert.equal(n, 16);
+  assert.equal(n, 18);
 });
 
 test('cost segments appear in component order for each side', () => {
@@ -87,7 +88,7 @@ test('figcaption follows the svg and states per-panel scales', () => {
   assert.match(s02, /<figcaption><b>Figure 1<\/b>[\s\S]*Each panel has its own scale[\s\S]*<\/figcaption>/);
 });
 
-test('always-visible data table with all 18 figure ids and one governing chip per row', () => {
+test('always-visible data table with all 20 figure ids and one governing chip per row', () => {
   const after = s02.slice(s02.indexOf('</figure>'));
   const table = (after.match(/<table[\s\S]*?<\/table>/) || [''])[0];
   assert.ok(table, 'no table after the figure');
@@ -98,7 +99,7 @@ test('always-visible data table with all 18 figure ids and one governing chip pe
   assert.equal(cols.length, 4);
   assert.equal(cols[3], 'Grade');
   const rows = [...table.slice(table.indexOf('<tbody>')).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1]);
-  assert.equal(rows.length, 9);
+  assert.equal(rows.length, 10);
   const all = [];
   for (const row of rows) {
     assert.match(row, /<th scope="row"/);
@@ -116,8 +117,8 @@ test('always-visible data table with all 18 figure ids and one governing chip pe
       all.push(id);
     }
   }
-  assert.equal(all.length, 18);
-  const wanted = ['output-per-head', 'cpa', 'ai-spend', ...COMPONENTS.map((c) => `cpa-${c}`)];
+  assert.equal(all.length, 20);
+  const wanted = ['cm', 'cpa', 'cpcm', 'ai-spend', ...COMPONENTS.map((c) => `cpa-${c}`)];
   for (const w of wanted) for (const side of ['base', 'scaled']) {
     assert.ok(table.includes(`data-fig="${w}-${side}"`), `${w}-${side}`);
   }
@@ -138,7 +139,7 @@ test('svg has no style attributes, var() fills, scripts or external hrefs', () =
 // must come from data.js like the bars and labels do.
 test('svg desc numbers equal the panel claim displays and nothing else', () => {
   const desc = svg.match(/<desc id="f2-d">([^<]+)<\/desc>/)[1];
-  const ids = ['output-per-head-base', 'output-per-head-scaled', 'cpa-base', 'cpa-scaled', 'ai-spend-base', 'ai-spend-scaled'];
+  const ids = ['cm-base', 'cm-scaled', 'cpa-base', 'cpa-scaled', 'cpcm-base', 'cpcm-scaled', 'ai-spend-base', 'ai-spend-scaled'];
   const displays = ids.map((id) => claims[id].display);
   for (const [i, d] of displays.entries()) assert.ok(desc.includes(d), `desc missing ${ids[i]} (${d})`);
   const tokens = desc.match(/\$?\d[\d,]*(?:\.\d+)?/g) || [];
