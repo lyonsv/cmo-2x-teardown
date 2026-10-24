@@ -6,6 +6,10 @@ export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
 export const SCENARIO = { multiplier: 2 };
 
+// Each source carries its own grade and flag (code review WR-07): the register's
+// Grade and Flag cells and every chip that links to a source are checked against
+// these fields. Law-firm commentary and the author's own secondary reading are a
+// Modelled basis, not a Benchmark.
 export const sources = {
   'gartner-2025-cmo-spend': {
     title: 'Gartner 2025 CMO Spend Survey Reveals Marketing Budgets Have Flatlined at 7.7% of Overall Company Revenue',
@@ -15,6 +19,8 @@ export const sources = {
     url: 'https://www.gartner.com/en/newsroom/press-releases/2025-05-12-gartner-2025-cmo-spend-survey-reveals-marketing-budgets-have-flatlined-at-seven-percent-of-overall-company-revenue',
     bias: 'Analyst firm; self-reported survey of 402 CMOs in North America, the UK and Europe, mostly companies above $1B revenue',
     read_via: 'Business Wire reproduction of the Gartner release (gartner.com returns 403 to automation)',
+    grade: 'Benchmark',
+    flag: null,
   },
   'gartner-2026-cmo-spend': {
     title: 'Gartner 2026 CMO Spend Survey Finds CMOs Allocate 15.3% of Marketing Budgets to AI, But Only 30% Are Ready to Scale AI Capabilities',
@@ -24,6 +30,8 @@ export const sources = {
     url: 'https://www.gartner.com/en/newsroom/press-releases/2026-05-11-gartner-2026-cmo-spend-survey-finds-cmos-allocate-15-point-3-percent-of-marketing-budgets-to-ai-but-only-30-percent-are-ready-to-scale-ai-capabilities',
     bias: 'Analyst firm; self-reported survey of 401 CMOs in North America, the UK and Europe, mostly companies above $1B revenue',
     read_via: 'Gartner newsroom page, confirmed in a browser by the author',
+    grade: 'Benchmark',
+    flag: null,
   },
   'nyu-emory-ai-ads-2025': {
     title: 'The Impact of Visual Generative AI on Advertising Effectiveness',
@@ -33,6 +41,8 @@ export const sources = {
     url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5638311',
     bias: 'Academic working paper; peer-review status not checked; one author is a consultant at an economics consultancy that republished it',
     read_via: 'SSRN page, confirmed in a browser by the author (SSRN returns 403 to automation); date from the NYU Stern research highlight of 2025-11-06',
+    grade: 'Benchmark',
+    flag: null,
   },
   'usco-copyright-ai-part2': {
     title: 'Copyright and Artificial Intelligence, Part 2: Copyrightability',
@@ -42,6 +52,8 @@ export const sources = {
     url: 'https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf',
     bias: 'Government agency report; the Office\'s view of US law, not a court ruling',
     read_via: 'Report PDF; executive summary read directly',
+    grade: 'Benchmark',
+    flag: null,
   },
   'getty-v-stability-uk': {
     title: 'Getty Images v Stability AI [2025] EWHC 2863 (Ch): judgment dated 2025-11-04 and permission to appeal',
@@ -51,6 +63,8 @@ export const sources = {
     url: 'https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted',
     bias: 'Law-firm commentary on a UK High Court judgment, not the judgment itself; appeal status is time-sensitive',
     read_via: 'Page returned 403 to automation on 2026-10-24, so the judgment date and the grant of permission to appeal rest on search summaries of this and a second law-firm note; publication month taken from the URL; the author is to confirm both and the Court of Appeal status in a browser before publishing; a US action was refiled in California per a Bloomberg Law report (headline only)',
+    grade: 'Modelled',
+    flag: null,
   },  'intercom-2x-teardown': {
     title: 'Intercom / Fin 2x — Teardown',
     publisher: 'Vincent Lyons (author of this page)',
@@ -59,6 +73,8 @@ export const sources = {
     url: 'https://lyonsv.github.io/intercom-2x-teardown/',
     bias: "The author's own secondary reading of company-presented webinar screenshots dated 2026-05-19; every figure is company-reported and concerns an engineering organisation reviewing code, not marketing assets",
     read_via: 'Page read in full and key screenshots viewed, 2026-10-24',
+    grade: 'Modelled',
+    flag: 'company-reported',
   },
 };
 

@@ -333,3 +333,18 @@ test('matrix total is labelled derived and matrix-approved applies the approval 
   assert.equal(c.grade, 'Modelled');
   assert.ok(c.value < r.total);
 });
+
+// ---- Code review WR-07: sources carry their own grade and flag ----
+
+test('every source has a valid grade and flag, and claims citing a source share its grade', () => {
+  for (const [k, src] of Object.entries(sources)) {
+    assert.ok(GRADES.includes(src.grade), `${k}: grade`);
+    assert.ok(src.flag === null || FLAGS.includes(src.flag), `${k}: flag`);
+    if (src.grade === 'Benchmark') assert.equal(src.flag, null, `${k}: flagged Benchmark source`);
+  }
+  for (const c of Object.values(claims).filter((x) => x.ref.startsWith('src-'))) {
+    const src = sources[c.ref.slice(4)];
+    assert.equal(c.grade, src.grade, `${c.id}: grade differs from its source row`);
+    if (src.flag) assert.equal(c.flag, src.flag, `${c.id}: source flag ${src.flag} missing`);
+  }
+});

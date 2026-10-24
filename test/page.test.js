@@ -13,8 +13,6 @@ function figEntry(id) {
 
 const FIG_RE = /<span data-fig="([^"]+)">([^<]*)<\/span>/g;
 const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
-// Source rows are Benchmark unless listed here (law-firm commentary is a Modelled basis, not a Benchmark).
-const SRC_GRADE = { 'getty-v-stability-uk': 'Modelled', 'intercom-2x-teardown': 'Modelled' };
 
 test('every data-fig matches data.js display', () => {
   const found = [...html.matchAll(FIG_RE)];
@@ -106,7 +104,7 @@ test('governing chip rule (UI-SPEC chip density)', () => {
       assert.equal(spans.length, 1, `register row needs one unlinked grade chip: ${u.html.slice(0, 40)}`);
       assert.equal(spans[0][1], CHIP_CLASS[spans[0][2]]);
       const id = u.html.match(/<tr id="([^"]+)"/)[1];
-      const grade = id.startsWith('src-') ? (SRC_GRADE[id.slice(4)] || 'Benchmark') : assumptions[id].grade;
+      const grade = id.startsWith('src-') ? sources[id.slice(4)].grade : assumptions[id].grade;
       assert.equal(spans[0][2], grade, `${id}: register grade`);
     }
   }
@@ -165,6 +163,10 @@ test('source register rows match data.js field by field', () => {
     assert.ok(row.includes(`href="${src.url}"`), `src-${k}: url drifted`);
     assert.ok(row.includes(`<th scope="row" class="id">src-${k}</th>`), `src-${k}: row header`);
     assert.ok(!row.includes('<a class="chip'), `src-${k}: register chip must not link`);
+    // WR-07: Grade and Flag cells come from data.js, not from a test-local table.
+    const tds = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
+    assert.equal(tds[3], `<span class="chip ${CHIP_CLASS[src.grade]}">${src.grade}</span>`, `src-${k}: grade cell`);
+    assert.equal(tds[4], src.flag ?? 'none', `src-${k}: flag cell`);
   }
 });
 
