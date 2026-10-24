@@ -102,3 +102,13 @@ test('new format kinds', () => {
 test('every model assumption is Modelled', () => {
   for (const e of Object.values(assumptions)) if (e.kind === 'model') assert.equal(e.grade, 'Modelled', e.id);
 });
+
+test('negative values put a true minus sign before the currency symbol', () => {
+  assert.equal(formatValue(-1, 'usd2'), '\u2212$1.00');
+  assert.equal(formatValue(-38421.4, 'usd0'), '\u2212$38,421');
+  assert.equal(formatValue(-710000, 'usdm2'), '\u2212$0.71M');
+  assert.equal(formatValue(-0.033, 'pct1'), '\u22123.3%');
+  assert.equal(formatValue(-1189.2, 'int'), '\u22121,189');
+  assert.equal(formatValue(-0.001, 'usd2'), '$0.00');
+  assert.equal(formatValue(-0, 'int'), '0');
+});

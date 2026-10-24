@@ -26,15 +26,24 @@ export const sources = {
   },
 };
 
+// Negative values format the absolute value and put a true minus sign (U+2212)
+// first, so -1 in usd2 is "−$1.00", not "$-1.00". A value that rounds to zero
+// carries no sign.
 export function formatValue(value, format) {
-  if (format === 'int') return Math.round(value).toLocaleString('en-GB', { maximumFractionDigits: 0 });
-  if (format === 'x1') return `${value.toLocaleString('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`;
   const n = (v, d) => v.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
-  if (format === 'usd0') return `$${n(value, 0)}`;
-  if (format === 'usd2') return `$${n(value, 2)}`;
-  if (format === 'usdm2') return `$${n(value / 1e6, 2)}M`;
-  if (format === 'pct0') return `${n(value * 100, 0)}%`;
-  if (format === 'pct1') return `${n(value * 100, 1)}%`;
+  const body = {
+    int: (v) => Math.round(v).toLocaleString('en-GB', { maximumFractionDigits: 0 }),
+    x1: (v) => `${n(v, 1)}x`,
+    usd0: (v) => `$${n(v, 0)}`,
+    usd2: (v) => `$${n(v, 2)}`,
+    usdm2: (v) => `$${n(v / 1e6, 2)}M`,
+    pct0: (v) => `${n(v * 100, 0)}%`,
+    pct1: (v) => `${n(v * 100, 1)}%`,
+  }[format];
+  if (body) {
+    const text = body(Math.abs(value));
+    return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
+  }
   if (format === 'pctchg0') {
     const p = Math.round(value * 100);
     return `${p < 0 ? '\u2212' : p > 0 ? '+' : ''}${Math.abs(p)}%`;
