@@ -171,3 +171,45 @@ test('formatValue applies', () => {
   assert.equal(formatValue(0.75, 'applies'), '75%');
   assert.equal(formatValue(0.4, 'applies'), '40%');
 });
+
+// ---- Plan 02-04: imagery sourcing and NYU/Emory ----
+
+// The user confirmed both figures on the SSRN primary page on 2026-10-24 (02-CONTEXT post-research decisions).
+test('NYU/Emory grade matches the 2026-10-24 browser confirmation (02-CONTEXT post-research decisions)', () => {
+  const want = { 'nyu-ctr-lift': [19, '19%'], 'nyu-disclosure-drop': [-31.5, '\u221231.5%'] };
+  for (const [id, [value, display]] of Object.entries(want)) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value);
+    assert.equal(c.display, display);
+    assert.equal(c.grade, 'Benchmark');
+    assert.equal(c.flag, null);
+    assert.equal(c.ref, 'src-nyu-emory-ai-ads-2025');
+  }
+  assert.ok(sources['nyu-emory-ai-ads-2025'].read_via.includes('confirmed in a browser by the author'));
+});
+
+test('new sources are complete', () => {
+  for (const k of ['nyu-emory-ai-ads-2025', 'usco-copyright-ai-part2', 'getty-v-stability-uk']) {
+    const s = sources[k];
+    assert.ok(s, k);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) {
+      assert.equal(typeof s[f], 'string', `${k}.${f}`);
+      assert.ok(s[f].length > 0, `${k}.${f} empty`);
+    }
+    assert.match(s.url, /^https:\/\//);
+    assert.equal(s.accessed, '2026-10-24');
+  }
+  const g = sources['getty-v-stability-uk'];
+  assert.ok(g.title.includes('2025-11-04') || g.bias.includes('2025-11-04'));
+});
+
+test('imagery assumptions', () => {
+  for (const id of ['asm-imagery-routes', 'asm-imagery-indemnity']) {
+    const e = assumptions[id];
+    assert.ok(e, id);
+    assert.equal(e.kind, 'evidence');
+    assert.equal(e.grade, 'Modelled');
+    assert.notEqual(e.display, e.basis);
+  }
+});

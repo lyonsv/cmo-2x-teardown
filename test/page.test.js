@@ -13,6 +13,8 @@ function figEntry(id) {
 
 const FIG_RE = /<span data-fig="([^"]+)">([^<]*)<\/span>/g;
 const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
+// Source rows are Benchmark unless listed here (law-firm commentary is a Modelled basis, not a Benchmark).
+const SRC_GRADE = { 'getty-v-stability-uk': 'Modelled' };
 
 test('every data-fig matches data.js display', () => {
   const found = [...html.matchAll(FIG_RE)];
@@ -104,7 +106,7 @@ test('governing chip rule (UI-SPEC chip density)', () => {
       assert.equal(spans.length, 1, `register row needs one unlinked grade chip: ${u.html.slice(0, 40)}`);
       assert.equal(spans[0][1], CHIP_CLASS[spans[0][2]]);
       const id = u.html.match(/<tr id="([^"]+)"/)[1];
-      const grade = id.startsWith('src-') ? 'Benchmark' : assumptions[id].grade;
+      const grade = id.startsWith('src-') ? (SRC_GRADE[id.slice(4)] || 'Benchmark') : assumptions[id].grade;
       assert.equal(spans[0][2], grade, `${id}: register grade`);
     }
   }
@@ -523,7 +525,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -603,4 +605,79 @@ test('s05 derive lead and matrix table', () => {
   assert.ok(/independent/.test(after) && /double count/.test(after));
   const tail = s.slice(s.indexOf('</table>'));
   assert.ok(tail.includes('data-fig="matrix-per-concept"') && tail.includes('data-fig="avg-campaign-variants"'));
+});
+
+// ---- Plan 02-04: s05 imagery sourcing, Getty line, personalisation ----
+
+const COI_S05 = 'The author works at iStock/Getty Images. This page is vendor-neutral by design; the table below sets out three routes to imagery without ranking them.';
+
+function imageryTable() {
+  const s = sectionHtml('s05');
+  const m = s.match(/<table>\s*<caption>Imagery sourcing: three routes<\/caption>[\s\S]*?<\/table>/);
+  assert.ok(m, 'imagery table missing');
+  return { s, table: m[0], at: s.indexOf(m[0]) };
+}
+
+test('s05 COI note sits directly above the imagery table', () => {
+  const s = sectionHtml('s05');
+  const m = s.match(/<div class="callout coi">\s*<span class="lbl">COI note<\/span>\s*<p>([\s\S]*?)<\/p>\s*<\/div>(\s*)<div class="table-scroll"/);
+  assert.ok(m, 'COI callout must be immediately followed by the table region');
+  assert.equal(strip(m[1]), COI_S05);
+  const before = s.slice(0, s.indexOf('<div class="callout coi">')).trimEnd();
+  assert.ok(before.endsWith('</p>'), 'a lead-in paragraph must come immediately before the callout');
+  const { table } = imageryTable();
+  assert.ok(s.indexOf(m[0]) < s.indexOf(table));
+  assert.ok(m[0].length + s.indexOf(m[0]) <= s.indexOf('<div class="table-scroll"', s.indexOf(m[0])) + 1);
+});
+
+test('imagery table is neutral', () => {
+  const { table } = imageryTable();
+  const head = [...table.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Criterion', 'Retrieve approved', 'License', 'Generate', 'Basis']);
+  const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  assert.deepEqual(rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1])), ['Rights', 'Indemnity', 'Copyrightability', 'Cost visibility', 'Speed']);
+  for (const r of rows) {
+    assert.equal((r.match(/class="chip /g) || []).length, 1, 'one chip per row');
+    const last = [...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
+    assert.ok(last.includes('class="chip '), 'chip in last cell');
+  }
+  assert.ok(!/<td\s+class=/.test(table), 'td with a class attribute');
+  const t = strip(table).toLowerCase();
+  for (const w of ['recommended', 'best', 'winner', 'preferred']) assert.ok(!t.includes(w), w);
+  for (const c of table.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) {
+    assert.ok(strip(c).split(' ').length <= 20, `cell over 20 words: ${strip(c)}`);
+  }
+});
+
+test('one dated Getty v Stability line', () => {
+  const { s, table } = imageryTable();
+  const text = strip(s.replace(/<svg[\s\S]*?<\/svg>/g, ' '));
+  assert.equal((text.match(/Getty v Stability/g) || []).length, 1);
+  const after = s.slice(s.indexOf(table) + table.length);
+  const p = (after.match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).find((x) => strip(x).includes('Getty v Stability'));
+  assert.ok(p, 'Getty line must follow the table');
+  assert.ok(p.includes('<time datetime="2025-11-04">'));
+  assert.ok(strip(p).includes('permission to appeal'));
+  assert.ok(p.includes('href="#src-getty-v-stability-uk"'));
+  assert.ok(p.includes('<a href="#s14">section 14</a>'));
+  assert.ok(strip(p).includes('Full treatment in section 14.'));
+});
+
+test('personalisation and feeds block', () => {
+  const s = sectionHtml('s05');
+  const text = strip(s);
+  const lower = text.toLowerCase();
+  for (const w of ['dynamic creative', 'catalogue', 'feed']) assert.ok(lower.includes(w), w);
+  assert.ok(s.includes('data-fig="nyu-ctr-lift"') && s.includes('data-fig="nyu-disclosure-drop"'));
+  assert.match(text, /up to 19%/);
+  const first = s.match(/<span data-fig="nyu-ctr-lift">[^<]*<\/span>\s*<a class="chip c-b" href="#src-nyu-emory-ai-ads-2025">Benchmark<\/a>/);
+  assert.ok(first, 'nyu-ctr-lift must be followed by its Benchmark chip');
+  for (const bad of ['3.73', '4.44', '2.56', '685', '105,999']) assert.ok(!s.includes(bad), bad);
+  const CAVEAT = 'Secondary source: reported in trade press; we could not confirm the primary paper.';
+  if (claims['nyu-ctr-lift'].grade === 'Modelled') assert.ok(text.includes(CAVEAT));
+  else assert.ok(!text.includes(CAVEAT));
+});
+
+test('time elements are present', () => {
+  assert.ok((html.match(/<time datetime="/g) || []).length >= 1);
 });
