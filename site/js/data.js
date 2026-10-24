@@ -6,6 +6,7 @@ import { present, defaultValues, RESULT_ROWS } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
+export const PUBLISHER_TYPES = ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government'];
 export const SCENARIO = { multiplier: 2 };
 
 // Each source carries its own grade and flag (code review WR-07): the register's
@@ -16,6 +17,7 @@ export const sources = {
   'gartner-2025-cmo-spend': {
     title: 'Gartner 2025 CMO Spend Survey Reveals Marketing Budgets Have Flatlined at 7.7% of Overall Company Revenue',
     publisher: 'Gartner, Inc.',
+    publisherType: 'company',
     published: '2025-05-12',
     accessed: '2026-10-24',
     url: 'https://www.gartner.com/en/newsroom/press-releases/2025-05-12-gartner-2025-cmo-spend-survey-reveals-marketing-budgets-have-flatlined-at-seven-percent-of-overall-company-revenue',
@@ -27,6 +29,7 @@ export const sources = {
   'gartner-2026-cmo-spend': {
     title: 'Gartner 2026 CMO Spend Survey Finds CMOs Allocate 15.3% of Marketing Budgets to AI, But Only 30% Are Ready to Scale AI Capabilities',
     publisher: 'Gartner, Inc.',
+    publisherType: 'company',
     published: '2026-05-11',
     accessed: '2026-10-24',
     url: 'https://www.gartner.com/en/newsroom/press-releases/2026-05-11-gartner-2026-cmo-spend-survey-finds-cmos-allocate-15-point-3-percent-of-marketing-budgets-to-ai-but-only-30-percent-are-ready-to-scale-ai-capabilities',
@@ -38,6 +41,7 @@ export const sources = {
   'nyu-emory-ai-ads-2025': {
     title: 'The Impact of Visual Generative AI on Advertising Effectiveness',
     publisher: 'SSRN (working paper); authors at NYU Stern and Emory',
+    publisherType: 'academic',
     published: '2025-11-06',
     accessed: '2026-10-24',
     url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5638311',
@@ -49,6 +53,7 @@ export const sources = {
   'usco-copyright-ai-part2': {
     title: 'Copyright and Artificial Intelligence, Part 2: Copyrightability',
     publisher: 'U.S. Copyright Office',
+    publisherType: 'government',
     published: '2025-01-29',
     accessed: '2026-10-24',
     url: 'https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf',
@@ -60,6 +65,7 @@ export const sources = {
   'getty-v-stability-uk': {
     title: 'Getty Images v Stability AI [2025] EWHC 2863 (Ch): judgment dated 2025-11-04 and permission to appeal',
     publisher: 'Taylor Wessing (law-firm commentary)',
+    publisherType: 'law-firm commentary',
     published: '2026-01',
     accessed: '2026-10-24',
     url: 'https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted',
@@ -71,6 +77,7 @@ export const sources = {
   'ailawsuittracker-getty-uk': {
     title: 'Getty Images v. Stability AI (UK), [2025] EWHC 2863 (Ch): case page',
     publisher: 'AI Lawsuit Tracker (ailawsuittracker.com)',
+    publisherType: 'tracker',
     published: '2026-10-11',
     accessed: '2026-10-24',
     url: 'https://ailawsuittracker.com/cases/getty-images-v-stability-ai-uk-2025-ewhc-2863-ch/',
@@ -82,6 +89,7 @@ export const sources = {
   'intercom-2x-teardown': {
     title: 'Intercom / Fin 2x — Teardown',
     publisher: 'Vincent Lyons (author of this page)',
+    publisherType: 'company',
     published: '2026-08-25',
     accessed: '2026-10-24',
     url: 'https://lyonsv.github.io/intercom-2x-teardown/',
@@ -93,6 +101,7 @@ export const sources = {
   'laubli-2019': {
     title: 'Post-editing Productivity with Neural Machine Translation: An Empirical Assessment of Speed and Quality in the Banking and Finance Domain',
     publisher: 'arXiv (Läubli et al.)',
+    publisherType: 'academic',
     published: '2019-06-04',
     accessed: '2026-10-24',
     url: 'https://arxiv.org/abs/1906.01685',
@@ -104,6 +113,7 @@ export const sources = {
   'translation-vendor-case': {
     title: 'How a Fortune 500 enterprise translated millions of words at scale',
     publisher: 'Smartling (translation-technology vendor)',
+    publisherType: 'vendor',
     published: '2025-03-10',
     accessed: '2026-10-24',
     url: 'https://smartling.com/resources/case-study/technology-customer-case-study',
@@ -115,6 +125,7 @@ export const sources = {
   'experimentation-vendor-playbook': {
     title: 'Top 10 takeaways from running 173,000 experiments',
     publisher: 'Optimizely (experimentation-platform vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.optimizely.com/insights/top-10-takeaways-from-the-experimentation-playbook/',
@@ -126,6 +137,7 @@ export const sources = {
   'kohavi-2013': {
     title: 'Online Controlled Experiments at Large Scale',
     publisher: 'KDD 2013 (Kohavi, Deng, Frasca, Walker, Xu, Pohlmann; Microsoft)',
+    publisherType: 'academic',
     published: '2013-08-11',
     accessed: '2026-10-24',
     url: 'https://exp-platform.com/Documents/2013%20controlledExperimentsAtScale.pdf',
@@ -137,6 +149,7 @@ export const sources = {
   'mmm-geox': {
     title: 'Meridian: GeoX geo experiments for MMM calibration',
     publisher: 'Google (open-source marketing-mix framework documentation)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://developers.google.com/meridian/geox',
@@ -148,6 +161,7 @@ export const sources = {
   'haynes-2026': {
     title: 'GEO is a distraction',
     publisher: 'Marie Haynes Consulting (SEO consultancy)',
+    publisherType: 'vendor',
     published: '2026-10-21',
     accessed: '2026-10-24',
     url: 'https://www.mariehaynes.com/geo-is-a-distraction/',
@@ -159,6 +173,7 @@ export const sources = {
   'seoworks-2026': {
     title: 'AI referral traffic benchmark',
     publisher: 'The SEO Works (UK agency selling GEO services)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.seoworks.co.uk/downloads/ai-referral-traffic-benchmark/',
@@ -170,6 +185,7 @@ export const sources = {
   'indig-2026': {
     title: 'Does AI drive more direct traffic?',
     publisher: 'Growth Memo (Kevin Indig)',
+    publisherType: 'press',
     published: '2026-10-19',
     accessed: '2026-10-24',
     url: 'https://www.growth-memo.com/p/does-ai-drive-more-direct-traffic',
@@ -181,6 +197,7 @@ export const sources = {
   'aggarwal-geo-2024': {
     title: 'GEO: Generative Engine Optimization',
     publisher: 'KDD 2024 (Aggarwal et al.)',
+    publisherType: 'academic',
     published: '2024-08-25',
     accessed: '2026-10-24',
     url: 'https://arxiv.org/abs/2311.09735',
@@ -192,6 +209,7 @@ export const sources = {
   'cornell-17usc504': {
     title: '17 U.S. Code section 504: Remedies for infringement: Damages and profits',
     publisher: 'Legal Information Institute, Cornell Law School (US Code text)',
+    publisherType: 'government',
     published: 'undated',
     accessed: '2026-10-24',
     url: 'https://www.law.cornell.edu/uscode/text/17/504',
@@ -203,6 +221,7 @@ export const sources = {
   'cornell-17usc412': {
     title: '17 U.S. Code section 412: Registration as prerequisite to certain remedies for infringement',
     publisher: 'Legal Information Institute, Cornell Law School (US Code text)',
+    publisherType: 'government',
     published: 'undated',
     accessed: '2026-10-24',
     url: 'https://www.law.cornell.edu/uscode/text/17/412',
@@ -214,6 +233,7 @@ export const sources = {
   'gradial-integrations': {
     title: 'Gradial integrations page',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.gradial.com/integrations',
@@ -225,6 +245,7 @@ export const sources = {
   'gradial-docs-faq': {
     title: 'Gradial documentation: FAQs',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://docs.gradial.com/docs/faqs/faqs.md',
@@ -236,6 +257,7 @@ export const sources = {
   'gradial-docs-how': {
     title: 'Gradial documentation: How Gradial works',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://docs.gradial.com/docs/getting-started/how-gradial-works.md',
@@ -247,6 +269,7 @@ export const sources = {
   'gradial-docs-what': {
     title: 'Gradial documentation: What is Gradial',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://docs.gradial.com/docs/getting-started/what-is-gradial.md',
@@ -258,6 +281,7 @@ export const sources = {
   'gradial-platform': {
     title: 'Gradial platform page',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.gradial.com/platform',
@@ -269,6 +293,7 @@ export const sources = {
   'gradial-docs-dam': {
     title: 'Gradial documentation: Digital asset management',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://docs.gradial.com/docs/asset-management/digital-asset-management.md',
@@ -280,6 +305,7 @@ export const sources = {
   'gradial-docs-translation': {
     title: 'Gradial documentation: Translation and localization',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://docs.gradial.com/docs/translation-and-localization/translation.md',
@@ -291,6 +317,7 @@ export const sources = {
   'gradial-home': {
     title: 'Gradial home page',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.gradial.com/',
@@ -302,6 +329,7 @@ export const sources = {
   'gradial-geo': {
     title: 'Gradial generative engine optimization solution page',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.gradial.com/solutions/generative-engine-optimization',
@@ -313,6 +341,7 @@ export const sources = {
   'gradial-customers': {
     title: 'Gradial customer stories',
     publisher: 'Gradial (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://gradial.com/customers',
@@ -324,6 +353,7 @@ export const sources = {
   'airops-pricing': {
     title: 'AirOps pricing page',
     publisher: 'AirOps (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.airops.com/pricing',
@@ -335,6 +365,7 @@ export const sources = {
   'airops-enterprise': {
     title: 'AirOps enterprise page',
     publisher: 'AirOps (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.airops.com/enterprise',
@@ -346,6 +377,7 @@ export const sources = {
   'airops-webflow': {
     title: 'AirOps case study: Webflow',
     publisher: 'AirOps (vendor)',
+    publisherType: 'vendor',
     published: '2025-04-28; page metadata modified 2026-06-11',
     accessed: '2026-10-24',
     url: 'https://www.airops.com/blog/webflow-case-study',
@@ -357,6 +389,7 @@ export const sources = {
   'airops-chime': {
     title: 'AirOps case study: Chime',
     publisher: 'AirOps (vendor)',
+    publisherType: 'vendor',
     published: '2025-09-11; page metadata modified 2025-11-17',
     accessed: '2026-10-24',
     url: 'https://www.airops.com/blog/chime-case-study',
@@ -368,6 +401,7 @@ export const sources = {
   'airops-home': {
     title: 'AirOps home page',
     publisher: 'AirOps (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.airops.com',
@@ -379,6 +413,7 @@ export const sources = {
   'profound-agents': {
     title: 'Profound agents feature page',
     publisher: 'Profound (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://tryprofound.com/features/agents',
@@ -390,6 +425,7 @@ export const sources = {
   'profound-pricing': {
     title: 'Profound pricing page',
     publisher: 'Profound (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.tryprofound.com/pricing',
@@ -401,6 +437,7 @@ export const sources = {
   'profound-home': {
     title: 'Profound home page',
     publisher: 'Profound (vendor)',
+    publisherType: 'vendor',
     published: 'undated on the page',
     accessed: '2026-10-24',
     url: 'https://www.tryprofound.com',
@@ -408,6 +445,168 @@ export const sources = {
     read_via: 'Primary page fetched 2026-10-24 (HTTP 200); phrases checked: "Generates posts and images" and "Agent Analytics"',
     grade: 'Modelled',
     flag: 'vendor-claimed',
+  },
+  // ---- Phase 4 Plan 2: adoption, risk and regulation sources (all read 2026-10-24) ----
+  'parasuraman-manzey-2010': {
+    title: 'Complacency and Bias in Human Use of Automation: An Attentional Integration (Human Factors 52(3), 381-410)',
+    publisher: 'Human Factors journal (SAGE); Parasuraman and Manzey',
+    publisherType: 'academic',
+    published: '2010',
+    accessed: '2026-10-24',
+    url: 'https://doi.org/10.1177/0018720810376055',
+    bias: 'Peer-reviewed review article on automation use in general; not a study of marketing review. Only the abstract-level claim is used: complacency and automation bias are documented in naive and expert users, and training or instructions alone do not remove them',
+    read_via: 'Crossref metadata and abstract; full text not read',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'moffatt-air-canada-2024': {
+    title: 'Moffatt v. Air Canada, 2024 BCCRT 149 (file SC-2023-005609): a tribunal held an airline responsible for wrong fare information from its website chatbot; total order $812.02 (damages $650.88, interest $36.14, tribunal fees $125)',
+    publisher: 'British Columbia Civil Resolution Tribunal',
+    publisherType: 'government',
+    published: '2024-02-14',
+    event: '2024-02-14',
+    accessed: '2026-10-24',
+    url: 'https://decisions.civilresolutionbc.ca/crt/crtd/en/525448/1/document.do',
+    bias: 'Tribunal decision by Member Christopher C. Rivers; a small-claims body, so persuasive rather than binding on other courts',
+    read_via: 'Decision text read (the page serves a PDF; a browser-like request returns it, a plain automated fetch returns 403)',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'eu-ai-act-art50': {
+    title: 'EU AI Act, Article 50: transparency obligations for providers and deployers of certain AI systems (applies from 2026-08-02 under Article 113)',
+    publisher: 'European Union (consolidated text republished by artificialintelligenceact.eu)',
+    publisherType: 'government',
+    published: '2024-06-13',
+    accessed: '2026-10-24',
+    url: 'https://artificialintelligenceact.eu/article/50/',
+    bias: 'Unofficial consolidated text of Regulation (EU) 2024/1689; the official text is on EUR-Lex. The page paraphrases and does not quote it',
+    read_via: 'artificialintelligenceact.eu Article 50 page read; EUR-Lex returned a bot challenge to automation, so the official text was not read directly',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'eu-ai-omnibus-2026-1744': {
+    title: 'Regulation (EU) 2026/1744 (Digital Omnibus on AI), final text PE-CONS 30/1/26 REV 1: adds a transition to 2026-12-02 for Article 50(2) marking by systems placed on the market before 2026-08-02',
+    publisher: 'European Parliament and Council of the European Union',
+    publisherType: 'government',
+    published: '2026-07-08',
+    accessed: '2026-10-24',
+    url: 'https://data.consilium.europa.eu/doc/document/PE-30-2026-REV-1/en/pdf',
+    bias: 'Legislative text; it changes Article 50 only at paragraph 7 and adds Article 111(4), and leaves the Article 50(4) deployer duty unchanged',
+    read_via: 'PE-CONS PDF downloaded and read (Article 111(4) addition and recital 38); the Official Journal date of 2026-07-24 comes from a search snippet of the EUR-Lex record, which could not be fetched',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'eu-code-of-practice-transparency': {
+    title: 'Code of Practice on Transparency of AI-generated Content (providers: marking and detection; deployers: labelling)',
+    publisher: 'European Commission',
+    publisherType: 'government',
+    published: 'undated on the page',
+    accessed: '2026-10-24',
+    url: 'https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content',
+    bias: 'Regulator page; the code is voluntary, and the Commission and the AI Board describe it as an adequate voluntary tool to demonstrate compliance',
+    read_via: 'Commission page read directly. The page is undated in the extract; a law-firm report dates the final code to June 2026 and is not used as a source here',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'asa-ai-disclosure-2025': {
+    title: 'Disclosure of AI in Advertising: Striking the Balance Between Creativity and Responsibility',
+    publisher: 'Advertising Standards Authority (UK)',
+    publisherType: 'government',
+    published: '2025-05-29',
+    accessed: '2026-10-24',
+    url: 'https://www.asa.org.uk/news/disclosure-of-ai-in-advertising-striking-the-balance-between-creativity-and-responsibility.html',
+    bias: 'The ASA is the UK self-regulatory body for advertising, funded by an industry levy; typed government as the closest allowed type. States that existing rules apply however content is generated',
+    read_via: 'ASA page read directly',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'ftc-fake-reviews-rule-2024': {
+    title: 'Federal Trade Commission announces final rule banning fake reviews and testimonials, including AI-generated fake reviews',
+    publisher: 'U.S. Federal Trade Commission',
+    publisherType: 'government',
+    published: '2024-08-14',
+    accessed: '2026-10-24',
+    url: 'https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials',
+    bias: 'Regulator press release announcing a final rule; the effective date comes from secondary summaries and is not used on the page',
+    read_via: 'FTC press release read directly',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'getty-v-stability-us': {
+    title: 'Getty Images (US), Inc. v. Stability AI, Ltd., N.D. Cal. No. 3:25-cv-06891: case page',
+    publisher: 'AI Lawsuit Tracker (ailawsuittracker.com)',
+    publisherType: 'tracker',
+    published: '2026-10-19',
+    accessed: '2026-10-24',
+    url: 'https://ailawsuittracker.com/cases/getty-v-stability-ai/',
+    bias: 'Third-party case tracker, single source; legal status is time-sensitive. The tracker\'s own page dates conflict (last reviewed 2026-10-07, text reviewed 2026-10-11, footer updated 2026-10-19), so the latest is used as the published date. The court docket returned 403',
+    read_via: 'Case page read on 2026-10-24: filed 2025-08-14 after a Delaware action was voluntarily dismissed; on 2026-04-23 a motion to dismiss was granted only as to the DMCA section 1202 claim, with leave to amend; a jury trial is set for 2028-01-18',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'getty-v-stability-uk-cms': {
+    title: 'Artificial Intelligence and Copyright Case Tracker: Getty Images (US) Inc & Ors v Stability AI Ltd (United Kingdom)',
+    publisher: 'CMS (law-firm tracker)',
+    publisherType: 'law-firm commentary',
+    published: '2026-04-16',
+    accessed: '2026-10-24',
+    url: 'https://cms.law/en/int/publication/artificial-intelligence-and-copyright-case-tracker/united-kingdom-getty-images-us-inc-ors-v-stability-ai-ltd',
+    bias: 'Law-firm commentary on a UK High Court judgment, not the judgment itself. Dates permission to appeal 2025-12-17, where the AI Lawsuit Tracker says 2025-12-16: a one-day discrepancy, so the page says only December 2025',
+    read_via: 'Tracker page read on 2026-10-24; no Court of Appeal hearing date or judgment found in it or in the other tracker',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'incident-mcdonalds-nl-2025': {
+    title: "McDonald's Netherlands AI-generated Christmas advert removed after online criticism (NBC News; corroborated by BNN Bloomberg, 2025-12-10)",
+    publisher: 'NBC News',
+    publisherType: 'press',
+    published: '2025-12-11',
+    event: '2025-12-10',
+    accessed: '2026-10-24',
+    url: 'https://www.nbcnews.com/world/europe/mcdonalds-ai-generated-christmas-advert-social-media-backlash-rcna248590',
+    bias: 'News report; the company confirmed the removal and gave a statement to NBC and Bloomberg. The event date is the removal date',
+    read_via: 'NBC page read; BNN Bloomberg report of 2025-12-10 read as corroboration. The press is the original reporter',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'incident-cocacola-2025': {
+    title: 'Coca-Cola releases AI-generated "Holidays Are Coming" adverts for a second year (TODAY, 2025-11-04)',
+    publisher: 'TODAY (NBC)',
+    publisherType: 'press',
+    published: '2025-11-04',
+    event: '2025-11-03',
+    accessed: '2026-10-24',
+    url: 'https://www.today.com/today/amp/rcna241799',
+    bias: 'News report; the company says the earlier film performed well while press reports a largely negative public reaction, so reception is disputed. The release itself is not in dispute',
+    read_via: 'TODAY page read; the press is the original reporter',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'incident-guess-vogue-2025': {
+    title: 'Guess advert with AI-generated models in US Vogue (ABC7, 2025-08-01; ContentGrip, 2025-08-05)',
+    publisher: 'ABC7 / ContentGrip',
+    publisherType: 'press',
+    published: '2025-08-01',
+    event: '2025-08',
+    accessed: '2026-10-24',
+    url: 'https://abc7news.com/post/controversy-stirs-ai-generated-models-new-guess-ads-appearing-vogue/17390923/',
+    bias: 'News reports. Only the narrow facts are used: the advert credit naming the producing agency is printed in the ad (per ContentGrip) and the agency confirmed its role to ABC News. No statement from Vogue or Guess was found in a primary or direct form',
+    read_via: 'ABC7 page read; ContentGrip (https://www.contentgrip.com/guess-vogue-ai-model/) read as corroboration. The press is the original reporter',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'incident-levis-2023': {
+    title: 'Levi Strauss & Co. announces a test of AI-generated models with Lalaland.ai (2023-03-22; editor\'s note dated 2023-03-28)',
+    publisher: 'Levi Strauss & Co.',
+    publisherType: 'company',
+    published: '2023-03-22',
+    event: '2023-03-22',
+    accessed: '2026-10-24',
+    url: 'https://www.levistrauss.com/2023/03/22/lsco-partners-with-lalaland-ai/',
+    bias: "Company's own announcement and editor's note, so company-reported; the later criticism is reported by NBC News (2023-04-30, https://www.nbcnews.com/business/business-news/ai-models-levis-controversy-backlash-rcna77280)",
+    read_via: 'Company page read; the announcement is the primary source',
+    grade: 'Modelled',
+    flag: 'company-reported',
   },
 };
 
@@ -805,6 +1004,15 @@ evidence('asm-harness-design', 'Eval harness design', 'Modelled', 'Design from o
   "Harness pattern adapted from one company-reported engineering example: human decisions as ground truth, versioned datasets, baseline-versus-treatment comparison inside a noise band; most changes tested there were inconclusive and a newer model tested worse. Thresholds must be calibrated on the organisation's own data.");
 evidence('asm-telemetry-metrics', 'Telemetry metrics', 'Modelled', 'Recommended instrumentation',
   'Metrics chosen so every cost, quality and outcome figure on this page can be measured per asset ID; no published benchmark.');
+
+// ---- Phase 4 Plan 2: context assumptions for s13 and s14 ----
+// Kind 'context' rows are shown and graded but never read by the model.
+assumptions['asm-backlog0-days'] = a('asm-backlog0-days', 'Backlog 0 service level (N)', 'context', null, 5, 'working days', '5 working days',
+  'A service-level target this page chose, not a measurement: it sits just above the modelled build time at 2x plus one review touch (3 days plus 1.5 days, rounded up). Replace it with your own service level. No published benchmark.');
+assumptions['asm-adoption-design'] = { ...a('asm-adoption-design', 'Adoption stages, first moves and guardrails', 'context', null, null, null, "Author's design",
+  "The adoption stages, first moves and guardrails in section 13 are the author's design, not a measured pathway. No adoption rates are stated because none were found."), grade: 'Speculative' };
+assumptions['asm-risk-likelihood'] = { ...a('asm-risk-likelihood', 'Risk likelihood words', 'context', null, null, null, "Author's judgement",
+  "The likelihood words in the risk register are the author's judgement from the incidents and sources cited in section 14, not measured rates."), grade: 'Speculative' };
 
 // ---- Plan 03-03: operations lever, statutory-damages illustration ----
 // The statute ranges are Benchmark (primary law). The incident rate is an invented,

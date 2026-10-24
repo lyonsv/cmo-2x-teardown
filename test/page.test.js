@@ -201,14 +201,13 @@ test('source register rows match data.js field by field', () => {
     for (const f of ['title', 'publisher', 'published', 'accessed', 'bias', 'read_via']) {
       assert.ok(text.includes(src[f]), `src-${k}: ${f} drifted`);
     }
-    assert.ok(row.includes(`<td>${src.publisher}</td>`), `src-${k}: publisher cell`);
     assert.ok(row.includes(`href="${src.url}"`), `src-${k}: url drifted`);
     assert.ok(row.includes(`<th scope="row" class="id">src-${k}</th>`), `src-${k}: row header`);
     assert.ok(!row.includes('<a class="chip'), `src-${k}: register chip must not link`);
     // WR-07: Grade and Flag cells come from data.js, not from a test-local table.
     const tds = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
     // Columns: td0 Claim, td1 Publisher, td2 Publisher type, td3 Date accessed, td4 Grade, td5 Flag, td6 URL.
-    assert.equal(tds[1], src.publisher, `src-${k}: publisher cell`);
+    assert.equal(decode(tds[1]), src.publisher, `src-${k}: publisher cell`);
     assert.ok(PUBLISHER_TYPES.includes(src.publisherType), `src-${k}: publisherType not in the fixed list`);
     assert.equal(tds[2], src.publisherType, `src-${k}: publisher type cell`);
     assert.equal(tds[3], `<time datetime="${src.accessed}">${src.accessed}</time>`, `src-${k}: accessed cell`);

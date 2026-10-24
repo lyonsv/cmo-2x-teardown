@@ -84,6 +84,7 @@ thead th { border-bottom: 2px solid var(--ink); }
 .register tr { scroll-margin-top: 16px; }
 .register a { overflow-wrap: anywhere; }
 .register tr:target { background: var(--paper-2); box-shadow: inset 3px 0 0 var(--ink); }
+.register [aria-label="Source register table"] table { min-width: 1040px; }
 footer { border-top: 1px solid var(--rule); margin-top: var(--s-2xl); padding-top: var(--s-md); font: 400 12px/1.6 var(--mono); color: var(--muted); }
 svg.fig { display: block; width: 100%; height: auto; }
 .fig text { font: 400 12px var(--mono); fill: var(--ink); }
