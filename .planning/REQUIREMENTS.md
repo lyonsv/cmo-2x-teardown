@@ -37,13 +37,13 @@
 - [ ] **GEN-02**: Reader sees the "derive, do not generate" principle: a few human-directed master concepts derived into the full set
 - [ ] **GEN-03**: Reader sees a neutral imagery-sourcing decision table (retrieve approved / license / generate) with rights, indemnity and copyrightability notes
 - [ ] **GEN-04**: Reader sees a personalisation/DCO and product/catalog-feed block, including the graded NYU/Emory CTR finding and the −31.5% AI-disclosure penalty
-- [x] **GEN-05**: Reader sees inline SVG figures for the factory model, the content supply chain, and the brief-to-approved-asset flow, each with `<title>`/`<desc>`
+- [ ] **GEN-05**: Reader sees inline SVG figures for the factory model, the content supply chain, and the brief-to-approved-asset flow, each with `<title>`/`<desc>`
 
 ### Build-and-Review Spine
 
 - [ ] **SPINE-01**: Reader sees the operating architecture (intent, policy/knowledge, build, review, eval harness, system of record, activation, measurement) with one versioned policy source shared by generator and reviewer
 - [ ] **SPINE-02**: Reader sees the review agent described: cites rule IDs, writes findings to the asset manifest, runs a bounded fix loop, can escalate but never lower a tier, and uses a different model/prompt family from the generator
-- [x] **SPINE-03**: Reader sees the T0–T3 tier ladder with examples, a human-only list (hero work, claim-bearing/testimonial content, likeness), and an "illustrative, not legal advice" note
+- [ ] **SPINE-03**: Reader sees the T0–T3 tier ladder with examples, a human-only list (hero work, claim-bearing/testimonial content, likeness), and an "illustrative, not legal advice" note
 - [ ] **SPINE-04**: Reader sees a static reviewer-capacity worked example showing why review throughput is the binding constraint at 2x
 - [ ] **SPINE-05**: Reader sees the eval harness: reviewer decisions with reason codes as ground truth, seeded known-bad and rights-trap assets, escape-rate sampling of auto-approvals, per-tier precision/recall/drift, and no change shipping if it regresses the harness
 - [ ] **SPINE-06**: Reader sees the telemetry layer: asset-ID join from manifest to performance, and the dashboard metrics to instrument
@@ -148,10 +148,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GEN-02 | Phase 2 | Pending |
 | GEN-03 | Phase 2 | Pending |
 | GEN-04 | Phase 2 | Pending |
-| GEN-05 | Phase 2 | Complete |
+| GEN-05 | Phase 2 | Pending |
 | SPINE-01 | Phase 2 | Pending |
 | SPINE-02 | Phase 2 | Pending |
-| SPINE-03 | Phase 2 | Complete |
+| SPINE-03 | Phase 2 | Pending |
 | SPINE-04 | Phase 2 | Pending |
 | SPINE-05 | Phase 2 | Pending |
 | SPINE-06 | Phase 2 | Pending |
