@@ -33,7 +33,7 @@ Plans:
 - [ ] 01-02-PLAN.md — Publish skeleton (user-approved repo creation and push) and Gartner 2026 browser check
 - [ ] 01-03-PLAN.md — Front matter, COI note, grade key, answer-first paragraph, 15-section TOC and skeletons, full stylesheet
 - [ ] 01-04-PLAN.md — Section 01: headline metric trio, tier-weighted sensitivity, six-lever table, what 2x does not mean, falsifier
-- [ ] 01-05-PLAN.md — Section 02 prose: Gartner flat budget, full cost model, cost per approved-live asset, review constraint, AI-spend floor
+- [ ] 01-05-PLAN.md — Section 02 prose: Gartner flat budget, full cost model with approval yield, cost per approved-live asset, review constraint, AI-spend floor; local prose review checkpoint
 - [ ] 01-06-PLAN.md — Section 02 Figure 1 (inline SVG) with always-visible data table
 - [ ] 01-07-PLAN.md — Pre-flight, user review and approved push, live verification
 **UI hint**: yes

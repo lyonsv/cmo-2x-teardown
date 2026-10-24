@@ -401,11 +401,14 @@ $2.5-3.2M against $78M budget could look trivial. State explicitly that media an
 | A4 | Every calculator default (all rows of the assumptions table, golden case excluded) | Finding 4 | Intended: Modelled, reader-overridable; reviewer FTE 10%, 12 min/review, $4 vs $0.80 variant cost are the most contestable |
 | A5 | 49/40/27% GenAI-ROI reading | Finding 1 | Excluded from Phase 1 |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Gartner 2026 grade** - could not read the primary page (403). Resolve with the human-verify task; default Modelled if skipped.
+   RESOLVED: handled in plan 01-02 Task 3 (browser check records `gartner_2026_grade`) and plan 01-05 (applies the grade; test enforces the caveat when Modelled).
 2. **Repo creation and push** - outward-facing; planner must put a `checkpoint:human-verify` before `gh repo create` and `git push`.
+   RESOLVED: handled in plan 01-02 Task 1 (blocking checkpoint:decision before repo creation and push) and plan 01-07 Task 2 (approve-push checkpoint before the final push).
 3. **Prose numbers in s01/s02 that are Speculative or unsourced** - keep Phase 1 prose to numbers in `data.js` only.
+   RESOLVED: handled by the drift test (plan 01-01 page.test.js: every data-fig equals data.js) and the numeric-token gate (plan 01-03), extended in 01-04 to 01-06.
 
 ## Environment Availability
 
