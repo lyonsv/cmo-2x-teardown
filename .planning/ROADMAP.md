@@ -197,7 +197,7 @@ Plans:
   4. Reader can use the page with a keyboard and screen reader (labelled inputs, aria-live outputs, data-table equivalents, grades not by colour alone), at 320 CSS px with tables scrolling in their own regions, and can print it cleanly.
   5. Primary sources, vendor facts, EU AI Act Art. 50 and Getty v Stability status are re-verified and date-stamped, the legal wording is flagged for review, and the production deploy is live.
 
-**Plans:** 5/9 plans executed
+**Plans:** 6/9 plans executed
 
 Plans:
 **Wave 1**
@@ -222,7 +222,7 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
-- [ ] 04-06-PLAN.md — QA-04 crosscheck.mjs (CI, mutation-tested) and static WCAG checks
+- [x] 04-06-PLAN.md — QA-04 crosscheck.mjs (CI, mutation-tested) and static WCAG checks
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
@@ -245,4 +245,4 @@ Plans:
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete    | 2026-10-24 |
-| 4. Adoption, Risk, Evidence & Publish Slice | 5/9 | In Progress|  |
+| 4. Adoption, Risk, Evidence & Publish Slice | 6/9 | In Progress|  |
