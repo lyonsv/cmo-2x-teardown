@@ -12,7 +12,11 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Editorial page shell, title block, metadata, COI note, grade key and 15-section TOC, live on GitHub Pages behind a test-gated workflow — Phase 1
+- ✓ Confidence grades (Benchmark / Modelled / Speculative + vendor/company flag) on every number, linked to a register, all from one `data.js` — Phase 1
+- ✓ Headline metric (approved-live variants per head per quarter, with concepts and variants per concept), six-lever table, "what 2x does not mean" and falsifier — Phase 1
+- ✓ CFO answer: Gartner-anchored flat budget, fully loaded cost per approved-live asset ($64.71 → $41.18, Modelled), AI spend as a floor, Figure 1 — Phase 1
+- ✓ Tested pure `calc.js` model (identity, monotonicity, golden cases, edge inputs, cost per asset falling) — Phase 1
 
 ### Active
 
@@ -68,6 +72,8 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 | Candid risks section | Credibility with a sceptical CMO/CFO reader | — Pending |
 | Static GitHub Pages delivery | Matches the reference | — Pending |
 | Named comparison vs Gradial, AirOps, Profound on the page | The user wants the CMO to see how this approach compares to market offerings | — Pending |
+| Falsifier uses OR (outcomes flat OR compliance falls) | Code review: AND let flat outcomes escape falsification; a CFO would spot it | ✓ Phase 1 |
+| Flat budget stated with explicit reallocation (~$0.71M from agency/production lines) | Model shows production cost rising 27%; honesty constraint | ✓ Phase 1 |
 | Add AEO/GEO as a sixth lever | Answer-engine visibility is an emerging output/outcome channel (Profound) that the original five levers missed | — Pending |
 
 ## Evolution
@@ -88,4 +94,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-24 after initialization (competitor comparison + AEO/GEO lever added)*
+*Last updated: 2026-10-24 after Phase 1 (live at https://lyonsv.github.io/cmo-2x-teardown/)*
