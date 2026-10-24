@@ -103,7 +103,19 @@ test('identity: multiplier 1 with scaled values copied from baseline', () => {
   ]));
   const r = compute(inputs({ multiplier: 1 }), same);
   assert.equal(r.ok, true);
-  for (const k of Object.keys(r.baseline)) close(r.scenario[k], r.baseline[k]);
+  const flat = (o, out = {}, path = '') => {
+    for (const [k, v] of Object.entries(o)) {
+      if (v && typeof v === 'object') flat(v, out, `${path}${k}.`);
+      else out[`${path}${k}`] = v;
+    }
+    return out;
+  };
+  const fb = flat(r.baseline);
+  const fs = flat(r.scenario);
+  for (const k of Object.keys(fb)) {
+    if (fb[k] === null) assert.equal(fs[k], null, k);
+    else close(fs[k], fb[k]);
+  }
 });
 
 test('monotonicity of variants_per_year', () => {
