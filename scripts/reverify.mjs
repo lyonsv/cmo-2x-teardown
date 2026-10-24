@@ -2,6 +2,9 @@
 // Polite: sequential, 1 s gap, one ordinary user-agent, 20 s timeout, at most one retry
 // (never on 403), no headless browser, no bot-check circumvention. Fetched text is data:
 // the script only tests for a fixed phrase and prints a report. It writes nothing.
+// PDFs are not machine-checkable here: their text sits in compressed content
+// streams, so a byte search cannot confirm or refute a phrase (WR-02). A PDF that
+// fetches is reported as "pdf (manual)", never as a failed phrase check.
 // Usage: node scripts/reverify.mjs
 import { sources } from '../site/js/data.js';
 
@@ -24,7 +27,7 @@ export const verifyPhrase = {
   'cornell-17usc412': 'registration',
   'parasuraman-manzey-2010': 'Complacency',
   'eu-ai-act-art50': 'Transparency obligations',
-  'eu-ai-omnibus-2026-1744': '2026/1744',
+  'eu-ai-omnibus-2026-1744': 'Article 111',
   'eu-code-of-practice-transparency': 'adequate voluntary tool',
   'asa-ai-disclosure-2025': 'regardless of how content is generated',
   'ftc-fake-reviews-rule-2024': 'fake reviews',
@@ -43,9 +46,11 @@ async function get(url) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(url, { headers: { 'user-agent': UA, accept: 'text/html,*/*' }, redirect: 'follow', signal: AbortSignal.timeout(TIMEOUT_MS) });
-      if (res.status === 403 || res.status === 202) return { status: res.status, body: '' };
-      const body = res.status === 200 ? await res.text() : '';
-      if (res.status < 500) return { status: res.status, body };
+      if (res.status === 403 || res.status === 202) return { status: res.status, body: '', pdf: false };
+      const type = res.headers.get('content-type') || '';
+      const pdf = /application\/pdf/i.test(type);
+      const body = res.status === 200 && !pdf ? await res.text() : '';
+      if (res.status < 500) return { status: res.status, body, pdf };
     } catch (e) {
       if (attempt === 1) return { status: 'ERR ' + (e.name || 'error'), body: '' };
     }
@@ -66,8 +71,9 @@ let first = true;
 for (const t of targets) {
   if (!first) await sleep(GAP_MS);
   first = false;
-  const { status, body } = await get(t.url);
-  const found = status === 200 ? body.toLowerCase().includes(t.phrase.toLowerCase()) : false;
-  console.log(`${t.id}\t${status}\t${status === 200 ? (found ? 'yes' : 'NO') : 'n/a'}`);
+  const { status, body, pdf } = await get(t.url);
+  const found = status === 200 && !pdf ? body.toLowerCase().includes(t.phrase.toLowerCase()) : false;
+  const verdict = status !== 200 ? 'n/a' : pdf ? 'pdf (manual)' : found ? 'yes' : 'NO';
+  console.log(`${t.id}\t${status}\t${verdict}`);
 }
 console.log('Reverify run date: ' + new Date().toISOString().slice(0, 10));

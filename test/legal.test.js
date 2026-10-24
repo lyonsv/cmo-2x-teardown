@@ -52,3 +52,14 @@ test('rows that could not be re-fetched say so and keep their last verified date
     assert.ok(html.includes(sources[k].read_via), `${k} register matches data.js`);
   }
 });
+
+test('PDF sources are stamped not machine-checkable, never "Re-check failed" (WR-02)', async () => {
+  const { sources } = await import('../site/js/data.js');
+  for (const k of ['kohavi-2013', 'eu-ai-omnibus-2026-1744']) {
+    assert.match(sources[k].url, /pdf/i, k);
+    assert.match(sources[k].read_via, /Not machine-checkable \(PDF\): the \d{4}-\d{2}-\d{2} re-check cannot read PDF text; last verified \d{4}-\d{2}-\d{2}, when the PDF was read/, k);
+    assert.doesNotMatch(sources[k].read_via, /Re-check failed|Phrase not found/, k);
+    assert.ok(html.includes(sources[k].read_via), `${k} register matches data.js`);
+  }
+  assert.doesNotMatch(html, /Phrase not found/);
+});
