@@ -49,9 +49,12 @@ test('validate: cross-field caps and clean defaults', () => {
 });
 
 test('validate: overflow becomes a key-null message', () => {
-  const errs = validate({ ...defaults, campaigns: 1e9, concepts: 1e9, locales: 1e9 }, ctx);
-  for (const e of errs) assert.ok(e.key === null || typeof e.key === 'string');
-  if (errs.length) assert.ok(errs.every((e) => e.message.length > 0));
+  // Reader inputs are capped at 1e9, so at the shipped assumptions even every
+  // volume at its limit still computes. The overflow branch is defensive; it is
+  // driven here with a context whose capacity is so small utilisation is Infinity.
+  assert.deepEqual(validate({ ...defaults, campaigns: 1e9, concepts: 1e9, locales: 1e9 }, ctx), []);
+  const big = { ...ctx, assumptions: { ...ctx.assumptions, reviewer_hours_per_fte_year: Number.MIN_VALUE } };
+  assert.deepEqual(validate(defaults, big), [{ key: null, message: 'These inputs are too large to calculate.' }]);
 });
 
 test('parseHash: non-calculator hashes give defaults and restored false', () => {
