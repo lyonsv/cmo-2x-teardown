@@ -124,7 +124,7 @@ test('break-even and capacity floor are rows of their own', () => {
 
 test('table note and fixed-assumptions sentence follow the table', () => {
   const tableEnd = s11.indexOf('</table>');
-  const note = s11.indexOf('<p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>');
+  const note = s11.indexOf('<p class="table-note">Each output carries the weakest grade of the inputs it uses. Cost per campaign-market is the same cost as cost per approved asset, expressed per campaign-market, so its change always matches; it is not separate evidence.</p>');
   const fixed = s11.indexOf('<p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today\'s variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>');
   assert.ok(tableEnd > 0 && note > tableEnd && fixed > note, `order ${tableEnd} ${note} ${fixed}`);
   assert.match(html, /<div class="table-scroll" id="assumptions-register" role="region"/);
@@ -402,7 +402,11 @@ test('s11 order: results, fixed note, scenario, Figure 8, maths, believe, sensit
   ];
   assert.deepEqual([...order].sort((a, b) => a - b), order);
   assert.match(s11, /<p class="fixed-note">[^<]*<a href="#assumptions-register">assumptions register<\/a>/);
-  assert.ok(s11.indexOf('<p class="fixed-note">') - s11.indexOf('Each output carries') < 120, 'fixed note sits under the results table');
+  assert.ok(s11.indexOf('<p class="fixed-note">') - s11.indexOf('Each output carries') < 280, 'fixed note sits under the results table');
+  // IN-02: cost per campaign-market is disclosed as a unit translation of cost per approved asset, in the results note and Figure 1.
+  for (const where of [s11.slice(s11.indexOf('<p class="table-note">Each output carries')), html.slice(html.indexOf('<b>Figure 1</b>'))]) {
+    assert.match(where.slice(0, 600), /expressed per campaign-market, so its change always matches; it is not separate evidence\./);
+  }
   assert.match(s11, /<div class="fig-grid">[\s\S]*<svg class="fig fig-live"[\s\S]*How to read this[\s\S]*<\/figure>/);
 });
 
