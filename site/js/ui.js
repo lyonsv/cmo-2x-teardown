@@ -266,13 +266,13 @@ form.addEventListener('change', (e) => {
 copyBtn.addEventListener('click', () => {
   const done = (msg) => { shareStatus.textContent = msg; };
   if (copyBtn.disabled || shareLink.value === '') return;
-  const fail = () => {
-    shareLink.select();
-    done('Could not copy. Select the link and copy it manually.');
-  };
+  const fail = () => { shareLink.select(); done('Could not copy. Select the link and copy it manually.'); };
   if (!navigator.clipboard) return fail();
   navigator.clipboard.writeText(shareLink.value).then(() => done('Link copied.'), fail);
 });
+
+// Summary links focus their input without changing location.hash or history (IN-11).
+errBox.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#in-"]'); if (a) { e.preventDefault(); inputs[a.getAttribute('href').slice(4)]?.focus(); } });
 
 $('reset-calc').addEventListener('click', () => {
   fillInputs(defaults);

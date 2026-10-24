@@ -163,6 +163,12 @@ async function cases(base) {
     check('nan', !/NaN|Infinity/.test(body), 'NaN or Infinity in s11');
     const hash = await evalJs('location.hash');
     check('hash untouched', hash === '', `hash "${hash}"`);
+    // IN-11: a summary link focuses its input and leaves the hash and history alone.
+    const before = await evalJs('history.length');
+    await evalJs("document.querySelector('.calc-errors a[href=\"#in-campaigns\"]').click()");
+    await sleep(200);
+    const after = await evalJs("[location.hash, history.length, document.activeElement.id]");
+    check('summary link', after[0] === '' && after[1] === before && after[2] === 'in-campaigns', `after click ${JSON.stringify(after)}`);
     // WR-08: no stale share link while inputs are invalid.
     const share = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
     check('share blocked', share[0] === '' && share[1] === true && share[2] === 'Fix the highlighted inputs before sharing.', `share ${JSON.stringify(share)}`);
