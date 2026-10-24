@@ -365,13 +365,20 @@ test('vendor names stay inside s12 and s15', () => {
 });
 
 // Getty and Stability are named by design (conflict-of-interest note, s05), so they are not listed.
-const VENDOR_RE = /\b(gradial|airops|profound|adobe|firefly|midjourney|dall-?e|openai|chatgpt|anthropic|claude|gemini|google|microsoft|copilot|canva|shutterstock|runway|synthesia|jasper|salesforce|hubspot|bynder|aprimo|contentful|amazon|aws|azure|honeycomb|athena|optimizely|klarna|unilever)\b/i;
+// Code review IN-04: extended with ad-platform, model, DAM and creative-tool names.
+// Ordinary English words that are also product names (writer, typeface, meta,
+// flux) are matched only in their branded forms to avoid false positives.
+const VENDOR_RE = /\b(gradial|airops|profound|adobe|firefly|midjourney|dall-?e|openai|chatgpt|anthropic|claude|gemini|google|microsoft|copilot|canva|shutterstock|runway|synthesia|jasper|salesforce|hubspot|bynder|aprimo|contentful|amazon|aws|azure|honeycomb|athena|optimizely|klarna|unilever|tiktok|linkedin|facebook|instagram|youtube|meta ads|meta platforms|sora|veo|imagen|flux\.1|black forest labs|ideogram|leonardo\.ai|stable diffusion|figma|workfront|sprinklr|celtra|persado|typeface\.ai|writer\.com|smartling|phrase tms|deepl|seismic|sitecore|bria)\b/i;
 
-test('no vendor names in s03 to s08', () => {
-  for (const id of ['s03', 's04', 's05', 's06', 's07', 's08']) {
-    const m = strip(sectionHtml(id)).match(VENDOR_RE);
-    assert.ok(!m, `${id} names a vendor: ${m && m[0]}`);
-  }
+test('no vendor names outside s12 and s15, apart from the COI notes and the Getty line (IN-04)', () => {
+  let rest = html.replace(/<head>[\s\S]*?<\/head>/, '');
+  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  rest = rest.replace(/<div class="callout coi">[\s\S]*?<\/div>/g, ' ');
+  const getty = (rest.match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).filter((p) => strip(p).startsWith('Getty v Stability'));
+  assert.equal(getty.length, 1, 'exactly one Getty line is exempt');
+  rest = rest.replace(getty[0], ' ');
+  const m = strip(rest).match(VENDOR_RE);
+  assert.ok(!m, `page names a vendor outside s12/s15: ${m && m[0]}`);
 });
 
 test('Intercom exactly once outside s12 and s15, in s06', () => {
