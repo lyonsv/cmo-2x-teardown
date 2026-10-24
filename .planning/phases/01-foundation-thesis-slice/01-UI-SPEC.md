@@ -1,7 +1,8 @@
 ---
 phase: 1
 slug: foundation-thesis-slice
-status: draft
+status: approved
+reviewed_at: 2026-10-24
 shadcn_initialized: false
 preset: none
 created: 2026-10-24
@@ -55,7 +56,7 @@ Exactly 4 sizes and 2 weights (400 and 600). Reference weights 650 on `strong` a
 
 | Role | Size | Weight | Line Height | Family / notes |
 |------|------|--------|-------------|----------------|
-| Body | 17px (16px at <=720px) | 400 | 1.6 | Serif. Paragraphs, lists, table cells (see exception), standfirst, h3 (h3 is Body size at 600), pull quote (italic 400) |
+| Body | 17px (16px at <=720px) | 400 | 1.6 | Serif. Paragraphs, lists, table cells, standfirst, h3 (h3 is Body size at 600), pull quote (italic 400) |
 | Label | 12px | 600 (400 for meta values, figcaption, `.n`) | 1.6 | Mono. Kicker, `.meta`, h4, chips, flag tags, `th`, `caption`, figcaption, TOC, `.sec-num`, `code`, `.num` cells. Uppercase with letter-spacing .12em for kicker, h4, chips, th, caption; sentence case for meta, figcaption, TOC |
 | Heading | 31px (25px at <=720px) | 600 | 1.15 | Serif. `h2` section titles only, letter-spacing -.01em |
 | Display | `clamp(34px, 5.2vw, 58px)` | 600 | 1.05 | Serif. `h1` page title only, letter-spacing -.015em; `em` italic in muted colour |
@@ -169,7 +170,7 @@ The Phase 1 page loads no script at all (it must work fully with JS off). `data.
 
 | Interaction | Contract |
 |-------------|----------|
-| Anchor navigation | TOC links and chip links jump with smooth scroll when motion is allowed; `:target` row highlight on register rows; focus moves with the hash natively (target sections `tabindex="-1"` not required for sections; required on register rows? No, `:target` highlight suffices) |
+| Anchor navigation | TOC links and chip links jump with smooth scroll when motion is allowed; `:target` row highlight on register rows; focus moves with the hash natively (no `tabindex="-1"` is needed on sections or register rows; the `:target` highlight is sufficient) |
 | Hover | Links underline thickness .06em to .12em; TOC rows bg `--paper-2`; chips underline. No transitions longer than 120ms; none under `prefers-reduced-motion` |
 | Focus | Visible 2px `--verified` outline offset 2px on every link, chip link, summary, and scroll region |
 | Scroll regions | Every table wider than its container sits in `.table-scroll` with `tabindex="0"`, `role="region"`, accessible name |
