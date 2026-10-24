@@ -225,3 +225,34 @@ export function compute(inputs, assumptions) {
   }
   return out;
 }
+
+// Worked variant matrix: concepts expanded by a list of factors. Each factor
+// multiplies only the stated share (applies) of the running set by its count, so
+// multiplier = 1 + applies x (count - 1) and factors are independent. Never throws,
+// never returns NaN or Infinity; bad input comes back as { ok: false, errors }.
+export function variantMatrix(concepts, factors) {
+  const errors = [];
+  const isInt = (x) => typeof x === 'number' && Number.isInteger(x) && x >= 1;
+  if (!isInt(concepts)) errors.push({ field: 'concepts', message: 'concepts must be a finite integer of at least 1' });
+  if (!Array.isArray(factors) || factors.length === 0) {
+    errors.push({ field: 'factors', message: 'factors must be a non-empty array' });
+  } else {
+    factors.forEach((f, i) => {
+      const src = f && typeof f === 'object' ? f : {};
+      if (typeof src.id !== 'string' || src.id === '') errors.push({ field: `factors[${i}].id`, message: 'id must be a non-empty string' });
+      if (!isInt(src.count)) errors.push({ field: `factors[${i}].count`, message: 'count must be a finite integer of at least 1' });
+      if (typeof src.applies !== 'number' || !Number.isFinite(src.applies) || src.applies < 0 || src.applies > 1) {
+        errors.push({ field: `factors[${i}].applies`, message: 'applies must be a finite number between 0 and 1' });
+      }
+    });
+  }
+  if (errors.length) return { ok: false, errors };
+  let running = concepts;
+  const rows = factors.map((f) => {
+    const multiplier = 1 + f.applies * (f.count - 1);
+    running *= multiplier;
+    return { id: f.id, count: f.count, applies: f.applies, multiplier, variants: running };
+  });
+  if (!Number.isFinite(running)) return { ok: false, errors: [{ field: 'factors', message: 'the product is too large to represent' }] };
+  return { ok: true, concepts, rows, total: running, per_concept: running / concepts };
+}

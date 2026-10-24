@@ -1,5 +1,6 @@
 // Single source of numbers, grades, sources and assumptions (CRED-06).
 // The page's data-fig spans, the register rows and compute() all read from here.
+import { variantMatrix } from './calc.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
@@ -44,6 +45,7 @@ export function formatValue(value, format) {
     const text = body(Math.abs(value));
     return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
   }
+  if (format === 'applies') return value === 1 ? 'all' : formatValue(value, 'pct0');
   if (format === 'pts1') {
     const text = `${n(Math.abs(value) * 100, 1)} points`;
     return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
@@ -143,6 +145,39 @@ lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
 lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative.');
 
+export const variantMatrixDefaults = {
+  concepts: 4,
+  factors: [
+    { id: 'sizes', label: 'Sizes', count: 10, applies: 1 },
+    { id: 'channels', label: 'Channels', count: 5, applies: 0.75 },
+    { id: 'locales', label: 'Locales', count: 6, applies: 0.4 },
+    { id: 'audiences', label: 'Audiences', count: 5, applies: 0.75 },
+    { id: 'tests', label: 'Tests', count: 4, applies: 0.5 },
+    { id: 'feeds', label: 'Feed items', count: 4, applies: 0.5 },
+  ],
+};
+
+assumptions['asm-matrix-concepts'] = a('asm-matrix-concepts', 'Master concepts in the worked campaign', 'matrix', null, 4, 'concepts', '4',
+  'Four human-directed master concepts for one flagship campaign; illustrative, no published benchmark.');
+{
+  const wording = {
+    sizes: ['10 sizes, all items', 'Ten sizes, each applied to every item, so the count and the fraction both multiply the whole set; illustrative, no published benchmark.'],
+    channels: ['5 channels, 75% of items', 'Five channels, with 75% of the items going to more than one channel; illustrative, no published benchmark.'],
+    locales: ['6 locales, 40% of items', 'Six locales, with 40% of the items localised into all of them; illustrative, no published benchmark.'],
+    audiences: ['5 audiences, 75% of items', 'Five audience segments, with 75% of the items tailored to each; illustrative, no published benchmark.'],
+    tests: ['4 tests, 50% of items', 'Four test treatments, with 50% of the items carrying them; illustrative, no published benchmark.'],
+    feeds: ['4 feed items, 50% of items', 'Four feed-rendered forms, with 50% of the items rendered into a feed; illustrative, no published benchmark.'],
+  };
+  for (const f of variantMatrixDefaults.factors) {
+    const id = `asm-matrix-${f.id}`;
+    assumptions[id] = a(id, `Worked campaign: ${f.label}`, 'matrix', null, { count: f.count, applies: f.applies }, 'factor',
+      wording[f.id][0], wording[f.id][1]);
+  }
+}
+assumptions['asm-matrix-independence'] = a('asm-matrix-independence', 'Independence of matrix factors', 'matrix', null, null, null,
+  'Each factor applies to a stated share of the running set',
+  'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent, so no variant is counted twice. Real campaigns have exclusions (a size that a channel does not take); the applies fractions stand in for them.');
+
 export const claims = {
   'gartner-share-2025': {
     id: 'gartner-share-2025', value: 7.7, unit: '% of revenue', display: '7.7%',
@@ -224,4 +259,24 @@ export function defaultAssumptions() {
   const out = {};
   for (const e of Object.values(assumptions)) if (e.kind === 'model') out[e.key] = e.value;
   return out;
+}
+
+{
+  const r = variantMatrix(variantMatrixDefaults.concepts, variantMatrixDefaults.factors);
+  const add = (id, value, unit, format, ref, row, field) => {
+    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, format, matrix: { row, field } };
+  };
+  add('matrix-concepts', r.concepts, 'master concepts', 'int', 'asm-matrix-concepts', null, 'concepts');
+  for (const row of r.rows) {
+    const ref = `asm-matrix-${row.id}`;
+    add(`matrix-${row.id}-count`, row.count, `${row.id} per item`, 'int', ref, row.id, 'count');
+    add(`matrix-${row.id}-applies`, row.applies, `share of items that take ${row.id}`, 'applies', ref, row.id, 'applies');
+    add(`matrix-${row.id}-variants`, row.variants, 'variants after this factor', 'int', ref, row.id, 'variants');
+  }
+  add('matrix-total', r.total, 'approved-live variants in the worked campaign', 'int', 'asm-matrix-independence', null, 'total');
+  add('matrix-per-concept', r.per_concept, 'approved-live variants per master concept', 'int', 'asm-matrix-independence', null, 'per_concept');
+  claims['avg-campaign-variants'] = {
+    id: 'avg-campaign-variants', value: 1000, unit: 'approved-live variants per campaign in the model', display: '1,000',
+    grade: 'Modelled', flag: null, ref: 'asm-campaigns',
+  };
 }
