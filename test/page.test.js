@@ -962,3 +962,11 @@ test('every flagged claim shows its flag wherever it appears (WR-06)', () => {
     assert.ok(/(<\/span>|<\/a>)\s*$/.test(before), `flag ${m[1]} does not follow a figure or chip`);
   }
 });
+
+// ---- Code review IN-07: the s08 claim about the reference links its source ----
+
+test('s08 links the reference it describes (IN-07)', () => {
+  const p = (sectionHtml('s08').match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).find((x) => strip(x).includes('newer model tested worse'));
+  assert.ok(p);
+  assert.ok(p.includes('<a href="#src-intercom-2x-teardown">the one public reference</a>'));
+});
