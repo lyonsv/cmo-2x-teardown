@@ -747,8 +747,8 @@ export const claims = {
     id, value, unit, display: formatValue(value, 'int'), grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
   }])),
   ...Object.fromEntries([
-    ['cm-base', 50, 'baseline.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets in market per quarter: one campaign live in one market counts once', 0, 'int'],
-    ['cm-scaled', 100, 'scenario.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets in market per quarter: one campaign live in one market counts once', 0, 'int'],
+    ['cm-base', 50, 'baseline.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
+    ['cm-scaled', 100, 'scenario.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
     ['btl-base', 11.8, 'baseline.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
     ['btl-scaled', 7.5, 'scenario.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
     ['cpcm-base', 12943, 'baseline.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],

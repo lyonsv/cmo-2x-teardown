@@ -140,7 +140,7 @@ export function weakestGrade(ids, grades) {
 }
 
 export const RESULT_ROWS = [
-  { id: 'campaign_markets', label: 'Campaign-markets in market per quarter', format: 'int', changeFormat: 'pctchg0' },
+  { id: 'campaign_markets', label: 'Campaign-markets launched per quarter', format: 'int', changeFormat: 'pctchg0' },
   { id: 'brief_to_live', label: 'Brief-to-live time (days)', format: 'days1', changeFormat: 'pctchg0' },
   { id: 'cost_per_asset', label: 'Fully loaded cost per approved asset', format: 'usd2', changeFormat: 'pctchg0' },
   { id: 'cost_per_campaign_market', label: 'Production cost per campaign-market', format: 'usd0', changeFormat: 'pctchg0' },
@@ -365,7 +365,7 @@ function mathsPresentation(values, ctx, r, rows) {
   const c = s.cost;
   const S = (id, name, formula, list, result, deps) => stepOf(id, name, formula, list, result, deps, ctx);
   return [
-    S('campaign_markets', 'Campaign-markets per quarter at 2x', 'campaigns a year times markets per campaign times the scale factor, divided by four quarters; the route only decides whether the extra comes from campaigns, markets or both',
+    S('campaign_markets', 'Campaign-markets launched per quarter at 2x', 'campaigns a year times markets per campaign times the scale factor, divided by four quarters; the route only decides whether the extra comes from campaigns, markets or both',
       [num(inputs.campaigns_per_year), ' × ', num(inputs.markets_per_campaign), ' × ', num(inputs.multiplier), ' ÷ four quarters = '], rowRes('campaign_markets'), 'campaign_markets'),
     S('generated', 'Derived variants generated a year (internal throughput, not the claim)', 'campaign-markets a year times concepts per campaign times formats per market, divided by approval yield, because rejected variants are regenerated',
       [int(s.campaign_markets_per_year), ' × ', num(inputs.concepts_per_campaign), ' × ', num(inputs.formats_per_market), ' ÷ ', pctT(A.approval_yield), ' = '], res(s.generated_variants_per_year, 'int'), 'cost_per_asset'),
@@ -459,7 +459,7 @@ export function present(values, ctx) {
   // called live (CR-01).
   const summary = over
     ? `With ${route}, 2x would mean ${cm} campaign-markets launched per quarter, but reviewers are over capacity, at ${z}, so that volume cannot go live and brief-to-live time is unbounded.`
-    : `With ${route}, at 2x you have ${cm} campaign-markets live per quarter, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
+    : `With ${route}, at 2x you have ${cm} campaign-markets launched per quarter, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
     scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),

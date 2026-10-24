@@ -55,7 +55,7 @@ function regionOf(label) {
 
 test('s11 reads in order: lead, status, no-JS note, summary output, results table', () => {
   const idx = [
-    s11.indexOf('Replace the defaults with your own numbers. The page recomputes campaign-markets per quarter, brief-to-live time, cost per approved asset and per campaign-market, reviewer load and the auto-approval share you would need.'),
+    s11.indexOf('Replace the defaults with your own numbers. The page recomputes campaign-markets launched per quarter, brief-to-live time, cost per approved asset and per campaign-market, reviewer load and the auto-approval share you would need.'),
     s11.indexOf('<p role="status" class="calc-status">Showing: page defaults</p>'),
     s11.indexOf('<p class="calc-nojs">The interactive calculator needs JavaScript. Below is the default scenario, calculated in advance from the same model.</p>'),
     s11.indexOf('<output id="calc-summary" aria-live="polite" aria-atomic="true">The table below shows the page defaults.</output>'),

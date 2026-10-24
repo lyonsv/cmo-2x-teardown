@@ -210,7 +210,7 @@ test('present(defaults): ten rows in order with golden texts', () => {
   for (const r of p.rows) {
     if (r.base.value !== undefined) assert.equal(r.base.text, formatValue(r.base.value, rr[r.id].format));
   }
-  assert.equal(p.summary, 'With more campaigns and more markets, at 2x you have 100 campaign-markets live per quarter, brief to live in 7.5 days, at $45.26 per approved asset and $9,052 per campaign-market, with reviewers at 62% of capacity.');
+  assert.equal(p.summary, 'With more campaigns and more markets, at 2x you have 100 campaign-markets launched per quarter, brief to live in 7.5 days, at $45.26 per approved asset and $9,052 per campaign-market, with reviewers at 62% of capacity.');
   assert.ok(!/per head|cycle/i.test(p.summary));
 });
 

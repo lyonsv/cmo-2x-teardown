@@ -544,8 +544,8 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
 
 // ---- Plan 01-04: section 01 ----
 
-const FALSIFIER = 'If campaign-markets in market per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
-const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets in market per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.';
+const FALSIFIER = 'If campaign-markets launched per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
+const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets launched per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.';
 
 test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
   const s = sectionHtml('s01');
@@ -564,7 +564,7 @@ test('s01 metric trio carries the campaign-market claim and its companions', () 
   for (const id of ['cm-base', 'cm-scaled', 'btl-base', 'btl-scaled', 'cpa-base', 'cpa-scaled']) {
     assert.ok(m[0].includes(`data-fig="${id}"`), id);
   }
-  for (const l of ['Campaign-markets in market per quarter', 'Brief-to-live time', 'Cost per approved asset']) {
+  for (const l of ['Campaign-markets launched per quarter', 'Brief-to-live time', 'Cost per approved asset']) {
     assert.ok(m[0].includes(`<span class="lbl">${l}</span>`), l);
   }
   // The removed per-head, weighted and variants-per-concept claims are gone everywhere.
@@ -581,7 +581,7 @@ test('s01 six-lever table', () => {
   const body = s.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
   const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
   assert.equal(rows.length, 6);
-  assert.ok(strip(rows[0][1]).includes('Campaign-markets in market per quarter; brief-to-live time; cost per approved asset'));
+  assert.ok(strip(rows[0][1]).includes('Campaign-markets launched per quarter; brief-to-live time; cost per approved asset'));
   rows.forEach((r, i) => {
     assert.match(r[1], new RegExp(`<a class="chip c-[ms]" href="#asm-lever-0${i + 1}-evidence">(Modelled|Speculative)</a>\\s*</td>\\s*$`));
   });
@@ -1503,8 +1503,22 @@ test('03.1 reframe guards: "approved-live" is gone, the metric reads "approved a
   assert.ok(!/approved-live/i.test(html), 'approved-live must not survive in markup or attributes');
 });
 
+test('03.1 reframe guards: the headline is a launch rate, never "in market" or "live per quarter" (WR-01)', () => {
+  const stale = /in market per quarter|live per quarter|campaigns live across markets|campaign live in one market/i;
+  assert.ok(!stale.test(guardText(html)), 'page text must say launched per quarter');
+  assert.ok(!stale.test(html), 'markup and attributes must say launched per quarter');
+  for (const id of ['cm-base', 'cm-scaled']) {
+    assert.ok(!stale.test(claims[id].unit), `${id} unit`);
+    assert.match(claims[id].unit, /launched per quarter/);
+  }
+  for (const f of ['model.js', 'svg.js', 'data.js']) {
+    assert.ok(!stale.test(readFileSync(new URL(`../site/js/${f}`, import.meta.url), 'utf8')), `${f} must say launched per quarter`);
+  }
+  assert.match(guardText(sectionHtml('s01')), /campaign-markets launched per quarter/);
+});
+
 test('03.1 reframe guards: definition appears once, in s01', () => {
-  const phrase = 'one campaign live in one market';
+  const phrase = 'one campaign launched in one market';
   const all = guardText(html).toLowerCase().split(phrase).length - 1;
   assert.equal(all, 1);
   assert.ok(guardText(sectionHtml('s01')).toLowerCase().includes(phrase));
