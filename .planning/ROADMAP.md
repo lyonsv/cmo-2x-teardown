@@ -26,7 +26,16 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
   3. Reader sees in section 01 the output metric defined (approved-live variants per marketing head per quarter, beside concept count and variants per concept), the six-lever summary table, a "what 2x does not mean" statement and a stated falsifier.
   4. Reader sees in section 02 the Gartner-anchored flat-budget framing, fully loaded cost per approved-live asset for baseline vs 2x, AI spend framed as a floor, and a baseline-vs-2x SVG figure with a data-table equivalent.
   5. Every quantitative claim shows a text grade chip linked to a register entry, and the figures come from `data.js`. A push deploys only if `node --test` passes.
-**Plans**: TBD
+**Plans:** 7 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Walking Skeleton locally: data.js -> calc.js -> page with chips and register, drift tests, test-gated Pages workflow
+- [ ] 01-02-PLAN.md — Publish skeleton (user-approved repo creation and push) and Gartner 2026 browser check
+- [ ] 01-03-PLAN.md — Front matter, COI note, grade key, answer-first paragraph, 15-section TOC and skeletons, full stylesheet
+- [ ] 01-04-PLAN.md — Section 01: headline metric trio, tier-weighted sensitivity, six-lever table, what 2x does not mean, falsifier
+- [ ] 01-05-PLAN.md — Section 02 prose: Gartner flat budget, full cost model, cost per approved-live asset, review constraint, AI-spend floor
+- [ ] 01-06-PLAN.md — Section 02 Figure 1 (inline SVG) with always-visible data table
+- [ ] 01-07-PLAN.md — Pre-flight, user review and approved push, live verification
 **UI hint**: yes
 **Research flag**: Standard patterns. Quick-check only the Gartner 7.7/7.8% primary figures, GitHub Actions major versions and `node --test` behaviour. Confirm the primary-metric weighting decision (unweighted headline, tier weighting as sensitivity).
 
@@ -79,7 +88,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Thesis Slice | 0/TBD | Not started | - |
+| 1. Foundation & Thesis Slice | 0/7 | Planned | - |
 | 2. Factory & Spine Slice | 0/TBD | Not started | - |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
