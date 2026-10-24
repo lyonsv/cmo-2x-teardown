@@ -908,3 +908,39 @@ test('source register carries no unresolved pre-publication to-do (WR-05)', () =
   assert.ok(/Not read/.test(sources['getty-v-stability-uk'].read_via));
   assert.ok(sources['ailawsuittracker-getty-uk'].read_via.includes('2025-12-16'));
 });
+
+// ---- Code review WR-06: every chip and every flag is checked against data.js ----
+
+test('every linked chip states the grade of the row it links to (WR-06)', () => {
+  const chips = [...html.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
+  assert.equal(chips.length, (html.match(/<a class="chip /g) || []).length, 'a linked chip the check cannot parse');
+  for (const [, cls, href, word] of chips) {
+    const target = href.startsWith('src-') ? sources[href.slice(4)] : assumptions[href];
+    assert.ok(target, `chip links to unknown row #${href}`);
+    assert.equal(word, target.grade, `chip to #${href} says ${word}, target is ${target.grade}`);
+    assert.equal(cls, CHIP_CLASS[target.grade], `chip to #${href} class`);
+  }
+});
+
+test('every flagged claim shows its flag wherever it appears (WR-06)', () => {
+  const { units } = collectUnits();
+  const flagged = Object.values(claims).filter((c) => c.flag);
+  assert.ok(flagged.length >= 1);
+  for (const c of flagged) {
+    const where = units.filter((u) => u.kind !== 'register' && u.html.includes(`data-fig="${c.id}"`));
+    assert.ok(where.length >= 1, `${c.id} is not on the page`);
+    for (const u of where) {
+      // every appearance: the figure, optionally its chip, then the flag
+      const all = u.html.split(`data-fig="${c.id}"`).length - 1;
+      const re = new RegExp(`<span data-fig="${c.id}">[^<]*</span>\\s*(?:<a class="chip[^>]*>[^<]*</a>\\s*)?<span class="flag">${c.flag}</span>`, 'g');
+      assert.equal((u.html.match(re) || []).length, all, `${c.id}: flag ${c.flag} missing after a figure in: ${strip(u.html).slice(0, 60)}`);
+    }
+  }
+  // A flag must sit next to a figure or chip it qualifies, never on its own.
+  const legendless = html.replace(/<div class="legend">[\s\S]*?<\/dl>/, '');
+  for (const m of legendless.matchAll(/<span class="flag">([^<]+)<\/span>/g)) {
+    assert.ok(['vendor-claimed', 'company-reported'].includes(m[1]), `unknown flag ${m[1]}`);
+    const before = legendless.slice(Math.max(0, m.index - 160), m.index);
+    assert.ok(/(<\/span>|<\/a>)\s*$/.test(before), `flag ${m[1]} does not follow a figure or chip`);
+  }
+});
