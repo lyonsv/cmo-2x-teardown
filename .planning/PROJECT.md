@@ -20,6 +20,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 - ✓ Factory and content supply chain (Figures 2–3), layered operating architecture with one shared versioned policy source — Phase 2
 - ✓ 10,000+ asset campaign: worked variant matrix (12,000 derived → 11,400 approved-live), derive-don't-generate, neutral imagery-sourcing table with COI note, personalisation/feeds with NYU/Emory (Benchmark) — Phase 2
 - ✓ Build-and-review spine: review agent, T0–T3 tiers with human-only list, reviewer-capacity worked example, fatigue controls, eval harness and telemetry — Phase 2 (author UAT on indemnity wording and Getty facts pending)
+- ✓ Five other levers incl. AEO/GEO, outcome case with proof design, interactive calculator (scenarios, sensitivity, show the maths, what you must believe, share link), and the sourced Gradial/AirOps/Profound comparison — Phase 3 (author UAT on tone, vendor fairness, legal wording pending)
 
 ### Active
 
@@ -97,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-24 after Phase 2 (live at https://lyonsv.github.io/cmo-2x-teardown/)*
+*Last updated: 2026-10-24 after Phase 3 (live at https://lyonsv.github.io/cmo-2x-teardown/)*

@@ -207,5 +207,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
-| 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete   | 2026-10-24 |
+| 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete    | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
