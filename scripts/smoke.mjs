@@ -193,6 +193,29 @@ async function cases(base) {
     return `${same} then ${changed} mutations`;
   }));
 
+  // WR-10: clearing an untouched field to retype it keeps the last results, labelled as such.
+  await run('n retyping an untouched field keeps the last results', () => withPage(async ({ send, evalJs }) => {
+    await send('Page.enable');
+    await send('Page.navigate', { url: base });
+    for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+    await evalJs("(() => { const i = document.getElementById('in-locales'); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
+    await sleep(500);
+    const cell = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]')?.textContent");
+    check('kept', cell === expected(d, 'cost_per_asset', 'scaled'), `cost cell "${cell}"`);
+    const st = await evalJs("document.querySelector('.calc-status').textContent");
+    check('status', st === 'Showing: results for your last complete inputs', `status "${st}"`);
+    check('chart', (await evalJs("document.querySelector('svg.fig-live').hasAttribute('hidden')")) === false, 'chart hidden');
+    const share = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
+    check('share', share[0] === '' && share[1] === true && share[2] === 'Finish entering the inputs before sharing.', `share ${JSON.stringify(share)}`);
+    await evalJs("(() => { const i = document.getElementById('in-locales'); i.value = '6'; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
+    await sleep(800);
+    const now = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]').textContent");
+    check('updated', now === expected({ ...d, locales: 6 }, 'cost_per_asset', 'scaled'), `cost cell "${now}"`);
+    const ok2 = await evalJs("[document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
+    check('share back', ok2[0] === false && ok2[1] === '', `share ${JSON.stringify(ok2)}`);
+    return st;
+  }));
+
   await run('i over capacity in the chart', () => {
     const dom = dump(`${base}#s11?reviewers=4`);
     const label = decode((dom.match(/<text class="over-lbl"[^>]*>([^<]*)</) || [])[1] || '');

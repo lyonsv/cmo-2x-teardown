@@ -180,21 +180,16 @@ function statusText(values) {
 // Invalid inputs: no link to numbers that are not on screen (WR-08).
 const SHARE_BLOCKED = ['Fix the highlighted inputs before sharing.', 'Finish entering the inputs before sharing.'];
 
-function setShareStatus(text) {
-  if (shareStatus.textContent !== text) shareStatus.textContent = text;
-}
+const setShareStatus = (text) => { if (shareStatus.textContent !== text) shareStatus.textContent = text; };
 
-function blockShare(highlighted) {
-  shareLink.value = '';
-  copyBtn.disabled = true;
-  setShareStatus(SHARE_BLOCKED[highlighted ? 0 : 1]);
-}
-
-function allowShare(link) {
+function setShare(link, blocked) {
   shareLink.value = link;
-  copyBtn.disabled = false;
-  if (SHARE_BLOCKED.includes(shareStatus.textContent)) setShareStatus('');
+  copyBtn.disabled = blocked !== '';
+  if (blocked || SHARE_BLOCKED.includes(shareStatus.textContent)) setShareStatus(blocked);
 }
+
+// True while the results on screen are those of the last complete, valid inputs.
+let showing = false;
 
 // Re-reads every input and repaints. `commit` is true for change/blur/reset/restore.
 function update(commit, immediateSummary) {
@@ -203,14 +198,21 @@ function update(commit, immediateSummary) {
   const visible = fieldErrors.length > 0 ? errors.filter((e) => touched.has(e.key)) : errors;
   showFieldErrors(visible);
   showSummary(visible);
+  if (errors.length > 0) setShare('', SHARE_BLOCKED[visible.length > 0 ? 0 : 1]);
+  // Still typing in an untouched field: keep the last results and say so (WR-10).
+  if (errors.length > 0 && visible.length === 0 && showing) {
+    status.textContent = 'Showing: results for your last complete inputs';
+    return;
+  }
   clearTimeout(summaryTimer);
   if (errors.length > 0) {
+    showing = false;
     dashResults();
     summary.textContent = 'Results are not available until the inputs are fixed.';
     status.textContent = pendingNotice || 'Showing: results not available';
-    blockShare(visible.length > 0);
     return;
   }
+  showing = true;
   const p = present(values, ctx);
   writeResults(p);
   writeScenario(p.scenario);
@@ -225,7 +227,7 @@ function update(commit, immediateSummary) {
   else summaryTimer = setTimeout(writeSummary, 400);
   status.textContent = statusText(values);
   const hash = serialiseHash(values, ctx);
-  allowShare(location.href.split('#')[0] + hash);
+  setShare(location.href.split('#')[0] + hash, '');
   if (commit) history.replaceState(null, '', hash || location.pathname + location.search);
 }
 
