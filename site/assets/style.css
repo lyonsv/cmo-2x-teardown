@@ -24,6 +24,7 @@ h1 em { font-style: italic; color: var(--muted); }
 .byline { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0; }
 h3 { font-size: 17px; font-weight: 600; line-height: 1.6; margin: var(--s-xl) 0 var(--s-sm); }
 h2 { font-size: 31px; line-height: 1.15; font-weight: 600; letter-spacing: -.01em; margin: 0; }
+strong, b { font-weight: 600; }
 p, ul, ol { max-width: 44em; }
 p { margin: 0 0 var(--s-md); }
 .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(208px, 1fr)); gap: var(--s-xs) var(--s-lg); border-top: 1px solid var(--rule); padding-top: var(--s-md); margin-bottom: var(--s-lg); font: 400 12px/1.6 var(--mono); color: var(--muted); }
@@ -44,11 +45,12 @@ p { margin: 0 0 var(--s-md); }
 .claim { display: grid; grid-template-columns: 64px 1fr; column-gap: var(--s-md); }
 .metric-trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-lg); }
 .metric-trio > * { border-top: 1px solid var(--ink); padding-top: var(--s-sm); font-weight: 600; }
+.metric-trio .lbl { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); margin-bottom: var(--s-sm); }
 .later { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
 td.num { font: 400 12px/1.6 var(--mono); }
 figure { margin: var(--s-xl) 0; border-top: 1px solid var(--rule); padding-top: var(--s-md); }
 figcaption { font: 400 12px/1.6 var(--mono); color: var(--muted); max-width: 52em; margin-top: var(--s-sm); }
-figcaption b { text-transform: uppercase; }
+figcaption b { text-transform: uppercase; font-weight: 600; }
 .answer p { max-width: 46em; }
 section { scroll-margin-top: 16px; }
 section + section { border-top: 1px solid var(--rule); padding-top: var(--s-xl); margin-top: var(--s-xl); }
@@ -64,6 +66,8 @@ section + section { border-top: 1px solid var(--rule); padding-top: var(--s-xl);
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 caption { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); text-align: left; padding-bottom: var(--s-sm); }
 th { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); text-align: left; }
+tbody th[scope=row] { font: 400 17px/1.5 var(--serif); text-transform: none; letter-spacing: 0; color: var(--ink); }
+tbody th[scope=row].id { font: 400 12px/1.6 var(--mono); }
 th, td { padding: var(--s-sm) var(--s-md) var(--s-sm) 0; vertical-align: top; border-bottom: 1px solid var(--rule); }
 td { line-height: 1.5; }
 thead th { border-bottom: 2px solid var(--ink); }
@@ -86,8 +90,13 @@ svg.fig { display: block; width: 100%; height: auto; }
 .hatch-line { stroke: var(--paper); stroke-width: 2; }
 .fig-scroll { overflow-x: auto; }
 .fig-scroll:focus-visible { outline: 2px solid var(--verified); outline-offset: 2px; }
+@media (max-width: 960px) {
+  svg.fig { min-width: 800px; }
+}
 @media (max-width: 720px) {
   body { font-size: 16px; }
+  tbody th[scope=row] { font-size: 16px; }
+  tbody th[scope=row].id { font-size: 12px; }
   .wrap { padding: 0 var(--s-md) var(--s-3xl); }
   .sec-head { grid-template-columns: 32px 1fr; column-gap: var(--s-sm); }
   h2 { font-size: 25px; }
@@ -97,7 +106,6 @@ svg.fig { display: block; width: 100%; height: auto; }
   .meta { grid-template-columns: 1fr; }
   .metric-trio { grid-template-columns: 1fr; }
   .legend dl { grid-template-columns: 1fr; }
-  svg.fig { min-width: 560px; }
 }
 @media print {
   body { background: #fff; color: #000; font-size: 10.5pt; }
