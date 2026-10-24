@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 04-07-PLAN.md
-last_updated: "2026-10-24T19:54:53.369Z"
+last_updated: "2026-10-24T19:54:58.176Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 5
@@ -66,6 +66,7 @@ Progress: [█████████░] 88%
 | Phase 4 P05 | 40min | 2 tasks | 8 files |
 | Phase 4 P07 | 40min | 2 tasks | 7 files |
 | Phase 03.1 P01 | 20min | 2 tasks | 2 files |
+| Phase 03.1 P04 | 40min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,7 @@ Progress: [█████████░] 88%
 - [Phase 3]: 03-06: #s11? hash counts as restored even if all values invalid; summary debounced 400ms, table 250ms
 - [Phase 4]: s11 shows one grade chip per group with a shared-grade guard test; s12 matrix dates collapse into the caption
 - [Phase 03.1]: calc.test.js inlines page defaults rather than importing data.js (red until 03.1-05)
+- [Phase 03.1]: [03.1-04] Hours maths step labelled internal throughput, not the claim; smoke route cases read radio checked over CDP
 
 ### Pending Todos
 
