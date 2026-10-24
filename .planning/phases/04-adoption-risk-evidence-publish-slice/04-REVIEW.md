@@ -277,3 +277,35 @@ The ASA row is a related, lesser case: it is typed `government` "as the closest 
 _Reviewed: 2026-10-24T22:30:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
+
+## Fix Status
+
+**Applied:** 2026-10-24, by the gsd-code-fixer, working directly on `main`. Every decision below is the orchestrator's decision: the user was away and delegated judgement. The rule used was "most honest, least overclaiming". These author decisions were not undone: the legal flag stays removed, counsel review stays dropped, and the COI note and all Getty content stay removed.
+
+| ID | Status | Commit | Notes |
+|----|--------|--------|-------|
+| CR-01 | fixed (logic: requires human verification) | 9d534fc | Backlog 0 N is now derived in `data.js` as `ceil(compute(defaults).scenario.brief_to_live_days)` = 8 days. That figure includes queue wait and rework. The unit is "days", as the model uses. The register basis says the figure is a modelled average, so a ceiling on the oldest brief is harder to meet. A test pins N to be at least the 2x brief-to-live figure. |
+| WR-01 | fixed | 24a6c3f | `present().sensitivityNote` is built from the rows shown: the weakest grade, its ref, and one link per row ref. `panels.writeSensitivityNote` rewrites the note on every update. Two checks cover it: a DOM-free test, and smoke case `r` (`#s11?vcost=20&mconcept=10`). |
+| WR-02 | fixed | b89fe49 | `reverify.mjs` reports PDFs as `pdf (manual)`, and the omnibus phrase is now `Article 111`. The Kohavi and omnibus stamps now read "Not machine-checkable (PDF) ... last verified 2026-10-24, when the PDF was read". No network re-run was done. |
+| WR-03 | fixed | 5f888d0 | `evalJs` now throws on `exceptionDetails`. The a11y checks now require recorded stops (401 and 400 stops). All a11y checks pass. |
+| WR-04 | fixed | db736c4 | The lawsuit-status assertion is removed from the IP block and from its as-at note. The opening sentence was rephrased as guidance. |
+| WR-05 | fixed | 48d8e2b | Coca-Cola is now Established and Guess is now Alleged. A test maps each status to the evidence recorded in `data.js`. |
+| WR-06 | fixed | 7fcdab3 | Steady state is chipped Speculative and linked to `asm-adoption-design`. The `asm-backlog0-days` row stays Modelled, because it is now model-derived. |
+| WR-07 | fixed | 8a06d53 | Two publisher types were added, `author` and `secondary`, and the s15 note explains them. Intercom teardown is now `author`. EU Art 50 is now `secondary` and graded Modelled, because EUR-Lex returned 202 (bot challenge) and so could not be verified. The ASA row is unchanged (`government`). |
+| WR-08 | fixed | a099297 | All 8 `legal-*` ids are removed. Both the inventory tests and the `.planning/` read are gone. The absence guards remain. |
+| IN-01 | fixed | 19e4fbb | `a11y.mjs` and `print.mjs` throw "module did not load". |
+| IN-02 | fixed | e7016e9 | `orderCheck` now uses a wrap-around guard. |
+| IN-03 | fixed | 0347a43 | Skipped rows are listed, the last 5xx code is kept, vendor results are labelled "liveness only", and the fetches only run when the script is executed, not when it is imported. |
+| IN-04 | fixed | 551996f | Stale `GAP_TRACE` keys fail, and a mutation test covers this. |
+| IN-05 | fixed | a19c9a8 | Page count now comes from `pdfinfo` (84 pages). |
+| IN-06 | fixed | 1a6c44f | `dump()` throws on `r.error`, a timeout, or a non-zero exit. |
+| IN-07 | fixed | 0bb4489 | "forty resizes" became "every resize by hand". Smoke case `o` now derives the default campaigns value. `.backlog0` mobile padding is now `var(--s-md)`. |
+| IN-08 | fixed | c7b3f75 | The legend `<dd>` text no longer repeats the status word. In the IP block, the as-at paragraph now follows the mitigation. |
+
+**Gates after the fixes:**
+- `node --test`: 376/376 pass.
+- `node scripts/crosscheck.mjs`: 0 failures.
+- `smoke`: 18 PASS, exit 0.
+- `a11y`: 25 PASS, exit 0.
+- `print`: 11 PASS, 84 pages, exit 0.
+- None of the browser scripts needed a rerun for the CDP flake.
