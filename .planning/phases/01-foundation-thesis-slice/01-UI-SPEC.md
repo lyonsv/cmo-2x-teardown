@@ -183,7 +183,7 @@ The Phase 1 page loads no script at all (it must work fully with JS off). `data.
 
 - Breakpoint: single breakpoint at `max-width:720px` (as reference): body 16px, `.wrap` padding 16px, sec-head/claim/toc grids `32px 1fr` with 8px gap, h2 25px.
 - At <=480px `.meta` becomes one column; `.metric-trio` one column.
-- `@media print` (CFO print/PDF): `body{background:#fff;color:#000;font-size:10.5pt}`; `.toc` and `.skip` hidden (**same as reference**), but keep the grade key visible; `a{color:#000}` and show hrefs for register URLs only (`.register a[href^="http"]::after{content:" (" attr(href) ")"}`); `figure, table, .callout, .legend, tr{break-inside:avoid}`; `section{break-inside:auto}`; chips keep their 1px border and text so grades survive in B&W; remove `.later` bg; `.table-scroll{overflow:visible}`; hairlines `#ccc`; `h2{break-after:avoid}`.
+- `@media print` (CFO print/PDF): `body{background:#fff;color:#000;font-size:10.5pt}`; `.toc` and `.skip` hidden (**same as reference**), but keep the grade key visible; `a{color:#000}`; register URLs print once because their link text is the full URL (the `::after` href rule was dropped after code review IN-05, as it printed each URL twice); `figure, table, .callout, .legend, tr{break-inside:avoid}`; `section{break-inside:auto}`; chips keep their 1px border and text so grades survive in B&W; remove `.later` bg; `.table-scroll{overflow:visible}`; hairlines `#ccc`; `h2{break-after:avoid}`.
 
 ---
 

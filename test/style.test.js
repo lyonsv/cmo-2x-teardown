@@ -66,3 +66,11 @@ test('cost segments are separated by a paper gap and alternate segments are hatc
     assert.ok(!new RegExp(`\\.seg-${i}\\s*{`).test(css), `.seg-${i} must not set a CSS fill (it would override the hatch)`);
   }
 });
+
+test('print shows each register URL once: link text is the URL and no ::after repeats it (IN-05)', () => {
+  const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const links = [...html.matchAll(/<a href="(https?:[^"]+)">([^<]+)<\/a>/g)];
+  assert.ok(links.length > 0);
+  for (const [, href, text] of links) assert.equal(text, href);
+  assert.ok(!/::after\s*{[^}]*attr\(href\)/.test(css));
+});

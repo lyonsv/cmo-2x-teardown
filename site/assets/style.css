@@ -103,7 +103,7 @@ svg.fig { display: block; width: 100%; height: auto; }
   body { background: #fff; color: #000; font-size: 10.5pt; }
   .toc, .skip { display: none; }
   a { color: #000; }
-  .register a[href^="http"]::after { content: " (" attr(href) ")"; }
+  /* No href ::after: register link text is already the full URL (IN-05). */
   figure, table, .callout, .legend, tr { break-inside: avoid; }
   section { break-inside: auto; }
   .later { background: none; }
