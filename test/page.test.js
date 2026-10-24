@@ -1015,7 +1015,9 @@ test('s09 opens with the lead and the localisation block', () => {
 
 test('localisation block carries the graded evidence and caveats, anonymised', () => {
   const s = sectionHtml('s09');
-  const block = s.slice(s.indexOf('id="s09-localisation"'));
+  const lstart = s.indexOf('id="s09-localisation"');
+  const lend = s.indexOf('id="s09-experimentation"');
+  const block = s.slice(lstart, lend > lstart ? lend : undefined);
   const t = strip(block.replace(/<table>[\s\S]*?<\/table>/g, ' '));
   assert.ok(t.includes('we did not find a primary source'));
   assert.ok(/pre-LLM/.test(t) && /one domain/.test(t) && /few translators/.test(t));
@@ -1026,4 +1028,61 @@ test('localisation block carries the graded evidence and caveats, anonymised', (
   const prose = (block.replace(/<table>[\s\S]*?<\/table>/g, ' ').match(/<(p|li)\b[^>]*>[\s\S]*?<\/\1>/g) || []);
   const words = strip(prose.join(' ')).split(' ').filter(Boolean).length;
   assert.ok(words >= 250 && words <= 450, `localisation prose ${words} words`);
+});
+
+// ---- Plan 03-02: experimentation and insight blocks (LEVER-02, LEVER-03) ----
+
+function leverBlock(id, nextId) {
+  const s = sectionHtml('s09');
+  const start = s.indexOf(`id="${id}"`);
+  assert.ok(start >= 0, `missing ${id}`);
+  const end = nextId ? s.indexOf(`id="${nextId}"`) : s.length;
+  return s.slice(start, end > start ? end : s.length);
+}
+const blockWords = (b) => strip((b.replace(/<table>[\s\S]*?<\/table>/g, ' ').match(/<(p|li)\b[^>]*>[\s\S]*?<\/\1>/g) || []).join(' ')).split(' ').filter(Boolean).length;
+
+test('experimentation block: win rates by definition, never averaged, bounded by traffic', () => {
+  const s = sectionHtml('s09');
+  assert.ok(s.includes('<h3 id="s09-experimentation">Experimentation</h3>'));
+  const block = leverBlock('s09-experimentation', 's09-insight');
+  const mini = tableByCaption(block, 'Experimentation: output, outcome and evidence');
+  assert.deepEqual(mini.head, ['Measure', 'Metric', 'Evidence grade']);
+  for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>'));
+  const t = tableByCaption(block, 'Reported A/B win rates by definition of a win');
+  assert.deepEqual(t.head, ['Source', 'What counts as a win', 'Rate', 'Grade']);
+  assert.equal(t.rows.length, 3);
+  const ids = [['winrate-vendor', 'src-experimentation-vendor-playbook'], ['winrate-paper', 'src-kohavi-2013'], ['winrate-second-hand', 'src-kohavi-2013']];
+  t.rows.forEach((r, i) => {
+    assert.ok(!/average/i.test(r), 'row mentions average');
+    const tds = [...r.matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td>/g)];
+    assert.ok(tds[1][1].includes('class="num"'), 'Rate cell must be td.num');
+    const flag = claims[ids[i][0]].flag;
+    assert.ok(new RegExp(`<span data-fig="${ids[i][0]}">[^<]*</span> <span class="flag">${flag}</span>`).test(tds[1][2]), `rate cell ${ids[i][0]}`);
+    assert.ok(r.includes(`href="#${ids[i][1]}"`));
+  });
+  assert.ok(!/average/i.test(strip(block)), 'block mentions average');
+  assert.ok(!/36/.test(strip(s)), 'a 36 token appears in s09');
+  const text = strip(block);
+  assert.ok(/bounded by traffic/.test(text) && /more tests do not always mean more wins/.test(text));
+  assert.ok(block.includes('data-fig="asm-tests-per-quarter"') && block.includes('data-fig="tests-winners-lo"') && block.includes('data-fig="tests-winners-hi"'));
+  assert.ok(block.includes('href="#src-kohavi-2013"') && block.includes('href="#src-experimentation-vendor-playbook"'));
+  const words = blockWords(block);
+  assert.ok(words >= 250 && words <= 450, `experimentation prose ${words} words`);
+});
+
+test('insight and reporting block is brief, Modelled, anonymised', () => {
+  const s = sectionHtml('s09');
+  assert.ok(s.indexOf('id="s09-insight"') > s.indexOf('id="s09-experimentation"'));
+  assert.ok(s.includes('<h3 id="s09-insight">Insight and reporting</h3>'));
+  const block = leverBlock('s09-insight');
+  const mini = tableByCaption(block, 'Insight and reporting: output, outcome and evidence');
+  assert.equal(mini.rows.length, 2);
+  for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>'));
+  const text = strip(block);
+  assert.ok(/evidence gap|we did not find/.test(text));
+  assert.ok(!VENDOR_RE.test(text));
+  assert.ok(block.includes('<a class="chip c-m" href="#src-mmm-geox">Modelled</a>'));
+  assert.ok(block.includes('<a href="#s08">'));
+  const words = blockWords(block);
+  assert.ok(words >= 150 && words <= 300, `insight prose ${words} words`);
 });

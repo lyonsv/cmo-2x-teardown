@@ -110,6 +110,28 @@ export const sources = {
     grade: 'Modelled',
     flag: 'vendor-claimed',
   },
+  'experimentation-vendor-playbook': {
+    title: 'Top 10 takeaways from running 173,000 experiments',
+    publisher: 'Optimizely (experimentation-platform vendor)',
+    published: 'undated on the page',
+    accessed: '2026-10-24',
+    url: 'https://www.optimizely.com/insights/top-10-takeaways-from-the-experimentation-playbook/',
+    bias: 'Experimentation-platform vendor; self-selected customers; commercial interest in test volume',
+    read_via: 'Page read 2026-10-24; the 127,000 true experiments and the win definition (primary metric moves the winning way at the vendor\'s significance threshold) come from the vendor\'s linked 173,000-experiments guide, https://www.optimizely.com/field-notes/guides/173000-experiments',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
+  'kohavi-2013': {
+    title: 'Online Controlled Experiments at Large Scale',
+    publisher: 'KDD 2013 (Kohavi, Deng, Frasca, Walker, Xu, Pohlmann; Microsoft)',
+    published: '2013-08-11',
+    accessed: '2026-10-24',
+    url: 'https://exp-platform.com/Documents/2013%20controlledExperimentsAtScale.pdf',
+    bias: 'Peer-reviewed paper on company-internal data; product ideas, not marketing; the second figure is a second-hand quote',
+    read_via: 'Paper PDF fetched 2026-10-24 (Tenet 3); publication date taken from the KDD 2013 conference start, not re-confirmed',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
 };
 
 // Negative values format the absolute value and put a true minus sign (U+2212)
@@ -229,6 +251,9 @@ lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Vendor-biased anchors
 lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap', 'Almost entirely an evidence gap; kept brief and modelled.');
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
 lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative.');
+
+assumptions['asm-tests-per-quarter'] = a('asm-tests-per-quarter', 'Experiments run per team per quarter', 'context', null, 20, 'experiments', '20',
+  'An illustrative test cadence for one team; replace with your own. No published benchmark.');
 
 assumptions['asm-imagery-routes'] = { id: 'asm-imagery-routes', label: 'Imagery routes: rights, cost and speed', kind: 'evidence', key: null, value: null, unit: null,
   display: 'Generic route comparison', grade: 'Modelled', flag: null,
@@ -361,6 +386,30 @@ export const claims = {
   'loc-case-faster': {
     id: 'loc-case-faster', value: 0.5, unit: 'share faster to market, one vendor case study', display: '50%', format: 'pct0',
     grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-translation-vendor-case',
+  },
+  'winrate-vendor': {
+    id: 'winrate-vendor', value: 0.12, unit: 'share of experiments that win, experimentation-platform vendor dataset', display: '12%', format: 'pct0',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-experimentation-vendor-playbook',
+  },
+  'winrate-vendor-n': {
+    id: 'winrate-vendor-n', value: 127000, unit: 'true experiments in the vendor dataset', display: '127,000',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-experimentation-vendor-playbook',
+  },
+  'winrate-paper': {
+    id: 'winrate-paper', value: 0.33, unit: 'share of ideas that improved the metric they were designed to improve, one large software company', display: '33%', format: 'pct0',
+    grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
+  },
+  'winrate-second-hand': {
+    id: 'winrate-second-hand', value: 0.10, unit: 'share of experiments that led to a business change, second company quoted second-hand', display: '10%', format: 'pct0',
+    grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
+  },
+  'tests-winners-lo': {
+    id: 'tests-winners-lo', value: Math.round(20 * 0.10), unit: 'winners a quarter at the lowest reported rate', display: String(Math.round(20 * 0.10)),
+    grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter',
+  },
+  'tests-winners-hi': {
+    id: 'tests-winners-hi', value: Math.round(20 * 0.33), unit: 'winners a quarter at the highest reported rate', display: String(Math.round(20 * 0.33)),
+    grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter',
   },
   'weighted-ratio': {
     id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,

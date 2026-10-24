@@ -391,3 +391,49 @@ test('Plan 03-01 localisation sources and claims', () => {
     assert.equal(c.ref, ref); assert.equal(c.grade, 'Modelled'); assert.equal(c.flag, flag);
   }
 });
+
+test('Plan 03-02 experimentation sources, claims and assumption', () => {
+  const want = {
+    'experimentation-vendor-playbook': ['https://www.optimizely.com/insights/top-10-takeaways-from-the-experimentation-playbook/', 'vendor-claimed'],
+    'kohavi-2013': ['https://exp-platform.com/Documents/2013%20controlledExperimentsAtScale.pdf', 'company-reported'],
+  };
+  for (const [k, [url, flag]] of Object.entries(want)) {
+    const s = sources[k];
+    assert.ok(s, k);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) {
+      assert.equal(typeof s[f], 'string', `${k}.${f}`);
+      assert.ok(s[f].length > 0, `${k}.${f} empty`);
+    }
+    assert.equal(s.accessed, '2026-10-24');
+    assert.equal(s.grade, 'Modelled');
+    assert.equal(s.url, url);
+    assert.equal(s.flag, flag);
+  }
+  const claimWant = [
+    ['winrate-vendor', 0.12, '12%', 'src-experimentation-vendor-playbook', 'vendor-claimed'],
+    ['winrate-vendor-n', 127000, '127,000', 'src-experimentation-vendor-playbook', 'vendor-claimed'],
+    ['winrate-paper', 0.33, '33%', 'src-kohavi-2013', 'company-reported'],
+    ['winrate-second-hand', 0.10, '10%', 'src-kohavi-2013', 'company-reported'],
+    ['tests-winners-lo', Math.round(20 * 0.10), String(Math.round(20 * 0.10)), 'asm-tests-per-quarter', null],
+    ['tests-winners-hi', Math.round(20 * 0.33), String(Math.round(20 * 0.33)), 'asm-tests-per-quarter', null],
+  ];
+  for (const [id, value, display, ref, flag] of claimWant) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value); assert.equal(c.display, display);
+    assert.equal(c.ref, ref); assert.equal(c.grade, 'Modelled'); assert.equal(c.flag, flag);
+  }
+  const t = assumptions['asm-tests-per-quarter'];
+  assert.ok(t);
+  assert.equal(t.value, 20); assert.equal(t.display, '20'); assert.equal(t.grade, 'Modelled');
+  assert.ok(['evidence', 'context'].includes(t.kind));
+});
+
+test('Plan 03-02 insight source', () => {
+  const s = sources['mmm-geox'];
+  assert.ok(s);
+  for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) assert.ok(s[f] && s[f].length > 0, f);
+  assert.equal(s.url, 'https://developers.google.com/meridian/geox');
+  assert.equal(s.grade, 'Modelled'); assert.equal(s.flag, null); assert.equal(s.accessed, '2026-10-24');
+  assert.ok(/calibration guide/.test(s.read_via) && /not opened/.test(s.read_via));
+});
