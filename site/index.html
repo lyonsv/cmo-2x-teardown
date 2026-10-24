@@ -45,14 +45,6 @@
         <dd>Says who made the claim. It never raises a grade.</dd>
       </dl>
     </div>
-    <div class="callout">
-      <span class="lbl">What 2x does not mean</span>
-      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.</p>
-    </div>
-    <div class="callout">
-      <span class="lbl">Falsifier</span>
-      <p>If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org.</p>
-    </div>
     <nav class="toc" aria-label="Sections">
       <a href="#s01"><span class="n">01</span><span>Claim &amp; measurement</span></a>
       <a href="#s02"><span class="n">02</span><span>The CFO answer</span></a>
@@ -72,7 +64,66 @@
     </nav>
     <section id="s01" aria-labelledby="s01-h">
       <div class="sec-head"><span class="sec-num">01</span><h2 id="s01-h">Claim &amp; measurement</h2></div>
-      <p>This section will define the output metric, the outcome measures that must move with it, and the six levers, so that the claim can be tested rather than admired.</p>
+      <p>The headline metric counts <b>approved-and-live asset-variants per marketing head per quarter</b>. The denominator is all marketing FTE: brand, operations, regional and agency-equivalent staff. Assets that are generated but not approved never count. The number is always shown beside unique concepts and variants per concept, so growth from new ideas cannot hide behind growth from cheap copies.</p>
+      <p>The count is of approved-and-live variants only. To reach it the model derives more variants than it publishes, at an approval yield of <span data-fig="asm-approval-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a>; the next section costs the rejected ones.</p>
+      <div class="metric-trio">
+        <div><span class="lbl">Approved-live variants per head per quarter</span><br><span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a></div>
+        <div><span class="lbl">Unique concepts a year</span><br><span data-fig="concepts-base">1,000</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a> to <span data-fig="concepts-scaled">1,189</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a></div>
+        <div><span class="lbl">Variants per concept</span><br><span data-fig="vpc-base">40</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="vpc-scaled">67</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a></div>
+      </div>
+      <p>A tier-weighted view is shown as a sensitivity only: weighting variants by review effort puts the gain at <span data-fig="weighted-ratio">1.6x</span> <a class="chip c-m" href="#asm-tier-weights">Modelled</a>, below 2x because the extra volume sits in low-risk tiers. The weights are arbitrary and gameable, so this is not the headline.</p>
+      <div class="table-scroll" role="region" aria-label="The six levers table" tabindex="0">
+        <table>
+          <caption>The six levers</caption>
+          <thead><tr><th scope="col">Lever</th><th scope="col">Output metric</th><th scope="col">Outcome metric</th><th scope="col">Evidence grade</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">Content generation at scale (the deep dive)</th>
+              <td>Approved-live variants per head; unique concepts; cost per approved live asset</td>
+              <td>Holdout conversion, CAC and ROAS; first-pass compliance; rejection rate; brief-to-live time</td>
+              <td><a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Localisation and transcreation</th>
+              <td>Approved localised assets per locale per quarter; lag from master to last locale</td>
+              <td>Launch lag; locale rejection rate; quality sampled by linguists</td>
+              <td><a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Experimentation</th>
+              <td>Experiments per quarter; rate of conclusive tests</td>
+              <td>Winners rolled out; time from fatigue to replacement</td>
+              <td><a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Insight and reporting</th>
+              <td>Time to insight; share of reports automated; refresh cadence of marketing-mix models</td>
+              <td>Faster budget reallocation; earlier fatigue detection</td>
+              <td><a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Ops: briefs, approvals, asset metadata and rights</th>
+              <td>Brief-to-draft time; review rounds; metadata completeness; rights-check coverage</td>
+              <td>Rights incidents per thousand assets; reuse; takedown rate</td>
+              <td><a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Answer-engine visibility (closes the loop into refresh briefs)</th>
+              <td>Answer assets published or refreshed per head; prompts tracked</td>
+              <td>Share of voice and citations; AI-referred sessions and conversion; pipeline</td>
+              <td><a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <div class="callout">
+      <span class="lbl">What 2x does not mean</span>
+      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.</p>
+    </div>
+    <div class="callout">
+      <span class="lbl">Falsifier</span>
+      <p>If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org.</p>
+    </div>
     </section>
     <section id="s02" aria-labelledby="s02-h">
       <div class="sec-head"><span class="sec-num">02</span><h2 id="s02-h">The CFO answer</h2></div>
@@ -226,6 +277,69 @@
               <td><span data-fig="asm-concept-growth">0.25</span> <a class="chip c-m" href="#asm-concept-growth">Modelled</a></td>
               <td><a class="chip c-m" href="#asm-concept-growth">Modelled</a></td>
               <td>Share of growth from new concepts in log terms; 0 means pure derivation.</td>
+            </tr>
+            <tr id="asm-approval-yield">
+              <th scope="row">asm-approval-yield</th>
+              <td>Approval yield</td>
+              <td><span data-fig="asm-approval-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-approval-yield">Modelled</a></td>
+              <td>Share of derived variants that clear the gate after the bounded fix loop; rejected variants still cost generation and review. No published benchmark.</td>
+            </tr>
+            <tr id="asm-tier-mix">
+              <th scope="row">asm-tier-mix</th>
+              <td>Review tier mix</td>
+              <td><span data-fig="asm-tier-mix">T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x</span> <a class="chip c-m" href="#asm-tier-mix">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-tier-mix">Modelled</a></td>
+              <td>Illustrative tier shares; no published benchmark exists</td>
+            </tr>
+            <tr id="asm-tier-weights">
+              <th scope="row">asm-tier-weights</th>
+              <td>Relative review effort per tier</td>
+              <td><span data-fig="asm-tier-weights">1 / 2 / 4 / 8</span> <a class="chip c-m" href="#asm-tier-weights">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-tier-weights">Modelled</a></td>
+              <td>Relative review effort per tier; used only for the weighted sensitivity because weights are arbitrary and gameable</td>
+            </tr>
+            <tr id="asm-lever-01-evidence">
+              <th scope="row">asm-lever-01-evidence</th>
+              <td>Lever 1 evidence: content generation</td>
+              <td><span data-fig="asm-lever-01-evidence">Company-reported anchors only, plus one controlled click-through study; the rest is modelled.</span> <a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
+              <td>Company-reported anchors only, plus one controlled click-through study; the rest is modelled.</td>
+            </tr>
+            <tr id="asm-lever-02-evidence">
+              <th scope="row">asm-lever-02-evidence</th>
+              <td>Lever 2 evidence: localisation</td>
+              <td><span data-fig="asm-lever-02-evidence">Vendor case studies and a wide academic range; per-word rates are a gap.</span> <a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td>
+              <td>Vendor case studies and a wide academic range; per-word rates are a gap.</td>
+            </tr>
+            <tr id="asm-lever-03-evidence">
+              <th scope="row">asm-lever-03-evidence</th>
+              <td>Lever 3 evidence: experimentation</td>
+              <td><span data-fig="asm-lever-03-evidence">Published win-rate anchors exist but are vendor-biased; verified in a later section.</span> <a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>
+              <td>Published win-rate anchors exist but are vendor-biased; verified in a later section.</td>
+            </tr>
+            <tr id="asm-lever-04-evidence">
+              <th scope="row">asm-lever-04-evidence</th>
+              <td>Lever 4 evidence: insight and reporting</td>
+              <td><span data-fig="asm-lever-04-evidence">Almost entirely an evidence gap; kept brief and modelled.</span> <a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>
+              <td><a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>
+              <td>Almost entirely an evidence gap; kept brief and modelled.</td>
+            </tr>
+            <tr id="asm-lever-05-evidence">
+              <th scope="row">asm-lever-05-evidence</th>
+              <td>Lever 5 evidence: ops</td>
+              <td><span data-fig="asm-lever-05-evidence">No data beyond the statute; a judgement.</span> <a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>
+              <td><a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>
+              <td>No data beyond the statute; a judgement.</td>
+            </tr>
+            <tr id="asm-lever-06-evidence">
+              <th scope="row">asm-lever-06-evidence</th>
+              <td>Lever 6 evidence: answer-engine visibility</td>
+              <td><span data-fig="asm-lever-06-evidence">Thin, vendor-only and panel-based; outcomes are speculative.</span> <a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>
+              <td><a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>
+              <td>Thin, vendor-only and panel-based; outcomes are speculative.</td>
             </tr>
             </tbody>
           </table>
