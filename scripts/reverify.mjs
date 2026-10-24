@@ -43,6 +43,7 @@ const phraseFor = (id) => {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function get(url) {
+  let last = 'ERR';
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(url, { headers: { 'user-agent': UA, accept: 'text/html,*/*' }, redirect: 'follow', signal: AbortSignal.timeout(TIMEOUT_MS) });
@@ -51,29 +52,43 @@ async function get(url) {
       const pdf = /application\/pdf/i.test(type);
       const body = res.status === 200 && !pdf ? await res.text() : '';
       if (res.status < 500) return { status: res.status, body, pdf };
+      last = res.status; // IN-03: keep the 5xx code for the report
     } catch (e) {
-      if (attempt === 1) return { status: 'ERR ' + (e.name || 'error'), body: '' };
+      last = 'ERR ' + (e.name || 'error');
     }
-    await sleep(GAP_MS);
+    if (attempt === 0) await sleep(GAP_MS);
   }
-  return { status: 'ERR', body: '' };
+  return { status: last, body: '', pdf: false };
 }
 
-const targets = [];
-for (const [id, s] of Object.entries(sources)) {
-  if (!s.url || !/^https?:/.test(s.url)) continue;
-  const phrase = phraseFor(id);
-  if (phrase) targets.push({ id, url: s.url, phrase });
+// Vendor rows are checked by product name only: a "yes" shows the page is up, not
+// that the claim was re-read (IN-03).
+const isVendor = (id) => /^(gradial|airops|profound)-/.test(id);
+
+async function main() {
+  const targets = [];
+  const skipped = [];
+  for (const [id, s] of Object.entries(sources)) {
+    const phrase = s.url && /^https?:/.test(s.url) ? phraseFor(id) : null;
+    if (phrase) targets.push({ id, url: s.url, phrase });
+    else skipped.push(id);
+  }
+
+  console.log('id\tstatus\tphrase-found');
+  let first = true;
+  for (const t of targets) {
+    if (!first) await sleep(GAP_MS);
+    first = false;
+    const { status, body, pdf } = await get(t.url);
+    const found = status === 200 && !pdf ? body.toLowerCase().includes(t.phrase.toLowerCase()) : false;
+    let verdict = status !== 200 ? 'n/a' : pdf ? 'pdf (manual)' : found ? 'yes' : 'NO';
+    if (isVendor(t.id) && verdict === 'yes') verdict = 'yes (liveness only)';
+    console.log(`${t.id}\t${status}\t${verdict}`);
+  }
+  // IN-03: the report shows what was not checked, not only what was.
+  for (const id of skipped) console.log(`${id}\t-\tskipped (no phrase)`);
+  console.log('Reverify run date: ' + new Date().toISOString().slice(0, 10));
 }
 
-console.log('id\tstatus\tphrase-found');
-let first = true;
-for (const t of targets) {
-  if (!first) await sleep(GAP_MS);
-  first = false;
-  const { status, body, pdf } = await get(t.url);
-  const found = status === 200 && !pdf ? body.toLowerCase().includes(t.phrase.toLowerCase()) : false;
-  const verdict = status !== 200 ? 'n/a' : pdf ? 'pdf (manual)' : found ? 'yes' : 'NO';
-  console.log(`${t.id}\t${status}\t${verdict}`);
-}
-console.log('Reverify run date: ' + new Date().toISOString().slice(0, 10));
+// IN-03: importing verifyPhrase must not start network fetches.
+if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href) await main();
