@@ -1439,6 +1439,13 @@ test('s14 risk blocks appear in order with answer-first, mitigation and as-at', 
   }
 });
 
+// WR-04: no source on the page supports a litigation status, so the IP block makes none.
+test('s14 IP block asserts no litigation status', () => {
+  const t = strip(riskBlock('ip'));
+  assert.doesNotMatch(t, /lawsuit|litigation|no final outcome|unresolved/i);
+  assert.ok(t.includes('Treat the rights in the data each model was trained on as an open question too, for the vendor and counsel to answer.'));
+});
+
 test('s14 reviewer fatigue cites Parasuraman and Manzey at abstract level only', () => {
   const b = riskBlock('fatigue');
   assert.ok(b.includes('href="#src-parasuraman-manzey-2010"'));
