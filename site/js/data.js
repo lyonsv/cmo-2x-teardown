@@ -1,6 +1,6 @@
 // Single source of numbers, grades, sources and assumptions (CRED-06).
 // The page's data-fig spans, the register rows and compute() all read from here.
-import { variantMatrix } from './calc.js';
+import { variantMatrix, compute } from './calc.js';
 import { formatValue } from './format.js';
 import { present, defaultValues, RESULT_ROWS } from './model.js';
 
@@ -957,8 +957,16 @@ evidence('asm-telemetry-metrics', 'Telemetry metrics', 'Modelled', 'Recommended 
 
 // ---- Phase 4 Plan 2: context assumptions for s13 and s14 ----
 // Kind 'context' rows are shown and graded but never read by the model.
-assumptions['asm-backlog0-days'] = a('asm-backlog0-days', 'Backlog 0 service level (N)', 'context', null, 5, 'working days', '5 working days',
-  'A service-level target this page chose, not a measurement: it sits just above the modelled build time at 2x plus one review touch (3 days plus 1.5 days, rounded up). Replace it with your own service level. No published benchmark.');
+// CR-01: N is derived from the model, not chosen beside it. It is the 2x
+// brief-to-live time at the page defaults (build time plus one review touch,
+// including queue wait and rework), rounded up to whole days, so the target can
+// never sit below what the page's own maths predicts.
+{
+  const btl = compute(defaultInputs(), defaultAssumptions()).scenario.brief_to_live_days;
+  const n = Math.ceil(btl);
+  assumptions['asm-backlog0-days'] = a('asm-backlog0-days', 'Backlog 0 service level (N)', 'context', null, n, 'days', `${n} days`,
+    `A service-level target this page chose, not a measurement: the modelled brief-to-live time at 2x with the page defaults (build time plus one review touch, including queue wait and rework, ${formatValue(btl, 'days1')}), rounded up. The model gives an average, so a ceiling on the oldest brief is harder to meet than the model shows; read it as the least a 2x programme must achieve, not a forecast. Replace it with your own service level. No published benchmark.`);
+}
 assumptions['asm-adoption-design'] = { ...a('asm-adoption-design', 'Adoption stages, first moves and guardrails', 'context', null, null, null, "Author's design",
   "The adoption stages, first moves and guardrails in section 13 are the author's design, not a measured pathway. No adoption rates are stated because none were found."), grade: 'Speculative' };
 assumptions['asm-risk-likelihood'] = { ...a('asm-risk-likelihood', 'Risk likelihood words', 'context', null, null, null, "Author's judgement",

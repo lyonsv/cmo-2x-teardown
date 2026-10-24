@@ -302,9 +302,16 @@ test('Phase 4 sources carry the researched grade, publisherType and event date',
 test('Phase 4 context assumptions: backlog 0 N, adoption design, risk likelihood', () => {
   const b = assumptions['asm-backlog0-days'];
   assert.equal(b.kind, 'context');
-  assert.equal(b.value, 5);
-  assert.equal(b.unit, 'working days');
-  assert.equal(b.display, '5 working days');
+  assert.equal(b.value, 8);
+  assert.equal(b.unit, 'days');
+  assert.equal(b.display, '8 days');
+  // CR-01: the target is derived from the model and can never sit below the
+  // modelled 2x brief-to-live time at the page defaults (same unit: days).
+  const btl = compute(defaultInputs(), defaultAssumptions()).scenario.brief_to_live_days;
+  assert.equal(b.value, Math.ceil(btl));
+  assert.ok(b.value >= btl && b.value >= claims['btl-scaled'].value, `${b.value} < ${btl}`);
+  assert.equal(claims['btl-scaled'].unit.includes('days'), true);
+  assert.ok(b.basis.includes(formatValue(btl, 'days1')) && b.basis.includes('queue wait and rework'));
   assert.equal(b.grade, 'Modelled');
   assert.ok(b.basis.includes('not a measurement') && b.basis.includes('No published benchmark'));
   for (const [id, display] of [['asm-adoption-design', "Author's design"], ['asm-risk-likelihood', "Author's judgement"]]) {

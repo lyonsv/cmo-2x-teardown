@@ -1350,11 +1350,11 @@ test('s13 Backlog 0 definition block', () => {
   assert.equal((s.match(/<h3>Backlog 0, defined<\/h3>/g) || []).length, 1);
   const blk = s.match(/<div class="backlog0">[\s\S]*?<\/div>/)[0];
   const p = blk.match(/<p>([\s\S]*?)<\/p>/)[1];
-  assert.equal(p, 'Backlog 0 means no approved brief waits longer than <span data-fig="asm-backlog0-days">5 working days</span> <a class="chip c-m" href="#asm-backlog0-days">Modelled</a> for its first derived set. Replace this with your own service level.');
+  assert.equal(p, 'Backlog 0 means no approved brief waits longer than <span data-fig="asm-backlog0-days">8 days</span> <a class="chip c-m" href="#asm-backlog0-days">Modelled</a> for its first derived set to go live. Replace this with your own service level.');
   assert.ok(!blk.match(/<dl>[\s\S]*<\/dl>/)[0].includes('data-fig'));
   const dts = [...blk.matchAll(/<dt>([\s\S]*?)<\/dt>/g)].map((m) => strip(m[1]));
   assert.deepEqual(dts, ['Measure', 'Target', "Reader's number"]);
-  assert.equal(assumptions['asm-backlog0-days'].display, '5 working days');
+  assert.equal(assumptions['asm-backlog0-days'].display, '8 days');
 });
 
 // ---- Plan 04-03: s14 incidents ----
