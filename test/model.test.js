@@ -316,6 +316,26 @@ test('sensitivity: auto-approval cap clamps and is marked capped', () => {
   assert.equal(row.cost.up, 0, 'already at the cap, so no further movement');
 });
 
+test('scenario rows carry the weakest grade of their inputs (WR-01)', () => {
+  const at = (grades) => {
+    const p = present({ ...defaultValues(ctx), scenario: 'reduce' }, { ...ctx, grades });
+    return Object.fromEntries(p.scenario.rows.map((r) => [r.id, [r.grade, r.ref]]));
+  };
+  const cost = at({ ...ctx.grades, 'asm-master-concept-cost': 'Speculative' });
+  assert.deepEqual(cost.first_year_net, ['Speculative', 'asm-master-concept-cost']);
+  assert.deepEqual(cost.production_cost_change, ['Speculative', 'asm-master-concept-cost']);
+  assert.equal(cost.people_cost_change[0], 'Modelled', 'master concept cost does not feed people cost');
+  const util = at({ ...ctx.grades, 'asm-review-minutes': 'Speculative' });
+  assert.deepEqual(util.people_cost_change, ['Speculative', 'asm-review-minutes']);
+  assert.deepEqual(util.first_year_net, ['Speculative', 'asm-review-minutes']);
+  const fte = at({ ...ctx.grades, 'asm-marketing-fte': 'Speculative' });
+  assert.deepEqual(fte.change_mgmt_one_off, ['Speculative', 'asm-marketing-fte']);
+  assert.deepEqual(fte.first_year_net, ['Speculative', 'asm-marketing-fte']);
+  const d = at(ctx.grades);
+  assert.equal(d.people_cost_change[1], 'asm-loaded-fte-cost', 'ref unchanged at the shipped grades');
+  assert.equal(d.first_year_net[1], 'asm-change-mgmt', 'ref unchanged at the shipped grades');
+});
+
 test('present().scenario and .sensitivity are finite and labelled', () => {
   const p = present(defaultValues(ctx), ctx);
   assert.equal(p.scenario.name, 'Redeploy');

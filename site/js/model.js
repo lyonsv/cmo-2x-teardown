@@ -256,13 +256,21 @@ function scenarioPresentation(values, ctx) {
   const mode = o.ok ? o.mode : (SCENARIOS.includes(values.scenario) ? values.scenario : 'redeploy');
   const util = weakestGrade(OUTPUT_DEPS.utilisation, ctx.grades);
   const prod = weakestGrade(OUTPUT_DEPS.total_cost, ctx.grades);
+  // Each row carries the weakest grade of everything it is computed from: people
+  // cost uses the freed reviewer FTE (all UTIL inputs); the net adds people,
+  // production and the one-off change cost (marketing and reviewer FTE).
+  const people = weakestGrade(['asm-loaded-fte-cost', ...OUTPUT_DEPS.utilisation], ctx.grades);
+  const oneOff = weakestGrade(['asm-change-mgmt', 'asm-marketing-fte', 'asm-reviewer-fte'], ctx.grades);
+  const net = weakestGrade([
+    'asm-change-mgmt', 'asm-loaded-fte-cost', 'asm-marketing-fte', 'asm-reviewer-fte', ...OUTPUT_DEPS.total_cost, ...OUTPUT_DEPS.utilisation,
+  ], ctx.grades);
   const defs = [
     ['reviewer_fte_required', 'Reviewer FTE required at target utilisation', util, (v) => formatValue(v, 'num1')],
     ['reviewer_fte_delta', 'Reviewer FTE freed (or needed)', util, (v) => (v >= 0 ? `${formatValue(v, 'num1')} freed` : `needs ${formatValue(-v, 'num1')} more reviewers`)],
-    ['people_cost_change', 'Annual people cost change', { grade: ctx.grades['asm-loaded-fte-cost'], ref: 'asm-loaded-fte-cost' }, (v) => formatValue(v, 'usd0')],
+    ['people_cost_change', 'Annual people cost change', people, (v) => formatValue(v, 'usd0')],
     ['production_cost_change', 'Annual production cost change', prod, (v) => formatValue(v, 'usd0')],
-    ['change_mgmt_one_off', 'One-off change cost (year one)', { grade: ctx.grades['asm-change-mgmt'], ref: 'asm-change-mgmt' }, (v) => formatValue(v, 'usd0')],
-    ['first_year_net', 'First-year net cost change', { grade: ctx.grades['asm-change-mgmt'], ref: 'asm-change-mgmt' }, (v) => formatValue(v, 'usd0')],
+    ['change_mgmt_one_off', 'One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],
+    ['first_year_net', 'First-year net cost change', net, (v) => formatValue(v, 'usd0')],
   ];
   const rows = defs.map(([id, label, g, fmt]) => {
     const node = o.ok && Number.isFinite(o[id]) ? { value: o[id], text: fmt(o[id]) } : { text: 'n/a' };
