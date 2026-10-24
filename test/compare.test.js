@@ -69,7 +69,9 @@ test('review row separates documented oversight levels from the undocumented gat
   assert.ok(strip(c[4]).includes('risk-class tier gate'));
   assert.ok(strip(c[4]).includes('eval harness calibrated against human reviewer decisions'));
   assert.ok(text.includes('The pages read do not describe a gate tiered by asset risk class, or an eval harness calibrated against human reviewer decisions.'));
-  assert.ok(strip(c[2]).includes('listed on all three plans'));
+  assert.ok(strip(c[2]).includes('listed on all three plans (plan marks read from the page markup, so not certain)'), 'MEDIUM-confidence plan marks are qualified');
+  // IN-07: vendor behaviour is attributed to the page that states it, never asserted as fact.
+  for (const m of text.matchAll(/[^.;]*(?:routes every piece|every piece routes)[^.;]*/g)) assert.match(m[0], /\bsays\b/, `unattributed: ${m[0].trim()}`);
 });
 
 test('AEM is cited for Gradial, and no price wording appears', () => {
