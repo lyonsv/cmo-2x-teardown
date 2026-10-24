@@ -673,19 +673,24 @@ export const claims = {
     id: 'winrate-second-hand', value: 0.10, unit: 'share of experiments that led to a business change, second company quoted second-hand', display: '10%', format: 'pct0',
     grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
   },
-  'tests-winners-lo': {
-    id: 'tests-winners-lo', value: Math.round(20 * 0.10), unit: 'winners a quarter at the lowest reported rate', display: String(Math.round(20 * 0.10)),
-    grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter',
-  },
-  'tests-winners-hi': {
-    id: 'tests-winners-hi', value: Math.round(20 * 0.33), unit: 'winners a quarter at the highest reported rate', display: String(Math.round(20 * 0.33)),
-    grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter',
-  },
   'weighted-ratio': {
     id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,
     ref: 'asm-tier-weights', derived: 'ratios.weighted_output_per_head', decimals: 1, format: 'x1',
   },
 };
+
+// Winners a quarter (s10): the test cadence times the lowest and highest reported
+// win rates, read from the assumption and the claims rather than repeated as literals.
+{
+  const cadence = assumptions['asm-tests-per-quarter'].value;
+  for (const [id, rateId, unit] of [
+    ['tests-winners-lo', 'winrate-second-hand', 'winners a quarter at the lowest reported rate'],
+    ['tests-winners-hi', 'winrate-paper', 'winners a quarter at the highest reported rate'],
+  ]) {
+    const value = Math.round(cadence * claims[rateId].value);
+    claims[id] = { id, value, unit, display: String(value), grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter' };
+  }
+}
 
 export function defaultInputs() {
   const out = { multiplier: SCENARIO.multiplier };

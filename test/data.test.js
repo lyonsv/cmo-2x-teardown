@@ -417,9 +417,16 @@ test('Plan 03-02 experimentation sources, claims and assumption', () => {
     ['winrate-vendor-n', 127000, '127,000', 'src-experimentation-vendor-playbook', 'vendor-claimed'],
     ['winrate-paper', 0.33, '33%', 'src-kohavi-2013', 'company-reported'],
     ['winrate-second-hand', 0.10, '10%', 'src-kohavi-2013', 'company-reported'],
-    ['tests-winners-lo', Math.round(20 * 0.10), String(Math.round(20 * 0.10)), 'asm-tests-per-quarter', null],
-    ['tests-winners-hi', Math.round(20 * 0.33), String(Math.round(20 * 0.33)), 'asm-tests-per-quarter', null],
   ];
+  // WR-07: winners are derived from the cadence and the reported rates, never literals.
+  const cadence = assumptions['asm-tests-per-quarter'].value;
+  const rates = ['winrate-vendor', 'winrate-paper', 'winrate-second-hand'].map((id) => claims[id].value);
+  assert.equal(claims['winrate-second-hand'].value, Math.min(...rates), 'lo uses the lowest reported rate');
+  assert.equal(claims['winrate-paper'].value, Math.max(...rates), 'hi uses the highest reported rate');
+  const lo = Math.round(cadence * Math.min(...rates));
+  const hi = Math.round(cadence * Math.max(...rates));
+  claimWant.push(['tests-winners-lo', lo, String(lo), 'asm-tests-per-quarter', null], ['tests-winners-hi', hi, String(hi), 'asm-tests-per-quarter', null]);
+  assert.ok(!/tests-winners-(?:lo|hi)'[^}]*Math\.round\(\d/.test(readFileSync(new URL('../site/js/data.js', import.meta.url), 'utf8')), 'winners hard-code their inputs');
   for (const [id, value, display, ref, flag] of claimWant) {
     const c = claims[id];
     assert.ok(c, id);
