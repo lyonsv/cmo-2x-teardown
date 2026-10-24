@@ -47,7 +47,8 @@ p { margin: 0 0 var(--s-md); }
 .metric-trio > * { border-top: 1px solid var(--ink); padding-top: var(--s-sm); font-weight: 600; }
 .metric-trio .lbl { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); margin-bottom: var(--s-sm); }
 .later { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
-td.num { font: 400 12px/1.6 var(--mono); }
+td.num { font: 400 17px/1.6 var(--mono); }
+td.na { font: 400 17px/1.6 var(--mono); color: var(--muted); }
 figure { margin: var(--s-xl) 0; border-top: 1px solid var(--rule); padding-top: var(--s-md); }
 figcaption { font: 400 12px/1.6 var(--mono); color: var(--muted); max-width: 52em; margin-top: var(--s-sm); }
 figcaption b { text-transform: uppercase; font-weight: 600; }
@@ -156,7 +157,7 @@ fieldset.calc-group legend { grid-column: 1 / -1; font: 600 12px/1.6 var(--mono)
 .share-status { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0; min-height: 1.6em; }
 input[type=radio] { accent-color: var(--ink); }
 .radio { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: var(--s-md); min-height: 48px; padding: var(--s-sm) 0; cursor: pointer; }
-.radio input { margin-top: var(--s-xs); flex: none; }
+.radio input { width: 24px; height: 24px; margin: 0; flex: none; }
 .radio-text { display: block; }
 .radio-title { display: block; font-weight: 600; }
 .radio-desc { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); }
@@ -172,7 +173,7 @@ svg.fig-live[hidden], .chart-empty[hidden] { display: none; }
 .believe ul { margin: 0; padding-left: var(--s-lg); }
 .believe li + li { margin-top: var(--s-sm); }
 details.maths { margin: var(--s-lg) 0; max-width: 44em; }
-details.maths summary { font: 600 12px/1.6 var(--mono); min-height: 48px; display: flex; align-items: center; cursor: pointer; }
+details.maths summary { font: 600 12px/1.6 var(--mono); display: list-item; padding: var(--s-md) 0; min-height: 48px; box-sizing: border-box; cursor: pointer; }
 details.maths summary:hover { text-decoration: underline; }
 ol.maths-steps { padding-left: var(--s-lg); }
 ol.maths-steps li + li { margin-top: var(--s-md); }
@@ -187,6 +188,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
 @media (max-width: 720px) {
   body { font-size: 16px; }
   tbody th[scope=row] { font-size: 16px; }
+  td.num, td.na { font-size: 16px; }
   tbody th[scope=row].id { font-size: 12px; }
   .wrap { padding: 0 var(--s-md) var(--s-3xl); }
   .sec-head { grid-template-columns: 32px 1fr; column-gap: var(--s-sm); }

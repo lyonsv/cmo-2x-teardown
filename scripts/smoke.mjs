@@ -227,7 +227,7 @@ async function cases(base) {
     const label = decode((dom.match(/<text class="over-lbl"[^>]*>([^<]*)</) || [])[1] || '');
     check('label', label === 'over capacity', `over label "${label}"`);
     const sum = decode((dom.match(/<output id="calc-summary"[^>]*>([^<]*)</) || [])[1] || '');
-    check('summary', sum.includes('over capacity at'), `summary "${sum}"`);
+    check('summary', sum.includes('over capacity, at'), `summary "${sum}"`);
     check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
     return label;
   });

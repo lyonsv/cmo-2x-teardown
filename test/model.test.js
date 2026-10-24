@@ -159,7 +159,8 @@ test('present with too few reviewers: over capacity wording', () => {
   const row = (id) => p.rows.find((r) => r.id === id);
   assert.ok(row('utilisation').scaled.text.includes('over capacity'));
   assert.equal(row('cycle_time').scaled.text, 'unbounded (over capacity)');
-  assert.ok(p.summary.includes('with reviewers over capacity at'));
+  assert.ok(p.summary.endsWith('with reviewers over capacity, at 186%.') || /with reviewers over capacity, at \d+%\.$/.test(p.summary), p.summary);
+  assert.ok(!p.summary.includes('of capacity'));
 });
 
 test('present: zero-baseline AI spend gives n/a change', () => {

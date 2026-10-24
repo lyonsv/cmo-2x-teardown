@@ -70,7 +70,7 @@ function setCell(td, node, withValue) {
     span.setAttribute('data-fig', withValue);
     td.append(span);
   } else {
-    td.removeAttribute('class');
+    td.className = 'na';
     td.append(node.text);
   }
 }

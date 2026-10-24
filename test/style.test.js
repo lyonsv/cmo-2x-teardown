@@ -238,3 +238,24 @@ test('Figure 8 opts out of the Figure 1 phone minimum width', () => {
   assert.equal((page.match(/<svg\b[^>]*\bclass="fig fig-live"/g) || []).length, 1);
   assert.ok(/svg\.fig-live\s*{[^}]*max-width: 360px/.test(css));
 });
+
+// Phase 4 Plan 1: Phase 3 UI-review fixes 1, 2 and 3.
+test('details.maths summary keeps the native disclosure marker and a 48px target', () => {
+  const r = rule('details.maths summary');
+  assert.ok(r.includes('display: list-item'));
+  assert.ok(!r.includes('display: flex'));
+  assert.ok(r.includes('min-height: 48px') && r.includes('padding: var(--s-md) 0'));
+});
+
+test('scenario radios render at 24 x 24 px (WCAG 2.5.8)', () => {
+  const r = rule('.radio input');
+  assert.ok(r.includes('width: 24px') && r.includes('height: 24px'));
+});
+
+test('table numbers match their 17px row labels; Not applicable is muted', () => {
+  assert.ok(rule('td.num').includes('font: 400 17px/1.6 var(--mono)'));
+  const na = rule('td.na');
+  assert.ok(na.includes('font: 400 17px/1.6 var(--mono)') && na.includes('color: var(--muted)'));
+  const m = css.match(/@media \(max-width: 720px\) {([\s\S]*?)\n}/);
+  assert.ok(/td\.num, td\.na { font-size: 16px; }/.test(m[1]));
+});

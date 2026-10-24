@@ -48,6 +48,13 @@ test('derived claims equal compute() output on default inputs', () => {
   }
 });
 
+test('formatValue ptschg1 signs point changes with a true minus', () => {
+  assert.equal(formatValue(0.009, 'ptschg1'), '+0.9 points');
+  assert.equal(formatValue(-0.009, 'ptschg1'), '\u22120.9 points');
+  assert.equal(formatValue(0, 'ptschg1'), '0.0 points');
+  for (const id of ['budget_share', 'utilisation']) assert.equal(RESULT_ROWS.find((r) => r.id === id).changeFormat, 'ptschg1');
+});
+
 test('formatValue formats int and x1', () => {
   assert.equal(formatValue(1189.2, 'int'), '1,189');
   assert.equal(formatValue(1.626, 'x1'), '1.6x');
@@ -506,7 +513,7 @@ test('Plan 03-03 answer-engine sources and claims', () => {
 // ---- Plan 03-05: calculator claims generated from present() ----
 
 import { modelContext } from '../site/js/data.js';
-import { present, defaultValues } from '../site/js/model.js';
+import { present, defaultValues, RESULT_ROWS } from '../site/js/model.js';
 
 test('formatValue: days1 and pctchg1 kinds', () => {
   assert.equal(formatValue(7.52, 'days1'), '7.5 days');

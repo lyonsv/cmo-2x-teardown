@@ -59,6 +59,7 @@ test('results table: head, nine rows in model order, cells equal present(default
       if (node.value === undefined) {
         assert.equal(strip(inner), node.text);
         assert.ok(!attrs.includes('num'), `${def.id} ${name}: text cell must not be td.num`);
+        if (node.text === 'Not applicable') assert.equal(attrs.trim(), 'class="na"', `${def.id} ${name}: Not applicable is td.na`);
         assert.ok(!inner.includes('data-fig'));
       } else {
         assert.equal(attrs.trim(), 'class="num"', `${def.id} ${name}`);
@@ -162,7 +163,9 @@ test('form: five groups, twelve fields in order with label, input, unit, chip an
     const grade = assumptions[f.asm].grade;
     assert.ok(html_.includes(`<a class="chip ${CHIP_CLASS[grade]}" href="#${f.asm}">${grade}</a>`), `${f.key} chip`);
     const hint = html_.match(new RegExp(`<p class="hint" id="hint-${f.key}">([^<]*)</p>`));
-    assert.ok(hint && hint[1].startsWith(`Default ${toText(f, d)}`), `${f.key} hint`);
+    assert.ok(hint && hint[1].startsWith(`Default ${f.hintFormat ? formatValue(d, f.hintFormat) : toText(f, d)}`), `${f.key} hint`);
+    if (f.key === 'vcost') assert.ok(hint[1].startsWith('Default $0.80.'));
+    if (f.key === 'mconcept') assert.ok(hint[1].startsWith('Default $1,200.'));
     // WR-02: hints must not claim an input changes "only" some outputs; both FTE
     // inputs also feed the scenario table (change cost, required and freed FTE).
     assert.ok(!/\bonly\b/.test(hint[1]), `${f.key} hint makes an "only" claim`);
@@ -257,7 +260,9 @@ test('scenario table: six rows equal present(defaults).scenario with one chip pe
   });
   // WR-03: the Hold sentence is scoped to the page defaults and its figure is the presenter's Hold row.
   const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change');
-  assert.ok(s11.includes(`At the page defaults, Hold changes annual production cost by only <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a>, because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs.`));
+  const word = hold.value < 0 ? 'a saving' : 'an increase';
+  assert.ok(s11.includes(`At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a> (${word}), because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs.`));
+  assert.ok(!/Hold changes annual production cost by only/.test(s11), 'the confusing "only" wording is gone');
   assert.ok(Math.abs(hold.value) < 60000, 'Hold change stays small at the defaults');
   assert.ok(!/Hold saves little/.test(s11), 'no unscoped Hold claim');
   assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-([a-z_]+)/)[1]), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);

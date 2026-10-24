@@ -108,10 +108,10 @@ export const RESULT_ROWS = [
   { id: 'output_per_head', label: 'Approved-live variants per head per quarter', format: 'int', changeFormat: 'pctchg0' },
   { id: 'cost_per_asset', label: 'Fully loaded cost per approved-live asset', format: 'usd2', changeFormat: 'pctchg0' },
   { id: 'total_cost', label: 'Total production cost', format: 'usdm2', changeFormat: 'pctchg0' },
-  { id: 'budget_share', label: 'Production share of marketing budget', format: 'pct1', changeFormat: 'pts1' },
+  { id: 'budget_share', label: 'Production share of marketing budget', format: 'pct1', changeFormat: 'ptschg1' },
   { id: 'ai_spend', label: 'AI spend', format: 'usd0', changeFormat: 'pctchg0' },
   { id: 'cycle_time', label: 'Cycle time, brief to live (days)', format: 'days1', changeFormat: 'pctchg0' },
-  { id: 'utilisation', label: 'Review utilisation', format: 'pct1', changeFormat: 'pts1' },
+  { id: 'utilisation', label: 'Review utilisation', format: 'pct1', changeFormat: 'ptschg1' },
   { id: 'break_even', label: 'Break-even auto-approval at flat reviewer headcount', format: 'pct0', changeFormat: 'none' },
   { id: 'capacity_floor', label: 'Capacity floor (auto-approval below which review capacity is exceeded)', format: 'pct0', changeFormat: 'none' },
 ];
@@ -153,12 +153,12 @@ function buildRows(r) {
       ratioChange('total_cost', r.ratios.total_cost)],
     budget_share: [cell(b.production_share_of_budget, formatValue(b.production_share_of_budget, 'pct1')),
       cell(s.production_share_of_budget, formatValue(s.production_share_of_budget, 'pct1')),
-      cell(r.deltas.production_share_of_budget, formatValue(r.deltas.production_share_of_budget, 'pts1'))],
+      cell(r.deltas.production_share_of_budget, formatValue(r.deltas.production_share_of_budget, 'ptschg1'))],
     ai_spend: [cell(b.ai_spend, formatValue(b.ai_spend, 'usd0')), cell(s.ai_spend, formatValue(s.ai_spend, 'usd0')),
       ratioChange('ai_spend', r.ratios.ai_spend)],
     cycle_time: [cycle(b.cycle_days), cycle(s.cycle_days), cycleChange],
     utilisation: [cell(b.utilisation, util(b.utilisation)), cell(s.utilisation, util(s.utilisation)),
-      cell(s.utilisation - b.utilisation, formatValue(s.utilisation - b.utilisation, 'pts1'))],
+      cell(s.utilisation - b.utilisation, formatValue(s.utilisation - b.utilisation, 'ptschg1'))],
     break_even: [na, breakEvenCell(r.break_even_auto_approval), na],
     capacity_floor: [na, breakEvenCell(r.capacity_auto_approval), na],
   };
@@ -407,7 +407,7 @@ export function present(values, ctx) {
   const x = formatValue(r.scenario.output_per_head_per_quarter, 'int');
   const y = formatValue(r.scenario.cost_per_asset, 'usd2');
   const z = formatValue(r.scenario.utilisation, 'pct0');
-  const summary = `At 2x, your team approves ${x} variants per head per quarter at ${y} per approved asset, with reviewers ${over ? 'over capacity at' : 'at'} ${z} of capacity.`;
+  const summary = `At 2x, your team approves ${x} variants per head per quarter at ${y} per approved asset, with reviewers ${over ? `over capacity, at ${z}.` : `at ${z} of capacity.`}`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
     scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),

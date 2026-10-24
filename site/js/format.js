@@ -24,6 +24,11 @@ export function formatValue(value, format) {
     const text = `${n(Math.abs(value) * 100, 1)} points`;
     return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
   }
+  if (format === 'ptschg1') {
+    const text = `${n(Math.abs(value) * 100, 1)} points`;
+    if (!/[1-9]/.test(text)) return text;
+    return `${value < 0 ? '\u2212' : '+'}${text}`;
+  }
   if (format === 'pctchg0') {
     const p = Math.round(value * 100);
     return `${p < 0 ? '\u2212' : p > 0 ? '+' : ''}${Math.abs(p)}%`;

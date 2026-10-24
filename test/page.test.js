@@ -444,7 +444,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
     // via toText) and the change-management sentence, built here from data.js so a
     // changed assumption fails the gate. Any other numeral in the form fails.
     ...SECTION_IDS.map((id) => (id === 's11' ? stripStep(sectionHtml(id)) : sectionHtml(id))
-      .replace(/<p class="hint" id="hint-[a-z0-9]+">Default [\d.,]+%?/g, ' ')
+      .replace(/<p class="hint" id="hint-[a-z0-9]+">Default \$?[\d.,]+%?/g, ' ')
       .replace(`Change-management cost: ${assumptions['asm-change-mgmt'].display}, included`, ' ')
       .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
     regionHtml('<footer>', '</footer>'),
