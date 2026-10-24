@@ -112,3 +112,15 @@ test('svg has no style attributes, var() fills, scripts or external hrefs', () =
   assert.ok(!/fill="var\(/.test(svg));
   assert.ok(!/<script|foreignObject|href=/.test(svg));
 });
+
+// Code review WR-05: the <desc> is what screen readers announce, so its numbers
+// must come from data.js like the bars and labels do.
+test('svg desc numbers equal the panel claim displays and nothing else', () => {
+  const desc = svg.match(/<desc id="f2-d">([^<]+)<\/desc>/)[1];
+  const ids = ['output-per-head-base', 'output-per-head-scaled', 'cpa-base', 'cpa-scaled', 'ai-spend-base', 'ai-spend-scaled'];
+  const displays = ids.map((id) => claims[id].display);
+  for (const [i, d] of displays.entries()) assert.ok(desc.includes(d), `desc missing ${ids[i]} (${d})`);
+  const tokens = desc.match(/\$?\d[\d,]*(?:\.\d+)?/g) || [];
+  assert.equal(tokens.length, ids.length, `desc numerals: ${tokens.join(' ')}`);
+  for (const t of tokens) assert.ok(displays.includes(t), `desc numeral ${t} is not a panel claim display`);
+});
