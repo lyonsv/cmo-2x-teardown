@@ -163,7 +163,8 @@ test('visible text equivalent', () => {
       figure6MatchesTierTable(f);
       continue;
     }
-    assert.ok(f.html.includes('<h3 class="steps-h">Steps in this figure</h3>'), `Figure ${f.n} steps heading`);
+    // IN-03: headings name their figure so a screen-reader heading list can tell them apart.
+    assert.ok(f.html.includes(`<h3 class="steps-h">Steps in Figure ${f.n}</h3>`), `Figure ${f.n} steps heading`);
     assert.ok(ol, `Figure ${f.n} ol.fig-steps`);
     const items = ol[1].match(/<li>/g) || [];
     assert.ok(items.length >= 3, 'at least 3 steps');
