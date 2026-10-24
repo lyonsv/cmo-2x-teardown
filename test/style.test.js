@@ -312,3 +312,7 @@ test('print block resets screen min-widths, shows status borders and avoids brea
   assert.match(print, /thead \{ display: table-header-group; \}/);
   assert.match(print, /\.callout\.legal-flag \{[^}]*border/);
 });
+
+test('live chart panel label is serif so the 37-char label fits the 300-unit viewBox under text spacing (plan 04-08)', () => {
+  assert.match(css, /\.fig-live \.panel-lbl \{ font-family: var\(--serif\); \}/);
+});
