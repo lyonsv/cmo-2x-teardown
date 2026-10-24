@@ -118,3 +118,43 @@ test('font sizes stay on the scale', () => {
   assert.ok(sizes.length > 5);
   for (const sz of sizes) assert.ok(ok.has(sz) || sz.startsWith('clamp('), `off-scale font size ${sz}`);
 });
+
+// ---- Phase 2 plan 02: diagram CSS ----
+
+const rules = () => [...css.matchAll(/(?:^|\n|\s)([^{}@\n][^{}]*?) {([^}]*)}/g)].map((m) => ({ sel: m[1].trim(), body: m[2] }));
+
+test('diagram layout rules', () => {
+  const g = rule('.fig-grid');
+  assert.ok(g.includes('grid-template-columns: minmax(0, 360px) 1fr') && g.includes('gap: var(--s-lg)'));
+  const s = rule('svg.fig-d');
+  for (const d of ['width: 100%', 'max-width: 360px', 'height: auto']) assert.ok(s.includes(d), d);
+  const t = rule('.fig-d text');
+  assert.ok(t.includes('font: 400 12px') && t.includes('fill: var(--ink)'));
+  assert.ok(rule('.fig-d .node-t').includes('font-weight: 600'));
+  assert.ok(rule('.fig-d .edge-soft').includes('stroke-dasharray: 4 4'));
+  const m = css.match(/@media \(max-width: 720px\) {([\s\S]*?)\n}/);
+  assert.ok(m && /\.fig-grid { grid-template-columns: 1fr; }/.test(m[1]), '720px fig-grid rule');
+});
+
+test('accent is used in diagrams only on review/gate paths', () => {
+  for (const r of rules()) {
+    if (!r.sel.includes('.fig-d')) continue;
+    if (r.body.includes('var(--verified)')) assert.match(r.sel, /edge-review|node-review|arrow-head-review/, r.sel);
+    assert.ok(!r.body.includes('--inferred') && !r.body.includes('--low'), r.sel);
+  }
+});
+
+test('diagram print rules', () => {
+  const blocks = css.match(/@media print {[\s\S]*$/g);
+  assert.equal((css.match(/@media print/g) || []).length, 1);
+  const p = blocks[0];
+  for (const d of ['.fig-grid { display: block; }', 'svg.fig-d { max-width: 320px; }']) assert.ok(p.includes(d), d);
+  assert.match(p, /\.fig-d \.edge-review[^{]*{[^}]*stroke: #000;[^}]*stroke-width: 3;/);
+  assert.match(p, /\.fig-d \.node-review rect { fill: #fff; }/);
+  assert.match(p, /[^{}]*\.fig-grid[^{}]*{ break-inside: avoid; }/);
+});
+
+test('diagram contrast', () => {
+  assert.ok(contrast(token('verified'), token('paper-2')) >= 3);
+  assert.ok(contrast(token('ink'), token('paper')) >= 4.5);
+});

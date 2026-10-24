@@ -304,7 +304,7 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s03', 's04', 's05', 's06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s05', 's06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
 
 test('skeleton sections carry a scope sentence and the later note', () => {
   for (const id of SKELETON_IDS) {
@@ -519,4 +519,51 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
   }
   assert.ok(claims['capacity-auto-approval'].value < claims['break-even-auto-approval'].value);
   assert.ok(!/falls short of the break-even share, review capacity is exceeded/.test(s));
+});
+
+// ---- Plan 02-02: s03 factory model and s04 platform ----
+
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700] };
+
+test('section prose budgets', () => {
+  for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
+    const s = sectionHtml(id).replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<table>[\s\S]*?<\/table>/g, ' ');
+    const parts = s.match(/<(p|li|figcaption)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
+    const words = strip(parts.join(' ')).split(' ').filter(Boolean).length;
+    assert.ok(words >= lo && words <= hi, `${id} has ${words} prose words (want ${lo}-${hi})`);
+  }
+});
+
+test('s03 factory model', () => {
+  const s = sectionHtml('s03');
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'A marketing organisation scales by deriving variants from a few human-directed concepts, not by asking a model for ten thousand originals.');
+  assert.ok(!s.includes('<p class="later">'));
+  const t = strip(s).toLowerCase();
+  assert.ok(t.includes('content supply chain') && t.includes('derive'));
+});
+
+test('s04 layered architecture', () => {
+  const s = sectionHtml('s04');
+  assert.ok(!s.includes('<svg'));
+  assert.ok(!s.includes('<p class="later">'));
+  assert.match(s, /<div class="table-scroll" role="region" aria-label="[^"]+" tabindex="0">/);
+  assert.ok(s.includes('<caption>Operating architecture, by layer</caption>'));
+  const head = [...s.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Layer', 'What it does', 'Tool category', 'Reads / writes']);
+  const body = s.match(/<tbody>[\s\S]*?<\/tbody>/)[0];
+  const rows = body.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  assert.equal(rows.length, 10);
+  const names = rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
+  assert.deepEqual(names, ['Policy source', 'Brief and concepts', 'Generation', 'Derivation and rendering', 'Review agent', 'Auto-approval gate', 'Eval harness and telemetry', 'Asset manifest', 'Activation', 'Measurement']);
+  assert.ok(rows[0].startsWith('<tr class="shared">'));
+  const lastCell = [...rows[0].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
+  assert.ok(strip(lastCell).includes('Read by generator and reviewer; one versioned source'));
+  const table = strip(body).toLowerCase();
+  for (const w of ['intent', 'policy', 'build', 'review', 'eval harness', 'system of record', 'activation', 'measurement']) assert.ok(table.includes(w), w);
+  const prose = strip(s.replace(/<table>[\s\S]*?<\/table>/, ' ')).toLowerCase();
+  assert.ok(prose.includes('versioned') && prose.includes('skills'));
+  for (const c of body.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) {
+    assert.ok(strip(c).split(' ').length <= 20, `cell over 20 words: ${strip(c)}`);
+  }
 });
