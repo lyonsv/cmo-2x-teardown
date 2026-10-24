@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-10-24T09:34:51.972Z"
+last_updated: "2026-10-24T09:34:56.272Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 4
@@ -49,6 +49,7 @@ Progress: [███████░░░] 71%
 ## Accumulated Context
 
 | Phase 1 P01 | 15min | 3 tasks | 11 files |
+| Phase 1 P05 | session | 4 tasks | 6 files |
 
 ### Decisions
 
@@ -58,6 +59,7 @@ Progress: [███████░░░] 71%
 - Research: headline metric is approved-live variants per marketing head per quarter; tier weighting is a sensitivity only
 - Research: grade key is Benchmark / Modelled / Speculative plus a separate vendor-claimed/company-reported flag
 - [Phase 1]: Register value cells use data-fig plus self-linking chip; include-hidden-files ships .nojekyll
+- [Phase 1]: 01-05: Gartner 2026 graded Benchmark; s02 prose numeral-free via data-fig spans
 
 ### Pending Todos
 
