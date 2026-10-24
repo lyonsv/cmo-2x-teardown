@@ -29,14 +29,16 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 - [ ] Adoption section: how to pull up the floor across creative, brand, and regional teams
 - [ ] A candid "what goes wrong" section: slop at scale, brand dilution, rights/IP exposure, Goodhart on output counts, reviewer fatigue
 - [ ] Source register and evidence-gaps section
-- [ ] Vendor-neutral: names tool categories (GenAI image model, DAM, review agent, PIM, MMM), not brands
+- [ ] Answer-engine visibility (AEO/GEO) as a sixth 2x lever: share of voice and citations in AI answer engines as the output, discovery and pipeline as the outcome
+- [ ] A named "How this compares" section that sets the approach against Gradial, AirOps and Profound, using fair, sourced, dated claims with vendor-claimed figures marked as such. It covers where each tool slots into the operating model, where each one is an alternative, and where each falls short
+- [ ] Vendor-neutral elsewhere: the operating model names tool categories (GenAI image model, DAM, review agent, PIM, MMM), not brands. The comparison section is the only exception
 - [ ] Deployable to GitHub Pages as static files (no build server required at runtime)
 
 ### Out of Scope
 
 - A teardown of a specific named company or of Getty Images/iStock's own marketing org — the user chose a generic enterprise CMO
 - Real internal data — the figures are modelled from public benchmarks and stated assumptions
-- Naming or favouring specific vendors/products — the page stays neutral by category
+- Naming or favouring vendors outside the comparison section — the operating model stays neutral by category
 - Backend services, accounts, or data persistence for the calculator — it is client-side only
 - Building the actual agents or pipelines described — the page describes them; it does not implement them
 
@@ -52,7 +54,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 - **Delivery**: static HTML/CSS/JS deployable to GitHub Pages — same hosting model as the reference
 - **Honesty**: every number is graded and its assumptions visible — a CMO 2x is a projection, and presenting it as fact would undermine credibility
-- **Neutrality**: tool categories only, no brand names
+- **Neutrality**: tool categories only in the operating model; named vendors (Gradial, AirOps, Profound) appear only in the comparison section, and every claim about them is sourced and dated
 - **Self-contained**: no runtime dependencies beyond pinned CDN libraries, if any are used
 
 ## Key Decisions
@@ -65,6 +67,8 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 | Include an interactive calculator | Puts the reader's own numbers into the model, which strengthens the CFO case | — Pending |
 | Candid risks section | Credibility with a sceptical CMO/CFO reader | — Pending |
 | Static GitHub Pages delivery | Matches the reference | — Pending |
+| Named comparison vs Gradial, AirOps, Profound on the page | The user wants the CMO to see how this approach compares to market offerings | — Pending |
+| Add AEO/GEO as a sixth lever | Answer-engine visibility is an emerging output/outcome channel (Profound) that the original five levers missed | — Pending |
 
 ## Evolution
 
@@ -84,4 +88,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-24 after initialization*
+*Last updated: 2026-10-24 after initialization (competitor comparison + AEO/GEO lever added)*
