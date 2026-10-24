@@ -74,3 +74,47 @@ test('print shows each register URL once: link text is the URL and no ::after re
   for (const [, href, text] of links) assert.equal(text, href);
   assert.ok(!/::after\s*{[^}]*attr\(href\)/.test(css));
 });
+
+// ---- Phase 2 plan 01: Phase 1 UI-review typography and legibility fixes ----
+
+const rule = (selector) => {
+  const esc = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const m = css.match(new RegExp(`(?:^|\\n)${esc} {([^}]*)}`));
+  assert.ok(m, `missing rule ${selector}`);
+  return m[1];
+};
+
+test('bold text renders at 600, not the synthesised 700', () => {
+  assert.ok(css.includes('strong, b { font-weight: 600; }'));
+  const fc = rule('figcaption b');
+  assert.ok(fc.includes('text-transform: uppercase') && fc.includes('font-weight: 600'));
+});
+
+test('metric-trio labels use the Label style', () => {
+  const r = rule('.metric-trio .lbl');
+  for (const d of ['display: block', 'font: 400 12px/1.6 var(--mono)', 'color: var(--muted)']) assert.ok(r.includes(d), d);
+});
+
+test('table row headers are ink, normal case body text; ids stay mono', () => {
+  const r = rule('tbody th[scope=row]');
+  for (const d of ['font: 400 17px/1.5 var(--serif)', 'text-transform: none', 'letter-spacing: 0', 'color: var(--ink)']) assert.ok(r.includes(d), d);
+  assert.ok(rule('tbody th[scope=row].id').includes('font: 400 12px/1.6 var(--mono)'));
+});
+
+test('Figure 1 stays legible on phones: 12px text scaled by 800/960 is at least 10px', () => {
+  assert.ok(!css.includes('min-width: 560px'));
+  const m = css.match(/@media \(max-width: 960px\) {([\s\S]*?)\n}/);
+  assert.ok(m, 'missing 960px media block');
+  assert.ok(m[1].includes('svg.fig { min-width: 800px; }'));
+  assert.ok((12 * 800) / 960 >= 10);
+});
+
+test('font sizes stay on the scale', () => {
+  const ok = new Set(['12px', '16px', '17px', '25px', '31px', '10.5pt']);
+  const sizes = [
+    ...[...css.matchAll(/(?<![-\w])font:\s*\S+\s+([^\s/;}]+)/g)].map((m) => m[1]),
+    ...[...css.matchAll(/font-size:\s*([^;}]+)/g)].map((m) => m[1].trim()),
+  ];
+  assert.ok(sizes.length > 5);
+  for (const sz of sizes) assert.ok(ok.has(sz) || sz.startsWith('clamp('), `off-scale font size ${sz}`);
+});

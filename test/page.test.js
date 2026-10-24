@@ -11,20 +11,16 @@ function figEntry(id) {
   return null;
 }
 
-const figRe = /<span data-fig="([^"]+)">([^<]*)<\/span>(\s*<a class="chip (c-[a-z]+)" href="#([^"]+)">([^<]+)<\/a>)?/g;
+const FIG_RE = /<span data-fig="([^"]+)">([^<]*)<\/span>/g;
 const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 
-test('every data-fig matches data.js and is followed by its chip', () => {
-  const found = [...html.matchAll(figRe)];
+test('every data-fig matches data.js display', () => {
+  const found = [...html.matchAll(FIG_RE)];
   assert.ok(found.length > 0, 'no data-fig spans');
-  for (const [, id, text, chip, cls, href, word] of found) {
+  for (const [, id, text] of found) {
     const e = figEntry(id);
     assert.ok(e, `unknown data-fig ${id}`);
     assert.equal(text, e.display, `${id} display drifted`);
-    assert.ok(chip, `${id}: no chip after number`);
-    assert.equal(word, e.grade, `${id}: chip word`);
-    assert.equal(cls, CHIP_CLASS[e.grade], `${id}: chip colour class does not match grade ${e.grade}`);
-    assert.equal(href, e.ref, `${id}: chip href`);
   }
   // Code review WR-07: a data-fig the regex cannot parse (extra attributes,
   // nested markup) must fail, not be silently skipped. Every data-fig is either a
@@ -32,6 +28,99 @@ test('every data-fig matches data.js and is followed by its chip', () => {
   const all = (html.match(/\bdata-fig="/g) || []).length;
   const svgText = (html.match(/<text [^>]*\bdata-fig="/g) || []).length;
   assert.equal(found.length + svgText, all, 'some data-fig elements were not checked');
+});
+
+// UI-SPEC chip density rule. A chip governs the numbers it sits with: in prose the
+// first number of each claim source in a paragraph carries one linked chip; in a
+// table each row carries one linked chip in its last cell; in the s15 registers each
+// row carries one unlinked grade chip. Grade, ref and display are still checked for
+// every data-fig (the drift checks above and the chip checks below).
+const CHIP_AFTER = /^\s*<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/;
+
+function collectUnits() {
+  let work = html.replace(/<svg[\s\S]*?<\/svg>/g, '');
+  const total = (work.match(FIG_RE) || []).length;
+  const units = [];
+  const take = (re, kind) => {
+    work = work.replace(re, (m) => { units.push({ kind, html: m }); return ' '; });
+  };
+  take(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, 'register');
+  take(/<tr\b[^>]*>[\s\S]*?<\/tr>/g, 'row');
+  take(/<li\b[^>]*>[\s\S]*?<\/li>/g, 'prose');
+  take(/<p\b[^>]*>[\s\S]*?<\/p>/g, 'p');
+  take(/<div><span class="lbl">[\s\S]*?<\/div>/g, 'prose');
+  take(/<caption>[\s\S]*?<\/caption>/g, 'caption');
+  return { units, total };
+}
+
+test('governing chip rule (UI-SPEC chip density)', () => {
+  const { units, total } = collectUnits();
+  const counted = units.reduce((n, u) => n + (u.html.match(FIG_RE) || []).length, 0);
+  assert.equal(counted, total, 'a data-fig sits outside every prose, table or register unit');
+  const answerP = sectionHtml('answer');
+  for (const u of units) {
+    const figs = [...u.html.matchAll(FIG_RE)];
+    if (u.kind === 'p' || u.kind === 'prose') {
+      const seen = new Set();
+      for (const m of figs) {
+        const e = figEntry(m[1]);
+        const chip = u.html.slice(m.index + m[0].length).match(CHIP_AFTER);
+        if (!seen.has(e.ref)) {
+          seen.add(e.ref);
+          assert.ok(chip, `${m[1]}: first number of ${e.ref} in a paragraph needs its chip`);
+          assert.equal(chip[3], e.grade, `${m[1]}: chip word`);
+          assert.equal(chip[1], CHIP_CLASS[e.grade], `${m[1]}: chip colour class`);
+          assert.equal(chip[2], e.ref, `${m[1]}: chip href`);
+        } else {
+          assert.ok(!(chip && chip[2] === e.ref), `${m[1]}: repeated chip for ${e.ref} in one paragraph`);
+        }
+      }
+      if (u.kind === 'p') {
+        const hrefs = [...u.html.matchAll(/<a class="chip [^"]+" href="#([^"]+)"/g)].map((m) => m[1]);
+        assert.equal(new Set(hrefs).size, hrefs.length, `repeated chip href in: ${strip(u.html).slice(0, 60)}`);
+        const max = answerP.includes(u.html) ? 4 : 3;
+        assert.ok(hrefs.length <= max, `${hrefs.length} chips (max ${max}) in: ${strip(u.html).slice(0, 60)}`);
+      }
+    } else if (u.kind === 'row') {
+      const linked = [...u.html.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
+      assert.equal((u.html.match(/class="chip /g) || []).length, linked.length, 'row chip must be a link');
+      assert.ok(!/<td class="num">(?:(?!<\/td>)[\s\S])*class="chip /.test(u.html), 'chip inside td.num');
+      if (figs.length) {
+        assert.equal(linked.length, 1, `row with data-figs needs exactly one chip: ${strip(u.html).slice(0, 60)}`);
+        const lastTd = [...u.html.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
+        assert.ok(lastTd.includes('class="chip '), 'row chip must be in the last cell');
+        for (const m of figs) {
+          const e = figEntry(m[1]);
+          assert.equal(linked[0][2], e.ref, `${m[1]}: row chip href`);
+          assert.equal(linked[0][3], e.grade, `${m[1]}: row chip word`);
+          assert.equal(linked[0][1], CHIP_CLASS[e.grade], `${m[1]}: row chip class`);
+        }
+      } else {
+        assert.ok(linked.length <= 1, 'row without data-figs has at most one chip');
+      }
+    } else if (u.kind === 'register') {
+      assert.ok(!u.html.includes('<a class="chip'), 'register chip must not link to its own row');
+      const spans = [...u.html.matchAll(/<span class="chip (c-[bms])">(Benchmark|Modelled|Speculative)<\/span>/g)];
+      assert.equal(spans.length, 1, `register row needs one unlinked grade chip: ${u.html.slice(0, 40)}`);
+      assert.equal(spans[0][1], CHIP_CLASS[spans[0][2]]);
+      const id = u.html.match(/<tr id="([^"]+)"/)[1];
+      const grade = id.startsWith('src-') ? 'Benchmark' : assumptions[id].grade;
+      assert.equal(spans[0][2], grade, `${id}: register grade`);
+    }
+  }
+  // Caption figures are labels: the same id must be governed by a body row of the table.
+  for (const t of html.match(/<table>[\s\S]*?<\/table>/g) || []) {
+    const cap = (t.match(/<caption>[\s\S]*?<\/caption>/) || [''])[0];
+    const body = t.slice(t.indexOf('<tbody>'));
+    for (const m of cap.matchAll(FIG_RE)) assert.ok(body.includes(`data-fig="${m[1]}"`), `caption figure ${m[1]} not in a body row`);
+  }
+});
+
+test('every chip outside the legend and s15 registers is a link', () => {
+  const rest = html
+    .replace(/<div class="legend">[\s\S]*?<\/dl>/, '')
+    .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, '');
+  assert.ok(!rest.includes('<span class="chip'), 'unlinked chip outside the legend and registers');
 });
 
 test('every chip colour class matches its grade word', () => {
@@ -72,6 +161,8 @@ test('source register rows match data.js field by field', () => {
     assert.ok(row.includes(`<td>${src.accessed}</td>`), `src-${k}: accessed cell`);
     assert.ok(row.includes(`<td>${src.publisher}</td>`), `src-${k}: publisher cell`);
     assert.ok(row.includes(`href="${src.url}"`), `src-${k}: url drifted`);
+    assert.ok(row.includes(`<th scope="row" class="id">src-${k}</th>`), `src-${k}: row header`);
+    assert.ok(!row.includes('<a class="chip'), `src-${k}: register chip must not link`);
   }
 });
 
@@ -82,7 +173,19 @@ test('assumption register rows match data.js label, display, grade and basis', (
     assert.ok(row.includes(`<td>${e.label}</td>`), `${id}: label drifted`);
     assert.ok(text.includes(e.basis), `${id}: basis drifted`);
     assert.ok(row.includes(`<span data-fig="${id}">`), `${id}: value is not a data-fig span`);
-    assert.ok(row.includes(`<td><a class="chip ${CHIP_CLASS[e.grade]}" href="#${id}">${e.grade}</a></td>`), `${id}: grade cell`);
+    assert.ok(row.includes(`<td><span class="chip ${CHIP_CLASS[e.grade]}">${e.grade}</span></td>`), `${id}: grade cell`);
+    const value = row.match(new RegExp(`<td><span data-fig="${id}">([^<]*)</span></td>`));
+    assert.ok(value, `${id}: value cell must be exactly the data-fig span`);
+    assert.equal(decode(value[1]), e.display, `${id}: value cell`);
+    assert.ok(row.includes(`<th scope="row" class="id">${id}</th>`), `${id}: row header`);
+  }
+});
+
+test('lever evidence rows do not repeat one sentence in Value and Basis', () => {
+  for (let n = 1; n <= 6; n++) {
+    const id = `asm-lever-0${n}-evidence`;
+    const cells = [...registerRow(id).matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => strip(m[1]));
+    assert.notEqual(cells[1], cells[3], `${id}: Value equals Basis`);
   }
 });
 
@@ -98,7 +201,7 @@ test('static page guards', () => {
 const TITLES = {
   s01: 'Claim & measurement',
   s02: 'The CFO answer',
-  s03: 'The factory and the content supply chain',
+  s03: 'The factory model',
   s04: 'Platform and skills',
   s05: 'The 10,000-asset campaign',
   s06: 'The review agent',
@@ -200,14 +303,37 @@ test('fifteen anchored sections with the fixed snippet', () => {
   }
 });
 
-test('skeleton sections 03 to 14 carry a scope sentence and the later note', () => {
-  for (let n = 3; n <= 14; n++) {
-    const id = `s${String(n).padStart(2, '0')}`;
+// Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
+const SKELETON_IDS = ['s03', 's04', 's05', 's06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
+
+test('skeleton sections carry a scope sentence and the later note', () => {
+  for (const id of SKELETON_IDS) {
     const s = sectionHtml(id);
     assert.ok(s.includes('<p class="later">Coming in a later update.</p>'), id);
     const others = [...s.matchAll(/<p(?![^>]*class="later")[^>]*>/g)];
     assert.ok(others.length >= 1, `${id} has no scope sentence`);
   }
+});
+
+test('s12 stub', () => {
+  const s = strip(sectionHtml('s12'));
+  assert.ok(s.includes('This section will compare tool categories and, in this section only, named vendors, with every claim sourced and dated.'));
+  assert.ok(!s.includes('without naming them here'));
+});
+
+test('copy nits from the Phase 1 UI review', () => {
+  const a = strip(sectionHtml('answer'));
+  assert.ok(!a.includes('it is not rising'));
+  assert.ok(a.includes('has flatlined'));
+  const s = sectionHtml('s02');
+  assert.ok(s.includes('<h3>Budget: flat in total, not in production</h3>'));
+  assert.ok(!s.includes('<h3>Flat budget</h3>'));
+});
+
+test('s01 metric trio labels are Label style with no line break', () => {
+  const trio = sectionHtml('s01').match(/<div class="metric-trio">[\s\S]*?<\/div>\s*<p/)[0];
+  assert.ok(!trio.includes('<br>'));
+  assert.equal((trio.match(/<span class="lbl">/g) || []).length, 3);
 });
 
 test('answer-first paragraph is short and states the falsifier', () => {
@@ -230,6 +356,22 @@ test('vendor names stay inside s12 and s15', () => {
   assert.ok(!/gradial|airops|profound/i.test(rest));
 });
 
+// Getty and Stability are named by design (conflict-of-interest note, s05), so they are not listed.
+const VENDOR_RE = /\b(gradial|airops|profound|adobe|firefly|midjourney|dall-?e|openai|chatgpt|anthropic|claude|gemini|google|microsoft|copilot|canva|shutterstock|runway|synthesia|jasper|salesforce|hubspot|bynder|aprimo|contentful|amazon|aws|azure|honeycomb|athena|optimizely|klarna|unilever)\b/i;
+
+test('no vendor names in s03 to s08', () => {
+  for (const id of ['s03', 's04', 's05', 's06', 's07', 's08']) {
+    const m = strip(sectionHtml(id)).match(VENDOR_RE);
+    assert.ok(!m, `${id} names a vendor: ${m && m[0]}`);
+  }
+});
+
+test('Intercom at most once outside s12 and s15', () => {
+  let rest = html;
+  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  assert.ok((strip(rest).match(/\bintercom\b/gi) || []).length <= 1);
+});
+
 function regionHtml(open, close) {
   const start = html.indexOf(open);
   assert.ok(start >= 0, `missing ${open}`);
@@ -243,6 +385,15 @@ function regionHtml(open, close) {
 // contain numerals ("15.3%", "2,080", "asm-lever-01"). Those rows are compared
 // field by field with data.js by the register tests above, and their value cells
 // are data-fig spans checked by the data-fig test, so they are removed here.
+test('time elements carry ISO dates that appear in a source register row', () => {
+  const rows = html.match(/<tr id="src-[^"]+">[\s\S]*?<\/tr>/g) || [];
+  for (const [, d] of html.matchAll(/<time datetime="([^"]*)">/g)) {
+    assert.match(d, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(Number.isFinite(Date.parse(d)), `bad date ${d}`);
+    assert.ok(rows.some((r) => r.includes(d)), `${d} is not in a source register row`);
+  }
+});
+
 test('numeric gate: no ungraded numerals anywhere on the page', () => {
   const parts = [
     regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
@@ -253,13 +404,15 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
   for (const part of parts) {
     const cleaned = strip(
       part
+        .replace(/<a href="#s\d\d">[^<]*<\/a>/g, ' ') // in-page section cross-links
+        .replace(/<time datetime="\d{4}-\d{2}-\d{2}">[^<]*<\/time>/g, ' ') // ISO dates, checked below
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
         .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
         .replace(/<h2 id="s\d\d-h">[^<]*<\/h2>/g, ' ') // section titles are locked by the TITLES test
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
-    );
+    ).replace(/\bT[0-3]\b/g, ' '); // tier names
     for (const tok of cleaned.match(/\d[\d,.–-]*%?x?/g) || []) {
       const t = tok.replace(/[.,–-]+$/, '');
       assert.ok(ALLOWED_NUMERIC_TOKENS.includes(t), `ungraded numeral "${tok}" in: ${cleaned.slice(0, 80)}`);

@@ -87,24 +87,45 @@ test('figcaption follows the svg and states per-panel scales', () => {
   assert.match(s02, /<figcaption><b>Figure 1<\/b>[\s\S]*Each panel has its own scale[\s\S]*<\/figcaption>/);
 });
 
-test('always-visible data table with all 18 figure ids, each with a chip', () => {
+test('always-visible data table with all 18 figure ids and one governing chip per row', () => {
   const after = s02.slice(s02.indexOf('</figure>'));
   const table = (after.match(/<table[\s\S]*?<\/table>/) || [''])[0];
   assert.ok(table, 'no table after the figure');
   assert.ok(!/<details/.test(s02));
   assert.match(table, /<caption>[^<]+<\/caption>/);
-  assert.match(table, /<th scope="col"/);
-  assert.match(table, /<th scope="row"/);
-  const ids = [...table.matchAll(/<span data-fig="([^"]+)">([^<]*)<\/span>(\s*<a class="chip c-m" href="#[^"]+">Modelled<\/a>)?/g)];
-  assert.equal(ids.length, 18);
-  for (const [, id, text, chip] of ids) {
-    assert.equal(text, claims[id].display, id);
-    assert.ok(chip, `${id} chip`);
+  const head = table.match(/<thead>([\s\S]*?)<\/thead>/)[1];
+  const cols = [...head.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
+  assert.equal(cols.length, 4);
+  assert.equal(cols[3], 'Grade');
+  const rows = [...table.slice(table.indexOf('<tbody>')).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1]);
+  assert.equal(rows.length, 9);
+  const all = [];
+  for (const row of rows) {
+    assert.match(row, /<th scope="row"/);
+    const figs = [...row.matchAll(/<span data-fig="([^"]+)">([^<]*)<\/span>/g)];
+    assert.equal(figs.length, 2);
+    const chips = [...row.matchAll(/<a class="chip c-m" href="#([^"]+)">Modelled<\/a>/g)];
+    assert.equal(chips.length, 1, 'one chip per row');
+    assert.equal((row.match(/class="chip /g) || []).length, 1);
+    const lastTd = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
+    assert.ok(lastTd.includes('class="chip '), 'chip is in the last cell');
+    for (const m of row.matchAll(/<td class="num">([\s\S]*?)<\/td>/g)) assert.ok(!m[1].includes('class="chip'), 'no chip in td.num');
+    for (const [, id, text] of figs) {
+      assert.equal(text, claims[id].display, id);
+      assert.equal(claims[id].ref, chips[0][1], `${id}: row chip ref`);
+      all.push(id);
+    }
   }
+  assert.equal(all.length, 18);
   const wanted = ['output-per-head', 'cpa', 'ai-spend', ...COMPONENTS.map((c) => `cpa-${c}`)];
   for (const w of wanted) for (const side of ['base', 'scaled']) {
     assert.ok(table.includes(`data-fig="${w}-${side}"`), `${w}-${side}`);
   }
+});
+
+test('storage is too small to draw and is pointed at the table; the caption flags sideways scroll', () => {
+  assert.match(svg, /<text [^>]*>[^<]*too small to draw; see table[^<]*<\/text>/);
+  assert.match(s02, /<figcaption>[\s\S]*Scroll sideways on small screens\.[\s\S]*<\/figcaption>/);
 });
 
 test('svg has no style attributes, var() fills, scripts or external hrefs', () => {
@@ -128,7 +149,8 @@ test('svg desc numbers equal the panel claim displays and nothing else', () => {
 // Code review WR-09: neighbouring cost segments differ by texture, not grey shade alone.
 test('alternate cost segments and their legend swatches are hatched, the others solid', () => {
   const segs = [...svg.matchAll(/<rect class="seg seg-(\d)"([^>]*)\/>/g)];
-  assert.equal(segs.length, 18, '12 bar segments plus 6 legend swatches');
+  assert.equal(segs.length, 17, '12 bar segments plus 5 legend swatches (no storage swatch)');
+  assert.ok(!/<rect class="seg seg-6"(?![^>]*data-bar)[^>]*\/>/.test(svg), 'storage legend swatch is back');
   for (const [, n, rest] of segs) {
     if (Number(n) % 2 === 0) {
       assert.ok(rest.includes(`fill="url(#hatch-${n})"`), `seg-${n} not hatched`);

@@ -66,6 +66,8 @@ test('six lever evidence entries exist, ungraded Benchmark never, no company nam
     assert.ok(e, `lever ${n}`);
     assert.equal(e.kind, 'evidence');
     assert.notEqual(e.grade, 'Benchmark');
+    assert.notEqual(e.display, e.basis, `lever ${n}: Value repeats Basis`);
+    assert.ok(e.display.split(' ').length <= 6, `lever ${n}: Value is not short`);
     assert.ok(!/gradial|airops|profound|optimizely|klarna|unilever/i.test(e.display + e.basis));
   }
 });
