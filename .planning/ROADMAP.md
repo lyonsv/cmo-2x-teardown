@@ -197,7 +197,44 @@ Plans:
   4. Reader can use the page with a keyboard and screen reader (labelled inputs, aria-live outputs, data-table equivalents, grades not by colour alone), at 320 CSS px with tables scrolling in their own regions, and can print it cleanly.
   5. Primary sources, vendor facts, EU AI Act Art. 50 and Getty v Stability status are re-verified and date-stamped, the legal wording is flagged for review, and the production deploy is live.
 
-**Plans**: TBD
+**Plans:** 9 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — Phase 3 UI-review fixes and the s11 group grade rule (chip density), s12 matrix de-densified, hashchange smoke case
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-02-PLAN.md — Register groundwork: publisher-type column, new sources and assumptions (Backlog 0 N), pinned time/numeric-gate/register test changes
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 04-03-PLAN.md — s13 adoption and Backlog 0; s14 lead and verified incident table
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 04-04-PLAN.md — s14 risk blocks with as-at callouts, Getty v Stability neutral treatment, regulation, risk register
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 04-05-PLAN.md — s15 evidence gaps and not-used notes, legal-review flag and LEGAL-REVIEW.md, QA-03 re-verification stamps
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 04-06-PLAN.md — QA-04 crosscheck.mjs (CI, mutation-tested) and static WCAG checks
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [ ] 04-07-PLAN.md — cdp.mjs extraction, a11y.mjs (AX tree, focus, 320px, text spacing) and print.mjs with print CSS
+
+**Wave 8** *(blocked on Wave 7 completion)*
+
+- [ ] 04-08-PLAN.md — All gates, 04-HUMAN-UAT.md, local preview checkpoint and fixes
+
+**Wave 9** *(blocked on Wave 8 completion)*
+
+- [ ] 04-09-PLAN.md — Pre-flight, approve-push checkpoint, W3C, one content push, live smoke and a11y
 **UI hint**: yes
 **Research flag**: Verify against primary text: EU AI Act Art. 50 and Code of Practice (including the reported 2 Dec 2026 transition date), Getty v Stability appeal status, Moffatt v Air Canada, Parasuraman and Manzey (2010), indemnity wording, Gartner 49/40/27% figures (verify or drop). Flag the page for legal review.
 
