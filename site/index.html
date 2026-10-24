@@ -305,8 +305,30 @@
     </section>
     <section id="s04" aria-labelledby="s04-h">
       <div class="sec-head"><span class="sec-num">04</span><h2 id="s04-h">Platform and skills</h2></div>
-      <p>This section will describe the platform layers and the skills a team needs, using tool categories rather than products.</p>
-      <p class="later">Coming in a later update.</p>
+      <p>One versioned policy source, read by both the generator and the reviewer, is what makes the layers of a marketing factory governable.</p>
+      <div class="table-scroll" role="region" aria-label="Operating architecture table" tabindex="0">
+        <table>
+          <caption>Operating architecture, by layer</caption>
+          <thead><tr><th scope="col">Layer</th><th scope="col">What it does</th><th scope="col">Tool category</th><th scope="col">Reads / writes</th></tr></thead>
+          <tbody>
+            <tr class="shared"><th scope="row">Policy source</th><td>Brand, legal, accessibility and claims rules, held as one versioned source.</td><td>Policy and knowledge store</td><td>Read by generator and reviewer; one versioned source</td></tr>
+            <tr><th scope="row">Brief and concepts</th><td>Captures intent: audience, offer and master concepts.</td><td>Planning and collaboration workspace</td><td>Writes the brief and approved concepts</td></tr>
+            <tr><th scope="row">Generation</th><td>Builds master assets from approved concepts.</td><td>Creative generation model</td><td>Reads concepts and policy; writes master assets</td></tr>
+            <tr><th scope="row">Derivation and rendering</th><td>Templates, localises and renders feeds into variants.</td><td>Template and rendering engine</td><td>Reads master assets; writes variants</td></tr>
+            <tr><th scope="row">Review agent</th><td>Checks each variant against the policy version and cites rule IDs.</td><td>Review model, separate from the generator</td><td>Reads variants and policy; writes findings</td></tr>
+            <tr><th scope="row">Auto-approval gate</th><td>Assigns the tier and routes to auto-approve or a human.</td><td>Workflow and routing engine</td><td>Reads findings; writes tier and decision</td></tr>
+            <tr><th scope="row">Eval harness and telemetry</th><td>Measures the reviewer against human decisions and seeded errors.</td><td>Evaluation and monitoring tooling</td><td>Reads decisions; writes accuracy and drift reports</td></tr>
+            <tr><th scope="row">Asset manifest</th><td>System of record for every variant, finding and approval.</td><td>Digital asset management and metadata store</td><td>Read and written by every layer</td></tr>
+            <tr><th scope="row">Activation</th><td>Publishes approved variants to channels.</td><td>Ad platforms, CMS and CRM</td><td>Reads approved variants; writes publish events</td></tr>
+            <tr><th scope="row">Measurement</th><td>Joins performance back to the asset ID.</td><td>Analytics and experimentation</td><td>Reads publish events; writes results to the manifest</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The table reads from intent at the top to measurement at the bottom, and it names tool categories rather than products on purpose. Any layer can be filled by several kinds of tool, and the architecture holds if one is swapped for another. What does not change is the order of responsibility: intent is captured, assets are built and derived, they are reviewed, a gate decides who approves, and results are measured against the same record.</p>
+      <p>The first row carries the weight. Brand, legal, accessibility and claims rules live in one versioned policy source, and both the generator and the reviewer read the same version of it. If they read different copies, the reviewer ends up checking work against rules the generator never saw, and disagreements look like defects when they are really drift. Every finding therefore records the policy version it was checked against. A change to policy is a versioned release, with an owner and a date, not an edit to a prompt that nobody tracks.</p>
+      <p>Skills are the second idea. A skill is a reusable unit of work, such as localising a headline, rendering a feed or checking a claim, packaged with its instructions and its own tests. Treating skills as software changes how they are managed. Each has a version, an owner and a set of examples that must keep passing, and a change to a skill is released only after it has been checked against those examples. The discipline is simple to state: measure, build, enforce, re-measure.</p>
+      <p>Skills also keep people in the right place. People write the policy and direct the concepts; skills carry out the repeatable work; the review agent applies policy to every variant; humans take the decisions the gate sends them. Each of these roles can be inspected, because each leaves a record.</p>
+      <p>The asset manifest is the join key that makes this inspection possible. It is the system of record for every variant, and every layer reads from it or writes to it. A variant, its concept, its policy version, its review findings, its approval and its performance are all attached to one identifier. That identifier is used again when <a href="#s08">eval harness and telemetry</a> compares the reviewer with human decisions, and it is what allows a programme to say which rule, which skill and which policy version produced a given result.</p>
     </section>
     <section id="s05" aria-labelledby="s05-h">
       <div class="sec-head"><span class="sec-num">05</span><h2 id="s05-h">The 10,000-asset campaign</h2></div>
