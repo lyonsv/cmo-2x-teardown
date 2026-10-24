@@ -406,8 +406,9 @@
           </tbody>
         </table>
       </div>
+      <p class="table-note">Derived variants: internal throughput, not the claim. The 2x counts campaign-markets, so these counts measure factory load, not output.</p>
       <p>The factors are treated as independent for illustration. Each one expands only the stated share of the set that exists after the previous factor. Real campaigns have correlated factors, because sizes follow the placement specs of each channel, so the total is an upper-bound sketch rather than a count of distinct valid variants. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
-      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
+      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live derived variants (internal throughput). Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
       <h3>Where the imagery comes from</h3>
       <p>Every campaign needs images, and there are three routes to them: retrieve approved assets, license new ones, or generate them. The comparison is shown without a ranking.</p>
       <div class="table-scroll" role="region" aria-label="Imagery sourcing table" tabindex="0">
@@ -530,7 +531,7 @@
       </ul>
       <h3>Reviewer capacity is the binding constraint</h3>
       <p>Here, without the gate means an auto-approval share of zero, so a person reviews every variant; with the gate uses the model's shares. Hours are before rework, while utilisation includes the rework loop at <span data-fig="asm-rework-rate">15%</span> <a class="chip c-m" href="#asm-rework-rate">Modelled</a>.</p>
-      <p>Volume is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-formats-per-market">Modelled</a> approved-live variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
+      <p>Review volume, in derived variants (internal throughput, not the claim), is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-formats-per-market">Modelled</a> approved-live variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
       <div class="table-scroll" role="region" aria-label="Reviewer capacity table" tabindex="0">
         <table>
           <caption>Reviewer capacity, 1x and 2x</caption>
@@ -543,6 +544,7 @@
           </tbody>
         </table>
       </div>
+      <p class="table-note">Derived variants: internal throughput, not the claim. The 2x counts campaign-markets, so these counts measure factory load, not output.</p>
       <p>With the gate, human review hours fall; without it, 2x volume exceeds reviewer capacity. Utilisation is the binding constraint, not generation.</p>
       <p>At flat reviewers the model needs at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants auto-approved, and below about <span data-fig="capacity-auto-approval">29%</span> capacity is exceeded outright. At the clearance rates published by the one public reference (see <a href="#s06">the review agent</a>), 2x utilisation would be <span data-fig="cap-2x-ref-high-util">100.1%</span> <a class="chip c-m" href="#src-intercom-2x-teardown">Modelled</a> <span class="flag">company-reported</span> over capacity and <span data-fig="cap-2x-ref-low-util">111.3%</span> <span class="flag">company-reported</span> over capacity, using rates the reference company reported for code review, not marketing. At 2x without the gate there is no cycle time to show, because the queue never clears.</p>
       <h3>Guarding against reviewer fatigue</h3>
@@ -623,7 +625,7 @@
         <li><b>Queue age:</b> how long the oldest items have waited.</li>
         <li><b>Rework rate.</b></li>
         <li><b>Cost per approved-live asset.</b></li>
-        <li><b>Cycle time</b> from brief to live.</li>
+        <li><b>Brief-to-live time.</b></li>
         <li><b>Policy and skill version</b> in use for each asset.</li>
       </ul>
       <p>This is instrumentation of the work, not surveillance of people: metrics are per asset, per tier and per queue, never per named reviewer. <a class="chip c-m" href="#asm-telemetry-metrics">Modelled</a></p>

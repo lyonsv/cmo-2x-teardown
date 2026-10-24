@@ -706,6 +706,7 @@ test('s05 derive lead and matrix table', () => {
   const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
   assert.equal(strip(first[1]), 'Derive, do not generate: four master concepts become about 12,000 Modelled variants through templating, localisation and feed rendering, and most land in low-risk tiers.');
   assert.ok(first[1].includes('data-fig="matrix-total"'));
+  assert.ok(strip(s).includes('Derived variants: internal throughput, not the claim.'));
   assert.ok(!s.includes('<p class="later">'));
   assert.match(s, /<div class="table-scroll" role="region" aria-label="[^"]+" tabindex="0">/);
   const cap = s.match(/<caption>([\s\S]*?)<\/caption>/)[1];
@@ -868,6 +869,8 @@ function tableByCaption(sec, caption) {
 
 test('s07 reviewer capacity', () => {
   const s = sectionHtml('s07');
+  assert.ok(strip(s).includes('Derived variants: internal throughput, not the claim.'));
+  assert.ok(strip(s).includes('Review volume, in derived variants (internal throughput, not the claim), is'));
   const t = tableByCaption(s, 'Reviewer capacity, 1x and 2x');
   // WR-01: volume and capacity are stated once before the table under their own
   // chips; each row holds only figures that move with the auto-approval share.
@@ -928,7 +931,7 @@ test('s08 eval harness', () => {
   assert.ok(text.includes('reason code'));
   assert.ok(text.includes('No change to a generator, prompt, model or policy ships if it regresses the harness.'));
   const lower = text.toLowerCase();
-  for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved-live asset', 'cycle time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
+  for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved-live asset', 'brief-to-live time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
   assert.equal((s.match(/href="#asm-telemetry-metrics"/g) || []).length, 1);
 });
 
