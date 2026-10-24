@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { modelContext, claims, assumptions } from '../site/js/data.js';
 import { present, defaultValues, RESULT_ROWS } from '../site/js/model.js';
+import { FIELDS } from '../site/js/fields.js';
+import { toText } from '../site/js/state.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const start = html.indexOf('<section id="s11"');
@@ -25,7 +27,6 @@ test('s11 reads in order: lead, status, no-JS note, summary output, results tabl
   for (const i of idx) assert.ok(i >= 0, `missing element, positions ${idx}`);
   assert.deepEqual([...idx].sort((a, b) => a - b), idx, 'elements out of order');
   assert.ok(/<p><output id="calc-summary"/.test(s11), 'summary output sits in its own paragraph');
-  assert.ok(!s11.includes('calc-live'), 'JS-only wrappers arrive in a later plan');
 });
 
 test('s11 has one live region and the table is not inside an output', () => {
@@ -97,4 +98,86 @@ test('calculator assumptions have register rows', () => {
   for (const id of ['asm-locales', 'asm-formats-per-locale']) {
     assert.ok(html.includes(`<tr id="${id}">`), id);
   }
+});
+
+// ---- Plan 03-06: the form, error summary and share panel ----
+
+function calcLiveWrappers() {
+  const out = [];
+  const re = /<div class="calc-live" id="([^"]+)">/g;
+  let m;
+  while ((m = re.exec(s11))) {
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const tag = /<(\/?)div\b[^>]*>/g;
+    tag.lastIndex = i;
+    let t;
+    while (depth > 0 && (t = tag.exec(s11))) depth += t[1] ? -1 : 1;
+    out.push({ id: m[1], inner: s11.slice(i, t.index) });
+  }
+  return out;
+}
+
+test('s11 order: lead, status, no-JS, form, errors, summary, results, share last', () => {
+  const at = (needle) => {
+    const i = s11.indexOf(needle);
+    assert.ok(i >= 0, needle);
+    return i;
+  };
+  const order = [
+    at('<p role="status" class="calc-status">'),
+    at('<p class="calc-nojs">'), at('<div class="calc-live" id="calc-form-wrap">'), at('<div class="calc-live" id="calc-errors-wrap">'),
+    at('<p><output id="calc-summary"'), at('aria-label="Calculator results"'), at('<div class="calc-live" id="calc-share-wrap">'),
+  ];
+  assert.deepEqual([...order].sort((a, b) => a - b), order);
+  const share = calcLiveWrappers().find((w) => w.id === 'calc-share-wrap');
+  assert.ok(s11.indexOf(share.inner) + share.inner.length > s11.lastIndexOf('</table>'), 'share panel last');
+  assert.equal((s11.match(/role="status"/g) || []).length, 2, 'status region and share status only');
+});
+
+test('no result, table, figure, details, believe panel or summary sits inside a .calc-live wrapper', () => {
+  const wraps = calcLiveWrappers();
+  assert.deepEqual(wraps.map((w) => w.id), ['calc-form-wrap', 'calc-errors-wrap', 'calc-share-wrap']);
+  for (const w of wraps) {
+    for (const bad of ['data-fig=', '<table', '<figure', '<details', 'class="believe"', 'id="calc-summary"']) {
+      assert.ok(!w.inner.includes(bad), `${w.id} contains ${bad}`);
+    }
+  }
+});
+
+test('form: four groups, twelve fields in order with label, input, unit, chip and hint', () => {
+  const wrap = calcLiveWrappers()[0].inner;
+  assert.match(wrap, /^\s*<form class="calc-form" novalidate>[\s\S]*<\/form>\s*$/);
+  const groups = [...wrap.matchAll(/<fieldset class="calc-group">\s*<legend>([^<]*)<\/legend>([\s\S]*?)<\/fieldset>/g)];
+  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'People', 'Cost and quality', 'Automation']);
+  const fields = groups.flatMap((g) => g[2].split('<div class="field">').slice(1));
+  fields.forEach((html_, i) => {
+    const f = FIELDS[i];
+    const d = defaultValues(ctx)[f.key];
+    assert.ok(html_.includes(`<label for="in-${f.key}">${f.label}</label>`), f.key);
+    const input = `<input id="in-${f.key}" name="${f.key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-${f.key}" value="${toText(f, d)}">`;
+    assert.ok(html_.includes(input), `${f.key} input`);
+    assert.ok(html_.includes(`<span class="unit">${f.unit}</span>`), `${f.key} unit`);
+    const grade = assumptions[f.asm].grade;
+    assert.ok(html_.includes(`<a class="chip ${CHIP_CLASS[grade]}" href="#${f.asm}">${grade}</a>`), `${f.key} chip`);
+    const hint = html_.match(new RegExp(`<p class="hint" id="hint-${f.key}">([^<]*)</p>`));
+    assert.ok(hint && hint[1].startsWith(`Default ${toText(f, d)}`), `${f.key} hint`);
+    if (f.key === 'reviewers') assert.match(hint[1], /utilisation, cycle time and break-even only/);
+    if (f.key === 'marketers') assert.match(hint[1], /output per head only/);
+    assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
+  });
+  assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2]);
+  assert.deepEqual(FIELDS.map((f) => f.group), ['volume', 'volume', 'volume', 'people', 'people', 'people', 'cost', 'cost', 'cost', 'cost', 'automation', 'automation']);
+  assert.ok(!/<h2[^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
+});
+
+test('error summary and share panel markup', () => {
+  const [, errors, share] = calcLiveWrappers();
+  assert.ok(errors.inner.includes('<div class="calc-errors" role="alert" tabindex="-1" hidden>'));
+  assert.ok(share.inner.includes('<h3>Share these numbers</h3>'));
+  assert.ok(share.inner.includes('<input readonly id="share-link"'));
+  assert.ok(share.inner.includes('<button type="button" class="btn" id="copy-link">Copy link</button>'));
+  assert.ok(share.inner.includes('<button type="button" class="btn" id="reset-calc">Reset to defaults</button>'));
+  assert.ok(share.inner.includes('The link stores your inputs in the address only. Nothing is sent or saved.'));
+  assert.ok(share.inner.includes('<p role="status" class="share-status"></p>'));
 });

@@ -211,3 +211,20 @@ test('.btn and .btn-primary follow the UI-SPEC', () => {
   assert.match(css, /ol\.proof-steps li \+ li \{ margin-top: var\(--s-md\); \}/);
   assert.ok(!/outline:\s*none/.test(css));
 });
+
+// Phase 3 Plan 6: calculator form.
+test('calculator form CSS follows the UI-SPEC', () => {
+  const rl = (sel) => (css.match(new RegExp(`(?:^|\\n)${sel.replace(/[.\[\]=:]/g, '\\$&')} \\{([^}]*)\\}`)) || [])[1] || '';
+  const input = rl('.control input');
+  assert.match(input, /min-height:\s*48px/);
+  const fs = Number(input.match(/font:\s*\d+\s+(\d+)px/)[1]);
+  assert.ok(fs >= 16);
+  assert.match(rl('.btn'), /min-height:\s*48px/);
+  assert.match(rl('.is-invalid .control, .control.is-invalid'), /border:\s*3px solid var\(--ink\)/);
+  assert.match(rl('.field-error'), /border-left:\s*3px solid var\(--ink\)/);
+  assert.match(css, /accent-color:\s*var\(--ink\)/);
+  assert.match(css, /@media \(max-width: 720px\) \{[\s\S]*?fieldset\.calc-group \{ grid-template-columns: 1fr; \}/);
+  assert.match(css, /@media print \{[\s\S]*\.share, \.calc-errors, \.calc-nojs, \.calc-live \.btn \{ display: none; \}/);
+  const added = css.slice(css.indexOf('.calc-form {'), css.indexOf('ol.proof-steps {'));
+  for (const [, v] of added.matchAll(/(?:^|[^-])color:\s*([^;}]+)/g)) assert.match(v.trim(), /^var\(--(ink|muted|verified|paper|paper-2)\)$/, v);
+});

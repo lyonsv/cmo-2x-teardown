@@ -194,7 +194,11 @@ test('lever evidence rows do not repeat one sentence in Value and Basis', () => 
 });
 
 test('static page guards', () => {
-  assert.ok(!html.includes('<script'), 'script element present');
+  const scripts = html.match(/<script\b[^>]*>[\s\S]*?<\/script>/g) || [];
+  assert.deepEqual(scripts, ['<script type="module" src="js/ui.js"></script>'], 'exactly one same-origin module script');
+  assert.equal((html.match(/<script/g) || []).length, 1);
+  assert.ok(html.indexOf('</footer>') < html.indexOf('<script') && html.indexOf('<script') < html.indexOf('</body>'), 'script sits between footer and body end');
+  assert.ok(!/\son[a-z]+\s*=/i.test(html), 'inline event handler present');
   assert.ok(!html.includes('data:image'), 'data:image present');
   assert.match(html, /<html lang="en-GB">/);
   assert.ok(existsSync(new URL('../site/.nojekyll', import.meta.url)));
@@ -353,6 +357,12 @@ test('answer-first paragraph is short and states the falsifier', () => {
   assert.ok(!/do not improve and first-pass compliance falls/.test(html), 'AND falsifier wording is back');
 });
 
+test('CSP meta is exactly the pinned policy', () => {
+  const m = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/);
+  assert.ok(m, 'CSP meta');
+  assert.equal(m[1], "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'");
+});
+
 test('landmarks and CSP hygiene', () => {
   for (const t of ['<header', '<nav', '<main id="main"', '<footer']) assert.ok(html.includes(t), t);
   assert.ok(!html.includes(' style="'), 'inline style attribute');
@@ -424,7 +434,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
   const parts = [
     regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
     regionHtml('<div class="legend">', '</dl>'),
-    ...SECTION_IDS.map((id) => sectionHtml(id).replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
+    ...SECTION_IDS.map((id) => sectionHtml(id).replace(/<form class="calc-form"[\s\S]*?<\/form>/, ' ').replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
     regionHtml('<footer>', '</footer>'),
   ];
   for (const part of parts) {

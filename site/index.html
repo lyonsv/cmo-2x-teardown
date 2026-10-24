@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
 <title>CMO 2x: what doubling a marketing organisation's output would take</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -797,6 +797,85 @@
         <p>Replace the defaults with your own numbers. The page recomputes cost per approved-live asset, reviewer load and the auto-approval share you would need.</p>
         <p role="status" class="calc-status">Showing: page defaults</p>
         <p class="calc-nojs">The interactive calculator needs JavaScript. Below is the default scenario, calculated in advance from the same model.</p>
+        <div class="calc-live" id="calc-form-wrap">
+          <form class="calc-form" novalidate>
+            <fieldset class="calc-group">
+              <legend>Volume</legend>
+              <div class="field">
+                <div class="field-head"><label for="in-campaigns">Campaigns per year</label><a class="chip c-m" href="#asm-campaigns">Modelled</a></div>
+                <div class="control"><input id="in-campaigns" name="campaigns" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-campaigns" value="40"><span class="unit">campaigns</span></div>
+                <p class="hint" id="hint-campaigns">Default 40.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-concepts">Concepts per campaign</label><a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a></div>
+                <div class="control"><input id="in-concepts" name="concepts" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-concepts" value="25"><span class="unit">concepts</span></div>
+                <p class="hint" id="hint-concepts">Default 25. With locales, this gives the page's average campaign.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-locales">Locales</label><a class="chip c-m" href="#asm-locales">Modelled</a></div>
+                <div class="control"><input id="in-locales" name="locales" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-locales" value="5"><span class="unit">locales</span></div>
+                <p class="hint" id="hint-locales">Default 5.</p>
+              </div>
+            </fieldset>
+            <fieldset class="calc-group">
+              <legend>People</legend>
+              <div class="field">
+                <div class="field-head"><label for="in-marketers">Marketing FTE</label><a class="chip c-m" href="#asm-marketing-fte">Modelled</a></div>
+                <div class="control"><input id="in-marketers" name="marketers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-marketers" value="120"><span class="unit">FTE</span></div>
+                <p class="hint" id="hint-marketers">Default 120. Changes output per head only.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-reviewers">Reviewer FTE</label><a class="chip c-m" href="#asm-reviewer-fte">Modelled</a></div>
+                <div class="control"><input id="in-reviewers" name="reviewers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-reviewers" value="12"><span class="unit">FTE</span></div>
+                <p class="hint" id="hint-reviewers">Default 12. Changes utilisation, cycle time and break-even only.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-minutes">Minutes per review</label><a class="chip c-m" href="#asm-review-minutes">Modelled</a></div>
+                <div class="control"><input id="in-minutes" name="minutes" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-minutes" value="12"><span class="unit">minutes</span></div>
+                <p class="hint" id="hint-minutes">Default 12.</p>
+              </div>
+            </fieldset>
+            <fieldset class="calc-group">
+              <legend>Cost and quality</legend>
+              <div class="field">
+                <div class="field-head"><label for="in-vcost">Variant generation cost at 2x</label><a class="chip c-m" href="#asm-variant-cost">Modelled</a></div>
+                <div class="control"><input id="in-vcost" name="vcost" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-vcost" value="0.8"><span class="unit">$ per variant</span></div>
+                <p class="hint" id="hint-vcost">Default 0.8.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-mconcept">Cost per master concept</label><a class="chip c-m" href="#asm-master-concept-cost">Modelled</a></div>
+                <div class="control"><input id="in-mconcept" name="mconcept" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-mconcept" value="1200"><span class="unit">$ per concept</span></div>
+                <p class="hint" id="hint-mconcept">Default 1200.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-yield">Approval yield</label><a class="chip c-m" href="#asm-approval-yield">Modelled</a></div>
+                <div class="control"><input id="in-yield" name="yield" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-yield" value="95"><span class="unit">%</span></div>
+                <p class="hint" id="hint-yield">Default 95%.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-rework">Rework rate</label><a class="chip c-m" href="#asm-rework-rate">Modelled</a></div>
+                <div class="control"><input id="in-rework" name="rework" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-rework" value="15"><span class="unit">%</span></div>
+                <p class="hint" id="hint-rework">Default 15%.</p>
+              </div>
+            </fieldset>
+            <fieldset class="calc-group">
+              <legend>Automation</legend>
+              <div class="field">
+                <div class="field-head"><label for="in-auto1">Auto-approval share today</label><a class="chip c-m" href="#asm-auto-approval">Modelled</a></div>
+                <div class="control"><input id="in-auto1" name="auto1" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-auto1" value="20"><span class="unit">%</span></div>
+                <p class="hint" id="hint-auto1">Default 20%.</p>
+              </div>
+              <div class="field">
+                <div class="field-head"><label for="in-auto2">Auto-approval share at 2x</label><a class="chip c-m" href="#asm-auto-approval">Modelled</a></div>
+                <div class="control"><input id="in-auto2" name="auto2" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-auto2" value="60"><span class="unit">%</span></div>
+                <p class="hint" id="hint-auto2">Default 60%.</p>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+        <div class="calc-live" id="calc-errors-wrap">
+          <div class="calc-errors" role="alert" tabindex="-1" hidden><p><b></b></p><ul></ul></div>
+        </div>
         <p><output id="calc-summary" aria-live="polite" aria-atomic="true">The table below shows the page defaults.</output></p>
         <div class="table-scroll" role="region" aria-label="Calculator results" tabindex="0">
           <table>
@@ -871,6 +950,16 @@
         </div>
         <p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>
         <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
+        <div class="calc-live" id="calc-share-wrap">
+          <div class="share">
+            <h3>Share these numbers</h3>
+            <label for="share-link">Link to your numbers</label>
+            <div class="control"><input readonly id="share-link" type="text" value="" aria-describedby="share-hint"></div>
+            <p class="hint" id="share-hint">The link stores your inputs in the address only. Nothing is sent or saved.</p>
+            <div class="share-actions"><button type="button" class="btn" id="copy-link">Copy link</button><button type="button" class="btn" id="reset-calc">Reset to defaults</button></div>
+            <p role="status" class="share-status"></p>
+          </div>
+        </div>
       </div>
     </section>
     <section id="s12" aria-labelledby="s12-h">
@@ -1483,5 +1572,6 @@
     <p>Vincent Lyons · 2026-10-24 · Projection, not retrospective</p>
   </footer>
 </div>
+<script type="module" src="js/ui.js"></script>
 </body>
 </html>
