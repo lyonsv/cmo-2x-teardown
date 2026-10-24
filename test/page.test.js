@@ -430,6 +430,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
   for (const part of parts) {
     const cleaned = strip(
       part
+        .replace(/<span class="statute">17 U\.S\.C\. (?:504\(c\)|412)<\/span>/g, ' ') // statute citations, span text pinned below
         .replace(/<a href="#s\d\d">[^<]*<\/a>/g, ' ') // in-page section cross-links
         .replace(/<time datetime="\d{4}-\d{2}-\d{2}">[^<]*<\/time>/g, ' ') // ISO dates, checked below
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
@@ -1074,7 +1075,7 @@ test('insight and reporting block is brief, Modelled, anonymised', () => {
   const s = sectionHtml('s09');
   assert.ok(s.indexOf('id="s09-insight"') > s.indexOf('id="s09-experimentation"'));
   assert.ok(s.includes('<h3 id="s09-insight">Insight and reporting</h3>'));
-  const block = leverBlock('s09-insight');
+  const block = leverBlock('s09-insight', 's09-ops');
   const mini = tableByCaption(block, 'Insight and reporting: output, outcome and evidence');
   assert.equal(mini.rows.length, 2);
   for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>'));
@@ -1085,4 +1086,40 @@ test('insight and reporting block is brief, Modelled, anonymised', () => {
   assert.ok(block.includes('<a href="#s08">'));
   const words = blockWords(block);
   assert.ok(words >= 150 && words <= 300, `insight prose ${words} words`);
+});
+
+// ---- Plan 03-03: operations block with statutory illustration (LEVER-04) ----
+
+test('every statute span carries exactly one of the two pinned citations', () => {
+  const spans = [...html.matchAll(/<span class="statute">([^<]*)<\/span>/g)];
+  assert.ok(spans.length >= 2);
+  for (const m of spans) assert.ok(['17 U.S.C. 504(c)', '17 U.S.C. 412'].includes(m[1]), `statute span "${m[1]}"`);
+  assert.equal((html.match(/class="statute"/g) || []).length, spans.length, 'a statute span the check cannot parse');
+});
+
+test('ops block: statutory table, callout, reader-owned incident rate, per-work illustration', () => {
+  const s = sectionHtml('s09');
+  assert.ok(s.includes('<h3 id="s09-ops">Operations: briefs, approvals, metadata and rights</h3>'));
+  const block = leverBlock('s09-ops', 's09-aeo');
+  const mini = tableByCaption(block, 'Operations: output, outcome and evidence');
+  for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>'));
+  const t = tableByCaption(block, '<span class="statute">17 U\\.S\\.C\\. 504\\(c\\)</span>: statutory damages per work infringed');
+  assert.deepEqual(t.head, ['Case', 'Range per work', 'Grade']);
+  assert.equal(t.rows.length, 3);
+  assert.deepEqual(t.rows.map((r) => strip(r.match(/<th[^>]*>([\s\S]*?)<\/th>/)[1])), ['Ordinary', 'Innocent', 'Wilful']);
+  for (const r of t.rows) assert.ok(r.includes('<a class="chip c-b" href="#src-cornell-17usc504">Benchmark</a></td>'));
+  const after = block.slice(block.indexOf('</table>', block.indexOf('statutory damages per work infringed')));
+  assert.match(after, /^<\/table>\s*<\/div>\s*<div class="callout">\s*<span class="lbl">Not legal advice<\/span>\s*<p>Illustrative, not legal advice; depends on jurisdiction\.<\/p>/);
+  const text = strip(block);
+  assert.ok(text.includes('Treat this rate as yours to replace.'));
+  assert.ok(block.includes('<a class="chip c-s" href="#asm-incident-rate">Speculative</a>'));
+  assert.ok(block.includes('<a class="chip c-b" href="#src-cornell-17usc412">Benchmark</a>'));
+  assert.ok(/<span class="statute">17 U\.S\.C\. 412<\/span>/.test(block));
+  assert.ok(/one work/.test(text) && /per master concept, not per variant/.test(text));
+  assert.ok(/injunction/.test(text) && /small beside/.test(text));
+  assert.ok(block.includes('<a href="#s07">the auto-approval gate</a>'));
+  // never multiplied by the variant count
+  assert.ok(!/data-fig="(?:matrix-[^"]*|cap-[^"]*-variants|vpc-[^"]*|avg-campaign-variants)"/.test(block), 'ops block uses a variant count');
+  const words = blockWords(block);
+  assert.ok(words >= 250 && words <= 450, `ops prose ${words} words`);
 });

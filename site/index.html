@@ -680,6 +680,38 @@
       </div>
       <p>The method we point to is a marketing-mix model calibrated by incrementality experiments. An open-source marketing-mix framework documents calibrating the model with geo experiments, using the experiment results as priors <a class="chip c-m" href="#src-mmm-geox">Modelled</a>. That is a description of a method, not a measured result, and we did not open its calibration guide.</p>
       <p>Faster, asset-level telemetry, described in <a href="#s08">the eval harness and telemetry section</a>, shortens the time from a change in performance to a person noticing it. That is the plausible route from more output to better outcomes: budget moves sooner and fatigued creative is caught earlier. This is an evidence gap rather than a finding. We did not find independent evidence that faster reporting alone lifts revenue, so the claim stays Modelled until your own holdouts show it.</p>
+      <h3 id="s09-ops">Operations: briefs, approvals, metadata and rights</h3>
+      <p>Doubling output could raise legal exposure if rights checks do not scale with it, but the statutory arithmetic is smaller than it first looks, and the larger risk is not the damages award.</p>
+      <div class="table-scroll" role="region" aria-label="Operations table" tabindex="0">
+        <table>
+          <caption>Operations: output, outcome and evidence</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Metric</th><th scope="col">Evidence grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Output</th><td>Brief-to-draft time; review rounds; metadata completeness; rights-check coverage.</td><td><a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td></tr>
+            <tr><th scope="row">Outcome</th><td>Rights incidents per thousand master concepts; reuse; takedown rate.</td><td><a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Operations is the unglamorous lever. A brief that states the audience, the offer and the constraints cuts review rounds. Approval routing that matches the review tiers keeps the queue moving. Asset metadata that records the source, the model and the licence of each asset makes rights checkable after the fact. A rights register records where each licensed element may be used and until when. None of these raises output on its own; together they stop extra output from turning into extra rework or extra exposure.</p>
+      <div class="table-scroll" role="region" aria-label="Statutory damages table" tabindex="0">
+        <table>
+          <caption><span class="statute">17 U.S.C. 504(c)</span>: statutory damages per work infringed</caption>
+          <thead><tr><th scope="col">Case</th><th scope="col">Range per work</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Ordinary</th><td class="num"><span data-fig="stat-ordinary-min">$750</span> to <span data-fig="stat-ordinary-max">$30,000</span></td><td><a class="chip c-b" href="#src-cornell-17usc504">Benchmark</a></td></tr>
+            <tr><th scope="row">Innocent</th><td class="num">Court may reduce to not less than <span data-fig="stat-innocent-min">$200</span></td><td><a class="chip c-b" href="#src-cornell-17usc504">Benchmark</a></td></tr>
+            <tr><th scope="row">Wilful</th><td class="num">Court may increase to not more than <span data-fig="stat-wilful-max">$150,000</span></td><td><a class="chip c-b" href="#src-cornell-17usc504">Benchmark</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="lbl">Not legal advice</span>
+        <p>Illustrative, not legal advice; depends on jurisdiction.</p>
+      </div>
+      <p>Rights attach to the master concept, and under the statute all the parts of a derivative work constitute one work. The illustration is therefore per master concept, not per variant. Multiplying a damages figure by the number of variants would overstate the exposure, and this page does not do it.</p>
+      <p>Suppose the rate of rights problems is <span data-fig="asm-incident-rate">1 in 1,000 master concepts</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a>. Treat this rate as yours to replace. We invented it for illustration, and we did not find a published benchmark for it.</p>
+      <p>At <span data-fig="concepts-scaled">1,189</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a> master concepts a year, that rate gives about <span data-fig="ops-incidents">1.2</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a> incidents a year. The statutory exposure would be <span data-fig="ops-exposure-lo">$892</span> to <span data-fig="ops-exposure-hi">$35,670</span> at the ordinary range, and up to <span data-fig="ops-exposure-wilful">$178,350</span> if every incident were found wilful.</p>
+      <p>Statutory damages also need timely registration (<span class="statute">17 U.S.C. 412</span> <a class="chip c-b" href="#src-cornell-17usc412">Benchmark</a>), so for unregistered or late-registered work the exposure is smaller still. Even the wilful figure is small beside <span data-fig="total-cost-scaled">$3.29M</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> of production-attributable cost at 2x. The tail risk is therefore an injunction, a takedown or harm to the brand, not the damages award, which is why rights checks sit in <a href="#s07">the auto-approval gate</a>.</p>
     </section>
     <section id="s10" aria-labelledby="s10-h">
       <div class="sec-head"><span class="sec-num">10</span><h2 id="s10-h">The outcome case</h2></div>
@@ -759,6 +791,24 @@
               <td><span class="chip c-m">Modelled</span></td>
               <td>none</td>
               <td><a href="https://developers.google.com/meridian/geox">https://developers.google.com/meridian/geox</a></td>
+            </tr>
+            <tr id="src-cornell-17usc504">
+              <th scope="row" class="id">src-cornell-17usc504</th>
+              <td>17 U.S. Code section 504: Remedies for infringement: Damages and profits<br>Published undated. Primary statute text; how courts apply it varies; not legal advice. Read via: Statute page read 2026-10-24; subsection (c) quoted for the per-work ranges and the rule that all the parts of a derivative work constitute one work.</td>
+              <td>Legal Information Institute, Cornell Law School (US Code text)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-b">Benchmark</span></td>
+              <td>none</td>
+              <td><a href="https://www.law.cornell.edu/uscode/text/17/504">https://www.law.cornell.edu/uscode/text/17/504</a></td>
+            </tr>
+            <tr id="src-cornell-17usc412">
+              <th scope="row" class="id">src-cornell-17usc412</th>
+              <td>17 U.S. Code section 412: Registration as prerequisite to certain remedies for infringement<br>Published undated. Primary statute text; how courts apply it varies; not legal advice. Read via: Statute page read 2026-10-24; the registration precondition for statutory damages.</td>
+              <td>Legal Information Institute, Cornell Law School (US Code text)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-b">Benchmark</span></td>
+              <td>none</td>
+              <td><a href="https://www.law.cornell.edu/uscode/text/17/412">https://www.law.cornell.edu/uscode/text/17/412</a></td>
             </tr>
             <tr id="src-gartner-2025-cmo-spend">
               <th scope="row" class="id">src-gartner-2025-cmo-spend</th>
@@ -1103,6 +1153,13 @@
               <td><span data-fig="asm-tests-per-quarter">20</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td>An illustrative test cadence for one team; replace with your own. No published benchmark.</td>
+            </tr>
+            <tr id="asm-incident-rate">
+              <th scope="row" class="id">asm-incident-rate</th>
+              <td>Rights incidents per master concept</td>
+              <td><span data-fig="asm-incident-rate">1 in 1,000 master concepts</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td>An invented illustrative rate of rights problems per master concept; rights attach to masters, and derivatives of one work count as one work. Treat this rate as yours to replace. No published benchmark.</td>
             </tr>
             <tr id="asm-imagery-routes">
               <th scope="row" class="id">asm-imagery-routes</th>

@@ -143,6 +143,28 @@ export const sources = {
     grade: 'Modelled',
     flag: null,
   },
+  'cornell-17usc504': {
+    title: '17 U.S. Code section 504: Remedies for infringement: Damages and profits',
+    publisher: 'Legal Information Institute, Cornell Law School (US Code text)',
+    published: 'undated',
+    accessed: '2026-10-24',
+    url: 'https://www.law.cornell.edu/uscode/text/17/504',
+    bias: 'Primary statute text; how courts apply it varies; not legal advice',
+    read_via: 'Statute page read 2026-10-24; subsection (c) quoted for the per-work ranges and the rule that all the parts of a derivative work constitute one work',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'cornell-17usc412': {
+    title: '17 U.S. Code section 412: Registration as prerequisite to certain remedies for infringement',
+    publisher: 'Legal Information Institute, Cornell Law School (US Code text)',
+    published: 'undated',
+    accessed: '2026-10-24',
+    url: 'https://www.law.cornell.edu/uscode/text/17/412',
+    bias: 'Primary statute text; how courts apply it varies; not legal advice',
+    read_via: 'Statute page read 2026-10-24; the registration precondition for statutory damages',
+    grade: 'Benchmark',
+    flag: null,
+  },
 };
 
 // Negative values format the absolute value and put a true minus sign (U+2212)
@@ -158,6 +180,7 @@ export function formatValue(value, format) {
     usdm2: (v) => `$${n(v / 1e6, 2)}M`,
     pct0: (v) => `${n(v * 100, 0)}%`,
     pct1: (v) => `${n(v * 100, 1)}%`,
+    num1: (v) => n(v, 1),
   }[format];
   if (body) {
     const text = body(Math.abs(value));
@@ -541,3 +564,32 @@ evidence('asm-harness-design', 'Eval harness design', 'Modelled', 'Design from o
   "Harness pattern adapted from one company-reported engineering example: human decisions as ground truth, versioned datasets, baseline-versus-treatment comparison inside a noise band; most changes tested there were inconclusive and a newer model tested worse. Thresholds must be calibrated on the organisation's own data.");
 evidence('asm-telemetry-metrics', 'Telemetry metrics', 'Modelled', 'Recommended instrumentation',
   'Metrics chosen so every cost, quality and outcome figure on this page can be measured per asset ID; no published benchmark.');
+
+// ---- Plan 03-03: operations lever, statutory-damages illustration ----
+// The statute ranges are Benchmark (primary law). The incident rate is an invented,
+// reader-owned assumption (Speculative). Rights attach to master concepts and all
+// derivatives of one work count as one work, so exposure is per master concept and
+// is never multiplied by the variant count.
+
+assumptions['asm-incident-rate'] = { id: 'asm-incident-rate', label: 'Rights incidents per master concept', kind: 'evidence', key: null, value: 0.001, unit: 'incidents per master concept',
+  display: '1 in 1,000 master concepts', grade: 'Speculative', flag: null,
+  basis: 'An invented illustrative rate of rights problems per master concept; rights attach to masters, and derivatives of one work count as one work. Treat this rate as yours to replace. No published benchmark.' };
+
+{
+  const stat = (id, value, unit) => {
+    claims[id] = { id, value, unit, display: formatValue(value, 'usd0'), grade: 'Benchmark', flag: null, ref: 'src-cornell-17usc504', format: 'usd0' };
+  };
+  stat('stat-ordinary-min', 750, 'USD per work infringed, ordinary minimum');
+  stat('stat-ordinary-max', 30000, 'USD per work infringed, ordinary maximum');
+  stat('stat-innocent-min', 200, 'USD per work infringed, floor where the court finds innocent infringement');
+  stat('stat-wilful-max', 150000, 'USD per work infringed, ceiling where the court finds wilful infringement');
+  const rate = assumptions['asm-incident-rate'].value;
+  const incidents = claims['concepts-scaled'].value * rate;
+  const ops = (id, value, unit, format) => {
+    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Speculative', flag: null, ref: 'asm-incident-rate', format };
+  };
+  ops('ops-incidents', incidents, 'illustrative rights incidents a year at 2x master concepts', 'num1');
+  ops('ops-exposure-lo', incidents * claims['stat-ordinary-min'].value, 'USD illustrative statutory exposure a year, ordinary minimum', 'usd0');
+  ops('ops-exposure-hi', incidents * claims['stat-ordinary-max'].value, 'USD illustrative statutory exposure a year, ordinary maximum', 'usd0');
+  ops('ops-exposure-wilful', incidents * claims['stat-wilful-max'].value, 'USD illustrative statutory exposure a year, wilful ceiling', 'usd0');
+}

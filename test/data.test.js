@@ -437,3 +437,33 @@ test('Plan 03-02 insight source', () => {
   assert.equal(s.grade, 'Modelled'); assert.equal(s.flag, null); assert.equal(s.accessed, '2026-10-24');
   assert.ok(/calibration guide/.test(s.read_via) && /not opened/.test(s.read_via));
 });
+
+test('Plan 03-03 statute sources, claims, incident assumption and ops claims', () => {
+  for (const [k, url] of [['cornell-17usc504', 'https://www.law.cornell.edu/uscode/text/17/504'], ['cornell-17usc412', 'https://www.law.cornell.edu/uscode/text/17/412']]) {
+    const s = sources[k];
+    assert.ok(s, k);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) assert.ok(typeof s[f] === 'string' && s[f].length > 0, `${k}.${f}`);
+    assert.equal(s.url, url); assert.equal(s.grade, 'Benchmark'); assert.equal(s.flag, null); assert.equal(s.accessed, '2026-10-24');
+  }
+  for (const [id, value, display] of [['stat-ordinary-min', 750, '$750'], ['stat-ordinary-max', 30000, '$30,000'], ['stat-innocent-min', 200, '$200'], ['stat-wilful-max', 150000, '$150,000']]) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value); assert.equal(c.display, display); assert.equal(c.grade, 'Benchmark');
+    assert.equal(c.flag, null); assert.equal(c.ref, 'src-cornell-17usc504');
+  }
+  const a = assumptions['asm-incident-rate'];
+  assert.equal(a.grade, 'Speculative'); assert.equal(a.value, 0.001); assert.equal(a.display, '1 in 1,000 master concepts');
+  assert.ok(a.basis.includes('Treat this rate as yours to replace'));
+  const inc = claims['concepts-scaled'].value * 0.001;
+  const want = { 'ops-incidents': [inc, '1.2'], 'ops-exposure-lo': [inc * 750, formatValue(inc * 750, 'usd0')], 'ops-exposure-hi': [inc * 30000, formatValue(inc * 30000, 'usd0')], 'ops-exposure-wilful': [inc * 150000, formatValue(inc * 150000, 'usd0')] };
+  for (const [id, [value, display]] of Object.entries(want)) {
+    const c = claims[id];
+    assert.ok(Math.abs(c.value - value) < 1e-9, id);
+    assert.equal(c.display, display); assert.equal(c.grade, 'Speculative'); assert.equal(c.ref, 'asm-incident-rate');
+  }
+});
+
+test('formatValue num1 gives one decimal', () => {
+  assert.equal(formatValue(1.189, 'num1'), '1.2');
+  assert.equal(formatValue(12, 'num1'), '12.0');
+});
