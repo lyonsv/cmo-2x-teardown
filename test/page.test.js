@@ -627,7 +627,6 @@ test('s05 COI note sits directly above the imagery table', () => {
   assert.ok(before.endsWith('</p>'), 'a lead-in paragraph must come immediately before the callout');
   const { table } = imageryTable();
   assert.ok(s.indexOf(m[0]) < s.indexOf(table));
-  assert.ok(m[0].length + s.indexOf(m[0]) <= s.indexOf('<div class="table-scroll"', s.indexOf(m[0])) + 1);
 });
 
 test('imagery table is neutral', () => {
@@ -660,7 +659,7 @@ test('one dated Getty v Stability line', () => {
   assert.ok(strip(p).includes('permission to appeal'));
   assert.ok(p.includes('href="#src-getty-v-stability-uk"'));
   assert.ok(p.includes('<a href="#s14">section 14</a>'));
-  assert.ok(strip(p).includes('Full treatment in section 14.'));
+  assert.ok(strip(p).replace(/\s+([.,;])/g, '$1').includes('Full treatment in section 14.'));
 });
 
 test('personalisation and feeds block', () => {

@@ -25,6 +25,33 @@ export const sources = {
     bias: 'Analyst firm; self-reported survey of 401 CMOs in North America, the UK and Europe, mostly companies above $1B revenue',
     read_via: 'Gartner newsroom page, confirmed in a browser by the author',
   },
+  'nyu-emory-ai-ads-2025': {
+    title: 'The Impact of Visual Generative AI on Advertising Effectiveness',
+    publisher: 'SSRN (working paper); authors at NYU Stern and Emory',
+    published: '2025-11-06',
+    accessed: '2026-10-24',
+    url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5638311',
+    bias: 'Academic working paper; peer-review status not checked; one author is a consultant at an economics consultancy that republished it',
+    read_via: 'SSRN page, confirmed in a browser by the author (SSRN returns 403 to automation); date from the NYU Stern research highlight of 2025-11-06',
+  },
+  'usco-copyright-ai-part2': {
+    title: 'Copyright and Artificial Intelligence, Part 2: Copyrightability',
+    publisher: 'U.S. Copyright Office',
+    published: '2025-01-29',
+    accessed: '2026-10-24',
+    url: 'https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf',
+    bias: 'Government agency report; the Office\'s view of US law, not a court ruling',
+    read_via: 'Report PDF; executive summary read directly',
+  },
+  'getty-v-stability-uk': {
+    title: 'Getty Images v Stability AI [2025] EWHC 2863 (Ch): judgment dated 2025-11-04 and permission to appeal',
+    publisher: 'Taylor Wessing (law-firm commentary)',
+    published: '2026-01',
+    accessed: '2026-10-24',
+    url: 'https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted',
+    bias: 'Law-firm commentary on a UK High Court judgment, not the judgment itself; appeal status is time-sensitive',
+    read_via: 'Page returned 403 to automation on 2026-10-24, so the judgment date and the grant of permission to appeal rest on search summaries of this and a second law-firm note; publication month taken from the URL; the author is to confirm both and the Court of Appeal status in a browser before publishing; a US action was refiled in California per a Bloomberg Law report (headline only)',
+  },
 };
 
 // Negative values format the absolute value and put a true minus sign (U+2212)
@@ -145,6 +172,13 @@ lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
 lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative.');
 
+assumptions['asm-imagery-routes'] = { id: 'asm-imagery-routes', label: 'Imagery routes: rights, cost and speed', kind: 'evidence', key: null, value: null, unit: null,
+  display: 'Generic route comparison', grade: 'Modelled', flag: null,
+  basis: 'Generic comparison of retrieving approved, licensing and generating imagery; actual terms depend on each licence, model provider and jurisdiction. Not legal advice.' };
+assumptions['asm-imagery-indemnity'] = { id: 'asm-imagery-indemnity', label: 'Imagery routes: indemnity', kind: 'evidence', key: null, value: null, unit: null,
+  display: 'Typical contract terms', grade: 'Modelled', flag: null,
+  basis: 'Summary of typical indemnity terms described in law-firm commentary: often limited to paid tiers, conditional on using the provider safeguards, excluding output the customer knew or should have known infringed and often excluding modified output; caps can apply. Provider contracts vary. Not legal advice.' };
+
 export const variantMatrixDefaults = {
   concepts: 4,
   factors: [
@@ -190,6 +224,14 @@ export const claims = {
   'gartner-sample-2025': {
     id: 'gartner-sample-2025', value: 402, unit: 'respondents', display: '402',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
+  },
+  'nyu-ctr-lift': {
+    id: 'nyu-ctr-lift', value: 19, unit: '% click-through lift, fully AI-created ads (up to)', display: '19%',
+    grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
+  },
+  'nyu-disclosure-drop': {
+    id: 'nyu-disclosure-drop', value: -31.5, unit: '% change in click-through when AI involvement is disclosed', display: '\u221231.5%',
+    grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
   },
   'output-per-head-base': {
     id: 'output-per-head-base', value: 83, unit: 'approved-live asset-variants per head per quarter', display: '83',

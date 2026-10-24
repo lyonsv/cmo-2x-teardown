@@ -393,6 +393,29 @@
       </div>
       <p>The factors are independent. Each one expands only the stated share of the set that exists after the previous factor, so no variant is double counted, and the shares stand in for the exclusions a real campaign has. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
       <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers and reach <a href="#s07">the auto-approval gate</a> with a small chance of sending anything to a person.</p>
+      <h3>Where the imagery comes from</h3>
+      <p>Every campaign needs images, and there are three routes to them: retrieve approved assets, license new ones, or generate them. The comparison is shown without a ranking.</p>
+      <div class="callout coi">
+        <span class="lbl">COI note</span>
+        <p>The author works at iStock/Getty Images. This page is vendor-neutral by design; the table below sets out three routes to imagery without ranking them.</p>
+      </div>
+      <div class="table-scroll" role="region" aria-label="Imagery sourcing table" tabindex="0">
+        <table>
+          <caption>Imagery sourcing: three routes</caption>
+          <thead><tr><th scope="col">Criterion</th><th scope="col">Retrieve approved</th><th scope="col">License</th><th scope="col">Generate</th><th scope="col">Basis</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Rights</th><td>Existing licence terms govern use.</td><td>Per-licence terms govern use.</td><td>Depends on the model terms and any third-party material in the output.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
+            <tr><th scope="row">Indemnity</th><td>Often set by the contract.</td><td>Often set by the contract.</td><td>Conditional; scope, tiers and exclusions vary by provider.</td><td><a class="chip c-m" href="#asm-imagery-indemnity">Modelled</a></td></tr>
+            <tr><th scope="row">Copyrightability</th><td>Rights sit with the existing owner.</td><td>Rights sit with the licensor.</td><td>Purely AI output may not be protectable in the US; human selection and modification may be.</td><td><a class="chip c-b" href="#src-usco-copyright-ai-part2">Benchmark</a></td></tr>
+            <tr><th scope="row">Cost visibility</th><td>Low per asset once licensed.</td><td>Per asset or by subscription.</td><td>Metered inference plus review time.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
+            <tr><th scope="row">Speed</th><td>Search time.</td><td>Search time.</td><td>Fast to a first draft; review dominates.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Getty v Stability (UK): as at <time datetime="2026-10-24">2026-10-24</time>, the High Court had dismissed Getty's secondary copyright claim against Stability AI and upheld a narrower trade mark claim in a judgment dated <time datetime="2025-11-04">2025-11-04</time>; Getty has permission to appeal, and a separate US action was refiled in California. <a href="#src-getty-v-stability-uk">Register entry</a>. Full treatment in <a href="#s14">section 14</a>.</p>
+      <h3>Personalisation and feeds</h3>
+      <p>Dynamic creative optimisation (DCO) and product-catalogue feeds are the main source of variants at this scale. A template is bound to a feed, and each catalogue item, audience or locale renders its own version, which the review agent checks like any other asset. These variants are mechanical, so they are the cheapest to govern.</p>
+      <p>Outcomes and disclosure pull in different directions. A field study of display ads found that fully AI-created images raised click-through by up to <span data-fig="nyu-ctr-lift">19%</span> <a class="chip c-b" href="#src-nyu-emory-ai-ads-2025">Benchmark</a>, while disclosing AI involvement changed click-through by <span data-fig="nyu-disclosure-drop">−31.5%</span> on the same source. Disclosure rules therefore belong in the policy source, and outcomes must be measured by holdout, not assumed.</p>
     </section>
     <section id="s06" aria-labelledby="s06-h">
       <div class="sec-head"><span class="sec-num">06</span><h2 id="s06-h">The review agent</h2></div>
@@ -465,6 +488,33 @@
               <td><span class="chip c-b">Benchmark</span></td>
               <td>none</td>
               <td><a href="https://www.gartner.com/en/newsroom/press-releases/2026-05-11-gartner-2026-cmo-spend-survey-finds-cmos-allocate-15-point-3-percent-of-marketing-budgets-to-ai-but-only-30-percent-are-ready-to-scale-ai-capabilities">https://www.gartner.com/en/newsroom/press-releases/2026-05-11-gartner-2026-cmo-spend-survey-finds-cmos-allocate-15-point-3-percent-of-marketing-budgets-to-ai-but-only-30-percent-are-ready-to-scale-ai-capabilities</a></td>
+            </tr>
+            <tr id="src-nyu-emory-ai-ads-2025">
+              <th scope="row" class="id">src-nyu-emory-ai-ads-2025</th>
+              <td>The Impact of Visual Generative AI on Advertising Effectiveness<br>Published 2025-11-06. Academic working paper; peer-review status not checked; one author is a consultant at an economics consultancy that republished it. Read via: SSRN page, confirmed in a browser by the author (SSRN returns 403 to automation); date from the NYU Stern research highlight of 2025-11-06.</td>
+              <td>SSRN (working paper); authors at NYU Stern and Emory</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-b">Benchmark</span></td>
+              <td>none</td>
+              <td><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5638311">https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5638311</a></td>
+            </tr>
+            <tr id="src-usco-copyright-ai-part2">
+              <th scope="row" class="id">src-usco-copyright-ai-part2</th>
+              <td>Copyright and Artificial Intelligence, Part 2: Copyrightability<br>Published 2025-01-29. Government agency report; the Office's view of US law, not a court ruling. Read via: Report PDF; executive summary read directly.</td>
+              <td>U.S. Copyright Office</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-b">Benchmark</span></td>
+              <td>none</td>
+              <td><a href="https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf">https://www.copyright.gov/ai/Copyright-and-Artificial-Intelligence-Part-2-Copyrightability-Report.pdf</a></td>
+            </tr>
+            <tr id="src-getty-v-stability-uk">
+              <th scope="row" class="id">src-getty-v-stability-uk</th>
+              <td>Getty Images v Stability AI [2025] EWHC 2863 (Ch): judgment dated 2025-11-04 and permission to appeal<br>Published 2026-01. Law-firm commentary on a UK High Court judgment, not the judgment itself; appeal status is time-sensitive. Read via: Page returned 403 to automation on 2026-10-24, so the judgment date and the grant of permission to appeal rest on search summaries of this and a second law-firm note; publication month taken from the URL; the author is to confirm both and the Court of Appeal status in a browser before publishing; a US action was refiled in California per a Bloomberg Law report (headline only).</td>
+              <td>Taylor Wessing (law-firm commentary)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>none</td>
+              <td><a href="https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted">https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted</a></td>
             </tr>
             </tbody>
           </table>
@@ -739,6 +789,20 @@
               <td><span data-fig="asm-matrix-independence">Each factor applies to a stated share of the running set</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td>Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent, so no variant is counted twice. Real campaigns have exclusions (a size that a channel does not take); the applies fractions stand in for them.</td>
+            </tr>
+            <tr id="asm-imagery-routes">
+              <th scope="row" class="id">asm-imagery-routes</th>
+              <td>Imagery routes: rights, cost and speed</td>
+              <td><span data-fig="asm-imagery-routes">Generic route comparison</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Generic comparison of retrieving approved, licensing and generating imagery; actual terms depend on each licence, model provider and jurisdiction. Not legal advice.</td>
+            </tr>
+            <tr id="asm-imagery-indemnity">
+              <th scope="row" class="id">asm-imagery-indemnity</th>
+              <td>Imagery routes: indemnity</td>
+              <td><span data-fig="asm-imagery-indemnity">Typical contract terms</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Summary of typical indemnity terms described in law-firm commentary: often limited to paid tiers, conditional on using the provider safeguards, excluding output the customer knew or should have known infringed and often excluding modified output; caps can apply. Provider contracts vary. Not legal advice.</td>
             </tr>
             <tr id="asm-lever-01-evidence">
               <th scope="row" class="id">asm-lever-01-evidence</th>
