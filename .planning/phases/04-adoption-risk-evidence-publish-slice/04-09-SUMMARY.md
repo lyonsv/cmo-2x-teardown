@@ -1,6 +1,6 @@
-# Phase 4 Plan 09: Publish Summary (PARTIAL: Task 1 done, Task 2 pending)
+# Phase 4 Plan 09: Publish Summary
 
-Status: Task 1 (final pre-flight) complete on 2026-10-24. Task 2 (approve-push) awaiting user. Task 3 (W3C, push, live checks) NOT run. Nothing uploaded, nothing pushed.
+Status: complete. Task 1 (pre-flight) and Task 2 (push approval) done earlier; Task 3 (W3C, one push, deploy, live checks) done 2026-10-24. Live URL: https://lyonsv.github.io/cmo-2x-teardown/
 
 ## Pre-flight
 
@@ -119,3 +119,38 @@ Planning files (commit `docs(04-09): record legal review and human UAT dropped b
 Re-run gates: node --test 372 pass, 0 fail; crosscheck exit 0 (0 failures); smoke exit 0; a11y exit 0; print exit 0 (83 pages, page 1 has no flag). Pre-flight greps: script 1, script-src 'self' 1, inline handlers/styles 0, base64 0, root-relative links 0, storage/innerHTML 0 per file, site/.nojekyll present, counsel-flag grep 0, branch main, `git status --porcelain -- site test scripts .github` empty.
 
 Note for Task 3: the live-verify grep for `class="callout legal-flag"` now expects 0 (and the plan's automated check `grep -c ... | ...` will exit 1 on a count of 0; read it as the expected result).
+
+## Task 3: W3C, push, deploy, live verification
+
+### W3C Nu (after approval, before push)
+
+0 errors, 0 warnings, 2 info messages. Both are the known upload artefact (no base URL): "external stylesheet assets/style.css blocked by style-src" and "external script js/ui.js blocked by script-src". No markup fix needed. `node --test` re-run before push: 372 pass.
+
+### Push and deploy
+
+- `git push origin main`: d66c835..b172cb5, the only content push, no force.
+- Run id 40133211836: `test success`, `deploy success`. One annotation about the ubuntu-latest label migration, not an error.
+
+### Live grep counts (live / local)
+
+| String | Live | Local |
+|--------|------|-------|
+| `class="callout legal-flag"` | 0 (expected, flag removed by author) | 0 |
+| `Backlog 0, defined` | 1 | 1 |
+| `id="s14-getty"` | 0 (expected, Getty removed) | 0 |
+| `class="status status-` | 8 | 8 |
+| `<th scope="col">Publisher type</th>` | 1 | 1 |
+| `<ul class="gaps">` | 1 | 1 |
+| `McKinsey: no figure is used on this page.` | 1 | 1 |
+| `grade-note` | 8 | 8 |
+
+### Live browser checks
+
+- `node scripts/smoke.mjs https://lyonsv.github.io/cmo-2x-teardown/`: exit 0, 17 PASS, no FAIL.
+- `node scripts/a11y.mjs https://lyonsv.github.io/cmo-2x-teardown/`: exit 0 (text-spacing checks pass, legal flag absent; manual checks not attempted).
+
+## Deviations from Plan
+
+None beyond the author decisions recorded above (legal flag and Getty live greps expect 0). The final docs commit is pushed as a second, docs-only push.
+
+## Self-Check: PASSED

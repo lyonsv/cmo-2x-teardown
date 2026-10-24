@@ -11,7 +11,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
 - [x] **Phase 1: Foundation & Thesis Slice** - Live shell with front matter, sections 01-02, `data.js`, tested `calc.js`, baseline-vs-2x figure, tested Pages deploy (completed 2026-10-24)
 - [x] **Phase 2: Factory & Spine Slice** - Sections 03-08: factory, supply chain, 10,000-asset campaign, review agent, T0-T3 gate, eval harness and telemetry (completed 2026-10-24)
 - [x] **Phase 3: Levers, Outcomes, Calculator & Comparison Slice** - Sections 09-12: five other levers incl. AEO, outcome case, interactive calculator, Gradial/AirOps/Profound comparison (completed 2026-10-24)
-- [ ] **Phase 4: Adoption, Risk, Evidence & Publish Slice** - Sections 13-15, register reconciliation, WCAG/mobile/print pass, re-verification, legal flag, production deploy
+- [x] **Phase 4: Adoption, Risk, Evidence & Publish Slice** - Sections 13-15, register reconciliation, WCAG/mobile/print pass, re-verification, legal flag, production deploy (completed 2026-10-24)
 
 ## Phase Details
 
@@ -241,7 +241,7 @@ Plans:
   4. Reader can use the page with a keyboard and screen reader (labelled inputs, aria-live outputs, data-table equivalents, grades not by colour alone), at 320 CSS px with tables scrolling in their own regions, and can print it cleanly.
   5. Primary sources, vendor facts, EU AI Act Art. 50 and Getty v Stability status are re-verified and date-stamped, the legal wording is flagged for review, and the production deploy is live.
 
-**Plans:** 8/9 plans executed
+**Plans:** 9/9 plans complete
 
 Plans:
 **Wave 1**
@@ -278,7 +278,7 @@ Plans:
 
 **Wave 9** *(blocked on Wave 8 completion)*
 
-- [ ] 04-09-PLAN.md — Pre-flight, approve-push checkpoint, W3C, one content push, live smoke and a11y
+- [x] 04-09-PLAN.md — Pre-flight, approve-push checkpoint, W3C, one content push, live smoke and a11y
 **UI hint**: yes
 **Research flag**: Verify against primary text: EU AI Act Art. 50 and Code of Practice (including the reported 2 Dec 2026 transition date), Getty v Stability appeal status, Moffatt v Air Canada, Parasuraman and Manzey (2010), indemnity wording, Gartner 49/40/27% figures (verify or drop). Flag the page for legal review.
 
@@ -289,4 +289,4 @@ Plans:
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete    | 2026-10-24 |
-| 4. Adoption, Risk, Evidence & Publish Slice | 8/9 | In Progress|  |
+| 4. Adoption, Risk, Evidence & Publish Slice | 9/9 | Complete   | 2026-10-24 |
