@@ -19,9 +19,9 @@
 
 - [x] **CRED-01**: Reader sees a grade key (Benchmark / Modelled / Speculative) plus a separate source flag (vendor-claimed / company-reported) that never upgrades a claim to Benchmark
 - [x] **CRED-02**: Every quantitative claim on the page shows a text grade chip (not colour-only) linked to a source-register or assumptions-register entry
-- [ ] **CRED-03**: Reader sees the headline output metric defined as approved-and-live asset-variants per marketing head per quarter (all marketing FTE in the denominator), always shown beside the unique-concept count and variants per concept, with tier weighting offered only as a sensitivity
+- [x] **CRED-03**: Reader sees the headline output metric defined as approved-and-live asset-variants per marketing head per quarter (all marketing FTE in the denominator), always shown beside the unique-concept count and variants per concept, with tier weighting offered only as a sensitivity
 - [x] **CRED-04**: Reader sees a conflict-of-interest note (author works at iStock/Getty Images) in the front matter and repeated next to imagery sourcing and Getty v Stability
-- [ ] **CRED-05**: Reader can see a "what 2x does not mean" statement and a stated falsifier for the 2x claim
+- [x] **CRED-05**: Reader can see a "what 2x does not mean" statement and a stated falsifier for the 2x claim
 - [x] **CRED-06**: All numbers, defaults, grades and source IDs come from one `data.js` used by both prose and calculator, so they cannot diverge
 
 ### CFO Answer
@@ -56,7 +56,7 @@
 - [ ] **LEVER-03**: Reader sees an insight & reporting block with its output/outcome metrics, marked Modelled where evidence is a gap
 - [ ] **LEVER-04**: Reader sees an ops block (briefs, approvals, DAM metadata, rights tracking) including a statutory-damages tail-risk illustration (17 U.S.C. 504(c)) with the incident rate graded Speculative
 - [ ] **LEVER-05**: Reader sees an answer-engine visibility (AEO/GEO) block: answer assets published/refreshed per head as output; citation share, AI-referred sessions and pipeline as outcomes; citation loss feeding refresh briefs back into the factory
-- [ ] **LEVER-06**: Reader sees a six-lever summary table (output metric, outcome metric, evidence grade) in section 01
+- [x] **LEVER-06**: Reader sees a six-lever summary table (output metric, outcome metric, evidence grade) in section 01
 
 ### Outcome Case
 
@@ -134,15 +134,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHELL-05 | Phase 1 | Complete |
 | CRED-01 | Phase 1 | Complete |
 | CRED-02 | Phase 1 | Complete |
-| CRED-03 | Phase 1 | Pending |
+| CRED-03 | Phase 1 | Complete |
 | CRED-04 | Phase 1 | Complete |
-| CRED-05 | Phase 1 | Pending |
+| CRED-05 | Phase 1 | Complete |
 | CRED-06 | Phase 1 | Complete |
 | CFO-01 | Phase 1 | Complete |
 | CFO-02 | Phase 1 | Pending |
 | CFO-03 | Phase 1 | Pending |
 | CFO-04 | Phase 1 | Pending |
-| LEVER-06 | Phase 1 | Pending |
+| LEVER-06 | Phase 1 | Complete |
 | CALC-08 | Phase 1 | Complete |
 | GEN-01 | Phase 2 | Pending |
 | GEN-02 | Phase 2 | Pending |

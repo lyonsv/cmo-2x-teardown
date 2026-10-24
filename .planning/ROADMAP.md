@@ -29,7 +29,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
   4. Reader sees in section 02 the Gartner-anchored flat-budget framing, fully loaded cost per approved-live asset for baseline vs 2x, AI spend framed as a floor, and a baseline-vs-2x SVG figure with a data-table equivalent.
   5. Every quantitative claim shows a text grade chip linked to a register entry, and the figures come from `data.js`. A push deploys only if `node --test` passes.
 
-**Plans:** 3/7 plans executed
+**Plans:** 4/7 plans executed
 
 Plans:
 **Wave 1**
@@ -46,7 +46,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-04-PLAN.md — Section 01: headline metric trio, tier-weighted sensitivity, six-lever table, what 2x does not mean, falsifier
+- [x] 01-04-PLAN.md — Section 01: headline metric trio, tier-weighted sensitivity, six-lever table, what 2x does not mean, falsifier
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -121,7 +121,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Thesis Slice | 3/7 | In Progress|  |
+| 1. Foundation & Thesis Slice | 4/7 | In Progress|  |
 | 2. Factory & Spine Slice | 0/TBD | Not started | - |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
