@@ -425,7 +425,7 @@
         <div class="fig-grid">
       <svg class="fig-d" role="img" aria-labelledby="fd5-t fd5-d" viewBox="0 0 300 288">
         <title id="fd5-t">The review loop</title>
-        <desc id="fd5-d">An asset from the manifest goes to the review agent. The agent passes it to the gate, sends it into a bounded fix loop that returns to the agent, or escalates it to a person. It can raise a tier but never lower one.</desc>
+        <desc id="fd5-d">An asset from the manifest goes to the review agent. The agent passes it to the gate, sends it into a bounded fix loop that returns to the agent, or escalates it to a person, directly when something could not be checked or once the fix loop runs out. It can raise a tier but never lower one.</desc>
         <defs>
         <marker id="fd5-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
         <marker id="fd5-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
@@ -435,6 +435,7 @@
         <line class="edge" x1="150" y1="112" x2="214" y2="136" marker-end="url(#fd5-arrow)"/>
         <line class="edge" x1="214" y1="176" x2="150" y2="200" marker-end="url(#fd5-arrow)"/>
         <path class="edge edge-review" d="M270 156 L288 156 L288 92 L272 92" marker-end="url(#fd5-arrow-review)"/>
+        <path class="edge edge-review" d="M30 92 L14 92 L14 228 L28 228" marker-end="url(#fd5-arrow-review)"/>
         <text class="note" x="150" y="280" text-anchor="middle">Illustrative</text>
         <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Asset in</tspan><tspan x="150" dy="16">from the manifest</tspan></text></g>
         <g class="node node-review"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Review agent</tspan><tspan x="150" dy="16">checks policy rules</tspan></text></g>

@@ -220,6 +220,9 @@ test('Figure 5 loop', () => {
   const d = f.svg.match(/<path class="edge edge-review[^>]*\sd="([^"]+)"/)[1];
   assert.ok((d.match(/[ML]/g) || []).length >= 3, 'loop path has two or more segments');
   assert.ok(strip(f.svg).includes('never lower'));
+  // IN-10: "could not check" escalates straight from the agent, not only via Fix.
+  const direct = [...f.svg.matchAll(/<path class="edge edge-review"[^>]*\sd="M30 (\d+) [^"]* L28 (\d+)"/g)];
+  assert.ok(direct.some(([, y1, y2]) => Number(y1) > 72 && Number(y1) < 112 && Number(y2) > 200 && Number(y2) < 256), 'edge from the review agent to Escalate');
 });
 
 test('Figure 6 ladder', () => {
