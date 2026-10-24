@@ -515,6 +515,32 @@
         <li>Content about or aimed at children.</li>
         <li>Anything touching third-party rights not already cleared.</li>
       </ul>
+      <h3>Reviewer capacity is the binding constraint</h3>
+      <p>Here, without the gate means an auto-approval share of zero, so a person reviews every variant; with the gate uses the model's shares. Hours are before rework, while utilisation includes the rework loop at <span data-fig="asm-rework-rate">15%</span> <a class="chip c-m" href="#asm-rework-rate">Modelled</a>.</p>
+      <div class="table-scroll" role="region" aria-label="Reviewer capacity table" tabindex="0">
+        <table>
+          <caption>Reviewer capacity, 1x and 2x</caption>
+          <thead><tr><th scope="col">Scenario</th><th scope="col">Approved-live variants per year</th><th scope="col">Human review hours per year (before rework)</th><th scope="col">Reviewer capacity (hours per year)</th><th scope="col">Utilisation</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1x without gate</th><td class="num"><span data-fig="cap-1x-nogate-variants">40,000</span></td><td class="num"><span data-fig="cap-1x-nogate-hours">8,421</span></td><td class="num"><span data-fig="cap-capacity-hours">14,400</span></td><td class="num"><span data-fig="cap-1x-nogate-util">67.3%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
+            <tr><th scope="row">1x with gate</th><td class="num"><span data-fig="cap-1x-gate-variants">40,000</span></td><td class="num"><span data-fig="cap-1x-gate-hours">6,905</span></td><td class="num"><span data-fig="cap-capacity-hours">14,400</span></td><td class="num"><span data-fig="cap-1x-gate-util">55.1%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
+            <tr><th scope="row">2x without gate</th><td class="num"><span data-fig="cap-2x-nogate-variants">80,000</span></td><td class="num"><span data-fig="cap-2x-nogate-hours">16,842</span></td><td class="num"><span data-fig="cap-capacity-hours">14,400</span></td><td class="num"><span data-fig="cap-2x-nogate-util">134.5%</span> over capacity</td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
+            <tr><th scope="row">2x with gate</th><td class="num"><span data-fig="cap-2x-gate-variants">80,000</span></td><td class="num"><span data-fig="cap-2x-gate-hours">7,747</span></td><td class="num"><span data-fig="cap-capacity-hours">14,400</span></td><td class="num"><span data-fig="cap-2x-gate-util">61.9%</span></td><td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>With the gate, human review hours fall; without it, 2x volume exceeds reviewer capacity. Utilisation is the binding constraint, not generation.</p>
+      <p>At flat reviewers the model needs at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants auto-approved, and below about <span data-fig="capacity-auto-approval">29%</span> capacity is exceeded outright. At the clearance rates published by the one public reference (see <a href="#s06">the review agent</a>), 2x utilisation would be <span data-fig="cap-2x-ref-high-util">100.1%</span> and <span data-fig="cap-2x-ref-low-util">111.3%</span>. At 2x without the gate there is no cycle time to show, because the queue never clears.</p>
+      <h3>Guarding against reviewer fatigue</h3>
+      <ul>
+        <li><b>Blind-first review.</b> The reviewer decides before seeing the agent's verdict, so agreement is evidence and not anchoring.</li>
+        <li><b>Seeded-error catch rate.</b> Known-bad assets are mixed into queues; a falling catch rate is the standing fatigue signal.</li>
+        <li><b>Session caps and queue rotation.</b> Review sessions are limited and reviewers move between asset classes.</li>
+        <li><b>Random sampling of auto-approvals.</b> A person audits a random slice of what the gate cleared, so the gate is never trusted unchecked.</li>
+        <li><b>Drift alarms.</b> Sudden shifts in approval rate or time per asset trigger a look before quality slips.</li>
+        <li><b>Mandatory reason codes.</b> Every override says why, which feeds the eval harness.</li>
+      </ul>
+      <p>These controls are a design judgement, not a tested result. <a class="chip c-s" href="#asm-fatigue-controls">Speculative</a></p>
     </section>
     <section id="s08" aria-labelledby="s08-h">
       <div class="sec-head"><span class="sec-num">08</span><h2 id="s08-h">Eval harness and telemetry</h2></div>
@@ -978,6 +1004,27 @@
               <td><span data-fig="asm-lever-06-evidence">Thin, vendor-only data</span></td>
               <td><span class="chip c-s">Speculative</span></td>
               <td>Thin, vendor-only and panel-based; outcomes are speculative.</td>
+            </tr>
+            <tr id="asm-fatigue-controls">
+              <th scope="row" class="id">asm-fatigue-controls</th>
+              <td>Reviewer-fatigue controls</td>
+              <td><span data-fig="asm-fatigue-controls">Design judgement</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td>Controls drawn from general review practice and one company-reported engineering example; vigilance research suggests attention falls over long sessions, but no marketing-specific evidence was checked. A judgement.</td>
+            </tr>
+            <tr id="asm-harness-design">
+              <th scope="row" class="id">asm-harness-design</th>
+              <td>Eval harness design</td>
+              <td><span data-fig="asm-harness-design">Design from one public reference</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Harness pattern adapted from one company-reported engineering example: human decisions as ground truth, versioned datasets, baseline-versus-treatment comparison inside a noise band; most changes tested there were inconclusive and a newer model tested worse. Thresholds must be calibrated on the organisation's own data.</td>
+            </tr>
+            <tr id="asm-telemetry-metrics">
+              <th scope="row" class="id">asm-telemetry-metrics</th>
+              <td>Telemetry metrics</td>
+              <td><span data-fig="asm-telemetry-metrics">Recommended instrumentation</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Metrics chosen so every cost, quality and outcome figure on this page can be measured per asset ID; no published benchmark.</td>
             </tr>
             </tbody>
           </table>

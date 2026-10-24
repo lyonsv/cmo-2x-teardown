@@ -363,3 +363,38 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
   claims['ref-bot-approval-rate'] = { id: 'ref-bot-approval-rate', value: 0.284, unit: 'rolling bot approval rate, reference organisation',
     display: '28.4%', grade: 'Modelled', flag: 'company-reported', ref: 'src-intercom-2x-teardown' };
 }
+
+// ---- Plan 02-06: reviewer capacity, fatigue, harness and telemetry ----
+// Capacity claims are literal values re-checked by data.test under their own
+// scenario (override = the multiplier and a flat auto-approval share).
+
+{
+  const ROWS = [['1x-nogate', 1, 0, 'baseline'], ['1x-gate', 1, 0.2, 'baseline'], ['2x-nogate', 2, 0, 'scenario'], ['2x-gate', 2, 0.6, 'scenario']];
+  const VALUES = {
+    '1x-nogate': [40000, 8421, 0.673], '1x-gate': [40000, 6905, 0.551],
+    '2x-nogate': [80000, 16842, 1.345], '2x-gate': [80000, 7747, 0.619],
+  };
+  const put = (id, value, unit, derived, decimals, format, override) => {
+    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', derived, decimals, format, override };
+  };
+  for (const [row, multiplier, share, side] of ROWS) {
+    const override = { multiplier, auto_approval_share: share };
+    const [variants, hours, util] = VALUES[row];
+    put(`cap-${row}-variants`, variants, 'approved-live variants per year', `${side}.variants_per_year`, 0, 'int', override);
+    put(`cap-${row}-hours`, hours, 'human review hours per year, before rework', `${side}.review_hours`, 0, 'int', override);
+    put(`cap-${row}-util`, util, 'reviewer utilisation, including rework', `${side}.utilisation`, 3, 'pct1', override);
+  }
+  put('cap-capacity-hours', 14400, 'reviewer capacity, hours per year', 'baseline.review_capacity_hours', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 });
+  put('cap-2x-ref-low-util', 1.113, '2x utilisation at the reference low clearance rate', 'scenario.utilisation', 3, 'pct1', { multiplier: 2, auto_approval_share: 0.192 });
+  put('cap-2x-ref-high-util', 1.001, '2x utilisation at the reference high clearance rate', 'scenario.utilisation', 3, 'pct1', { multiplier: 2, auto_approval_share: 0.284 });
+}
+
+function evidence(id, label, grade, display, basis) {
+  assumptions[id] = { id, label, kind: 'evidence', key: null, value: null, unit: null, display, grade, flag: null, basis };
+}
+evidence('asm-fatigue-controls', 'Reviewer-fatigue controls', 'Speculative', 'Design judgement',
+  'Controls drawn from general review practice and one company-reported engineering example; vigilance research suggests attention falls over long sessions, but no marketing-specific evidence was checked. A judgement.');
+evidence('asm-harness-design', 'Eval harness design', 'Modelled', 'Design from one public reference',
+  "Harness pattern adapted from one company-reported engineering example: human decisions as ground truth, versioned datasets, baseline-versus-treatment comparison inside a noise band; most changes tested there were inconclusive and a newer model tested worse. Thresholds must be calibrated on the organisation's own data.");
+evidence('asm-telemetry-metrics', 'Telemetry metrics', 'Modelled', 'Recommended instrumentation',
+  'Metrics chosen so every cost, quality and outcome figure on this page can be measured per asset ID; no published benchmark.');
