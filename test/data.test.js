@@ -513,15 +513,27 @@ test('calc claims equal present(defaults)', () => {
   const calcClaims = Object.values(claims).filter((c) => c.calc);
   assert.ok(calcClaims.length >= 20, `only ${calcClaims.length} calc claims`);
   for (const c of calcClaims) {
-    const [, rowId, cellName] = c.calc.split('.');
-    const row = p.rows.find((r) => r.id === rowId);
-    assert.ok(row, `${c.id}: no row ${rowId}`);
-    const node = row[cellName];
+    const [head, rowId, cellName] = c.calc.split('.');
+    let row;
+    let node;
+    if (head === 'scenario') {
+      row = p.scenario.rows.find((r) => r.id === rowId);
+      node = row;
+      assert.equal(c.id, `calc-scen-${rowId}`);
+    } else if (head === 'sensitivity') {
+      row = p.sensitivity.find((r) => r.key === rowId);
+      node = row?.cells[cellName];
+      assert.equal(c.id, `calc-sens-${rowId}-${cellName}`);
+    } else {
+      row = p.rows.find((r) => r.id === rowId);
+      node = row?.[cellName];
+      assert.equal(c.id, `calc-${rowId}-${cellName}`);
+    }
+    assert.ok(row && node, `${c.id}: no node at ${c.calc}`);
     assert.equal(c.display, node.text, `${c.id} display`);
     assert.equal(c.value, node.value, `${c.id} value`);
     assert.equal(c.grade, row.grade, `${c.id} grade`);
     assert.equal(c.ref, row.ref, `${c.id} ref`);
-    assert.equal(c.id, `calc-${rowId}-${cellName}`);
     if (c.format) assert.equal(c.display, formatValue(c.value, c.format), `${c.id} format`);
   }
 });
@@ -533,4 +545,25 @@ test('calculator assumptions are Modelled calc rows that the model ignores as in
   }
   assert.equal('locales' in defaultInputs(), false);
   assert.equal(defaultInputs().variants_per_concept, 40);
+});
+
+test('scenario assumptions: Modelled calc rows with no-benchmark basis, carried in modelContext', () => {
+  const fte = assumptions['asm-loaded-fte-cost'];
+  const chg = assumptions['asm-change-mgmt'];
+  for (const e of [fte, chg]) {
+    assert.equal(e.kind, 'calc');
+    assert.equal(e.grade, 'Modelled');
+    assert.match(e.basis, /No published benchmark/);
+  }
+  assert.equal(fte.value, 150000);
+  assert.equal(fte.display, '$150,000');
+  assert.match(fte.basis, /replace it with your own/);
+  assert.equal(chg.value, 3000);
+  assert.equal(chg.display, '$3,000 per affected FTE');
+  assert.match(chg.basis, /one week of loaded time/);
+  assert.match(chg.basis, /excludes severance and exit costs/);
+  const ctx = modelContext();
+  assert.equal(ctx.fixed.loaded_fte_cost, 150000);
+  assert.equal(ctx.fixed.change_cost_per_fte, 3000);
+  assert.equal(defaultInputs().loaded_fte_cost, undefined);
 });

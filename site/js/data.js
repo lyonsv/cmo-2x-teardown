@@ -633,6 +633,10 @@ assumptions['asm-locales'] = a('asm-locales', 'Locales per concept', 'calc', nul
   'A modelled locale count; with eight formats per locale it reproduces the forty variants per concept used across the page. No published benchmark.');
 assumptions['asm-formats-per-locale'] = a('asm-formats-per-locale', 'Formats per locale', 'calc', null, 8, 'formats', '8',
   'Sizes and channel cuts per locale; fixed in the calculator. No published benchmark.');
+assumptions['asm-loaded-fte-cost'] = a('asm-loaded-fte-cost', 'Loaded annual cost per FTE', 'calc', null, 150000, 'USD per FTE per year', '$150,000',
+  'A round figure for salary plus on-costs, used only by the headcount scenarios; replace it with your own. No published benchmark.');
+assumptions['asm-change-mgmt'] = a('asm-change-mgmt', 'One-off change cost per affected FTE', 'calc', null, 3000, 'USD per affected FTE', '$3,000 per affected FTE',
+  'About one week of loaded time per person in the marketing and review teams for training and process change; it excludes severance and exit costs. No published benchmark.');
 
 // The context model.js needs, so model.js itself never imports this file.
 export function modelContext() {
@@ -640,7 +644,12 @@ export function modelContext() {
     inputs: defaultInputs(),
     assumptions: defaultAssumptions(),
     grades: Object.fromEntries(Object.values(assumptions).map((e) => [e.id, e.grade])),
-    fixed: { formats_per_locale: assumptions['asm-formats-per-locale'].value, default_locales: assumptions['asm-locales'].value },
+    fixed: {
+      formats_per_locale: assumptions['asm-formats-per-locale'].value,
+      default_locales: assumptions['asm-locales'].value,
+      loaded_fte_cost: assumptions['asm-loaded-fte-cost'].value,
+      change_cost_per_fte: assumptions['asm-change-mgmt'].value,
+    },
   };
 }
 

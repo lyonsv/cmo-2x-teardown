@@ -3,7 +3,7 @@
 // import of data.js: everything it needs arrives in `ctx`, built by data.js
 // modelContext(). Imports are limited to calc.js, fields.js and format.js.
 import { compute } from './calc.js';
-import { COMPUTE_FIELD_TO_KEY } from './fields.js';
+import { COMPUTE_FIELD_TO_KEY, FIELDS, SCENARIOS } from './fields.js';
 import { formatValue } from './format.js';
 
 // ctx = { inputs, assumptions, grades: { 'asm-...': grade }, fixed: { formats_per_locale, default_locales } }
@@ -165,6 +165,122 @@ function buildRows(r) {
   return by;
 }
 
+// ---- Headcount scenarios (CALC-04) ----
+
+const finite = (v) => (Number.isFinite(v) ? v : 0);
+
+function requiredReviewerFte(side, a) {
+  return (side.review_hours * (1 + a.rework_rate)) / (a.reviewer_hours_per_fte_year * a.target_utilisation);
+}
+
+// Redeploy keeps the team and the 2x output. Hold keeps the team and today's volume
+// (multiplier 1 with the scaled assumptions). Reduce cuts reviewer headcount only,
+// to the capacity the 2x output needs. The change cost applies in every scenario.
+export function scenarioOutcomes(values, ctx, mode) {
+  const out = run(values, ctx);
+  if (!out.ok) return { ok: false, errors: out.errors };
+  const m = SCENARIOS.includes(mode) ? mode : 'redeploy';
+  const { inputs, assumptions } = toCompute(values, ctx);
+  const r = out.result;
+  let side = r.scenario;
+  let production = r.scenario.cost.total - r.baseline.cost.total;
+  if (m === 'hold') {
+    const held = compute({ ...inputs, multiplier: 1 }, assumptions);
+    if (!held.ok) return { ok: false, errors: held.errors.map((e) => ({ key: keyFor(e), message: e.message })) };
+    side = held.scenario;
+    production = held.scenario.cost.total - r.baseline.cost.total;
+  }
+  const required = requiredReviewerFte(side, assumptions);
+  const delta = values.reviewers - required;
+  const people = m === 'reduce' && delta > 0 ? -delta * ctx.fixed.loaded_fte_cost : 0;
+  const oneOff = ctx.fixed.change_cost_per_fte * (values.marketers + values.reviewers);
+  const net = people + production + oneOff;
+  if (![required, delta, people, production, oneOff, net].every(Number.isFinite)) return { ok: false, errors: [{ key: null, message: 'These inputs are too large to calculate.' }] };
+  return {
+    ok: true, mode: m, reviewer_fte_required: required, reviewer_fte_delta: delta, people_cost_change: people,
+    production_cost_change: production, change_mgmt_one_off: oneOff, first_year_net: net,
+  };
+}
+
+// ---- Sensitivity (CALC-05): each input moved 20% down and up, others unchanged ----
+
+export const SENSITIVITY_STEP = 0.2;
+const SENSITIVITY_ROWS = 5;
+
+function perturb(field, base, step, ctx) {
+  const target = base * (1 + step);
+  let v = target;
+  let capped = false;
+  if (field.kind === 'int') {
+    v = Math.round(target);
+    if (v < 1) { v = 1; capped = target < 1 - 1e-9; }
+  }
+  let limit = Infinity;
+  if (field.kind === 'pct') limit = 1;
+  const mix = ctx.assumptions.tier_mix;
+  if (field.key === 'auto1') limit = Math.min(limit, mix.baseline[0] + mix.baseline[1]);
+  if (field.key === 'auto2') limit = Math.min(limit, mix.scaled[0] + mix.scaled[1]);
+  if (v > limit) { v = limit; capped = true; }
+  return { v, capped };
+}
+
+export function sensitivity(values, ctx) {
+  const base = run(values, ctx);
+  if (!base.ok) return [];
+  const b = base.result.scenario;
+  const rel = (now, was) => (was === 0 || !Number.isFinite(now) || !Number.isFinite(was) ? null : now / was - 1);
+  const rows = FIELDS.map((field, order) => {
+    const cost = { down: null, up: null };
+    const util = { down: null, up: null };
+    const capped = { down: false, up: false };
+    const baseValue = values[field.key];
+    for (const [dir, step] of [['down', -SENSITIVITY_STEP], ['up', SENSITIVITY_STEP]]) {
+      if (baseValue === 0) continue;
+      const p = perturb(field, baseValue, step, ctx);
+      capped[dir] = p.capped;
+      const r = run({ ...values, [field.key]: p.v }, ctx);
+      if (!r.ok) continue;
+      cost[dir] = rel(r.result.scenario.cost_per_asset, b.cost_per_asset);
+      util[dir] = rel(r.result.scenario.utilisation, b.utilisation);
+    }
+    const swing = Math.abs(finite(cost.down)) + Math.abs(finite(cost.up));
+    return { key: field.key, label: field.label, ref: field.asm, grade: ctx.grades[field.asm], cost, util, capped, swing, order };
+  });
+  rows.sort((x, y) => y.swing - x.swing || x.order - y.order);
+  return rows.slice(0, SENSITIVITY_ROWS).map(({ swing, order, ...row }) => row);
+}
+
+const SCENARIO_NAMES = { redeploy: 'Redeploy', hold: 'Hold', reduce: 'Reduce' };
+
+function scenarioPresentation(values, ctx) {
+  const o = scenarioOutcomes(values, ctx, values.scenario);
+  const mode = o.ok ? o.mode : (SCENARIOS.includes(values.scenario) ? values.scenario : 'redeploy');
+  const util = weakestGrade(OUTPUT_DEPS.utilisation, ctx.grades);
+  const prod = weakestGrade(OUTPUT_DEPS.total_cost, ctx.grades);
+  const defs = [
+    ['reviewer_fte_required', 'Reviewer FTE required at target utilisation', util, (v) => formatValue(v, 'num1')],
+    ['reviewer_fte_delta', 'Reviewer FTE freed (or needed)', util, (v) => (v >= 0 ? `${formatValue(v, 'num1')} freed` : `needs ${formatValue(-v, 'num1')} more reviewers`)],
+    ['people_cost_change', 'Annual people cost change', { grade: ctx.grades['asm-loaded-fte-cost'], ref: 'asm-loaded-fte-cost' }, (v) => formatValue(v, 'usd0')],
+    ['production_cost_change', 'Annual production cost change', prod, (v) => formatValue(v, 'usd0')],
+    ['change_mgmt_one_off', 'One-off change cost (year one)', { grade: ctx.grades['asm-change-mgmt'], ref: 'asm-change-mgmt' }, (v) => formatValue(v, 'usd0')],
+    ['first_year_net', 'First-year net cost change', { grade: ctx.grades['asm-change-mgmt'], ref: 'asm-change-mgmt' }, (v) => formatValue(v, 'usd0')],
+  ];
+  const rows = defs.map(([id, label, g, fmt]) => {
+    const node = o.ok && Number.isFinite(o[id]) ? { value: o[id], text: fmt(o[id]) } : { text: 'n/a' };
+    return { id, label, ...node, grade: g.grade, ref: g.ref };
+  });
+  return { mode, name: SCENARIO_NAMES[mode], rows };
+}
+
+function sensitivityPresentation(values, ctx) {
+  const node = (v) => (v === null ? { text: 'n/a' } : { value: v, text: formatValue(v, 'pctchg1') });
+  return sensitivity(values, ctx).map((row) => ({
+    key: row.key, label: row.label,
+    cells: { costDown: node(row.cost.down), costUp: node(row.cost.up), utilDown: node(row.util.down), utilUp: node(row.util.up) },
+    capped: row.capped, grade: row.grade, ref: row.ref,
+  }));
+}
+
 export function present(values, ctx) {
   const out = run(values, ctx);
   if (!out.ok) {
@@ -185,5 +301,8 @@ export function present(values, ctx) {
   const y = formatValue(r.scenario.cost_per_asset, 'usd2');
   const z = formatValue(r.scenario.utilisation, 'pct0');
   const summary = `At 2x, your team approves ${x} variants per head per quarter at ${y} per approved asset, with reviewers ${over ? 'over capacity at' : 'at'} ${z} of capacity.`;
-  return { ok: true, summary, overCapacity: over, rows, errors: [] };
+  return {
+    ok: true, summary, overCapacity: over, rows, errors: [],
+    scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(values, ctx),
+  };
 }

@@ -5,7 +5,7 @@ import { compute } from '../site/js/calc.js';
 import { formatValue } from '../site/js/format.js';
 import { FIELDS, SCENARIOS, COMPUTE_FIELD_TO_KEY } from '../site/js/fields.js';
 import {
-  defaultValues, toCompute, run, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present,
+  defaultValues, toCompute, run, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity,
 } from '../site/js/model.js';
 import { modelContext, assumptions, defaultInputs, defaultAssumptions } from '../site/js/data.js';
 
@@ -233,5 +233,88 @@ test('purity: import specifiers of model.js, fields.js and format.js', () => {
   assert.deepEqual(specs(read('format.js')), []);
   for (const f of ['model.js', 'fields.js', 'format.js']) {
     assert.ok(!/\bdocument\b|\bwindow\b|innerHTML/.test(read(f)), `${f} touches the DOM`);
+  }
+});
+
+// ---- Plan 03-07: headcount scenarios and sensitivity ----
+
+test('scenarioOutcomes goldens at defaults', () => {
+  const v = defaultValues(ctx);
+  const red = scenarioOutcomes(v, ctx, 'redeploy');
+  assert.equal(red.reviewer_fte_required.toFixed(2), '8.73');
+  assert.equal(red.reviewer_fte_delta.toFixed(2), '3.27');
+  assert.equal(red.people_cost_change, 0);
+  assert.equal(Math.round(red.production_cost_change), 705782);
+  assert.equal(red.change_mgmt_one_off, 396000);
+  assert.equal(Math.round(red.first_year_net), 1101782);
+  const hold = scenarioOutcomes(v, ctx, 'hold');
+  assert.equal(Math.round(hold.production_cost_change), -53579);
+  assert.equal(hold.people_cost_change, 0);
+  assert.equal(Math.round(hold.first_year_net), 342421);
+  assert.ok(Math.abs(hold.production_cost_change) < 60000, 'Hold saving stays small');
+  const cut = scenarioOutcomes(v, ctx, 'reduce');
+  assert.equal(Math.round(cut.people_cost_change), -489783);
+  assert.equal(Math.round(cut.first_year_net), 611999);
+  for (const o of [red, hold, cut]) assert.equal(o.change_mgmt_one_off, 396000, 'change cost in every scenario');
+});
+
+test('scenarioOutcomes: too few reviewers needs more, reduce cuts nothing; failures return errors', () => {
+  const v = { ...defaultValues(ctx), reviewers: 6 };
+  const red = scenarioOutcomes(v, ctx, 'redeploy');
+  assert.ok(red.reviewer_fte_delta < 0);
+  assert.equal(scenarioOutcomes(v, ctx, 'reduce').people_cost_change, 0);
+  assert.match(present(v, ctx).scenario.rows[1].text, /^needs \d+\.\d more reviewers$/);
+  const bad = scenarioOutcomes({ ...defaultValues(ctx), reviewers: 0 }, ctx, 'hold');
+  assert.equal(bad.ok, false);
+  assert.ok(Array.isArray(bad.errors));
+});
+
+test('sensitivity ranking, clamping and reviewer-only utilisation effect at defaults', () => {
+  const rows = sensitivity(defaultValues(ctx), ctx);
+  assert.deepEqual(rows.map((r) => r.key), ['locales', 'mconcept', 'auto2', 'minutes', 'yield']);
+  const y = rows.find((r) => r.key === 'yield');
+  assert.equal(y.capped.up, true);
+  assert.equal(y.capped.down, false);
+  assert.equal(rows[0].ref, 'asm-locales');
+  assert.equal(rows[0].grade, 'Modelled');
+  const finiteOrNull = (x) => x === null || Number.isFinite(x);
+  for (const r of rows) for (const g of [r.cost, r.util]) assert.ok(finiteOrNull(g.down) && finiteOrNull(g.up));
+  const full = sensitivity({ ...defaultValues(ctx), auto2: 0.9 }, ctx);
+  assert.deepEqual(full, []);
+});
+
+test('sensitivity: auto-approval cap clamps and is marked capped', () => {
+  const v = { ...defaultValues(ctx), auto2: 0.85 };
+  const row = sensitivity(v, ctx).find((r) => r.key === 'auto2');
+  assert.ok(row, 'auto2 stays in the top five');
+  assert.equal(row.capped.up, true);
+  assert.equal(row.cost.up, 0, 'already at the cap, so no further movement');
+});
+
+test('present().scenario and .sensitivity are finite and labelled', () => {
+  const p = present(defaultValues(ctx), ctx);
+  assert.equal(p.scenario.name, 'Redeploy');
+  assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
+  assert.equal(p.scenario.rows[3].text, '$705,782');
+  assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '−$53,579');
+  assert.equal(p.sensitivity[0].cells.costDown.text, '+17.6%');
+  assert.equal(p.sensitivity[0].cells.costUp.text, '−11.8%');
+  assert.equal(p.sensitivity.length, 5);
+});
+
+test('fuzz: scenario and sensitivity never emit NaN, Infinity, undefined or null', () => {
+  const rand = rng(7);
+  const between = (lo, hi) => lo + rand() * (hi - lo);
+  const BAD = /NaN|Infinity|undefined|null/;
+  for (let i = 0; i < 200; i++) {
+    const v = {
+      campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), locales: Math.ceil(between(1, 20)),
+      marketers: between(1, 500), reviewers: between(0.5, 100), minutes: between(1, 60), vcost: between(0.01, 10),
+      mconcept: between(1, 5000), yield: between(0.1, 1), rework: between(0, 1), auto1: between(0, 0.75), auto2: between(0, 0.85),
+      scenario: ['redeploy', 'hold', 'reduce'][i % 3],
+    };
+    const p = present(v, ctx);
+    if (!p.ok) continue;
+    assert.equal(BAD.test(JSON.stringify({ s: p.scenario, n: p.sensitivity })), false, JSON.stringify(v));
   }
 });
