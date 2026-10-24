@@ -302,7 +302,10 @@ test('print block resets screen min-widths, shows status borders and avoids brea
   const print = css.match(/@media print \{[\s\S]*?\n\}\n/)[0];
   assert.match(print, /\.status \{ border-color: #000; color: #000; \}/);
   assert.match(print, /\.status-disputed \{ border-style: double; \}/);
-  assert.match(print, /\.asat, \.backlog0, \.risk \{ break-inside: avoid; \}/);
+  assert.match(print, /\.asat, \.backlog0, \.risk h3, \.risk \.mitigation \{ break-inside: avoid; \}/);
+  assert.match(print, /\.risk h3 \{ break-after: avoid; \}/);
+  assert.match(print, /\.risk \{ break-inside: auto; \}/);
+  assert.match(print, /\[aria-label="Adoption stages by team"\] table, table\.risk-register/);
   assert.match(print, /\.register \[aria-label="Source register table"\] table \{ min-width: 0; \}/);
   assert.match(print, /\.matrix, table\.incidents/);
   assert.match(print, /svg\.fig \{ min-width: 0; max-width: 100%; height: auto; \}/);
@@ -313,4 +316,8 @@ test('print block resets screen min-widths, shows status borders and avoids brea
 
 test('live chart panel label is serif so the 37-char label fits the 300-unit viewBox under text spacing (plan 04-08)', () => {
   assert.match(css, /\.fig-live \.panel-lbl \{ font-family: var\(--serif\); \}/);
+});
+
+test('adoption table and risk register keep a 720px min-width inside their scroll regions (v1.0 polish)', () => {
+  assert.match(css, /\[aria-label="Adoption stages by team"\] table, table\.risk-register \{ min-width: 720px; \}/);
 });
