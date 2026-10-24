@@ -324,8 +324,13 @@ export function defaultAssumptions() {
     add(`matrix-${row.id}-applies`, row.applies, `share of items that take ${row.id}`, 'applies', ref, row.id, 'applies');
     add(`matrix-${row.id}-variants`, row.variants, 'variants after this factor', 'int', ref, row.id, 'variants');
   }
-  add('matrix-total', r.total, 'approved-live variants in the worked campaign', 'int', 'asm-matrix-independence', null, 'total');
-  add('matrix-per-concept', r.per_concept, 'approved-live variants per master concept', 'int', 'asm-matrix-independence', null, 'per_concept');
+  add('matrix-total', r.total, 'derived variants entering review in the worked campaign, before the gate', 'int', 'asm-matrix-independence', null, 'total');
+  add('matrix-per-concept', r.per_concept, 'derived variants per master concept, before the gate', 'int', 'asm-matrix-independence', null, 'per_concept');
+  // CR-02: the matrix counts derived variants before the gate. Approved-live is
+  // that count at the approval yield, the same yield s01 uses for the headline.
+  const approved = r.total * assumptions['asm-approval-yield'].value;
+  claims['matrix-approved'] = { id: 'matrix-approved', value: approved, unit: 'approved-live variants in the worked campaign, at the approval yield',
+    display: formatValue(approved, 'int'), grade: 'Modelled', flag: null, ref: 'asm-approval-yield', format: 'int' };
   claims['avg-campaign-variants'] = {
     id: 'avg-campaign-variants', value: 1000, unit: 'approved-live variants per campaign in the model', display: '1,000',
     grade: 'Modelled', flag: null, ref: 'asm-campaigns',

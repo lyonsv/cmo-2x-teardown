@@ -587,15 +587,19 @@ test('s05 derive lead and matrix table', () => {
   assert.ok(!s.includes('<p class="later">'));
   assert.match(s, /<div class="table-scroll" role="region" aria-label="[^"]+" tabindex="0">/);
   const cap = s.match(/<caption>([\s\S]*?)<\/caption>/)[1];
-  assert.equal(strip(cap), 'Worked example: one campaign, about 12,000 variants');
+  assert.equal(strip(cap), 'Worked example: one campaign, about 12,000 derived variants');
   assert.ok(cap.includes('data-fig="matrix-total"'));
   const table = s.match(/<table>[\s\S]*?<\/table>/)[0];
   const head = [...table.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
   assert.deepEqual(head, ['Factor', 'Count', 'Applies to', 'Variants after factor', 'Grade']);
   const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
   const names = rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
-  assert.deepEqual(names, ['Master concepts', 'Sizes', 'Channels', 'Locales', 'Audiences', 'Tests', 'Feed items', 'Total approved-live variants']);
+  // CR-02: the matrix counts derived variants before the gate; approved-live is shown at the approval yield.
+  assert.deepEqual(names, ['Master concepts', 'Sizes', 'Channels', 'Locales', 'Audiences', 'Tests', 'Feed items', 'Total derived variants, before the gate', 'Approved-live at the approval yield']);
   assert.ok(rows[7].startsWith('<tr class="total">'));
+  assert.ok(rows[8].includes('data-fig="matrix-approved"') && rows[8].includes('data-fig="asm-approval-yield"'));
+  assert.ok(rows[8].includes('<a class="chip c-m" href="#asm-approval-yield">Modelled</a>'));
+  assert.ok(!/approved-live/i.test(strip(rows.slice(0, 8).join(' '))), 'pre-gate rows must not be labelled approved-live');
   for (const r of rows) {
     const tds = [...r.matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td>/g)];
     assert.equal(tds.length, 4);

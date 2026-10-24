@@ -309,3 +309,18 @@ test('evidence assumptions for fatigue, harness and telemetry', () => {
     assert.notEqual(e.display, e.basis);
   }
 });
+
+// ---- Code review CR-02: matrix total is derived (pre-gate); approved-live applies the yield ----
+
+test('matrix total is labelled derived and matrix-approved applies the approval yield', () => {
+  const r = variantMatrix(variantMatrixDefaults.concepts, variantMatrixDefaults.factors);
+  for (const id of ['matrix-total', 'matrix-per-concept']) {
+    assert.ok(/derived/.test(claims[id].unit) && !/approved-live/.test(claims[id].unit), `${id} unit`);
+  }
+  const c = claims['matrix-approved'];
+  assert.ok(Math.abs(c.value - r.total * assumptions['asm-approval-yield'].value) <= 1e-9);
+  assert.equal(c.display, '11,400');
+  assert.equal(c.ref, 'asm-approval-yield');
+  assert.equal(c.grade, 'Modelled');
+  assert.ok(c.value < r.total);
+});
