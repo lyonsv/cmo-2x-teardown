@@ -276,3 +276,12 @@ test('.status is a bordered mono tag with a non-colour cue per variant', () => {
   assert.ok(d.includes('border-style: double') && d.includes('border-width: 3px'));
   for (const s of ['.status', '.status-alleged', '.status-disputed']) assert.ok(!/--low|--verified|background/.test(rule(s)), s);
 });
+
+// ---- Phase 4 plan 04: risk blocks ----
+
+test('.asat is ruled top and bottom, .risk is spaced, no status colours', () => {
+  const a = rule('.asat');
+  for (const d of ['border-top: 1px solid var(--rule)', 'border-bottom: 1px solid var(--rule)', 'padding: var(--s-sm) 0']) assert.ok(a.includes(d), d);
+  assert.ok(rule('.risk').includes('margin: var(--s-xl) 0'));
+  for (const s of ['.asat', '.risk', '.mitigation']) assert.ok(!/--low|--verified/.test(rule(s)), s);
+});

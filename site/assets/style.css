@@ -180,6 +180,10 @@ svg.fig-live[hidden], .chart-empty[hidden] { display: none; }
 .status { display: inline-block; font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; padding: var(--s-xs) var(--s-sm); }
 .status-alleged { border-style: dashed; }
 .status-disputed { border-style: double; border-width: 3px; }
+.risk { margin: var(--s-xl) 0; }
+.risk h3 { margin-top: 0; }
+.mitigation { margin: 0 0 var(--s-md); }
+.asat { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: var(--s-sm) 0; margin: 0 0 var(--s-md); }
 table.incidents { min-width: 840px; }
 .believe ul { margin: 0; padding-left: var(--s-lg); }
 .believe li + li { margin-top: var(--s-sm); }
@@ -226,7 +230,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .toc, .skip { display: none; }
   a { color: #000; }
   /* No href ::after: register link text is already the full URL (IN-05). */
-  figure, .fig-grid, table, .callout, .legend, tr { break-inside: avoid; }
+  figure, .fig-grid, table, .callout, .legend, .asat, tr { break-inside: avoid; }
   section { break-inside: auto; }
   .later { background: none; }
   .table-scroll, .fig-scroll { overflow: visible; }

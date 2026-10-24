@@ -1409,3 +1409,66 @@ test('s14 lead, status legend and incident table', () => {
   });
   assert.ok(!strip(s).includes('Intercom'));
 });
+
+// ---- Plan 04-04: s14 risk blocks and register ----
+
+const RISK_BLOCKS = [
+  ['slop', 'Slop and sameness'],
+  ['fatigue', 'Reviewer fatigue'],
+  ['goodhart', 'Goodhart on counts and spend'],
+];
+
+function riskBlock(slug) {
+  const s = sectionHtml('s14');
+  const start = s.indexOf(`<h3 id="s14-${slug}">`);
+  assert.ok(start >= 0, `no block ${slug}`);
+  const rest = s.slice(start + 10);
+  const next = rest.search(/<h3 id="s14-|<div class="table-scroll"[^>]*aria-label="Risk register/);
+  return s.slice(start, next < 0 ? s.length : start + 10 + next);
+}
+
+test('s14 risk blocks appear in order with answer-first, mitigation and as-at', () => {
+  const s = sectionHtml('s14');
+  const hs = [...s.matchAll(/<h3 id="s14-([a-z]+)">([^<]*)<\/h3>/g)].map((m) => [m[1], m[2]]);
+  assert.deepEqual(hs.slice(0, RISK_BLOCKS.length), RISK_BLOCKS);
+  for (const [slug] of RISK_BLOCKS) {
+    const b = riskBlock(slug);
+    const first = b.match(/<\/h3>\s*<p>([\s\S]*?)<\/p>/);
+    assert.ok(first, `${slug}: first paragraph`);
+    assert.ok(strip(first[1]).split(' ').length <= 30, `${slug}: answer-first sentence too long`);
+    assert.match(b, /<p class="mitigation"><b>Mitigation:<\/b> [^<]/);
+    const asat = b.match(/<p class="asat"><b>As at <time datetime="(\d{4}-\d{2}-\d{2})">[^<]*<\/time><\/b>:[\s\S]*?<\/p>/);
+    assert.ok(asat, `${slug}: as-at callout`);
+    assert.match(asat[0], /class="cite" href="#src-/);
+    if (['ip', 'regulation'].includes(slug)) assert.ok(strip(asat[0]).endsWith('Check again before relying on it.'), slug);
+  }
+});
+
+test('s14 reviewer fatigue cites Parasuraman and Manzey at abstract level only', () => {
+  const b = riskBlock('fatigue');
+  assert.ok(b.includes('href="#src-parasuraman-manzey-2010"'));
+  assert.ok(b.includes('href="#s07"'));
+  assert.match(strip(b), /expert/i);
+  assert.match(strip(b), /training/i);
+});
+
+test('s14 risk register table', () => {
+  const s = sectionHtml('s14');
+  const t = s.match(/<table class="risk-register">[\s\S]*?<\/table>/);
+  assert.ok(t, 'no risk register');
+  assert.ok(t[0].includes('<caption>Risk register: likelihood grade, mitigation and owner</caption>'));
+  const head = [...t[0].match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
+  assert.deepEqual(head, ['Risk', 'Likelihood', 'Mitigation', 'Owner', 'Grade']);
+  const rows = t[0].match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr>[\s\S]*?<\/tr>/g);
+  assert.equal(rows.length, 6);
+  assert.match(strip(rows[5]), /^Agent liability/);
+  for (const r of rows) {
+    const tds = [...r.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
+    assert.equal(tds.length, 4);
+    assert.ok(['Low', 'Medium', 'High'].includes(strip(tds[0])), strip(tds[0]));
+    assert.ok(['Brand governance', 'Legal', 'Marketing operations', 'Analytics'].includes(strip(tds[2])), strip(tds[2]));
+    assert.match(tds[3], /^<a class="chip c-s" href="#asm-risk-likelihood">Speculative<\/a>$/);
+    for (const c of r.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) assert.ok(strip(c).split(' ').length <= 20, strip(c));
+  }
+  assert.ok(!/--low|--verified|\b(green|amber|red)\b/i.test(t[0]));
+});

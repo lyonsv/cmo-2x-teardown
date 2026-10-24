@@ -1345,6 +1345,42 @@
           </tbody>
         </table>
       </div>
+      <div class="risk">
+        <h3 id="s14-slop">Slop and sameness</h3>
+        <p>Volume without variety produces sameness, and audiences notice. The risk is a library of correct assets that all look and read alike.</p>
+        <p>Derivation can make this worse before it makes it better. When thousands of variants descend from a few masters, any weakness in a master is copied everywhere, and a model asked to fill a brief tends towards the average of what it has seen. Visible machine finish costs a brand attention, and the incidents above show that audiences and the press will say so in public. More output is only an improvement if each asset still earns its place in front of a customer.</p>
+        <p class="mitigation"><b>Mitigation:</b> Cap the variants allowed per concept, require a human-approved concept before any derivation, and run a diversity check that flags near-duplicates and off-voice copy. The concept count in <a href="#s03">section 3</a> and the variant matrix in <a href="#s05">section 5</a> set where those caps sit.</p>
+        <p class="asat"><b>As at <time datetime="2026-10-24">24 October 2026</time></b>: press reports describe public criticism of recent AI-made adverts from a drinks brand and a fashion brand, and the drinks company says its earlier film performed well, so reception is disputed. <a class="cite" href="#src-incident-cocacola-2025">src-incident-cocacola-2025</a> <a class="cite" href="#src-incident-guess-vogue-2025">src-incident-guess-vogue-2025</a></p>
+      </div>
+      <div class="risk">
+        <h3 id="s14-fatigue">Reviewer fatigue</h3>
+        <p>Reviewers who see mostly correct work stop looking hard. The gate is only as good as the attention behind it, and attention degrades with volume.</p>
+        <p>A peer-reviewed review of how people use automation finds that complacency and automation bias occur in experts as well as novices, and that training or instructions alone do not remove them. <a class="cite" href="#src-parasuraman-manzey-2010">src-parasuraman-manzey-2010</a> The article is about automation in general, not marketing review, and this page does not carry its findings over to a reviewer rate. What it supports is narrow: do not assume that skilled, trained reviewers stay vigilant by themselves. With an auto-approval gate clearing most variants, the people who remain see the rarer and harder cases, which is where drift is least visible. That is design reasoning, not a tested result. <a class="chip c-s" href="#asm-fatigue-controls">Speculative</a></p>
+        <p class="mitigation"><b>Mitigation:</b> Blind-first review, seeded errors, session caps, random sampling of auto-approvals and drift alarms, all set out in <a href="#s07">section 7</a>. Treat the seeded-error catch rate as the standing signal, and stop the line when it falls.</p>
+        <p class="asat"><b>As at <time datetime="2026-10-24">24 October 2026</time></b>: the finding was read at abstract level only and the full text was not read. Whether the same effect holds in marketing review has not been tested here. <a class="cite" href="#src-parasuraman-manzey-2010">src-parasuraman-manzey-2010</a></p>
+      </div>
+      <div class="risk">
+        <h3 id="s14-goodhart">Goodhart on counts and spend</h3>
+        <p>When a count or a spend line becomes the target, teams optimise the count. Variants produced and money spent on AI are inputs, not results.</p>
+        <p>A programme praised for approved-live variants will find cheap ways to raise that number, such as near-identical variants, loose approvals and assets nobody uses. A programme rewarded for AI spend will spend. The page's own claim is built to resist this: the falsifier in <a href="#s01">section 1</a> is tested on holdout-measured conversion and acquisition cost, not on how many assets shipped, and <a href="#s10">section 10</a> shows how those holdouts work. A volume figure should only ever be reported next to the outcome it is meant to move.</p>
+        <p class="mitigation"><b>Mitigation:</b> Report every count beside a holdout-measured outcome, treat spend as a floor and not a target, and revisit the targets whenever a count rises while the outcome does not.</p>
+        <p class="asat"><b>As at <time datetime="2026-10-24">24 October 2026</time></b>: an analyst survey of CMOs lists capacity to produce more content among the returns CMOs report from generative AI. It is self-reported and is not a measured outcome, which is the volume framing this block warns about. <a class="cite" href="#src-gartner-2025-cmo-spend">src-gartner-2025-cmo-spend</a></p>
+      </div>
+      <p>The likelihood words below are the author's judgement from the incidents and sources above, not measured rates. Owners are categories, not named people.</p>
+      <div class="table-scroll" role="region" aria-label="Risk register table" tabindex="0">
+        <table class="risk-register">
+          <caption>Risk register: likelihood grade, mitigation and owner</caption>
+          <thead><tr><th scope="col">Risk</th><th scope="col">Likelihood</th><th scope="col">Mitigation</th><th scope="col">Owner</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Slop and sameness</th><td>Medium</td><td>Variant caps, human-approved concepts and a diversity check.</td><td>Brand governance</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Reviewer fatigue</th><td>High</td><td>Blind-first review, seeded errors, session caps and sampling of auto-approvals.</td><td>Marketing operations</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Goodhart on counts and spend</th><td>Medium</td><td>Report every count beside a holdout-measured outcome.</td><td>Analytics</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">IP, copyrightability and Getty v Stability</th><td>Medium</td><td>Retrieve or license where rights matter; record human selection and edits.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Regulation</th><td>High</td><td>Disclose as the policy source says, and re-check dates with counsel.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row" id="legal-s14-agent-liability">Agent liability</th><td>Medium</td><td>Human sign-off on customer-facing agent statements; keep a log of what agents said.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
     <section id="s15" aria-labelledby="s15-h">
       <div class="sec-head"><span class="sec-num">15</span><h2 id="s15-h">Source register</h2></div>
