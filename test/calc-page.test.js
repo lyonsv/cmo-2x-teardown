@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { modelContext, claims, assumptions } from '../site/js/data.js';
-import { present, defaultValues, RESULT_ROWS } from '../site/js/model.js';
+import { present, defaultValues, RESULT_ROWS, SENSITIVITY_STEP } from '../site/js/model.js';
 import { FIELDS } from '../site/js/fields.js';
 import { toText } from '../site/js/state.js';
 import { formatValue } from '../site/js/format.js';
@@ -286,6 +286,14 @@ test('sensitivity table: header, five ranked rows equal present(defaults), cappe
   });
   assert.ok(trs.some((tr) => tr.includes('capped</span>')), 'at least one capped cell at defaults');
   assert.ok(after.includes('<p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>'));
+});
+
+test('sensitivity step text is tied to SENSITIVITY_STEP (IN-03)', () => {
+  const step = formatValue(SENSITIVITY_STEP, 'pct0');
+  assert.ok(s11.includes(`<caption>Sensitivity: each input moved ${step} down and up, others unchanged</caption>`));
+  assert.ok(s11.includes(`<tr><th scope="col">at −${step}</th><th scope="col">at +${step}</th><th scope="col">at −${step}</th><th scope="col">at +${step}</th></tr>`));
+  assert.ok(p.believe.find((b) => b.key === 'vcost').statement.includes(`A ${step} rise moves`));
+  assert.ok(s11.includes(`A ${step} rise moves cost per approved-live asset`));
 });
 
 test('scenario and sensitivity tables sit before the share panel and outside .calc-live', () => {

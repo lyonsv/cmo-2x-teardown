@@ -379,7 +379,7 @@ function believePresentation(values, ctx, sens) {
     let extra = null;
     if (i.key === 'vcost' && d !== null) {
       const small = Math.abs(d) < 0.02;
-      extra = [tx(`. A 20% rise moves cost per approved-live asset ${small ? 'only slightly, by ' : 'by '}`),
+      extra = [tx(`. A ${formatValue(SENSITIVITY_STEP, 'pct0')} rise moves cost per approved-live asset ${small ? 'only slightly, by ' : 'by '}`),
         { fig: 'calc-believe-vcost-swing', value: d, text: formatValue(d, 'pctchg1') }, tx('.')];
     }
     const item = make(i.key, i.asm, i.grade, i.v, i.text, extra);
