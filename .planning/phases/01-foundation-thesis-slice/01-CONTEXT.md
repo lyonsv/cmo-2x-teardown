@@ -34,7 +34,8 @@ Requirements: SHELL-01..05, CRED-01..06, CFO-01..04, LEVER-06, CALC-08.
 - `calc.js` implements the **full model now** (variants, review capacity with auto-approval share and sampling/escalation, fully loaded cost per approved-live asset — generation, review, rework, tooling, rights, storage — and cycle time). Phase 3 only adds UI. Pure ES module, no DOM, `compute(inputs, assumptions)`; invalid inputs return validation errors, never NaN/Infinity.
 - Tests (CALC-08): 1x identity, monotonicity, hand-calculated golden case, zero/edge inputs, cost per approved asset falls with volume.
 - Gartner 7.7% (2025) / 7.8% (2026): grade **Benchmark** only if a primary or Gartner press-release page is confirmed during plan research; otherwise Modelled with a "secondary source" note.
-- Falsifier: "If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org."
+- Falsifier (revised 2026-10-24 after code review WR-04, user chose OR): "If approved-live variants per head double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org."
+- Flat budget (added 2026-10-24 after code review CR-02): keep "flat total marketing budget"; state explicitly that the rise in production-attributable cost (~$0.7M, under one point of budget) is reallocated from other lines such as agency/production fees, graded Modelled.
 - Section 02 figure: paired horizontal bars, baseline vs 2x, for output per head, cost per approved-live asset (stacked by cost component) and AI spend; inline SVG with `<title>`/`<desc>` plus a `<table>` equivalent.
 - AI spend framed as a floor, not a KPI, with the Goodhart rationale.
 
