@@ -195,7 +195,7 @@ Plans:
   3. s02 Figure 1 and its data table, and the calculator's results, summary sentence, chart and "what you must believe" panel, report the new headline metric(s); variant counts remain only in s05/s07 (factory and review capacity) and the s15 registers, labelled as internal throughput.
   4. data.js, calc/model code and all drift, crosscheck and smoke tests are updated so every new number is graded, registered and traced; no test is loosened to make the change pass.
   5. The reason for the change (no CMO benchmark for assets per head; Goodhart risk from mechanical variants) is recorded in PROJECT.md Key Decisions.
-**Plans:** 2/7 plans executed
+**Plans:** 3/7 plans executed
 
 Plans:
 **Wave 1**
@@ -208,7 +208,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03.1-03-PLAN.md — Calculator presenter (ten rows, summary, maths, believe, deps) and Figure 8 chart spec
+- [x] 03.1-03-PLAN.md — Calculator presenter (ten rows, summary, maths, believe, deps) and Figure 8 chart spec
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
