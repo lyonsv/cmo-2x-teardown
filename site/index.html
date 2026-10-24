@@ -476,7 +476,7 @@
       <figure>
       <svg class="fig-d" role="img" aria-labelledby="fd6-t fd6-d" viewBox="0 0 300 288">
         <title id="fd6-t">The tier ladder</title>
-        <desc id="fd6-d">Four tiers from lowest to highest risk. The two lowest tiers can clear automatically after the gate and agent review. The upper two tiers always reach a human.</desc>
+        <desc id="fd6-d">Four tiers from lowest to highest risk. T0, resizes and swaps, clears on a policy match with a human sample. T1, new executions of already-approved claims, clears on an agent pass with a human sample. T2, new claims or newly generated imagery, goes to a human reviewer. T3, hero work and endorsements, goes to a senior human and legal.</desc>
         <defs>
         <marker id="fd6-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
         </defs>
@@ -485,10 +485,10 @@
         <line class="edge" x1="150" y1="196" x2="150" y2="216" marker-end="url(#fd6-arrow)"/>
         <text class="note" x="150" y="144" text-anchor="middle">auto above, human below</text>
         <text class="note" x="150" y="280" text-anchor="middle">Illustrative</text>
-        <g class="node node-review"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">T0 · derived variants</tspan><tspan x="150" dy="16">gate: auto-approve</tspan></text></g>
-        <g class="node node-review"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">T1 · approved templates</tspan><tspan x="150" dy="16">gate: agent review + sample</tspan></text></g>
-        <g class="node"><rect x="30" y="156" width="240" height="40" rx="2"/><text x="150" y="172" text-anchor="middle"><tspan class="node-t" x="150" y="172">T2 · new content</tspan><tspan x="150" dy="16">human reviewer</tspan></text></g>
-        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">T3 · high risk</tspan><tspan x="150" dy="16">senior human and legal</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">T0 · resizes and swaps</tspan><tspan x="150" dy="16">gate: policy match + sample</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">T1 · approved claims reused</tspan><tspan x="150" dy="16">gate: agent pass + sample</tspan></text></g>
+        <g class="node"><rect x="30" y="156" width="240" height="40" rx="2"/><text x="150" y="172" text-anchor="middle"><tspan class="node-t" x="150" y="172">T2 · new claims or imagery</tspan><tspan x="150" dy="16">human reviewer</tspan></text></g>
+        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">T3 · hero, endorsements</tspan><tspan x="150" dy="16">senior human and legal</tspan></text></g>
       </svg>
         <figcaption><b>Figure 6</b> The tier ladder: the lowest tiers can clear automatically; the upper tiers always reach a person. Illustrative; see the table.</figcaption>
       </figure>
@@ -498,8 +498,8 @@
           <thead><tr><th scope="col">Tier</th><th scope="col">Example assets</th><th scope="col">Who approves</th><th scope="col">Share of assets</th><th scope="col">Grade</th></tr></thead>
           <tbody>
             <tr><th scope="row" class="tier">T0</th><td>Resizes, crops, locale swaps of pre-approved strings, feed tiles from approved templates.</td><td>Policy match; human sample.</td><td><span data-fig="asm-tier-range-t0">45–65%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t0">55%</span></td><td><a class="chip c-m" href="#asm-tier-range-t0">Modelled</a></td></tr>
-            <tr><th scope="row" class="tier">T1</th><td>New copy inside an approved claims library; templates with retrieved approved imagery.</td><td>Agent pass; human sample.</td><td><span data-fig="asm-tier-range-t1">25–35%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t1">30%</span></td><td><a class="chip c-m" href="#asm-tier-range-t1">Modelled</a></td></tr>
-            <tr><th scope="row" class="tier">T2</th><td>Newly generated imagery, new claim phrasing, regulated-category copy, new audience segments.</td><td>A human reviewer.</td><td><span data-fig="asm-tier-range-t2">8–16%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t2">12%</span></td><td><a class="chip c-m" href="#asm-tier-range-t2">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T1</th><td>New executions of already-approved claims (no new claims); templates with retrieved approved imagery; audience variants built from existing segments.</td><td>Agent pass; human sample.</td><td><span data-fig="asm-tier-range-t1">25–35%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t1">30%</span></td><td><a class="chip c-m" href="#asm-tier-range-t1">Modelled</a></td></tr>
+            <tr><th scope="row" class="tier">T2</th><td>Newly generated imagery, any new claim or new claim phrasing, regulated-category copy, newly defined audience segments.</td><td>A human reviewer.</td><td><span data-fig="asm-tier-range-t2">8–16%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t2">12%</span></td><td><a class="chip c-m" href="#asm-tier-range-t2">Modelled</a></td></tr>
             <tr><th scope="row" class="tier">T3</th><td>Hero work, testimonials and endorsements, likeness or voice, comparative, health or finance claims.</td><td>Senior human plus legal.</td><td><span data-fig="asm-tier-range-t3">2–5%</span> <b class="default-mark">model default</b> <span data-fig="tier-default-t3">3%</span></td><td><a class="chip c-m" href="#asm-tier-range-t3">Modelled</a></td></tr>
           </tbody>
         </table>
@@ -508,10 +508,10 @@
       <p>The baseline and 2x tier mix is <span data-fig="asm-tier-mix">T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x</span> <a class="chip c-m" href="#asm-tier-mix">Modelled</a>, so reviewer effort shifts toward the lowest tiers as volume grows.</p>
       <p>The page assumes an auto-approval share of <span data-fig="asm-auto-approval">20% today, 60% at 2x</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a>. At 2x, <span data-fig="tier-eligible-share-scaled">85%</span> of variants are tier-eligible, so the agent must clear about <span data-fig="auto-share-of-eligible">71%</span> of those without a full human review. A sampled or escalated share of what it clears still goes to a person, so about <span data-fig="human-touch-share-scaled">46%</span> of all derived variants are still seen by someone. That is a Modelled target that depends on most variants being template-derived, not a measured rate; <a href="#s06">the review agent</a> section shows how far a real system was from it.</p>
       <h3>Always human</h3>
-      <p>These classes never auto-approve, whatever the agent's verdict; the list is illustrative.</p>
+      <p>These classes never auto-approve, whatever the agent's verdict; the list is illustrative. Copy that only reuses a claim already approved in the claims library is not a new claim, which is why it can sit in T1; any new claim starts at T2.</p>
       <ul>
         <li>Hero and launch work.</li>
-        <li>Claim-bearing, comparative and testimonial or endorsement content.</li>
+        <li>New or comparative claims, testimonials and endorsements.</li>
         <li>The likeness or voice of a real person.</li>
         <li>Content about or aimed at children.</li>
         <li>Anything touching third-party rights not already cleared.</li>

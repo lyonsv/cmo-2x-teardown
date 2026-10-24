@@ -838,3 +838,19 @@ test('s05 and s07 state the human-touch share from the model, not a "small chanc
   assert.ok(/still reach a person/.test(strip(p)));
   assert.ok(/sampled or escalated share/.test(assumptions['asm-auto-approval'].basis));
 });
+
+// ---- Code review WR-02: tier rules are internally consistent ----
+
+test('tier rules agree: T1 reuses approved claims, any new claim is T2 or above (WR-02)', () => {
+  const s = sectionHtml('s07');
+  const rows = s.match(/<caption>Approval tiers \(illustrative\)<\/caption>[\s\S]*?<\/table>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g).slice(1);
+  const example = (r) => strip([...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][0][1]).toLowerCase();
+  assert.ok(example(rows[1]).includes('already-approved claims') && example(rows[1]).includes('no new claims'), 'T1 allows only reused claims');
+  assert.ok(example(rows[1]).includes('existing segments'), 'audience variants from existing segments are T1');
+  assert.ok(example(rows[2]).includes('new claim'), 'new claims are T2');
+  for (const r of rows.slice(0, 2)) assert.ok(!/\bnew cop(y|ies)\b/.test(example(r)), 'no new copy in T0/T1');
+  const ah = s.match(/<h3>Always human<\/h3>\s*<p>([\s\S]*?)<\/p>\s*<ul>([\s\S]*?)<\/ul>/);
+  assert.ok(!/claim-bearing/i.test(ah[2]), 'always-human list must not catch reused approved claims');
+  assert.ok(/new or comparative claims/i.test(strip(ah[2])));
+  assert.ok(/any new claim starts at T2/.test(strip(ah[1])));
+});
