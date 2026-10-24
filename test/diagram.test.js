@@ -8,7 +8,7 @@ const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 
 // Figure number -> section. 02-03 adds 4: 's05', 02-05 adds 5: 's06' and 6: 's07', 02-06 adds 7: 's08'.
-const EXPECTED_FIGURES = { 2: 's03', 3: 's03' };
+const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05' };
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`\\s${name}="([^"]*)"`));
@@ -151,4 +151,22 @@ test('steps and captions carry no digits', () => {
     assert.ok(!/\d/.test(strip(ol)), `Figure ${f.n} steps contain digits`);
     assert.ok(!/\d/.test(strip(cap)), `Figure ${f.n} caption contains digits`);
   }
+});
+
+test('Figure 4 has a two-way fork', () => {
+  const f = figures().find((x) => x.n === 4);
+  assert.ok(f, 'Figure 4 present');
+  const forks = nodes(f.svg).filter((n) => /width="112"/.test(n.html));
+  assert.equal(forks.length, 2);
+  const pos = forks.map((n) => {
+    const r = n.html.match(/<rect\b[^>]*>/)[0];
+    return { x: Number(attr(r, 'x')), y: Number(attr(r, 'y')), text: strip(n.html) };
+  });
+  const left = pos.find((p) => p.x === 30);
+  const right = pos.find((p) => p.x === 158);
+  assert.ok(left && right, 'forks at x 30 and 158');
+  assert.equal(left.y, right.y);
+  assert.match(left.text, /auto/i);
+  assert.match(right.text, /human/i);
+  assert.ok(/<line class="edge edge-review"[^>]*x2="86"/.test(f.svg) || /<(line|path) class="edge edge-review"[^>]*(x2="86"|L86|86 )/.test(f.svg), 'auto branch edge is edge-review');
 });

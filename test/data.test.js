@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  GRADES, FLAGS, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions,
+  GRADES, FLAGS, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions, variantMatrixDefaults,
 } from '../site/js/data.js';
-import { compute } from '../site/js/calc.js';
+import { compute, variantMatrix } from '../site/js/calc.js';
 
 const entries = [...Object.values(claims), ...Object.values(assumptions)];
 
@@ -113,4 +113,61 @@ test('negative values put a true minus sign before the currency symbol', () => {
   assert.equal(formatValue(-1189.2, 'int'), '\u22121,189');
   assert.equal(formatValue(-0.001, 'usd2'), '$0.00');
   assert.equal(formatValue(-0, 'int'), '0');
+});
+
+// ---- Plan 02-03: worked variant matrix ----
+
+const GOLDEN_F = [
+  { id: 'sizes', count: 10, applies: 1 },
+  { id: 'channels', count: 5, applies: 0.75 },
+  { id: 'locales', count: 6, applies: 0.4 },
+  { id: 'audiences', count: 5, applies: 0.75 },
+  { id: 'tests', count: 4, applies: 0.5 },
+  { id: 'feeds', count: 4, applies: 0.5 },
+];
+
+test('variantMatrixDefaults is four concepts and the golden factor set', () => {
+  assert.equal(variantMatrixDefaults.concepts, 4);
+  assert.deepEqual(variantMatrixDefaults.factors.map(({ id, count, applies }) => ({ id, count, applies })), GOLDEN_F);
+});
+
+test('matrix claims equal variantMatrix()', () => {
+  const r = variantMatrix(variantMatrixDefaults.concepts, variantMatrixDefaults.factors);
+  assert.equal(r.ok, true);
+  const mc = Object.values(claims).filter((c) => c.matrix);
+  assert.ok(mc.length >= 20);
+  for (const c of mc) {
+    const { row, field } = c.matrix;
+    const expected = field === 'concepts' ? r.concepts : field === 'total' ? r.total : field === 'per_concept' ? r.per_concept
+      : r.rows.find((x) => x.id === row)[field];
+    assert.ok(Math.abs(c.value - expected) <= 1e-9, `${c.id} drifted`);
+    assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
+    assert.equal(c.grade, 'Modelled');
+    assert.equal(c.flag, null);
+    const ref = field === 'concepts' ? 'asm-matrix-concepts' : (field === 'total' || field === 'per_concept') ? 'asm-matrix-independence' : `asm-matrix-${row}`;
+    assert.equal(c.ref, ref, `${c.id} ref`);
+  }
+});
+
+test('matrix assumptions exist as kind matrix, Modelled', () => {
+  for (const k of ['concepts', 'sizes', 'channels', 'locales', 'audiences', 'tests', 'feeds', 'independence']) {
+    const e = assumptions[`asm-matrix-${k}`];
+    assert.ok(e, k);
+    assert.equal(e.kind, 'matrix');
+    assert.equal(e.grade, 'Modelled');
+  }
+});
+
+test('avg-campaign-variants equals the model average campaign', () => {
+  const r = compute(defaultInputs(), defaultAssumptions());
+  const c = claims['avg-campaign-variants'];
+  assert.equal(c.value, r.baseline.variants_per_year / defaultInputs().campaigns_per_year);
+  assert.equal(c.display, '1,000');
+  assert.equal(c.ref, 'asm-campaigns');
+});
+
+test('formatValue applies', () => {
+  assert.equal(formatValue(1, 'applies'), 'all');
+  assert.equal(formatValue(0.75, 'applies'), '75%');
+  assert.equal(formatValue(0.4, 'applies'), '40%');
 });

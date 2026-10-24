@@ -304,7 +304,7 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s05', 's06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
 
 test('skeleton sections carry a scope sentence and the later note', () => {
   for (const id of SKELETON_IDS) {
@@ -566,4 +566,41 @@ test('s04 layered architecture', () => {
   for (const c of body.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) {
     assert.ok(strip(c).split(' ').length <= 20, `cell over 20 words: ${strip(c)}`);
   }
+});
+
+// ---- Plan 02-03: s05 variant matrix ----
+
+test('s05 derive lead and matrix table', () => {
+  const s = sectionHtml('s05');
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'Derive, do not generate: four master concepts become about 12,000 Modelled variants through templating, localisation and feed rendering, and most land in low-risk tiers.');
+  assert.ok(first[1].includes('data-fig="matrix-total"'));
+  assert.ok(!s.includes('<p class="later">'));
+  assert.match(s, /<div class="table-scroll" role="region" aria-label="[^"]+" tabindex="0">/);
+  const cap = s.match(/<caption>([\s\S]*?)<\/caption>/)[1];
+  assert.equal(strip(cap), 'Worked example: one campaign, about 12,000 variants');
+  assert.ok(cap.includes('data-fig="matrix-total"'));
+  const table = s.match(/<table>[\s\S]*?<\/table>/)[0];
+  const head = [...table.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Factor', 'Count', 'Applies to', 'Variants after factor', 'Grade']);
+  const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  const names = rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
+  assert.deepEqual(names, ['Master concepts', 'Sizes', 'Channels', 'Locales', 'Audiences', 'Tests', 'Feed items', 'Total approved-live variants']);
+  assert.ok(rows[7].startsWith('<tr class="total">'));
+  for (const r of rows) {
+    const tds = [...r.matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td>/g)];
+    assert.equal(tds.length, 4);
+    for (const t of tds.slice(0, 3)) assert.equal(t[1].trim(), 'class="num"');
+  }
+  ['sizes', 'channels', 'locales', 'audiences', 'tests', 'feeds'].forEach((id, i) => {
+    for (const k of ['count', 'applies', 'variants']) assert.ok(rows[i + 1].includes(`data-fig="matrix-${id}-${k}"`), `${id} ${k}`);
+  });
+  assert.equal(strip([...rows[1].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][1][1]), 'all');
+  assert.ok(rows[7].includes('data-fig="matrix-total"'));
+  const total = Number(strip(rows[7].match(/data-fig="matrix-total">([^<]*)</)[1]).replace(/,/g, ''));
+  assert.ok(total >= 10000 && total <= 13000);
+  const after = strip(s.slice(s.indexOf('</table>')));
+  assert.ok(/independent/.test(after) && /double count/.test(after));
+  const tail = s.slice(s.indexOf('</table>'));
+  assert.ok(tail.includes('data-fig="matrix-per-concept"') && tail.includes('data-fig="avg-campaign-variants"'));
 });

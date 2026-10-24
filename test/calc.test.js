@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { compute } from '../site/js/calc.js';
+import { compute, variantMatrix } from '../site/js/calc.js';
 import { defaultAssumptions } from '../site/js/data.js';
 
 function close(a, b, tol = 1e-9) {
@@ -398,4 +398,93 @@ test('capacity auto-approval: utilisation is exactly 1 there and below the targe
   close(at(r.break_even_auto_approval.value).scenario.utilisation, assumptions.target_utilisation, 1e-9);
   assert.equal(at(capShare - 0.01).scenario.review_capacity_exceeded, true);
   assert.equal(at(capShare + 0.01).scenario.review_capacity_exceeded, false);
+});
+
+// ---- Plan 02-03: variantMatrix ----
+
+const F = [
+  { id: 'sizes', count: 10, applies: 1 },
+  { id: 'channels', count: 5, applies: 0.75 },
+  { id: 'locales', count: 6, applies: 0.4 },
+  { id: 'audiences', count: 5, applies: 0.75 },
+  { id: 'tests', count: 4, applies: 0.5 },
+  { id: 'feeds', count: 4, applies: 0.5 },
+];
+
+// Independent enumerator: expands round(items x applies) items by the factor count.
+function enumerate(concepts, factors) {
+  return factors.reduce((items, f) => {
+    const k = Math.round(items * f.applies);
+    return k * f.count + (items - k);
+  }, concepts);
+}
+
+test('variantMatrix golden: default set gives 12,000 over 4 concepts', () => {
+  const r = variantMatrix(4, F);
+  assert.equal(r.ok, true);
+  assert.deepEqual(r.rows.map((x) => Math.round(x.variants)), [40, 160, 480, 1920, 4800, 12000]);
+  close(r.total, 12000);
+  close(r.per_concept, 3000);
+  assert.equal(r.total, r.rows.at(-1).variants);
+  assert.equal(r.concepts, 4);
+});
+
+test('variantMatrix equals an independent enumerator', () => {
+  const small = [{ id: 'a', count: 3, applies: 0.5 }, { id: 'b', count: 2, applies: 0.5 }];
+  const r = variantMatrix(2, small);
+  close(r.total, 6);
+  close(r.total, enumerate(2, small));
+  close(variantMatrix(4, F).total, enumerate(4, F), 1e-6);
+});
+
+test('variantMatrix is order independent', () => {
+  const perms = [[...F].reverse(), [F[2], F[0], F[5], F[1], F[4], F[3]], [F[4], F[5], F[3], F[2], F[1], F[0]]];
+  for (const p of perms) close(variantMatrix(4, p).total, 12000);
+});
+
+test('variantMatrix identity: count 1 or applies 0 changes nothing, applies 1 is the plain product', () => {
+  const base = variantMatrix(4, F).total;
+  close(variantMatrix(4, [...F, { id: 'x', count: 1, applies: 0.7 }]).total, base);
+  close(variantMatrix(4, [...F, { id: 'y', count: 9, applies: 0 }]).total, base);
+  close(variantMatrix(3, F.map((f) => ({ ...f, applies: 1 }))).total, 3 * 10 * 5 * 6 * 5 * 4 * 4);
+});
+
+test('variantMatrix is monotonic in count and applies', () => {
+  const base = variantMatrix(4, F).total;
+  for (let i = 0; i < F.length; i++) {
+    const moreCount = F.map((f, j) => (j === i ? { ...f, count: f.count + 1 } : f));
+    const moreApplies = F.map((f, j) => (j === i ? { ...f, applies: Math.min(1, f.applies + 0.1) } : f));
+    assert.ok(variantMatrix(4, moreCount).total >= base);
+    assert.ok(variantMatrix(4, moreApplies).total >= base);
+  }
+});
+
+test('variantMatrix default set lands in [10000, 13000]', () => {
+  const t = variantMatrix(4, F).total;
+  assert.ok(t >= 10000 && t <= 13000);
+});
+
+test('variantMatrix validation names the field and never yields NaN', () => {
+  const bad = [
+    [0, F, 'concepts'], [1.5, F, 'concepts'], [-1, F, 'concepts'], [null, F, 'concepts'],
+    [4, [], 'factors'], [4, null, 'factors'],
+    [4, [{ id: 'a', count: 0, applies: 0.5 }], 'factors[0].count'],
+    [4, [{ id: 'a', count: 2.5, applies: 0.5 }], 'factors[0].count'],
+    [4, [{ id: 'a', count: 2, applies: 1.1 }], 'factors[0].applies'],
+    [4, [{ id: 'a', count: 2, applies: -0.1 }], 'factors[0].applies'],
+    [4, [{ id: 'a', count: 2, applies: NaN }], 'factors[0].applies'],
+    [4, [{ count: 2, applies: 0.5 }], 'factors[0].id'],
+  ];
+  for (const [c, f, field] of bad) {
+    const r = variantMatrix(c, f);
+    assert.equal(r.ok, false, field);
+    assert.ok(r.errors.some((e) => e.field === field), `expected error on ${field}`);
+    assert.ok(!('total' in r));
+  }
+});
+
+test('variantMatrix: every numeric leaf is finite', () => {
+  const r = variantMatrix(4, F);
+  const leaves = [r.concepts, r.total, r.per_concept, ...r.rows.flatMap((x) => [x.count, x.applies, x.multiplier, x.variants])];
+  for (const v of leaves) assert.ok(Number.isFinite(v));
 });
