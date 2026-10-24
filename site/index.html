@@ -392,7 +392,7 @@
           </tbody>
         </table>
       </div>
-      <p>The factors are independent. Each one expands only the stated share of the set that exists after the previous factor, so no variant is double counted, and the shares stand in for the exclusions a real campaign has. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
+      <p>The factors are treated as independent for illustration. Each one expands only the stated share of the set that exists after the previous factor. Real campaigns have correlated factors, because sizes follow the placement specs of each channel, so the total is an upper-bound sketch rather than a count of distinct valid variants. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
       <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
       <h3>Where the imagery comes from</h3>
       <p>Every campaign needs images, and there are three routes to them: retrieve approved assets, license new ones, or generate them. The comparison is shown without a ranking.</p>
@@ -955,7 +955,7 @@
               <td>Worked campaign: Channels</td>
               <td><span data-fig="asm-matrix-channels">5 channels, 75% of items</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>Five channels, with 75% of the items going to more than one channel; illustrative, no published benchmark.</td>
+              <td>Five channels, with 75% of the items rendered for all five channels and the rest for one; illustrative, no published benchmark.</td>
             </tr>
             <tr id="asm-matrix-locales">
               <th scope="row" class="id">asm-matrix-locales</th>
@@ -988,9 +988,9 @@
             <tr id="asm-matrix-independence">
               <th scope="row" class="id">asm-matrix-independence</th>
               <td>Independence of matrix factors</td>
-              <td><span data-fig="asm-matrix-independence">Each factor applies to a stated share of the running set</span></td>
+              <td><span data-fig="asm-matrix-independence">Factors treated as independent; an upper-bound sketch</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent, so no variant is counted twice. Real campaigns have exclusions (a size that a channel does not take); the applies fractions stand in for them.</td>
+              <td>Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent for illustration. Real campaigns have correlated factors: sizes follow channel placement specs, so not every channel takes every size. The total is therefore an upper-bound sketch, not a count of distinct valid variants; the applies fractions stand in only roughly for those exclusions.</td>
             </tr>
             <tr id="asm-imagery-routes">
               <th scope="row" class="id">asm-imagery-routes</th>

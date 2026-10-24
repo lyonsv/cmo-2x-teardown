@@ -232,7 +232,7 @@ assumptions['asm-matrix-concepts'] = a('asm-matrix-concepts', 'Master concepts i
 {
   const wording = {
     sizes: ['10 sizes, all items', 'Ten sizes, each applied to every item, so the count and the fraction both multiply the whole set; illustrative, no published benchmark.'],
-    channels: ['5 channels, 75% of items', 'Five channels, with 75% of the items going to more than one channel; illustrative, no published benchmark.'],
+    channels: ['5 channels, 75% of items', 'Five channels, with 75% of the items rendered for all five channels and the rest for one; illustrative, no published benchmark.'],
     locales: ['6 locales, 40% of items', 'Six locales, with 40% of the items localised into all of them; illustrative, no published benchmark.'],
     audiences: ['5 audiences, 75% of items', 'Five audience segments, with 75% of the items tailored to each; illustrative, no published benchmark.'],
     tests: ['4 tests, 50% of items', 'Four test treatments, with 50% of the items carrying them; illustrative, no published benchmark.'],
@@ -245,8 +245,8 @@ assumptions['asm-matrix-concepts'] = a('asm-matrix-concepts', 'Master concepts i
   }
 }
 assumptions['asm-matrix-independence'] = a('asm-matrix-independence', 'Independence of matrix factors', 'matrix', null, null, null,
-  'Each factor applies to a stated share of the running set',
-  'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent, so no variant is counted twice. Real campaigns have exclusions (a size that a channel does not take); the applies fractions stand in for them.');
+  'Factors treated as independent; an upper-bound sketch',
+  'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent for illustration. Real campaigns have correlated factors: sizes follow channel placement specs, so not every channel takes every size. The total is therefore an upper-bound sketch, not a count of distinct valid variants; the applies fractions stand in only roughly for those exclusions.');
 
 export const claims = {
   'gartner-share-2025': {

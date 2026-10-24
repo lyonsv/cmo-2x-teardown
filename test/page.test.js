@@ -615,7 +615,10 @@ test('s05 derive lead and matrix table', () => {
   const total = Number(strip(rows[7].match(/data-fig="matrix-total">([^<]*)</)[1]).replace(/,/g, ''));
   assert.ok(total >= 10000 && total <= 13000);
   const after = strip(s.slice(s.indexOf('</table>')));
-  assert.ok(/independent/.test(after) && /double count/.test(after));
+  // WR-10: independence is an illustrative simplification, and the total is an upper bound.
+  assert.ok(/treated as independent for illustration/.test(after) && /upper-bound sketch/.test(after));
+  assert.ok(!/no variant is (double counted|counted twice)/.test(after) && !/no variant is counted twice/.test(assumptions['asm-matrix-independence'].basis), 'unsupported no-double-count claim is back');
+  assert.ok(/rendered for all five channels/.test(assumptions['asm-matrix-channels'].basis), 'channels wording matches 1 + applies x (count - 1)');
   const tail = s.slice(s.indexOf('</table>'));
   assert.ok(tail.includes('data-fig="matrix-per-concept"') && tail.includes('data-fig="avg-campaign-variants"'));
 });
