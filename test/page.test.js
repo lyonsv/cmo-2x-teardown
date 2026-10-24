@@ -376,7 +376,7 @@ test('copy nits from the Phase 1 UI review', () => {
 });
 
 test('s01 metric trio labels are Label style with no line break', () => {
-  const trio = sectionHtml('s01').match(/<div class="metric-trio">[\s\S]*?<\/div>\s*<p/)[0];
+  const trio = sectionHtml('s01').match(/<div class="metric-trio">[\s\S]*?<\/div>\s*(?=<p|<div class="table-scroll)/)[0];
   assert.ok(!trio.includes('<br>'));
   assert.equal((trio.match(/<span class="lbl">/g) || []).length, 3);
 });
@@ -544,8 +544,8 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
 
 // ---- Plan 01-04: section 01 ----
 
-const FALSIFIER = 'If approved-live variants per head double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
-const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, within a flat total marketing budget, with outcomes that hold.';
+const FALSIFIER = 'If campaign-markets in market per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
+const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets in market per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.';
 
 test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
   const s = sectionHtml('s01');
@@ -557,16 +557,21 @@ test('s01 holds both callouts verbatim and the front matter does not duplicate t
   assert.equal(html.split('What 2x does not mean').length - 1, 1);
 });
 
-test('s01 metric trio carries the six figures', () => {
+test('s01 metric trio carries the campaign-market claim and its companions', () => {
   const s = sectionHtml('s01');
   const m = s.match(/<div class="metric-trio">[\s\S]*?<\/div>\s*(?=<p|<div class="table-scroll)/);
   assert.ok(m, 'no metric-trio');
-  for (const id of ['output-per-head-base', 'output-per-head-scaled', 'concepts-base', 'concepts-scaled', 'vpc-base', 'vpc-scaled']) {
-    assert.ok(s.includes(`data-fig="${id}"`), id);
+  for (const id of ['cm-base', 'cm-scaled', 'btl-base', 'btl-scaled', 'cpa-base', 'cpa-scaled']) {
+    assert.ok(m[0].includes(`data-fig="${id}"`), id);
   }
-  assert.ok(s.includes('data-fig="asm-approval-yield"'));
-  assert.ok(s.includes('data-fig="weighted-ratio"'));
-  assert.match(s, /sensitivity/);
+  for (const l of ['Campaign-markets in market per quarter', 'Brief-to-live time', 'Cost per approved asset']) {
+    assert.ok(m[0].includes(`<span class="lbl">${l}</span>`), l);
+  }
+  // The removed per-head, weighted and variants-per-concept claims are gone everywhere.
+  assert.ok(!/output-per-head|weighted-ratio|data-fig="vpc-/.test(html), 'a removed claim is back on the page');
+  const prose = strip(sectionHtml('answer')) + ' ' + strip(s);
+  assert.ok(!/per (marketing )?head/i.test(prose), 'per-head wording in the answer or s01');
+  assert.ok(!/tier-weighted/i.test(s));
 });
 
 test('s01 six-lever table', () => {
@@ -576,6 +581,7 @@ test('s01 six-lever table', () => {
   const body = s.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
   const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
   assert.equal(rows.length, 6);
+  assert.ok(strip(rows[0][1]).includes('Campaign-markets in market per quarter; brief-to-live time; cost per approved asset'));
   rows.forEach((r, i) => {
     assert.match(r[1], new RegExp(`<a class="chip c-[ms]" href="#asm-lever-0${i + 1}-evidence">(Modelled|Speculative)</a>\\s*</td>\\s*$`));
   });
@@ -608,6 +614,8 @@ test('answer carries the cost per asset and stays short', () => {
   assert.ok(a.includes('data-fig="cpa-base"'));
   assert.ok(a.includes('data-fig="cpa-scaled"'));
   assert.ok(strip(a).split(' ').length <= 120);
+  for (const id of ['cm-base', 'cm-scaled', 'btl-base', 'btl-scaled']) assert.ok(a.includes(`data-fig="${id}"`), id);
+  assert.ok(strip(a).includes('flat headcount'));
 });
 
 test('gartner 2026 source row is registered', () => {
@@ -880,7 +888,7 @@ test('s07 reviewer capacity', () => {
   assert.equal(strip([...t.rows[2].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][1][1]), '134.5% over capacity');
   const lead = s.slice(0, s.indexOf(t.html)).match(/<p\b[^>]*>[\s\S]*?<\/p>\s*$/);
   assert.ok(lead, 'a paragraph states volume and capacity directly above the table');
-  assert.match(lead[0], /<span data-fig="cap-1x-variants">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-variants-per-concept">Modelled<\/a>/);
+  assert.match(lead[0], /<span data-fig="cap-1x-variants">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-formats-per-market">Modelled<\/a>/);
   assert.ok(lead[0].includes('data-fig="cap-2x-variants"'));
   assert.match(lead[0], /<span data-fig="cap-capacity-hours">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-reviewer-hours">Modelled<\/a>/);
   const text = strip(s);

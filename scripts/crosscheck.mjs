@@ -10,13 +10,10 @@ import { formatValue } from '../site/js/format.js';
 
 // Register rows that no page link points at, each with the reason. Each entry was inspected.
 export const JUSTIFIED_UNREFERENCED = {
-  'asm-formats-per-locale': 'A fixed model constant shown only in the register because the calculator does not expose it.',
-  'asm-concept-growth': 'A model assumption shown only in the register because the calculator does not expose it.',
   'asm-sampling-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-escalation-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-reviewer-rate': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
   'asm-ai-share-variant': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
-  'asm-build-days': 'A cycle-time assumption shown only in the register because the calculator does not expose it.',
 };
 
 const NO_ASM = 'no assumption: external evidence';
@@ -87,6 +84,13 @@ export function run({ html, data } = {}) {
     const wantHint = `Default ${f.hintFormat ? formatValue(dv[f.key], f.hintFormat) : want}`;
     if (!hint || !hint[1].startsWith(wantHint)) failures.push(`default drift: hint-${f.key} does not start with "${wantHint}"`);
   }
+
+  // 4b. the checked route radio is the model default and its grade note links the route row
+  const routeWant = dv.route;
+  const routeChecked = [...html.matchAll(/<input type="radio" name="route" value="([^"]+)"([^>]*)>/g)].filter((m) => /\schecked\b/.test(m[2])).map((m) => m[1]);
+  if (routeChecked.length !== 1 || routeChecked[0] !== routeWant) failures.push(`default drift: route is ${routeChecked.join(',') || 'none checked'}, data.js has ${routeWant}`);
+  const routeGroup = (html.match(/<legend>How you get to 2x<\/legend>[\s\S]*?<\/fieldset>/) || [''])[0];
+  if (!/<p class="grade-note">[^]*?href="#asm-growth-route"/.test(routeGroup)) failures.push('default drift: route grade note does not link asm-growth-route');
 
   // 5. every register row is referenced or justified
   const unreferenced = [];

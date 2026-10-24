@@ -30,7 +30,8 @@
       <p>Legal wording on this page has been flagged for review and has not yet been reviewed by counsel. Nothing here is legal advice.</p>
     </div>
     <section id="answer" class="answer" aria-label="Summary">
-      <p><strong>A marketing organisation can roughly double approved-and-live asset-variants per marketing head per quarter, from <span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span>, within a flat total marketing budget.</strong> Gartner puts spend at <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> of revenue and has flatlined: cost per approved, live asset falls from <span data-fig="cpa-base">$64.71</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$41.18</span>, while production cost rises <span data-fig="total-cost-change">+27%</span>, funded by reallocating agency and production fees <a class="chip c-m" href="#asm-reallocation">Modelled</a>. That holds only if review is governed: a tiered gate, a review agent and an eval harness. The falsifier: the claim is false if output doubles but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
+      <p><strong>A marketing organisation can roughly double the campaigns live across markets each quarter, from <span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span>, within a flat total marketing budget and flat headcount.</strong> Brief to live falls from <span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span> and cost per approved asset from <span data-fig="cpa-base">$64.71</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$45.26</span>, while production cost rises <span data-fig="total-cost-change">+40%</span>, funded by reallocating agency and production fees <a class="chip c-m" href="#asm-reallocation">Modelled</a>.</p>
+      <p>Gartner puts spend at <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> of revenue and has flatlined. It holds only with governed review: a tiered gate, a review agent and an eval harness. The falsifier: the claim is false if campaigns live across markets double but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
     </section>
     <div class="legend">
       <h2 class="legend-title">How to read the grades</h2>
@@ -64,14 +65,13 @@
     </nav>
     <section id="s01" aria-labelledby="s01-h">
       <div class="sec-head"><span class="sec-num">01</span><h2 id="s01-h">Claim &amp; measurement</h2></div>
-      <p>The headline metric counts <b>approved-and-live asset-variants per marketing head per quarter</b>. The denominator is all marketing FTE: brand, operations, regional and agency-equivalent staff. Assets that are generated but not approved never count. The number is always shown beside unique concepts and variants per concept, so growth from new ideas cannot hide behind growth from cheap copies.</p>
-      <p>The count is of approved-and-live variants only. To reach it the model derives more variants than it publishes, at an approval yield of <span data-fig="asm-approval-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a>; the next section costs the rejected ones.</p>
+      <p>The headline metric counts <b>campaign-markets in market per quarter</b>. One campaign live in one market counts as one, so the same campaign in six markets counts six. It is an organisation total within a flat total marketing budget and flat headcount, with no per-head denominator. Briefs that never go live never count.</p>
+      <p>The factory behind it derives many variants for each campaign-market. Those variants are internal throughput, counted in the <a href="#s05">factory</a> and <a href="#s07">review-capacity</a> sections, not the claim. The number is always shown beside brief-to-live time and cost per approved asset.</p>
       <div class="metric-trio">
-        <div><span class="lbl">Approved-live variants per head per quarter</span><span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span></div>
-        <div><span class="lbl">Unique concepts a year</span><span data-fig="concepts-base">1,000</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a> to <span data-fig="concepts-scaled">1,189</span></div>
-        <div><span class="lbl">Variants per concept</span><span data-fig="vpc-base">40</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="vpc-scaled">67</span></div>
+        <div><span class="lbl">Campaign-markets in market per quarter</span><span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span></div>
+        <div><span class="lbl">Brief-to-live time</span><span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span></div>
+        <div><span class="lbl">Cost per approved asset</span><span data-fig="cpa-base">$64.71</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$45.26</span></div>
       </div>
-      <p>A tier-weighted view is shown as a sensitivity only: weighting variants by review effort puts the gain at <span data-fig="weighted-ratio">1.6x</span> <a class="chip c-m" href="#asm-tier-weights">Modelled</a>, below 2x because the extra volume sits in low-risk tiers. The weights are arbitrary and gameable, so this is not the headline.</p>
       <div class="table-scroll" role="region" aria-label="The six levers table" tabindex="0">
         <table>
           <caption>The six levers</caption>
@@ -79,8 +79,8 @@
           <tbody>
             <tr>
               <th scope="row">Content generation at scale (the deep dive)</th>
-              <td>Approved-live variants per head; unique concepts; cost per approved live asset</td>
-              <td>Holdout conversion, CAC and ROAS; first-pass compliance; rejection rate; brief-to-live time</td>
+              <td>Campaign-markets in market per quarter; brief-to-live time; cost per approved asset</td>
+              <td>Holdout conversion, CAC and ROAS; first-pass compliance; rejection rate</td>
               <td><a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
             </tr>
             <tr>
@@ -109,7 +109,7 @@
             </tr>
             <tr>
               <th scope="row">Answer-engine visibility (closes the loop into refresh briefs)</th>
-              <td>Answer assets published or refreshed per head; prompts tracked</td>
+              <td>Answer assets published or refreshed per quarter; prompts tracked</td>
               <td>Share of voice and citations; AI-referred sessions and conversion; pipeline</td>
               <td><a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>
             </tr>
@@ -118,11 +118,11 @@
       </div>
     <div class="callout">
       <span class="lbl">What 2x does not mean</span>
-      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, within a flat total marketing budget, with outcomes that hold.</p>
+      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets in market per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.</p>
     </div>
     <div class="callout">
       <span class="lbl">Falsifier</span>
-      <p>If approved-live variants per head double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.</p>
+      <p>If campaign-markets in market per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.</p>
     </div>
     </section>
     <section id="s02" aria-labelledby="s02-h">
@@ -530,7 +530,7 @@
       </ul>
       <h3>Reviewer capacity is the binding constraint</h3>
       <p>Here, without the gate means an auto-approval share of zero, so a person reviews every variant; with the gate uses the model's shares. Hours are before rework, while utilisation includes the rework loop at <span data-fig="asm-rework-rate">15%</span> <a class="chip c-m" href="#asm-rework-rate">Modelled</a>.</p>
-      <p>Volume is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> approved-live variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
+      <p>Volume is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-formats-per-market">Modelled</a> approved-live variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
       <div class="table-scroll" role="region" aria-label="Reviewer capacity table" tabindex="0">
         <table>
           <caption>Reviewer capacity, 1x and 2x</caption>
@@ -719,8 +719,8 @@
       </div>
       <p>Rights attach to the master concept, and under the statute all the parts of a derivative work constitute one work. The illustration is therefore per master concept, not per variant. Multiplying a damages figure by the number of variants would overstate the exposure, and this page does not do it.</p>
       <p>Suppose the rate of rights problems is <span data-fig="asm-incident-rate">1 in 1,000 master concepts</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a>. Treat this rate as yours to replace. We invented it for illustration, and we did not find a published benchmark for it.</p>
-      <p>At <span data-fig="concepts-scaled">1,189</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a> master concepts a year, that rate gives about <span data-fig="ops-incidents">1.2</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a> incidents a year. The statutory exposure would be <span data-fig="ops-exposure-lo">$892</span> to <span data-fig="ops-exposure-hi">$35,670</span> at the ordinary range, and up to <span data-fig="ops-exposure-wilful">$178,350</span> if every incident were found wilful.</p>
-      <p>Statutory damages also need timely registration (<span class="statute">17 U.S.C. 412</span> <a class="chip c-b" href="#src-cornell-17usc412">Benchmark</a>), so for unregistered or late-registered work the exposure is smaller still. Even the wilful figure is small beside <span data-fig="total-cost-scaled">$3.29M</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> of production-attributable cost at 2x. The tail risk is therefore an injunction, a takedown or harm to the brand, not the damages award, which is why rights checks sit in <a href="#s07">the auto-approval gate</a>.</p>
+      <p>At <span data-fig="concepts-scaled">1,414</span> <a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a> master concepts a year, that rate gives about <span data-fig="ops-incidents">1.4</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a> incidents a year. The statutory exposure would be <span data-fig="ops-exposure-lo">$1,061</span> to <span data-fig="ops-exposure-hi">$42,420</span> at the ordinary range, and up to <span data-fig="ops-exposure-wilful">$212,100</span> if every incident were found wilful.</p>
+      <p>Statutory damages also need timely registration (<span class="statute">17 U.S.C. 412</span> <a class="chip c-b" href="#src-cornell-17usc412">Benchmark</a>), so for unregistered or late-registered work the exposure is smaller still. Even the wilful figure is small beside <span data-fig="total-cost-scaled">$3.62M</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> of production-attributable cost at 2x. The tail risk is therefore an injunction, a takedown or harm to the brand, not the damages award, which is why rights checks sit in <a href="#s07">the auto-approval gate</a>.</p>
       <h3 id="s09-aeo">Answer-engine visibility (AEO/GEO)</h3>
       <p>Answer-engine visibility is the most hyped lever and the thinnest on evidence, so we grade it Speculative: the data we found measure whether a brand is mentioned in an answer, not whether a mention becomes pipeline.</p>
       <div class="table-scroll" role="region" aria-label="Answer-engine visibility table" tabindex="0">
@@ -751,7 +751,7 @@
           <tbody>
             <tr>
               <th scope="row">Content generation at scale (the deep dive)</th>
-              <td>Approved-live variants per head; unique concepts; cost per approved live asset</td><td>Holdout conversion and customer acquisition cost</td><td>Brief-to-live time</td><td>First-pass compliance and rejection rate</td><td>Tests that a larger variant pool enables</td>
+              <td>Campaign-markets in market per quarter; brief-to-live time; cost per approved asset</td><td>Holdout conversion and customer acquisition cost</td><td>Brief-to-live time</td><td>First-pass compliance and rejection rate</td><td>Tests that a larger variant pool enables</td>
               <td><a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
             </tr>
             <tr>

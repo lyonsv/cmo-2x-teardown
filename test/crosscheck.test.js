@@ -32,6 +32,15 @@ test('mutation: a drifted calculator default is named', () => {
   assert.ok(failures.some((f) => f.includes('default drift') && f.includes('campaigns')), failures.join('\n'));
 });
 
+test('mutation: moving the checked route radio is named as route drift', () => {
+  const mutated = html
+    .replace('<input type="radio" name="route" value="both" checked>', '<input type="radio" name="route" value="both">')
+    .replace('<input type="radio" name="route" value="markets">', '<input type="radio" name="route" value="markets" checked>');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('default drift: route')), failures.join('\n'));
+});
+
 test('mutation: a source with every reference removed is reported as unreferenced', () => {
   const id = 'src-gartner-2025-cmo-spend';
   const mutated = html.replaceAll(`href="#${id}"`, 'href="#s15"');
