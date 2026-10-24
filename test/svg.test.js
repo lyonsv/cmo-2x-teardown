@@ -23,7 +23,7 @@ test('chartSpec: three panels with the larger bar at 192 and widths in proportio
   }
   const p = present(d, ctx);
   const row = (id) => p.rows.find((r) => r.id === id);
-  for (const [panel, id] of [[a, 'output_per_head'], [b, 'cost_per_asset']]) {
+  for (const [panel, id] of [[a, 'campaign_markets'], [b, 'cost_per_asset']]) {
     const max = Math.max(row(id).base.value, row(id).scaled.value);
     panel.bars.forEach((bar, i) => assert.equal(bar.width, Math.round(((i ? row(id).scaled.value : row(id).base.value) / max) * 192 / 4) * 4));
   }
@@ -34,7 +34,7 @@ test('chartSpec: three panels with the larger bar at 192 and widths in proportio
 });
 
 test('chartSpec: every coordinate is a multiple of 4 and the first bar of a panel starts at x 0', () => {
-  for (const v of [{}, { reviewers: 4 }, { locales: 13, campaigns: 777 }]) {
+  for (const v of [{}, { reviewers: 4 }, { markets: 13, campaigns: 777 }]) {
     const spec = specFor(v);
     for (const n of coords(spec)) assert.equal(n % 4, 0, `${n} in ${JSON.stringify(v)}`);
   }

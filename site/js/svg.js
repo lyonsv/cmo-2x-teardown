@@ -15,8 +15,8 @@ function fit(text, value, kind) {
 }
 
 const PANELS = [
-  { id: 'output_per_head', label: 'Approved-live variants per head', fmt: 'int', kind: 'int' },
-  { id: 'cost_per_asset', label: 'Cost per approved-live asset', fmt: 'usd2', kind: 'usd' },
+  { id: 'campaign_markets', label: 'Campaign-markets per quarter', fmt: 'int', kind: 'int' },
+  { id: 'cost_per_asset', label: 'Cost per approved asset', fmt: 'usd2', kind: 'usd' },
   { id: 'utilisation', label: 'Review utilisation', fmt: 'pct1', kind: 'pct' },
 ];
 
