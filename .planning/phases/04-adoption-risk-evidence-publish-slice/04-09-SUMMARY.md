@@ -154,3 +154,13 @@ Note for Task 3: the live-verify grep for `class="callout legal-flag"` now expec
 None beyond the author decisions recorded above (legal flag and Getty live greps expect 0). The final docs commit is pushed as a second, docs-only push.
 
 ## Self-Check: PASSED
+
+## Republish after review fixes
+
+Authorised by the standing instruction under "Push approval". Pushed range: 20fc872..7d88151 (18 review-fix commits plus review docs; site/ changed). Live URL: https://lyonsv.github.io/cmo-2x-teardown/
+
+- Pre-flight on the exact tree (clean, main): node --test 376 tests, 376 pass, fail 0; crosscheck 0 failures (figures 334, chips 169, cites 62, register rows 107, unreferenced 4, defaults 12); a11y and print exit 0; smoke exit 0 on the second run (first run hit the known headless flake). Greps: script count 1, CSP script-src 'self' 1, inline handlers 0, style= 0, base64/data:image 0, root-absolute href/src 0, storage/cookie/innerHTML in site/js 0, site/.nojekyll present, legal-flag 0.
+- W3C Nu: 0 errors, 0 warnings, 2 info messages (known CSP "blocked" upload artefact). No markup fixes needed.
+- Run 40134832051 (headSha 7d88151): test success, deploy success.
+- Live greps: legal-flag 0, s14-getty 0, 'Backlog 0, defined' 1, 'class="status status-' 8, 'Publisher type' th 1, '<ul class="gaps">' 1, 'McKinsey: no figure is used on this page.' 1, grade-note 8, 'Not machine-checkable (PDF)' 2, '8 days' 6.
+- Live smoke exit 0 and live a11y exit 0.
