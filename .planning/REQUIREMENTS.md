@@ -42,8 +42,8 @@
 ### Build-and-Review Spine
 
 - [x] **SPINE-01**: Reader sees the operating architecture (intent, policy/knowledge, build, review, eval harness, system of record, activation, measurement) with one versioned policy source shared by generator and reviewer
-- [ ] **SPINE-02**: Reader sees the review agent described: cites rule IDs, writes findings to the asset manifest, runs a bounded fix loop, can escalate but never lower a tier, and uses a different model/prompt family from the generator
-- [ ] **SPINE-03**: Reader sees the T0–T3 tier ladder with examples, a human-only list (hero work, claim-bearing/testimonial content, likeness), and an "illustrative, not legal advice" note
+- [x] **SPINE-02**: Reader sees the review agent described: cites rule IDs, writes findings to the asset manifest, runs a bounded fix loop, can escalate but never lower a tier, and uses a different model/prompt family from the generator
+- [x] **SPINE-03**: Reader sees the T0–T3 tier ladder with examples, a human-only list (hero work, claim-bearing/testimonial content, likeness), and an "illustrative, not legal advice" note
 - [ ] **SPINE-04**: Reader sees a static reviewer-capacity worked example showing why review throughput is the binding constraint at 2x
 - [ ] **SPINE-05**: Reader sees the eval harness: reviewer decisions with reason codes as ground truth, seeded known-bad and rights-trap assets, escape-rate sampling of auto-approvals, per-tier precision/recall/drift, and no change shipping if it regresses the harness
 - [ ] **SPINE-06**: Reader sees the telemetry layer: asset-ID join from manifest to performance, and the dashboard metrics to instrument
@@ -150,8 +150,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GEN-04 | Phase 2 | Complete |
 | GEN-05 | Phase 2 | Complete |
 | SPINE-01 | Phase 2 | Complete |
-| SPINE-02 | Phase 2 | Pending |
-| SPINE-03 | Phase 2 | Pending |
+| SPINE-02 | Phase 2 | Complete |
+| SPINE-03 | Phase 2 | Complete |
 | SPINE-04 | Phase 2 | Pending |
 | SPINE-05 | Phase 2 | Pending |
 | SPINE-06 | Phase 2 | Pending |

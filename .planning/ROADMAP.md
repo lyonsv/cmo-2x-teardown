@@ -98,7 +98,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 02-05-PLAN.md — s06 review agent (Figure 5, single Intercom mention, reference datum) and s07 tier ladder (Figure 6, tier table, legal note, Always human)
+- [x] 02-05-PLAN.md — s06 review agent (Figure 5, single Intercom mention, reference datum) and s07 tier ladder (Figure 6, tier table, legal note, Always human)
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 4/8 | In Progress|  |
+| 2. Factory & Spine Slice | 5/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
