@@ -1,43 +1,72 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { compute, variantMatrix } from '../site/js/calc.js';
-import { defaultAssumptions } from '../site/js/data.js';
 
 function close(a, b, tol = 1e-9) {
   assert.ok(Math.abs(a - b) <= tol, `expected ${a} to be within ${tol} of ${b}`);
 }
 
+// The page-default inputs, written inline so this suite does not import data.js
+// (data.js loads model.js, which is rewritten in later plans of phase 03.1).
 const inputs = (over = {}) => ({
   campaigns_per_year: 40,
+  markets_per_campaign: 5,
   concepts_per_campaign: 25,
-  variants_per_concept: 40,
-  marketing_fte: 120,
+  formats_per_market: 8,
   reviewer_fte: 12,
   marketing_budget: 78000000,
   multiplier: 2,
   ...over,
 });
-const assumptions = defaultAssumptions();
+// The page-default assumptions, written inline for the same reason. The growth
+// route (campaign_growth_share) is set per case; 0.5 is the page default (both).
+const PAGE_ASSUMPTIONS = {
+  campaign_growth_share: 0.5,
+  tier_mix: { baseline: [0.4, 0.35, 0.2, 0.05], scaled: [0.55, 0.3, 0.12, 0.03] },
+  approval_yield: 0.95,
+  auto_approval_share: { baseline: 0.2, scaled: 0.6 },
+  sampling_rate: 0.05,
+  escalation_rate: 0.05,
+  review_minutes_per_variant: 12,
+  rework_rate: 0.15,
+  reviewer_hours_per_fte_year: 1200,
+  reviewer_rate_per_hour: 100,
+  master_concept_cost: 1200,
+  variant_cost: { baseline: 4, scaled: 0.8 },
+  rights_cost_per_concept: 250,
+  storage_cost_per_variant: 0.02,
+  tooling_cost_annual: { baseline: 150000, scaled: 600000 },
+  ai_share_of_variant_cost: { baseline: 0.05, scaled: 0.6 },
+  ai_share_of_tooling: { baseline: 0.2, scaled: 0.5 },
+  build_days: { baseline: 8, scaled: 3 },
+  review_service_days: 1.5,
+  target_utilisation: 0.85,
+};
+const assumptions = PAGE_ASSUMPTIONS;
+const withShare = (share) => ({ ...PAGE_ASSUMPTIONS, campaign_growth_share: share });
 
-test('default inputs give a 2x output per head ratio', () => {
-  const r = compute(inputs(), assumptions);
-  assert.equal(r.ok, true);
-  close(r.ratios.output_per_head, 2);
+test('headline identity: campaign-markets double exactly for every growth route', () => {
+  for (const share of [0, 0.5, 1]) {
+    const r = compute(inputs(), withShare(share));
+    assert.equal(r.ok, true);
+    close(r.ratios.campaign_markets, 2);
+    close(r.scenario.campaign_markets_per_quarter, 2 * r.baseline.campaign_markets_per_quarter);
+  }
+  close(compute(inputs({ multiplier: 3 }), withShare(0.3)).ratios.campaign_markets, 3);
 });
 
-test('marketing_fte 0 returns a validation error, not NaN', () => {
-  const r = compute(inputs({ marketing_fte: 0 }), assumptions);
+test('markets_per_campaign 0 returns a validation error, not NaN', () => {
+  const r = compute(inputs({ markets_per_campaign: 0 }), assumptions);
   assert.equal(r.ok, false);
-  assert.ok(r.errors.some((e) => e.field === 'marketing_fte'));
+  assert.ok(r.errors.some((e) => e.field === 'markets_per_campaign'));
 });
 
 // ---- Plan 01-04: output half of the model ----
 
 const GOLDEN_ASSUMPTIONS = {
-  concept_growth_exponent: 0,
+  campaign_growth_share: 0,
   approval_yield: 0.8,
   tier_mix: { baseline: [0.5, 0.5, 0, 0], scaled: [0.5, 0.5, 0, 0] },
-  tier_weights: [1, 2, 4, 8],
   auto_approval_share: { baseline: 0.2, scaled: 0.5 },
   sampling_rate: 0.05,
   escalation_rate: 0.05,
@@ -58,9 +87,9 @@ const GOLDEN_ASSUMPTIONS = {
 };
 const goldenInputs = (over = {}) => ({
   campaigns_per_year: 10,
+  markets_per_campaign: 2,
   concepts_per_campaign: 10,
-  variants_per_concept: 10,
-  marketing_fte: 10,
+  formats_per_market: 5,
   reviewer_fte: 2,
   marketing_budget: 1000000,
   multiplier: 2,
@@ -73,31 +102,141 @@ function walkNumbers(obj, fn, path = '') {
   if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) walkNumbers(v, fn, `${path}.${k}`);
 }
 
-test('golden case: hand-calculated output half', () => {
+test('golden case, markets route (share 0): hand-calculated campaign-market half', () => {
+  // C 10, M 2, 10 concepts per campaign, 5 formats per market, multiplier 2.
+  // Baseline: 10 x 2 = 20 campaign-markets a year (5 a quarter); concepts 10 x 10 = 100;
+  // variants per concept 5 x 2 = 10; variants 1,000; generated 1,000 / 0.8 = 1,250.
+  // Markets route: campaigns stay 10, markets double to 4: 40 a year (10 a quarter);
+  // concepts 100; variants per concept 5 x 4 = 20; variants 2,000; generated 2,500.
   const r = compute(goldenInputs(), GOLDEN_ASSUMPTIONS);
   assert.equal(r.ok, true);
+  close(r.baseline.campaigns, 10);
+  close(r.baseline.markets, 2);
+  close(r.baseline.campaign_markets_per_year, 20);
+  close(r.baseline.campaign_markets_per_quarter, 5);
   close(r.baseline.concepts, 100);
+  close(r.baseline.variants_per_concept, 10);
   close(r.baseline.variants_per_year, 1000);
   close(r.baseline.generated_variants_per_year, 1250);
-  close(r.baseline.output_per_head_per_quarter, 25);
-  close(r.baseline.weighted_output_per_head_per_quarter, 37.5);
+  close(r.scenario.campaigns, 10);
+  close(r.scenario.markets, 4);
+  close(r.scenario.campaign_markets_per_year, 40);
+  close(r.scenario.campaign_markets_per_quarter, 10);
   close(r.scenario.concepts, 100);
+  close(r.scenario.variants_per_concept, 20);
   close(r.scenario.variants_per_year, 2000);
   close(r.scenario.generated_variants_per_year, 2500);
-  close(r.scenario.output_per_head_per_quarter, 50);
-  close(r.scenario.weighted_output_per_head_per_quarter, 75);
-  close(r.ratios.weighted_output_per_head, 2);
+  close(r.ratios.campaign_markets, 2);
 });
 
-test('exponent golden: multiplier 4, exponent 0.5 splits growth evenly', () => {
-  const r = compute(goldenInputs({ multiplier: 4 }), { ...GOLDEN_ASSUMPTIONS, concept_growth_exponent: 0.5 });
+test('golden case, campaigns route (share 1): more concepts, same markets', () => {
+  // Campaigns double to 20, markets stay 2: 40 campaign-markets; concepts 20 x 10 = 200;
+  // variants per concept 5 x 2 = 10; variants 200 x 10 = 2,000; generated 2,500.
+  const r = compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, campaign_growth_share: 1 });
   assert.equal(r.ok, true);
+  close(r.scenario.campaigns, 20);
+  close(r.scenario.markets, 2);
+  close(r.scenario.campaign_markets_per_year, 40);
+  close(r.scenario.concepts, 200);
+  close(r.scenario.variants_per_concept, 10);
+  close(r.scenario.variants_per_year, 2000);
+  close(r.scenario.generated_variants_per_year, 2500);
+  // generation 200 x 1,000 + 2,500 x 1 = 202,500; rights 200 x 100 = 20,000;
+  // review 275 h x 100 = 27,500; rework 0.1 x 2,500 x 1 + 0.1 x 2,500 x 0.55 x 0.2 x 100 = 3,000;
+  // tooling 30,000; storage 2,000 x 0.1 = 200; total 283,200.
+  close(r.scenario.cost.generation, 202500);
+  close(r.scenario.cost.rights, 20000);
+  close(r.scenario.cost.review, 27500);
+  close(r.scenario.cost.rework, 3000);
+  close(r.scenario.cost.total, 283200);
+  close(r.scenario.cost_per_asset, 141.6);
+  close(r.scenario.cost_per_campaign_market, 7080);
+});
+
+test('growth route golden: multiplier 4, share 0.5 doubles campaigns and markets each', () => {
+  // m^0.5 = 2 for both: campaigns 20, markets 4, campaign-markets 80 vs 20 (x4), concepts 200,
+  // variants per concept 5 x 4 = 20, variants 4,000.
+  const r = compute(goldenInputs({ multiplier: 4 }), { ...GOLDEN_ASSUMPTIONS, campaign_growth_share: 0.5 });
+  assert.equal(r.ok, true);
+  close(r.scenario.campaigns, 2 * r.baseline.campaigns);
+  close(r.scenario.markets, 2 * r.baseline.markets);
   close(r.scenario.concepts, 2 * r.baseline.concepts);
   close(r.scenario.variants_per_concept, 2 * r.baseline.variants_per_concept);
+  close(r.scenario.variants_per_year, 4000);
+  close(r.ratios.campaign_markets, 4);
+  // generation 200 x 1,000 + 5,000 x 1 = 205,000; review 550 x 100 = 55,000; rework 0.1 x 5,000 + 0.1 x 5,000 x 0.55 x 0.2 x 100 = 6,000;
+  // tooling 30,000; rights 20,000; storage 400; total 316,400; per asset 79.1; per campaign-market 316,400 / 80 = 3,955.
+  close(r.scenario.cost.total, 316400);
+  close(r.scenario.cost_per_asset, 79.1);
+  close(r.scenario.cost_per_campaign_market, 3955);
 });
 
-test('identity: multiplier 1 with scaled values copied from baseline', () => {
-  const a = defaultAssumptions();
+test('variants per campaign-market is constant across sides and routes: extra variants never move the headline', () => {
+  for (const share of [0, 0.3, 0.5, 1]) {
+    for (const [inp, a] of [[inputs(), withShare(share)], [goldenInputs(), { ...GOLDEN_ASSUMPTIONS, campaign_growth_share: share }]]) {
+      const r = compute(inp, a);
+      const want = inp.concepts_per_campaign * inp.formats_per_market;
+      close(r.baseline.variants_per_campaign_market, want);
+      close(r.scenario.variants_per_campaign_market, want);
+      close(r.baseline.variants_per_year / r.baseline.campaign_markets_per_year, want, 1e-6);
+      close(r.scenario.variants_per_year / r.scenario.campaign_markets_per_year, want, 1e-6);
+    }
+  }
+  // doubling the formats doubles derived variants but leaves campaign-markets alone
+  const more = compute(inputs({ formats_per_market: 16 }), assumptions);
+  const base = compute(inputs(), assumptions);
+  close(more.scenario.variants_per_year, 2 * base.scenario.variants_per_year, 1e-6);
+  close(more.scenario.campaign_markets_per_quarter, base.scenario.campaign_markets_per_quarter);
+  close(more.ratios.campaign_markets, 2);
+});
+
+test('route ordering at the page defaults: same campaign-markets, markets cheapest per asset, campaigns dearest', () => {
+  const m = compute(inputs(), withShare(0));
+  const b = compute(inputs(), withShare(0.5));
+  const c = compute(inputs(), withShare(1));
+  for (const r of [m, b, c]) close(r.scenario.campaign_markets_per_quarter, 100);
+  assert.ok(m.scenario.cost_per_asset < b.scenario.cost_per_asset);
+  assert.ok(b.scenario.cost_per_asset < c.scenario.cost_per_asset);
+  // Hand figures (independent scratch calculation): 37.75, 45.26, 55.88 dollars per asset.
+  close(m.scenario.cost_per_asset, 37.750263, 1e-4);
+  close(b.scenario.cost_per_asset, 45.257884, 1e-4);
+  close(c.scenario.cost_per_asset, 55.875263, 1e-4);
+});
+
+test('page defaults, both routes: hand-calculated baseline and 2x', () => {
+  // Baseline: 40 x 5 = 200 campaign-markets a year, 50 a quarter; concepts 1,000; variants 1,000 x 8 x 5 = 40,000.
+  // Total 2,588,589.47 -> per asset 64.7147, per campaign-market 12,942.95; brief-to-live 11.846 days.
+  // 2x: campaigns 40 x sqrt 2 = 56.5685, markets 5 x sqrt 2 = 7.0711: 400 a year, 100 a quarter;
+  // concepts 1,414.21; variants 80,000; total 3,620,630.72 -> per asset 45.2579, per campaign-market 9,051.58;
+  // utilisation 0.61871; brief-to-live 7.524 days; AI spend 340,421.05.
+  const r = compute(inputs(), assumptions);
+  assert.equal(r.ok, true);
+  close(r.baseline.campaign_markets_per_quarter, 50, 1e-9);
+  close(r.baseline.variants_per_year, 40000, 1e-6);
+  close(r.baseline.cost.total, 2588589.4736842, 1e-3);
+  close(r.baseline.cost_per_asset, 64.714737, 1e-5);
+  close(r.baseline.cost_per_campaign_market, 12942.947368, 1e-4);
+  close(r.baseline.brief_to_live_days, 11.845828, 1e-5);
+  close(r.scenario.campaign_markets_per_quarter, 100, 1e-9);
+  close(r.scenario.concepts, 1414.2135624, 1e-6);
+  close(r.scenario.variants_per_year, 80000, 1e-6);
+  close(r.scenario.cost.total, 3620630.7180726, 1e-3);
+  close(r.scenario.cost_per_asset, 45.257884, 1e-5);
+  close(r.scenario.cost_per_campaign_market, 9051.576795, 1e-4);
+  close(r.scenario.utilisation, 0.618713, 1e-6);
+  close(r.scenario.brief_to_live_days, 7.524156, 1e-5);
+  close(r.scenario.ai_spend, 340421.0526, 1e-3);
+  close(r.ratios.cost_per_campaign_market, 9051.576795 / 12942.947368, 1e-6);
+  close(r.ratios.cost_per_campaign_market_change, r.ratios.cost_per_campaign_market - 1);
+  close(r.deltas.total_cost, 3620630.7180726 - 2588589.4736842, 1e-3);
+});
+
+test('identity: multiplier 1 with scaled values copied from baseline, for every growth route', () => {
+  for (const share of [0, 0.5, 1]) identityAt(share);
+});
+
+function identityAt(share) {
+  const a = withShare(share);
   const same = Object.fromEntries(Object.entries(a).map(([k, v]) => [
     k, v && typeof v === 'object' && 'baseline' in v ? { baseline: v.baseline, scaled: v.baseline } : v,
   ]));
@@ -116,10 +255,10 @@ test('identity: multiplier 1 with scaled values copied from baseline', () => {
     if (fb[k] === null) assert.equal(fs[k], null, k);
     else close(fs[k], fb[k]);
   }
-});
+}
 
 test('monotonicity: more volume gives more variants and more total cost on both sides', () => {
-  for (const f of ['variants_per_concept', 'concepts_per_campaign', 'campaigns_per_year']) {
+  for (const f of ['formats_per_market', 'markets_per_campaign', 'concepts_per_campaign', 'campaigns_per_year']) {
     let prev = -Infinity;
     let prevCost = { baseline: -Infinity, scenario: -Infinity };
     for (const v of [1, 2, 5, 10, 50]) {
@@ -143,14 +282,37 @@ test('validation of tier and yield assumptions', () => {
   };
   bad({ tier_mix: { baseline: [0.5, 0.4, 0, 0], scaled: [0.5, 0.5, 0, 0] } }, 'tier_mix');
   bad({ tier_mix: { baseline: [0.5, 0.5, 0, 0], scaled: [0.5, 0.5, 0] } }, 'tier_mix');
-  bad({ tier_weights: [1, 0, 4, 8] }, 'tier_weights');
   bad({ approval_yield: 0 }, 'approval_yield');
   bad({ approval_yield: 1.2 }, 'approval_yield');
 });
 
+test('campaign_growth_share outside 0 to 1 or non-numeric names the field', () => {
+  for (const bad of [-0.1, 1.1, NaN, Infinity, '0.5', undefined, null]) {
+    const r = compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, campaign_growth_share: bad });
+    assert.equal(r.ok, false, String(bad));
+    assert.ok(r.errors.some((e) => e.field === 'campaign_growth_share'), String(bad));
+  }
+  for (const ok of [0, 0.25, 1]) assert.equal(compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, campaign_growth_share: ok }).ok, true);
+});
+
+test('formats_per_market 0 returns a validation error, not NaN', () => {
+  const r = compute(inputs({ formats_per_market: 0 }), assumptions);
+  assert.equal(r.ok, false);
+  assert.ok(r.errors.some((e) => e.field === 'formats_per_market'));
+});
+
+test('removed outputs are gone: no per-head output, no weighted sensitivity, no old cycle-time name', () => {
+  const r = compute(inputs(), assumptions);
+  const keys = (o) => Object.keys(o);
+  const gone = /per_head|weighted|^cycle_/;
+  for (const k of [...keys(r.ratios), ...keys(r.baseline), ...keys(r.scenario)]) assert.ok(!gone.test(k), k);
+  // fte and tier weights are no longer inputs or assumptions, so omitting them is valid
+  assert.equal(r.ok, true);
+});
+
 test('bad inputs name the field and never produce NaN', () => {
   for (const bad of ['5', NaN, -1, '', undefined, Infinity]) {
-    for (const f of ['campaigns_per_year', 'concepts_per_campaign', 'variants_per_concept', 'marketing_fte', 'reviewer_fte', 'multiplier']) {
+    for (const f of ['campaigns_per_year', 'markets_per_campaign', 'concepts_per_campaign', 'formats_per_market', 'reviewer_fte', 'multiplier']) {
       const r = compute(goldenInputs({ [f]: bad }), GOLDEN_ASSUMPTIONS);
       assert.equal(r.ok, false);
       assert.ok(r.errors.some((e) => e.field === f), f);
@@ -164,11 +326,6 @@ test('every numeric leaf of a valid output is finite', () => {
   let n = 0;
   walkNumbers(r, (v) => { n++; assert.ok(Number.isFinite(v)); });
   assert.ok(n > 10);
-});
-
-test('default weighted ratio is a sensitivity below 2x', () => {
-  const r = compute(inputs(), assumptions);
-  assert.ok(r.ratios.weighted_output_per_head < r.ratios.output_per_head);
 });
 
 // ---- Plan 01-05: cost model, review capacity, AI spend, break-even ----
@@ -189,6 +346,7 @@ test('golden cost case at approval yield 0.8 (G = V / yield)', () => {
   close(b.cost.storage, 100);
   close(b.cost.total, 149525);
   close(b.cost_per_asset, 149.525);
+  close(b.cost_per_campaign_market, 7476.25); // 149,525 / 20
   close(s.review_hours, 275);
   close(s.utilisation, 0.15125);
   close(s.cost.generation, 102500);
@@ -199,6 +357,10 @@ test('golden cost case at approval yield 0.8 (G = V / yield)', () => {
   close(s.cost.storage, 200);
   close(s.cost.total, 173200);
   close(s.cost_per_asset, 86.6);
+  close(s.cost_per_campaign_market, 4330); // 173,200 / 40
+  close(r.ratios.cost_per_campaign_market, 4330 / 7476.25, 1e-9);
+  close(b.brief_to_live_days, 9.859679, 1e-5); // 8 + 1.1 x (1.5 + 1.5 x 0.11275 / 0.88725)
+  close(s.brief_to_live_days, 4.944035, 1e-5); // 3 + 1.1 x (1.5 + 1.5 x 0.15125 / 0.84875)
   close(r.ratios.cost_per_asset, 0.57917, 1e-4);
   close(b.production_share_of_budget, 0.149525);
   close(b.cost_per_asset_by_component.generation, 106.25);
@@ -212,6 +374,8 @@ test('golden cost case at approval yield 1 reproduces the research case', () => 
   close(r.scenario.cost.total, 166600);
   close(r.baseline.cost_per_asset, 143.64);
   close(r.scenario.cost_per_asset, 83.3);
+  close(r.baseline.cost_per_campaign_market, 7182); // 143,640 / 20
+  close(r.scenario.cost_per_campaign_market, 4165); // 166,600 / 40
   close(r.ratios.cost_per_asset, 0.5799, 1e-4);
   close(r.ratios.cost_per_asset_change, r.ratios.cost_per_asset - 1);
 });
@@ -223,24 +387,27 @@ test('cost per asset strictly decreases as the multiplier rises', () => {
     assert.equal(r.ok, true);
     assert.ok(r.scenario.cost_per_asset < prev, `multiplier ${multiplier}`);
     prev = r.scenario.cost_per_asset;
+    if (multiplier > 1) assert.ok(r.ratios.cost_per_asset < 1 && r.ratios.cost_per_campaign_market < 1, `ratios at ${multiplier}`);
   }
 });
 
-test('2x at baseline auto-approval exceeds review capacity and has no cycle time', () => {
+test('2x at baseline auto-approval exceeds review capacity and has no brief-to-live time', () => {
   const r = compute(inputs(), { ...assumptions, auto_approval_share: { baseline: 0.2, scaled: 0.2 } });
   assert.equal(r.ok, true);
   assert.equal(r.scenario.review_capacity_exceeded, true);
-  assert.equal(r.scenario.cycle_days, null);
+  assert.equal(r.scenario.brief_to_live_days, null);
+  assert.ok(Number.isFinite(r.baseline.brief_to_live_days));
 });
 
-test('defaults: cheaper per asset, under capacity, AI spend rises, break-even feasible', () => {
+test('defaults: cheaper per asset and per campaign-market, under capacity, AI spend rises, break-even feasible', () => {
   const r = compute(inputs(), assumptions);
   assert.equal(r.ok, true);
   assert.ok(r.scenario.cost_per_asset < r.baseline.cost_per_asset);
+  assert.ok(r.scenario.cost_per_campaign_market < r.baseline.cost_per_campaign_market);
   assert.ok(r.scenario.utilisation < 1);
   assert.ok(r.scenario.ai_spend > r.baseline.ai_spend);
   assert.equal(r.break_even_auto_approval.status, 'ok');
-  assert.ok(r.scenario.cycle_days > 0);
+  assert.ok(r.scenario.brief_to_live_days > 0);
 });
 
 test('cost-half validation names the field', () => {
@@ -268,7 +435,7 @@ test('tiny reviewer headcount is a result, not an error, and every leaf is finit
   assert.equal(r.ok, true);
   assert.equal(r.scenario.review_capacity_exceeded, true);
   walkNumbers(r, (v) => assert.ok(Number.isFinite(v)));
-  assert.equal(r.scenario.cycle_days, null);
+  assert.equal(r.scenario.brief_to_live_days, null);
 });
 
 test('break-even auto-approval at flat reviewers (golden, yield 0.8)', () => {
@@ -307,8 +474,9 @@ test('zero-cost baseline: cost ratios and their change are null, not NaN', () =>
   const r = compute(goldenInputs(), zero);
   assert.equal(r.ok, true);
   assert.equal(r.baseline.cost.total, 0);
-  for (const k of ['cost_per_asset', 'cost_per_asset_change', 'total_cost', 'total_cost_change', 'ai_spend']) assert.equal(r.ratios[k], null, k);
-  assert.deepEqual([...r.undefined_ratios].sort(), ['ai_spend', 'cost_per_asset', 'total_cost']);
+  for (const k of ['cost_per_asset', 'cost_per_asset_change', 'cost_per_campaign_market', 'cost_per_campaign_market_change', 'total_cost', 'total_cost_change', 'ai_spend']) assert.equal(r.ratios[k], null, k);
+  assert.equal(r.ratios.campaign_markets, 2);
+  assert.deepEqual([...r.undefined_ratios].sort(), ['ai_spend', 'cost_per_asset', 'cost_per_campaign_market', 'total_cost']);
   walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
 });
 
@@ -317,7 +485,7 @@ test('defaults have no undefined ratios', () => {
 });
 
 test('overflow fallback blames no single field', () => {
-  const r = compute(inputs({ campaigns_per_year: 1e200, concepts_per_campaign: 1e200 }), assumptions);
+  const r = compute(inputs({ campaigns_per_year: 1e200, concepts_per_campaign: 1e200, markets_per_campaign: 1e200 }), assumptions);
   assert.equal(r.ok, false);
   assert.equal(r.errors.length, 1);
   assert.equal(r.errors[0].field, null);
@@ -336,7 +504,7 @@ test('per-side values for every cost-half assumption are honoured, not read as s
   assert.equal(r.ok, true);
   close(r.baseline.cost.total, plain.baseline.cost.total);
   close(r.scenario.cost.total, plain.scenario.cost.total);
-  close(r.scenario.cycle_days, plain.scenario.cycle_days);
+  close(r.scenario.brief_to_live_days, plain.scenario.brief_to_live_days);
   // A lower rework rate at 2x changes only the scaled side.
   const lower = compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, rework_rate: { baseline: 0.1, scaled: 0.05 } });
   assert.equal(lower.ok, true);
