@@ -284,3 +284,10 @@ test('answer and s02 show the production cost rise and how a flat total budget f
     assert.ok(s.includes(`data-fig="${id}"`), id);
   }
 });
+
+test('answer cites the same Gartner year the model uses for the budget share (IN-07)', () => {
+  const a = sectionHtml('answer');
+  assert.ok(a.includes('data-fig="gartner-share-2026"'));
+  assert.ok(!a.includes('data-fig="gartner-share-2025"'));
+  assert.equal(assumptions['asm-budget-share'].display, claims['gartner-share-2026'].display);
+});
