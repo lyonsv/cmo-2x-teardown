@@ -60,8 +60,8 @@
 
 ### Outcome Case
 
-- [ ] **OUTC-01**: Reader sees an outcome scorecard pairing each output metric with outcomes across revenue/pipeline, speed to market, quality & brand, and learning velocity
-- [ ] **OUTC-02**: Reader sees how lift would be proven: holdouts, pre-registered metrics, multiple-comparison correction, MMM calibrated by incrementality, with outcomes graded Modelled/Speculative
+- [x] **OUTC-01**: Reader sees an outcome scorecard pairing each output metric with outcomes across revenue/pipeline, speed to market, quality & brand, and learning velocity
+- [x] **OUTC-02**: Reader sees how lift would be proven: holdouts, pre-registered metrics, multiple-comparison correction, MMM calibrated by incrementality, with outcomes graded Modelled/Speculative
 
 ### Calculator
 
@@ -161,8 +161,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEVER-03 | Phase 3 | Complete |
 | LEVER-04 | Phase 3 | Complete |
 | LEVER-05 | Phase 3 | Complete |
-| OUTC-01 | Phase 3 | Pending |
-| OUTC-02 | Phase 3 | Pending |
+| OUTC-01 | Phase 3 | Complete |
+| OUTC-02 | Phase 3 | Complete |
 | CALC-01 | Phase 3 | Pending |
 | CALC-02 | Phase 3 | Pending |
 | CALC-03 | Phase 3 | Pending |
