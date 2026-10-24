@@ -61,3 +61,7 @@ Phase 1 and 2 sections s01-s08 are still present. All 15 section anchors exist. 
 ## Gaps
 
 None found. The only open items are human judgement items, listed in the frontmatter. The preview and push checkpoints were auto-approved by the orchestrator, so they are not counted as human-passed.
+
+## Addendum 2026-10-24
+
+The status line above is unchanged. All four human items (vendor fairness and tone of s12, legal wording of the s09 illustration, s09/s10 editorial tone, hands-on calculator use) were dropped by author (not performed). Author decision 2026-10-24: "Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that." This is not a pass. See 03-HUMAN-UAT.md.

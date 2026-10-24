@@ -82,3 +82,13 @@ None blocking.
 No gaps. All five success criteria and all 12 requirements are evidenced in the code and on the live page. Status is human_needed only because of the three author and visual checks above.
 
 _Verifier: Claude (gsd-verifier)_
+
+## Addendum 2026-10-24
+
+The status line above is unchanged. Disposition of the human items, none of which were performed:
+
+1. Visual and print review of s03-s08: dropped by author (not performed). Author decision 2026-10-24: "Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that."
+2. Stock-licence indemnity wording and conflict of interest: moot, content removed in quick task 261024-s14.
+3. Getty tracker facts: moot, content removed in quick task 261024-s14.
+
+This is not a pass. See 02-HUMAN-UAT.md.

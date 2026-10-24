@@ -54,7 +54,7 @@
 - [x] **LEVER-02**: Reader sees an experimentation block with win-rate maths (≈12–36% depending on definition; superseded by the sourced ≈10–33% range, see 03-CONTEXT post-research decisions) explaining why test velocity improves outcomes, bounded by traffic
 - [x] **LEVER-03**: Reader sees an insight & reporting block with its output/outcome metrics, marked Modelled where evidence is a gap
 - [x] **LEVER-04**: Reader sees an ops block (briefs, approvals, DAM metadata, rights tracking) including a statutory-damages tail-risk illustration (17 U.S.C. 504(c)) with the incident rate graded Speculative
-- [x] **LEVER-05**: Reader sees an answer-engine visibility (AEO/GEO) block: answer assets published/refreshed per head as output; citation share, AI-referred sessions and pipeline as outcomes; citation loss feeding refresh briefs back into the factory
+- [x] **LEVER-05**: Reader sees an answer-engine visibility (AEO/GEO) block: answer assets published/refreshed per quarter as output; citation share, AI-referred sessions and pipeline as outcomes; citation loss feeding refresh briefs back into the factory (aligned to per-quarter in v1.0 polish (03.1 removed per-head denominators))
 - [x] **LEVER-06**: Reader sees a six-lever summary table (output metric, outcome metric, evidence grade) in section 01
 
 ### Outcome Case
@@ -89,8 +89,8 @@
 
 ### Quality & Publish
 
-- [x] **QA-01**: The page meets WCAG 2.2 AA: labelled inputs, `aria-live` outputs, data-table equivalents for charts, and grades not conveyed by colour alone
-- [x] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet
+- [x] **QA-01**: The page meets WCAG 2.2 AA: labelled inputs, `aria-live` outputs, data-table equivalents for charts, and grades not conveyed by colour alone (satisfied on automated evidence only; manual assistive-technology and device checks dropped by author 2026-10-24)
+- [x] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet (satisfied on automated evidence only; manual assistive-technology and device checks dropped by author 2026-10-24)
 - [x] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, and EU AI Act Art. 50 are re-verified, and the page's legal wording is flagged for review (flag and counsel review dropped by author decision 2026-10-24)
 - [x] **QA-04**: An automated or scripted cross-check confirms every graded number on the page has a register entry and every calculator default matches the prose
 
@@ -178,16 +178,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLOSE-01 | Phase 4 | Complete |
 | CLOSE-02 | Phase 4 | Complete |
 | CLOSE-03 | Phase 4 | Complete |
-| QA-01 | Phase 4 | Complete |
-| QA-02 | Phase 4 | Complete |
+| QA-01 | Phase 4 | Complete (automated evidence only; manual checks dropped by author 2026-10-24) |
+| QA-02 | Phase 4 | Complete (automated evidence only; manual checks dropped by author 2026-10-24) |
 | QA-03 | Phase 4 | Complete |
 | QA-04 | Phase 4 | Complete |
 
 **Coverage:**
-- v1 requirements: 54 total (CRED-04 retired, removed at author's request)
+- v1 requirements: 54 active (CRED-04 retired, removed at author's request)
 - Mapped to phases: 54
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-10-24*
-*Last updated: 2026-10-24 after roadmap creation (traceability filled)*
+*Last updated: 2026-10-24 after milestone v1.0 audit*
