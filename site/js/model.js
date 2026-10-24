@@ -50,7 +50,7 @@ export function toCompute(values, ctx) {
 
 function keyFor(error) {
   const field = error.field;
-  if (field === 'auto_approval_share') return String(error.message).includes('(baseline)') ? 'auto1' : 'auto2';
+  if (field === 'auto_approval_share') return error.which === 'baseline' ? 'auto1' : 'auto2';
   if (typeof field === 'string' && Object.hasOwn(COMPUTE_FIELD_TO_KEY, field)) return COMPUTE_FIELD_TO_KEY[field];
   return null;
 }

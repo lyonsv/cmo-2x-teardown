@@ -238,6 +238,19 @@ test('purity: import specifiers of model.js, fields.js and format.js', () => {
 
 // ---- Plan 03-07: headcount scenarios and sensitivity ----
 
+test('auto-approval errors map to their field by side, not by message text (IN-06)', () => {
+  const d = defaultValues(ctx);
+  const at = (mix) => run({ ...d }, { ...ctx, assumptions: { ...ctx.assumptions, tier_mix: mix } });
+  const one = at({ baseline: [0.05, 0.05, 0.6, 0.3], scaled: ctx.assumptions.tier_mix.scaled });
+  assert.equal(one.ok, false);
+  assert.deepEqual(one.errors.map((e) => e.key), ['auto1']);
+  const two = at({ baseline: ctx.assumptions.tier_mix.baseline, scaled: [0.1, 0.1, 0.5, 0.3] });
+  assert.deepEqual(two.errors.map((e) => e.key), ['auto2']);
+  const r = compute(toCompute(d, ctx).inputs, { ...toCompute(d, ctx).assumptions, auto_approval_share: { baseline: -1, scaled: 0.6 } });
+  assert.equal(r.errors[0].which, 'baseline');
+  assert.equal(run({ ...d, auto1: -1 }, ctx).errors[0].key, 'auto1', 'a share error without a side suffix still maps to auto1');
+});
+
 test('scenarioOutcomes goldens at defaults', () => {
   const v = defaultValues(ctx);
   const red = scenarioOutcomes(v, ctx, 'redeploy');

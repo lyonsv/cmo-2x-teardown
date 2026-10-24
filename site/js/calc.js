@@ -71,8 +71,10 @@ const isShare = (x) => isNonNeg(x) && x <= 1;
 
 function validateCost(assumptions, errors) {
   const a = assumptions && typeof assumptions === 'object' ? assumptions : {};
+  // `which` names the first failing side, so callers never parse the message.
   const both = (name, ok, msg) => {
-    if (!ok(pick(a[name], 'baseline')) || !ok(pick(a[name], 'scaled'))) errors.push({ field: name, message: `${name} ${msg}` });
+    const which = ['baseline', 'scaled'].find((w) => !ok(pick(a[name], w)));
+    if (which) errors.push({ field: name, which, message: `${name} ${msg}` });
   };
   both('auto_approval_share', isShare, 'must be a finite share between 0 and 1');
   for (const f of SHARE_FIELDS) both(f, isShare, 'must be a finite share between 0 and 1');
@@ -92,7 +94,7 @@ function validateCost(assumptions, errors) {
     const mix = pick(a.tier_mix, which);
     const share = pick(a.auto_approval_share, which);
     if (isMix(mix) && isShare(share) && share > mix[0] + mix[1] + 1e-9) {
-      errors.push({ field: 'auto_approval_share', message: `auto_approval_share (${which}) cannot exceed the T0 + T1 share of the tier mix` });
+      errors.push({ field: 'auto_approval_share', which, message: `auto_approval_share (${which}) cannot exceed the T0 + T1 share of the tier mix` });
     }
   }
 }
