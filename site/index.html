@@ -544,8 +544,75 @@
     </section>
     <section id="s08" aria-labelledby="s08-h">
       <div class="sec-head"><span class="sec-num">08</span><h2 id="s08-h">Eval harness and telemetry</h2></div>
-      <p>This section will show how an eval harness and telemetry keep quality visible once volume grows.</p>
-      <p class="later">Coming in a later update.</p>
+      <p>The eval harness is how the organisation proves the gate is safe, and keeps proving it as models, prompts and policy change.</p>
+      <figure>
+        <div class="fig-grid">
+      <svg class="fig-d" role="img" aria-labelledby="fd7-t fd7-d" viewBox="0 0 300 400">
+        <title id="fd7-t">The eval-harness loop</title>
+        <desc id="fd7-d">Reviewer decisions with reason codes become ground truth. Seeded known-bad assets and sampled auto-approvals test the review agent, which is scored per tier. A change gate compares every change with a baseline, and the loop returns to new reviewer decisions.</desc>
+        <defs>
+        <marker id="fd7-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
+        <marker id="fd7-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
+        </defs>
+        <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd7-arrow)"/>
+        <line class="edge" x1="150" y1="112" x2="150" y2="136" marker-end="url(#fd7-arrow)"/>
+        <line class="edge" x1="150" y1="176" x2="150" y2="200" marker-end="url(#fd7-arrow)"/>
+        <line class="edge" x1="150" y1="240" x2="150" y2="264" marker-end="url(#fd7-arrow)"/>
+        <line class="edge edge-review" x1="150" y1="304" x2="150" y2="328" marker-end="url(#fd7-arrow-review)"/>
+        <path class="edge edge-soft" d="M270 348 L288 348 L288 28 L272 28" marker-end="url(#fd7-arrow)"/>
+        <text class="note" x="150" y="392" text-anchor="middle">Illustrative</text>
+        <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Reviewer decisions</tspan><tspan x="150" dy="16">with reason codes</tspan></text></g>
+        <g class="node"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Ground truth</tspan><tspan x="150" dy="16">versioned datasets</tspan></text></g>
+        <g class="node"><rect x="30" y="136" width="240" height="40" rx="2"/><text x="150" y="152" text-anchor="middle"><tspan class="node-t" x="150" y="152">Seeded assets</tspan><tspan x="150" dy="16">known-bad, rights traps</tspan></text></g>
+        <g class="node"><rect x="30" y="200" width="240" height="40" rx="2"/><text x="150" y="216" text-anchor="middle"><tspan class="node-t" x="150" y="216">Escape sampling</tspan><tspan x="150" dy="16">of auto-approvals</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="264" width="240" height="40" rx="2"/><text x="150" y="280" text-anchor="middle"><tspan class="node-t" x="150" y="280">Review scores per tier</tspan><tspan x="150" dy="16">precision, recall, drift</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="328" width="240" height="40" rx="2"/><text x="150" y="344" text-anchor="middle"><tspan class="node-t" x="150" y="344">Change gate</tspan><tspan x="150" dy="16">baseline v treatment</tspan></text></g>
+      </svg>
+          <div>
+          <h3 class="steps-h">Steps in this figure</h3>
+          <ol class="fig-steps">
+          <li>Reviewer decisions: every human decision is recorded with a reason code.</li>
+          <li>Then Ground truth: those decisions become versioned datasets that the agent is measured against.</li>
+          <li>Then Seeded assets: known-bad assets and rights traps are mixed into the stream.</li>
+          <li>Then Escape sampling: a person audits a random slice of the auto-approvals.</li>
+          <li>Then Review scores per tier: agreement, precision, recall and drift are computed for each tier.</li>
+          <li>Then Change gate: any change is compared with a baseline and ships only if it does not regress. The loop then restarts with new decisions.</li>
+          </ol>
+          </div>
+        </div>
+        <figcaption><b>Figure 7</b> The eval-harness loop: human decisions become ground truth, seeded and sampled assets test the agent, and every change is compared with a baseline before it ships. Illustrative.</figcaption>
+      </figure>
+      <p>Ground truth is the set of decisions that reviewers have already made. Every human decision carries a reason code, so an override with a reason code is the cheapest ground-truth feed there is: it costs the reviewer one extra click and gives the harness a labelled example. Datasets are versioned, so a result can always be traced to the data that produced it.</p>
+      <div class="table-scroll" role="region" aria-label="Eval harness metrics table" tabindex="0">
+        <table>
+          <caption>What the eval harness reports</caption>
+          <thead><tr><th scope="col">Metric</th><th scope="col">What it tells you</th><th scope="col">Published threshold</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Agreement with human ground truth, per criterion and per tier</th><td>Whether the review agent decides as a trained person would, criterion by criterion.</td><td>Published per tier, never an average.</td><td><a class="chip c-m" href="#asm-harness-design">Modelled</a></td></tr>
+            <tr><th scope="row">Escape rate in sampled auto-approvals</th><td>How often a person finds a problem in something the gate cleared.</td><td>No rise beyond the noise band.</td><td><a class="chip c-m" href="#asm-harness-design">Modelled</a></td></tr>
+            <tr><th scope="row">Seeded known-bad and rights-trap catch rate</th><td>Whether planted defects are caught, and so whether reviewers and the agent are still alert.</td><td>No rights-trap misses in the lowest two tiers.</td><td><a class="chip c-m" href="#asm-harness-design">Modelled</a></td></tr>
+            <tr><th scope="row">Per-tier precision, recall and drift over a rolling window</th><td>Whether the agent over-blocks, under-blocks or slowly changes behaviour.</td><td>Calibrated on the organisation's own data.</td><td><a class="chip c-m" href="#asm-harness-design">Modelled</a></td></tr>
+            <tr><th scope="row">Change-gate result, baseline versus treatment</th><td>Whether a new generator, prompt, model or policy is better, worse or indistinguishable.</td><td>No regression beyond the noise band.</td><td><a class="chip c-m" href="#asm-harness-design">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Agreement is reported per criterion and per tier, never as one average. Rights and claims will be the hard criteria, and an average would hide a weak spot behind strong results on resizes and crops. The harness also feeds in seeded assets that are known to be bad, including rights traps, and samples auto-approvals at random, so it can estimate how often the gate lets through something a person would have stopped.</p>
+      <p>A harness can be gamed by the thing it evaluates. If the agent or its authors can see the seeded assets, they will learn them. Keep the seeded and held-out sets apart from anything used to tune prompts, rotate them, and let someone who does not own the generator maintain them.</p>
+      <p>Expect most changes to be unmeasurable. In the one public reference, most tested changes were inconclusive and a newer model tested worse than its predecessor. The harness therefore compares a change with a baseline and ships it only if it holds inside the noise band. Thresholds are relative on purpose: they must be calibrated on the organisation's own data, and this page does not invent a benchmark. <a class="chip c-m" href="#asm-harness-design">Modelled</a></p>
+      <p>No change to a generator, prompt, model or policy ships if it regresses the harness.</p>
+      <h3>Telemetry</h3>
+      <p>Telemetry joins the asset ID in the manifest to ad-platform and CRM performance, so each asset's policy version, review path, cost and outcome sit on one record. That join is what lets this page's cost and quality figures be measured and not only modelled.</p>
+      <ul>
+        <li><b>First-pass compliance:</b> the share of variants that clear review without rework.</li>
+        <li><b>Auto-approval share by tier.</b></li>
+        <li><b>Reviewer utilisation</b> against capacity.</li>
+        <li><b>Queue age:</b> how long the oldest items have waited.</li>
+        <li><b>Rework rate.</b></li>
+        <li><b>Cost per approved-live asset.</b></li>
+        <li><b>Cycle time</b> from brief to live.</li>
+        <li><b>Policy and skill version</b> in use for each asset.</li>
+      </ul>
+      <p>This is instrumentation of the work, not surveillance of people: metrics are per asset, per tier and per queue, never per named reviewer. <a class="chip c-m" href="#asm-telemetry-metrics">Modelled</a></p>
     </section>
     <section id="s09" aria-labelledby="s09-h">
       <div class="sec-head"><span class="sec-num">09</span><h2 id="s09-h">The other five levers</h2></div>
