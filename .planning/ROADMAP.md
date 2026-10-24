@@ -10,7 +10,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
 
 - [x] **Phase 1: Foundation & Thesis Slice** - Live shell with front matter, sections 01-02, `data.js`, tested `calc.js`, baseline-vs-2x figure, tested Pages deploy (completed 2026-10-24)
 - [x] **Phase 2: Factory & Spine Slice** - Sections 03-08: factory, supply chain, 10,000-asset campaign, review agent, T0-T3 gate, eval harness and telemetry (completed 2026-10-24)
-- [ ] **Phase 3: Levers, Outcomes, Calculator & Comparison Slice** - Sections 09-12: five other levers incl. AEO, outcome case, interactive calculator, Gradial/AirOps/Profound comparison
+- [x] **Phase 3: Levers, Outcomes, Calculator & Comparison Slice** - Sections 09-12: five other levers incl. AEO, outcome case, interactive calculator, Gradial/AirOps/Profound comparison (completed 2026-10-24)
 - [ ] **Phase 4: Adoption, Risk, Evidence & Publish Slice** - Sections 13-15, register reconciliation, WCAG/mobile/print pass, re-verification, legal flag, production deploy
 
 ## Phase Details
@@ -129,7 +129,7 @@ Plans:
   4. Reader sees the break-even auto-approval rate at flat review headcount, redeploy/hold/reduce scenarios with change-management cost, and a sensitivity table. Invalid or zero inputs show a message, never NaN or Infinity, and a URL hash restores a shared scenario.
   5. Reader sees the comparison matrix and per-vendor slot-in/alternative/falls-short text ("not publicly documented" wording), each vendor outcome flagged vendor-claimed with source URL and access date, category-level build-vs-buy and lock-in guidance, and the admission that the spine is a design not a shipped product. Vendor names appear only here and in the source register.
 
-**Plans:** 11/12 plans executed
+**Plans:** 12/12 plans complete
 
 Plans:
 **Wave 1**
@@ -178,7 +178,7 @@ Plans:
 
 **Wave 12** *(blocked on Wave 11 completion)*
 
-- [ ] 03-12-PLAN.md — Approve-push checkpoint, W3C, single push, live verification and live smoke
+- [x] 03-12-PLAN.md — Approve-push checkpoint, W3C, single push, live verification and live smoke
 
 **UI hint**: yes
 **Research flag**: Re-verify all vendor claims against primary pages (Gradial CMS/DAM list, which AirOps tier includes Human Review, Profound engine count and methodology). Check whether any independent AEO measurement study exists. Open primary sources before assigning any Benchmark grade.
@@ -207,5 +207,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
-| 3. Levers, Outcomes, Calculator & Comparison Slice | 11/12 | In Progress|  |
+| 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete   | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
