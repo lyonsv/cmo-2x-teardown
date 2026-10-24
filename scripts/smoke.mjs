@@ -256,11 +256,24 @@ async function withPage(fn) {
   }
   check('target', target, 'no page target');
   const ws = new WebSocket(target.webSocketDebuggerUrl);
-  await new Promise((res, rej) => { ws.onopen = res; ws.onerror = () => rej(new Error('websocket error')); });
+  await new Promise((res, rej) => {
+    const t = setTimeout(() => rej(new Error('websocket did not open within 10 s')), 10000);
+    ws.onopen = () => { clearTimeout(t); res(); };
+    ws.onerror = () => { clearTimeout(t); rej(new Error('websocket error')); };
+  });
   let id = 0;
+  // Every CDP call settles: a reply, a 15 s timeout, or the socket closing (IN-09).
   const pending = new Map();
-  ws.onmessage = (m) => { const msg = JSON.parse(m.data); if (msg.id && pending.has(msg.id)) { pending.get(msg.id)(msg); pending.delete(msg.id); } };
-  const send = (method, params = {}) => new Promise((res) => { id += 1; pending.set(id, res); ws.send(JSON.stringify({ id, method, params })); });
+  const settle = (key, fn) => { const p = pending.get(key); if (p) { pending.delete(key); clearTimeout(p.timer); fn(p); } };
+  ws.onmessage = (m) => { const msg = JSON.parse(m.data); if (msg.id) settle(msg.id, (p) => p.res(msg)); };
+  ws.onclose = () => { for (const key of [...pending.keys()]) settle(key, (p) => p.rej(new Error(`CDP socket closed during ${p.method}`))); };
+  const send = (method, params = {}) => new Promise((res, rej) => {
+    id += 1;
+    const key = id;
+    const timer = setTimeout(() => settle(key, (p) => p.rej(new Error(`CDP ${method} timed out after 15 s`))), 15000);
+    pending.set(key, { res, rej, timer, method });
+    ws.send(JSON.stringify({ id: key, method, params }));
+  });
   const evalJs = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true })).result.result.value;
   try {
     return await fn({ send, evalJs });
