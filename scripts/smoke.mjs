@@ -244,6 +244,35 @@ async function cases(base) {
   });
 
   await run('j hashchange on an open page', () => hashchange(base));
+
+  // Phase 3 UI review: an invalid field followed by a same-document hash navigation must
+  // show fresh results for the new hash, not the stale "not available" state.
+  await run('o invalid field then hashchange', () => withPage(async ({ send, evalJs }) => {
+    await send('Page.enable');
+    await send('Page.navigate', { url: base });
+    for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+    await evalJs("(() => { const i = document.getElementById('in-campaigns'); i.value = '0'; i.dispatchEvent(new Event('change', { bubbles: true })); })()");
+    await sleep(600);
+    const invalid = await evalJs("document.getElementById('in-campaigns').getAttribute('aria-invalid')");
+    check('invalid first', invalid === 'true', `aria-invalid "${invalid}" before the hash change`);
+    await evalJs("location.hash = '#s11?reviewers=4'");
+    await sleep(1000);
+    const st = await evalJs("document.querySelector('.calc-status').textContent");
+    check('status', !/not available/i.test(st), `status "${st}"`);
+    const fig = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]').textContent");
+    const want = expected({ ...d, reviewers: 4 }, 'cost_per_asset', 'scaled');
+    check('fresh results', fig === want, `cost per asset "${fig}", expected "${want}"`);
+    const util = await evalJs("document.querySelector('[data-fig=\"calc-utilisation-scaled\"]').textContent");
+    const wantUtil = expected({ ...d, reviewers: 4 }, 'utilisation', 'scaled');
+    check('utilisation reflects the new hash', util === wantUtil, `utilisation "${util}", expected "${wantUtil}"`);
+    const rev = await evalJs("document.getElementById('in-reviewers').value");
+    check('reviewers', rev === '4', `reviewers "${rev}"`);
+    const camp = await evalJs("document.getElementById('in-campaigns').value");
+    check('campaigns reset', camp === '40', `campaigns "${camp}"`);
+    const stale = await evalJs("document.querySelectorAll('[aria-invalid=\"true\"]').length");
+    check('no invalid fields', stale === 0, `${stale} fields still aria-invalid`);
+    return `${fig}, reviewers=${rev}, campaigns=${camp}`;
+  }));
 }
 
 async function withPage(fn) {
