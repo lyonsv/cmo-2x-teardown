@@ -27,23 +27,23 @@ async function cases(base) {
     const dom = dump(base);
     check('js', /<html[^>]*class="[^"]*\bjs\b/.test(dom), 'html lacks class js');
     const sum = decode((dom.match(/<output id="calc-summary"[^>]*>([^<]*)</) || [])[1] || '');
-    check('summary', sum.startsWith('At 2x, your team approves'), `summary was "${sum}"`);
+    check('summary', sum.startsWith('With more campaigns and more markets, at 2x you have'), `summary was "${sum}"`);
     check('cost', span(dom, 'calc-cost_per_asset-scaled') === expected(d, 'cost_per_asset', 'scaled'), `cost span ${span(dom, 'calc-cost_per_asset-scaled')}`);
     check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
     return sum.slice(0, 40);
   });
 
   await run('b hash restores inputs', () => {
-    const dom = dump(`${base}#s11?locales=6&auto2=70`);
+    const dom = dump(`${base}#s11?markets=6&auto2=70`);
     check('status', statusOf(dom).includes('(2 changed)'), `status "${statusOf(dom)}"`);
-    const v = { ...d, locales: 6, auto2: 0.7 };
+    const v = { ...d, markets: 6, auto2: 0.7 };
     check('cost', span(dom, 'calc-cost_per_asset-scaled') === expected(v, 'cost_per_asset', 'scaled'), `cost span ${span(dom, 'calc-cost_per_asset-scaled')} vs ${expected(v, 'cost_per_asset', 'scaled')}`);
     return statusOf(dom);
   });
 
   await run('c bad hash value', () => {
-    const dom = dump(`${base}#s11?locales=abc`);
-    check('notice', statusOf(dom).includes('defaults were used for: Locales'), `status "${statusOf(dom)}"`);
+    const dom = dump(`${base}#s11?markets=abc`);
+    check('notice', statusOf(dom).includes('defaults were used for: Markets per campaign'), `status "${statusOf(dom)}"`);
     check('cost', span(dom, 'calc-cost_per_asset-scaled') === expected(d, 'cost_per_asset', 'scaled'), 'defaults not shown');
   });
 
@@ -62,13 +62,47 @@ async function cases(base) {
     await sleep(300);
     const hash = await evalJs('location.hash');
     check('hash', hash === '#s11?scenario=reduce', `hash "${hash}"`);
-    return `${cap}, ${want}, ${hash}`;
+    await evalJs("(() => { const r = document.querySelector('input[name=route][value=campaigns]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); })()");
+    await sleep(300);
+    const hash2 = await evalJs('location.hash');
+    check('route hash', hash2 === '#s11?scenario=reduce&route=campaigns' || hash2 === '#s11?route=campaigns&scenario=reduce', `hash "${hash2}"`);
+    return `${cap}, ${want}, ${hash2}`;
+  }));
+
+  const open = async ({ send, evalJs }, hash) => {
+    await send('Page.enable');
+    await send('Page.navigate', { url: `${base}${hash}` });
+    for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+    await sleep(500);
+  };
+  const checkedRoute = (evalJs) => evalJs("document.querySelector('input[name=route]:checked').value");
+
+  await run('p route in the link', () => withPage(async (page) => {
+    const { evalJs } = page;
+    await open(page, '#s11?route=markets');
+    check('radio', (await checkedRoute(evalJs)) === 'markets', 'More markets radio not checked');
+    const v = { ...d, route: 'markets' };
+    const cost = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]').textContent");
+    check('cost', cost === expected(v, 'cost_per_asset', 'scaled'), `cost ${cost} vs ${expected(v, 'cost_per_asset', 'scaled')}`);
+    const cm = await evalJs("document.querySelector('[data-fig=\"calc-campaign_markets-scaled\"]').textContent");
+    check('cm', cm === expected(d, 'campaign_markets', 'scaled'), `campaign-markets ${cm}`);
+    return cost;
+  }));
+
+  await run('q hostile route in the link', () => withPage(async (page) => {
+    const { evalJs } = page;
+    await open(page, '#s11?route=__proto__');
+    const st = await evalJs("document.querySelector('.calc-status').textContent");
+    check('notice', st.includes('defaults were used for: How you get to 2x'), `status "${st}"`);
+    check('both', (await checkedRoute(evalJs)) === 'both', 'Both radio not checked');
+    const cost = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]').textContent");
+    check('cost', cost === expected(d, 'cost_per_asset', 'scaled'), 'defaults not shown');
   }));
 
   await run('g sensitivity ranks live', () => {
-    const dom = dump(`${base}#s11?locales=8`);
+    const dom = dump(`${base}#s11?markets=8`);
     const first = decode((dom.match(/aria-label="Sensitivity"[\s\S]*?<tbody>\s*<tr>\s*<th scope="row">([^<]*)<\/th>/) || [])[1] || '');
-    const top = present({ ...d, locales: 8 }, ctx).sensitivity[0];
+    const top = present({ ...d, markets: 8 }, ctx).sensitivity[0];
     check('label', first === top.label, `first row "${first}" vs "${top.label}"`);
     check('cell', span(dom, `calc-sens-${top.key}-costDown`) === top.cells.costDown.text, 'first-row cost cell differs');
     check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
@@ -161,7 +195,7 @@ async function cases(base) {
     await send('Page.enable');
     await send('Page.navigate', { url: base });
     for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
-    await evalJs("(() => { const i = document.getElementById('in-locales'); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
+    await evalJs("(() => { const i = document.getElementById('in-markets'); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
     await sleep(500);
     const cell = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]')?.textContent");
     check('kept', cell === expected(d, 'cost_per_asset', 'scaled'), `cost cell "${cell}"`);
@@ -170,10 +204,10 @@ async function cases(base) {
     check('chart', (await evalJs("document.querySelector('svg.fig-live').hasAttribute('hidden')")) === false, 'chart hidden');
     const share = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
     check('share', share[0] === '' && share[1] === true && share[2] === 'Finish entering the inputs before sharing.', `share ${JSON.stringify(share)}`);
-    await evalJs("(() => { const i = document.getElementById('in-locales'); i.value = '6'; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
+    await evalJs("(() => { const i = document.getElementById('in-markets'); i.value = '6'; i.dispatchEvent(new Event('input', { bubbles: true })); })()");
     await sleep(800);
     const now = await evalJs("document.querySelector('[data-fig=\"calc-cost_per_asset-scaled\"]').textContent");
-    check('updated', now === expected({ ...d, locales: 6 }, 'cost_per_asset', 'scaled'), `cost cell "${now}"`);
+    check('updated', now === expected({ ...d, markets: 6 }, 'cost_per_asset', 'scaled'), `cost cell "${now}"`);
     const ok2 = await evalJs("[document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
     check('share back', ok2[0] === false && ok2[1] === '', `share ${JSON.stringify(ok2)}`);
     return st;
@@ -239,13 +273,13 @@ const hashchange = (base) => withPage(async ({ send, evalJs }) => {
   await send('Page.navigate', { url: base });
   for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
   check('loaded', await evalJs("document.documentElement.classList.contains('js')"), 'module did not load');
-  await send('Page.navigate', { url: `${base}#s11?locales=7` });
+  await send('Page.navigate', { url: `${base}#s11?markets=7` });
   await sleep(1000);
   const st = await evalJs("document.querySelector('.calc-status').textContent");
-  const val = await evalJs("document.getElementById('in-locales').value");
+  const val = await evalJs("document.getElementById('in-markets').value");
   check('status', st.includes('(1 changed)'), `status "${st}"`);
-  check('value', val === '7', `locales input "${val}"`);
-  return `${st}, locales=${val}`;
+  check('value', val === '7', `markets input "${val}"`);
+  return `${st}, markets=${val}`;
 });
 
 try {
