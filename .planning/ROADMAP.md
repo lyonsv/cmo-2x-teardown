@@ -8,7 +8,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Thesis Slice** - Live shell with front matter, sections 01-02, `data.js`, tested `calc.js`, baseline-vs-2x figure, tested Pages deploy
+- [x] **Phase 1: Foundation & Thesis Slice** - Live shell with front matter, sections 01-02, `data.js`, tested `calc.js`, baseline-vs-2x figure, tested Pages deploy (completed 2026-10-24)
 - [ ] **Phase 2: Factory & Spine Slice** - Sections 03-08: factory, supply chain, 10,000-asset campaign, review agent, T0-T3 gate, eval harness and telemetry
 - [ ] **Phase 3: Levers, Outcomes, Calculator & Comparison Slice** - Sections 09-12: five other levers incl. AEO, outcome case, interactive calculator, Gradial/AirOps/Profound comparison
 - [ ] **Phase 4: Adoption, Risk, Evidence & Publish Slice** - Sections 13-15, register reconciliation, WCAG/mobile/print pass, re-verification, legal flag, production deploy
@@ -29,7 +29,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
   4. Reader sees in section 02 the Gartner-anchored flat-budget framing, fully loaded cost per approved-live asset for baseline vs 2x, AI spend framed as a floor, and a baseline-vs-2x SVG figure with a data-table equivalent.
   5. Every quantitative claim shows a text grade chip linked to a register entry, and the figures come from `data.js`. A push deploys only if `node --test` passes.
 
-**Plans:** 6/7 plans executed
+**Plans:** 7/7 plans complete
 
 Plans:
 **Wave 1**
@@ -58,7 +58,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
-- [ ] 01-07-PLAN.md — Pre-flight, user review and approved push, live verification
+- [x] 01-07-PLAN.md — Pre-flight, user review and approved push, live verification
 
 **UI hint**: yes
 **Research flag**: Standard patterns. Quick-check only the Gartner 7.7/7.8% primary figures, GitHub Actions major versions and `node --test` behaviour. Confirm the primary-metric weighting decision (unweighted headline, tier weighting as sensitivity).
@@ -121,7 +121,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Thesis Slice | 6/7 | In Progress|  |
+| 1. Foundation & Thesis Slice | 7/7 | Complete   | 2026-10-24 |
 | 2. Factory & Spine Slice | 0/TBD | Not started | - |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
