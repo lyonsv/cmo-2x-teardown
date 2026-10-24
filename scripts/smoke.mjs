@@ -109,6 +109,22 @@ async function cases(base) {
     return first;
   });
 
+  // WR-01: after a re-ranking the grade note links every row shown, at the weakest grade.
+  await run('r sensitivity grade note follows the ranking', () => {
+    const dom = dump(`${base}#s11?vcost=20&mconcept=10`);
+    const v = { ...d, vcost: 20, mconcept: 10 };
+    const p = present(v, ctx);
+    const shown = [...dom.matchAll(/data-fig="calc-sens-([a-z0-9]+)-costDown"/g)].map((m) => m[1]);
+    check('rows', JSON.stringify(shown) === JSON.stringify(p.sensitivity.map((r) => r.key)), `rows ${shown}`);
+    const note = (dom.match(/aria-label="Sensitivity"[\s\S]*?<p class="table-note grade-note">([\s\S]*?)<\/p>/) || [])[1] || '';
+    const links = [...note.matchAll(/<a href="#([^"]+)">/g)].map((m) => m[1]);
+    const want = [...new Set(p.sensitivity.map((r) => r.ref))];
+    check('links', JSON.stringify(links) === JSON.stringify(want), `note links ${links} vs ${want}`);
+    const chip = note.match(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/);
+    check('chip', chip && chip[3] === p.sensitivityNote.grade && chip[2] === p.sensitivityNote.ref, `note chip ${chip && chip[0]}`);
+    return shown.join(',');
+  });
+
   // --dump-dom cannot run with scripts disabled, so this case drives Chrome over CDP.
   await run('d JS off', () => withPage(async ({ send, evalJs }) => {
     await send('Emulation.setScriptExecutionDisabled', { value: true });

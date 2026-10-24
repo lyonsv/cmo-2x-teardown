@@ -372,6 +372,28 @@ test('sensitivity table: header, five ranked rows equal present(defaults), cappe
   assert.ok(after.includes('<p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>'));
 });
 
+// WR-01: ui.js rewrites the sensitivity grade note from present().sensitivityNote,
+// so the static note must equal the presenter's note at defaults, and after a
+// re-ranking the note must link every row actually shown at the weakest grade.
+const sensNoteHtml = (n) => `Every figure in this table is <a class="chip ${CHIP_CLASS[n.grade]}" href="#${n.ref}">${n.grade}</a>. Register rows: `
+  + `${n.refs.map((r) => `<a href="#${r}">${r}</a>`).join(', ')}.`;
+
+test('sensitivity grade note equals the presenter note at defaults and follows a re-ranking (WR-01)', () => {
+  const { note } = regionOf('Sensitivity');
+  assert.equal(note.replace(/^<p class="table-note grade-note">|<\/p>$/g, ''), sensNoteHtml(p.sensitivityNote));
+  const values = { ...defaultValues(ctx), vcost: 20, mconcept: 10 };
+  const moved = present(values, ctx);
+  const shown = moved.sensitivity.map((r) => r.key);
+  assert.ok(shown.includes('vcost') && !p.sensitivity.some((r) => r.key === 'vcost'), `re-ranked rows ${shown}`);
+  assert.deepEqual(moved.sensitivityNote.refs, [...new Set(moved.sensitivity.map((r) => r.ref))]);
+  for (const r of moved.sensitivity) assert.ok(assumptions[r.ref], r.ref);
+  // A weaker-graded input entering the table moves the note chip to that grade and row.
+  const weak = { ...ctx, grades: { ...ctx.grades, 'asm-variant-cost': 'Speculative' } };
+  const n = present(values, weak).sensitivityNote;
+  assert.equal(n.grade, 'Speculative');
+  assert.equal(n.ref, 'asm-variant-cost');
+});
+
 test('sensitivity step text is tied to SENSITIVITY_STEP (IN-03)', () => {
   const step = formatValue(SENSITIVITY_STEP, 'pct0');
   assert.ok(s11.includes(`<caption>Sensitivity: each input moved ${step} down and up, others unchanged</caption>`));

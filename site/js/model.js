@@ -324,6 +324,21 @@ function scenarioPresentation(values, ctx) {
   return { mode, name: SCENARIO_NAMES[mode], rows };
 }
 
+// WR-01: the sensitivity table has one grade note, not a chip per row. The live
+// ranking can bring any input into the table, so the note's chip and register
+// links are rebuilt from the rows actually shown: the weakest grade among them,
+// linked to its row, and one register link per distinct row ref in table order.
+export function sensitivityNote(rows) {
+  const refs = [...new Set(rows.map((r) => r.ref))];
+  const grades = {};
+  for (const r of rows) {
+    const prev = grades[r.ref];
+    if (prev === undefined || GRADE_ORDER.indexOf(r.grade) < GRADE_ORDER.indexOf(prev)) grades[r.ref] = r.grade;
+  }
+  const { grade, ref } = weakestGrade(refs, grades);
+  return { grade, ref, refs };
+}
+
 function sensitivityPresentation(rows) {
   const node = (v) => (v === null ? { text: 'n/a' } : { value: v, text: formatValue(v, 'pctchg1') });
   return rows.map((row) => ({
@@ -462,7 +477,7 @@ export function present(values, ctx) {
     : `With ${route}, at 2x you have ${cm} campaign-markets launched per quarter, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
-    scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),
+    scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens), sensitivityNote: sensitivityNote(sens),
     maths: mathsPresentation(values, ctx, r, rows), believe: believePresentation(values, ctx, sens),
   };
 }

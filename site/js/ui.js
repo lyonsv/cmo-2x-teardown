@@ -5,7 +5,7 @@ import { modelContext } from './data.js';
 import { present, defaultValues } from './model.js';
 import { FIELDS } from './fields.js';
 import { chartSpec, renderChart } from './svg.js';
-import { writeMaths, writeBelieve } from './panels.js';
+import { writeMaths, writeBelieve, writeSensitivityNote } from './panels.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
 
 const ctx = modelContext();
@@ -25,6 +25,7 @@ const radios = Object.fromEntries(GROUPS.map((g) => [g, [...document.querySelect
 const scenTable = document.querySelector('[aria-label="Headcount scenario"]');
 const scenRows = [...scenTable.querySelectorAll('tbody tr')];
 const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody tr')];
+const sensNote = document.querySelector('[aria-label="Sensitivity"]').nextElementSibling;
 const chart = document.querySelector('svg.fig-live');
 const chartEmpty = document.querySelector('.chart-empty');
 const mathsBox = document.querySelector('details.maths');
@@ -89,7 +90,7 @@ function writeScenario(sc) {
   sc.rows.forEach((row, i) => { scenRows[i].querySelector('[data-fig]').textContent = row.text; });
 }
 
-// Rewrites the five static sensitivity rows in the live ranking order.
+// Rewrites the static sensitivity rows in the live ranking order.
 function writeSensitivity(list) {
   list.forEach((row, i) => {
     const tr = sensRows[i];
@@ -215,6 +216,7 @@ function update(commit, immediateSummary) {
   writeResults(p);
   writeScenario(p.scenario);
   writeSensitivity(p.sensitivity);
+  writeSensitivityNote(sensNote, p.sensitivityNote);
   writeMaths(mathsItems, p.maths);
   writeBelieve(believeList, p.believe);
   chart.removeAttribute('hidden');
