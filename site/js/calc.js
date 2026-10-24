@@ -7,6 +7,7 @@ const POSITIVE_INPUTS = [
   'variants_per_concept',
   'marketing_fte',
   'reviewer_fte',
+  'marketing_budget',
   'multiplier',
 ];
 
@@ -27,6 +28,7 @@ function validate(inputs, assumptions) {
     errors.push({ field: 'concept_growth_exponent', message: 'concept_growth_exponent must be a finite number between 0 and 1' });
   }
   validateTiers(assumptions, errors);
+  validateCost(assumptions, errors);
   return errors;
 }
 
@@ -56,6 +58,41 @@ function validateTiers(assumptions, errors) {
   }
 }
 
+const SHARE_FIELDS = ['sampling_rate', 'escalation_rate', 'rework_rate', 'ai_share_of_variant_cost', 'ai_share_of_tooling'];
+const NONNEG_FIELDS = [
+  'review_minutes_per_variant', 'reviewer_rate_per_hour', 'master_concept_cost', 'variant_cost', 'rights_cost_per_concept',
+  'storage_cost_per_variant', 'tooling_cost_annual', 'build_days', 'review_service_days',
+];
+
+const isNonNeg = (x) => typeof x === 'number' && Number.isFinite(x) && x >= 0;
+const isShare = (x) => isNonNeg(x) && x <= 1;
+
+function validateCost(assumptions, errors) {
+  const a = assumptions && typeof assumptions === 'object' ? assumptions : {};
+  const both = (name, ok, msg) => {
+    if (!ok(pick(a[name], 'baseline')) || !ok(pick(a[name], 'scaled'))) errors.push({ field: name, message: `${name} ${msg}` });
+  };
+  both('auto_approval_share', isShare, 'must be a finite share between 0 and 1');
+  for (const f of SHARE_FIELDS) both(f, isShare, 'must be a finite share between 0 and 1');
+  for (const f of NONNEG_FIELDS) both(f, isNonNeg, 'must be a finite number of at least 0');
+  if (!isShare(a.target_utilisation) || a.target_utilisation <= 0) {
+    errors.push({ field: 'target_utilisation', message: 'target_utilisation must be greater than 0 and at most 1' });
+  }
+  if (!isPositive(a.reviewer_hours_per_fte_year)) {
+    errors.push({ field: 'reviewer_hours_per_fte_year', message: 'reviewer_hours_per_fte_year must be a finite number greater than 0' });
+  }
+  if (isShare(a.sampling_rate) && isShare(a.escalation_rate) && a.sampling_rate + a.escalation_rate > 1) {
+    errors.push({ field: 'sampling_rate', message: 'sampling_rate + escalation_rate must be at most 1' });
+  }
+  for (const which of ['baseline', 'scaled']) {
+    const mix = pick(a.tier_mix, which);
+    const share = pick(a.auto_approval_share, which);
+    if (isMix(mix) && isShare(share) && share > mix[0] + mix[1] + 1e-9) {
+      errors.push({ field: 'auto_approval_share', message: `auto_approval_share (${which}) cannot exceed the T0 + T1 share of the tier mix` });
+    }
+  }
+}
+
 function side(inputs, a, which, m) {
   const k = a.concept_growth_exponent;
   const concepts = inputs.campaigns_per_year * inputs.concepts_per_campaign * Math.pow(m, k);
@@ -66,10 +103,59 @@ function side(inputs, a, which, m) {
   const mix = pick(a.tier_mix, which);
   const tier_factor = mix.reduce((acc, share, i) => acc + share * a.tier_weights[i], 0);
   const weighted_output_per_head_per_quarter = output_per_head_per_quarter * tier_factor;
+  const G = generated_variants_per_year;
+  const V = variants_per_year;
+  const auto = pick(a.auto_approval_share, which);
+  const q = a.sampling_rate + a.escalation_rate;
+  const h = 1 - auto * (1 - q);
+  const r = a.rework_rate;
+  const hoursPer = a.review_minutes_per_variant / 60;
+  const review_hours = G * h * hoursPer;
+  const review_capacity_hours = inputs.reviewer_fte * a.reviewer_hours_per_fte_year;
+  const utilisation = (review_hours * (1 + r)) / review_capacity_hours;
+  const variantCost = pick(a.variant_cost, which);
+  const tooling = pick(a.tooling_cost_annual, which);
+  const cost = {
+    generation: concepts * a.master_concept_cost + G * variantCost,
+    review: review_hours * a.reviewer_rate_per_hour,
+    rework: r * G * variantCost + r * G * h * hoursPer * a.reviewer_rate_per_hour,
+    tooling,
+    rights: concepts * a.rights_cost_per_concept,
+    storage: V * a.storage_cost_per_variant,
+  };
+  cost.total = cost.generation + cost.review + cost.rework + cost.tooling + cost.rights + cost.storage;
+  const cost_per_asset_by_component = {};
+  for (const k of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) cost_per_asset_by_component[k] = cost[k] / V;
+  const ai_spend = G * variantCost * pick(a.ai_share_of_variant_cost, which) + tooling * pick(a.ai_share_of_tooling, which);
+  const exceeded = utilisation >= 1;
+  const service = a.review_service_days;
+  const cycle_days = exceeded ? null
+    : pick(a.build_days, which) + (1 + r) * (service + (service * utilisation) / (1 - utilisation));
   return {
     concepts, variants_per_concept, variants_per_year, generated_variants_per_year,
     output_per_head_per_quarter, weighted_output_per_head_per_quarter,
+    review_hours, review_capacity_hours, utilisation, review_capacity_exceeded: exceeded,
+    cost, cost_per_asset: cost.total / V, cost_per_asset_by_component, ai_spend, cycle_days,
+    production_share_of_budget: cost.total / inputs.marketing_budget,
   };
+}
+
+function breakEven(inputs, a, scenario) {
+  const q = a.sampling_rate + a.escalation_rate;
+  const denom = scenario.generated_variants_per_year * (1 + a.rework_rate) * (a.review_minutes_per_variant / 60);
+  const hStar = (a.target_utilisation * scenario.review_capacity_hours) / denom;
+  const aStar = (1 - hStar) / (1 - q);
+  if (aStar <= 0) return { value: 0, status: 'not_needed' };
+  if (aStar > 1) return { value: 1, status: 'infeasible' };
+  return { value: aStar, status: 'ok' };
+}
+
+// Every numeric leaf must be finite; null (cycle_days at capacity) is allowed.
+function allFinite(x) {
+  if (typeof x === 'number') return Number.isFinite(x);
+  if (Array.isArray(x)) return x.every(allFinite);
+  if (x && typeof x === 'object') return Object.values(x).every(allFinite);
+  return true;
 }
 
 export function compute(inputs, assumptions) {
@@ -80,10 +166,15 @@ export function compute(inputs, assumptions) {
   const ratios = {
     output_per_head: scenario.output_per_head_per_quarter / baseline.output_per_head_per_quarter,
     weighted_output_per_head: scenario.weighted_output_per_head_per_quarter / baseline.weighted_output_per_head_per_quarter,
+    cost_per_asset: scenario.cost_per_asset / baseline.cost_per_asset,
+    ai_spend: scenario.ai_spend / baseline.ai_spend,
+    total_cost: scenario.cost.total / baseline.cost.total,
   };
-  const all = [...Object.values(baseline), ...Object.values(scenario), ...Object.values(ratios)];
-  if (!all.every(Number.isFinite)) {
+  ratios.cost_per_asset_change = ratios.cost_per_asset - 1;
+  const break_even_auto_approval = breakEven(inputs, assumptions, scenario);
+  const out = { ok: true, baseline, scenario, ratios, break_even_auto_approval };
+  if (!allFinite(out)) {
     return { ok: false, errors: [{ field: 'multiplier', message: 'inputs produce a value outside the representable range' }] };
   }
-  return { ok: true, baseline, scenario, ratios };
+  return out;
 }

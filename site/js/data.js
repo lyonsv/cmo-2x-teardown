@@ -15,11 +15,30 @@ export const sources = {
     bias: 'Analyst firm; self-reported survey of 402 CMOs in North America, the UK and Europe, mostly companies above $1B revenue',
     read_via: 'Business Wire reproduction of the Gartner release (gartner.com returns 403 to automation)',
   },
+  'gartner-2026-cmo-spend': {
+    title: 'Gartner 2026 CMO Spend Survey Finds CMOs Allocate 15.3% of Marketing Budgets to AI, But Only 30% Are Ready to Scale AI Capabilities',
+    publisher: 'Gartner, Inc.',
+    published: '2026-05-11',
+    accessed: '2026-10-24',
+    url: 'https://www.gartner.com/en/newsroom/press-releases/2026-05-11-gartner-2026-cmo-spend-survey-finds-cmos-allocate-15-point-3-percent-of-marketing-budgets-to-ai-but-only-30-percent-are-ready-to-scale-ai-capabilities',
+    bias: 'Analyst firm; self-reported survey of 401 CMOs in North America, the UK and Europe, mostly companies above $1B revenue',
+    read_via: 'Gartner newsroom page, confirmed in a browser by the author',
+  },
 };
 
 export function formatValue(value, format) {
   if (format === 'int') return Math.round(value).toLocaleString('en-GB', { maximumFractionDigits: 0 });
   if (format === 'x1') return `${value.toLocaleString('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`;
+  const n = (v, d) => v.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+  if (format === 'usd0') return `$${n(value, 0)}`;
+  if (format === 'usd2') return `$${n(value, 2)}`;
+  if (format === 'usdm2') return `$${n(value / 1e6, 2)}M`;
+  if (format === 'pct0') return `${n(value * 100, 0)}%`;
+  if (format === 'pct1') return `${n(value * 100, 1)}%`;
+  if (format === 'pctchg0') {
+    const p = Math.round(value * 100);
+    return `${p < 0 ? '\u2212' : p > 0 ? '+' : ''}${Math.abs(p)}%`;
+  }
   throw new Error(`unknown format ${format}`);
 }
 
@@ -30,7 +49,7 @@ function a(id, label, kind, key, value, unit, display, basis) {
 export const assumptions = {
   'asm-revenue': a('asm-revenue', 'Subject organisation revenue', 'context', null, 1000000000, 'USD', '~$1B',
     'A round figure for a generic enterprise; there is no published source for this organisation.'),
-  'asm-marketing-budget': a('asm-marketing-budget', 'Marketing budget', 'context', null, 78000000, 'USD', '~$78M',
+  'asm-marketing-budget': a('asm-marketing-budget', 'Marketing budget', 'input', 'marketing_budget', 78000000, 'USD', '~$78M',
     'Revenue multiplied by the budget share below.'),
   'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 7.8, '% of revenue', '7.8%',
     'Set equal to the Gartner 2026 average; the subject org is an average respondent, not a benchmark.'),
@@ -57,6 +76,44 @@ assumptions['asm-tier-weights'] = a('asm-tier-weights', 'Relative review effort 
 assumptions['asm-approval-yield'] = a('asm-approval-yield', 'Approval yield', 'model', 'approval_yield', 0.95, 'share of derived variants', '95%',
   'Share of derived variants that clear the gate after the bounded fix loop; rejected variants still cost generation and review. No published benchmark.');
 
+function m(id, label, key, value, unit, display, basis) {
+  assumptions[id] = a(id, label, 'model', key, value, unit, display, basis);
+}
+m('asm-auto-approval', 'Auto-approval share', 'auto_approval_share', { baseline: 0.20, scaled: 0.60 }, 'share of variants', '20% today, 60% at 2x',
+  'Share of variants cleared with no human touch. The assumption the whole cost claim leans on; no published benchmark.');
+m('asm-sampling-rate', 'Sampling audit rate', 'sampling_rate', 0.05, 'share of auto-approved', '5%',
+  'Share of auto-approved variants audited by a human sample; no published benchmark.');
+m('asm-escalation-rate', 'Escalation rate', 'escalation_rate', 0.05, 'share of auto-approved', '5%',
+  'Share of auto-approved variants escalated to a human by the gate; no published benchmark.');
+m('asm-review-minutes', 'Review time per reviewed variant', 'review_minutes_per_variant', 12, 'minutes', '12 min',
+  'Human review time for each variant a person touches; no published benchmark.');
+m('asm-rework-rate', 'Rework rate', 'rework_rate', 0.15, 'share of variants', '15%',
+  'Share of variants needing one regenerate-and-re-review loop; no published benchmark.');
+m('asm-reviewer-hours', 'Review hours per reviewer per year', 'reviewer_hours_per_fte_year', 1200, 'hours', '1,200',
+  'A fatigue cap on productive review time, not the 2,080 contract hours; no published benchmark.');
+m('asm-reviewer-rate', 'Reviewer cost per hour', 'reviewer_rate_per_hour', 100, 'USD per hour', '$100',
+  'Fully loaded cost of a review hour; no published benchmark.');
+m('asm-master-concept-cost', 'Cost per master concept', 'master_concept_cost', 1200, 'USD per concept', '$1,200',
+  'Human-directed creative for each unique concept; no published benchmark.');
+m('asm-variant-cost', 'Cost per derived variant', 'variant_cost', { baseline: 4.00, scaled: 0.80 }, 'USD per variant', '$4.00 today, $0.80 at 2x',
+  'Manual or agency derivation today versus AI-derived at 2x; the most contestable cost driver, no published benchmark.');
+m('asm-rights-per-concept', 'Rights and licensing per concept', 'rights_cost_per_concept', 250, 'USD per concept', '$250',
+  'Rights attach to masters, not derivatives; no published benchmark.');
+m('asm-storage-per-variant', 'Storage per approved asset per year', 'storage_cost_per_variant', 0.02, 'USD per variant', '$0.02',
+  'Only approved, live assets are stored; no published benchmark.');
+m('asm-tooling', 'Annual tooling cost', 'tooling_cost_annual', { baseline: 150000, scaled: 600000 }, 'USD per year', '$150k today, $600k at 2x',
+  'Platform, model commitments and eval-harness upkeep, as a fixed annual cost; no published benchmark.');
+m('asm-ai-share-variant', 'AI share of variant cost', 'ai_share_of_variant_cost', { baseline: 0.05, scaled: 0.60 }, 'share of variant cost', '5% today, 60% at 2x',
+  'Share of the cost of a derived variant that is AI inference; no published benchmark.');
+m('asm-ai-share-tooling', 'AI share of tooling cost', 'ai_share_of_tooling', { baseline: 0.20, scaled: 0.50 }, 'share of tooling cost', '20% today, 50% at 2x',
+  'Share of annual tooling cost that is AI services; no published benchmark.');
+m('asm-build-days', 'Brief-to-ready build time', 'build_days', { baseline: 8, scaled: 3 }, 'days', '8 days today, 3 at 2x',
+  'Time to build a campaign from brief to ready for review; no published benchmark.');
+m('asm-review-service-days', 'Review turnaround per touch', 'review_service_days', 1.5, 'days', '1.5 days',
+  'Turnaround for one review touch before queueing; no published benchmark.');
+m('asm-target-utilisation', 'Target reviewer utilisation', 'target_utilisation', 0.85, 'share of capacity', '85%',
+  'Utilisation above which queues grow quickly; used for the break-even auto-approval share. No published benchmark.');
+
 function lever(n, label, grade, display) {
   const id = `asm-lever-0${n}-evidence`;
   assumptions[id] = { id, label, kind: 'evidence', key: null, value: null, unit: null, display, grade, flag: null,
@@ -72,6 +129,14 @@ lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, ven
 export const claims = {
   'gartner-share-2025': {
     id: 'gartner-share-2025', value: 7.7, unit: '% of revenue', display: '7.7%',
+    grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
+  },
+  'gartner-share-2026': {
+    id: 'gartner-share-2026', value: 7.8, unit: '% of revenue', display: '7.8%',
+    grade: 'Benchmark', flag: null, ref: 'src-gartner-2026-cmo-spend',
+  },
+  'gartner-sample-2025': {
+    id: 'gartner-sample-2025', value: 402, unit: 'respondents', display: '402',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
   },
   'output-per-head-base': {
@@ -91,6 +156,21 @@ export const claims = {
     ['vpc-scaled', 67, 'scenario.variants_per_concept', 'asm-variants-per-concept', 'variants per concept'],
   ].map(([id, value, derived, ref, unit]) => [id, {
     id, value, unit, display: formatValue(value, 'int'), grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
+  }])),
+  ...Object.fromEntries([
+    ['cpa-base', 64.71, 'baseline.cost_per_asset', 'asm-variant-cost', 'USD per approved-live asset', 2, 'usd2'],
+    ['cpa-scaled', 41.18, 'scenario.cost_per_asset', 'asm-variant-cost', 'USD per approved-live asset', 2, 'usd2'],
+    ['cpa-change', -0.36, 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved-live asset', 2, 'pctchg0'],
+    ['total-cost-base', 2588589, 'baseline.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['total-cost-scaled', 3294371, 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['budget-share-base', 0.033, 'baseline.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
+    ['budget-share-scaled', 0.042, 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
+    ['ai-spend-base', 38421, 'baseline.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
+    ['ai-spend-scaled', 340421, 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
+    ['ai-spend-ratio', 8.9, 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
+    ['break-even-auto-approval', 0.41, 'break_even_auto_approval.value', 'asm-auto-approval', 'minimum auto-approval share at flat reviewers', 2, 'pct0'],
+  ].map(([id, value, derived, ref, unit, decimals, format]) => [id, {
+    id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
   }])),
   'weighted-ratio': {
     id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,

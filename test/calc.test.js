@@ -98,7 +98,9 @@ test('exponent golden: multiplier 4, exponent 0.5 splits growth evenly', () => {
 
 test('identity: multiplier 1 with scaled values copied from baseline', () => {
   const a = defaultAssumptions();
-  const same = { ...a, tier_mix: { baseline: a.tier_mix.baseline, scaled: a.tier_mix.baseline } };
+  const same = Object.fromEntries(Object.entries(a).map(([k, v]) => [
+    k, v && typeof v === 'object' && 'baseline' in v ? { baseline: v.baseline, scaled: v.baseline } : v,
+  ]));
   const r = compute(inputs({ multiplier: 1 }), same);
   assert.equal(r.ok, true);
   for (const k of Object.keys(r.baseline)) close(r.scenario[k], r.baseline[k]);
