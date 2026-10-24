@@ -501,3 +501,24 @@ test('human_touch_share = 1 - auto x (1 - (sampling + escalation)) on each side'
   close(r.scenario.human_touch_share, 0.46, 1e-12);
   close(r.scenario.review_hours, r.scenario.generated_variants_per_year * r.scenario.human_touch_share * assumptions.review_minutes_per_variant / 60, 1e-6);
 });
+
+// ---- Code review WR-09: duplicate ids and sparse arrays are rejected ----
+
+test('variantMatrix rejects duplicate factor ids and holes, naming the field', () => {
+  const dup = variantMatrix(2, [{ id: 'a', count: 2, applies: 1 }, { id: 'a', count: 3, applies: 1 }]);
+  assert.equal(dup.ok, false);
+  assert.ok(dup.errors.some((e) => e.field === 'factors[1].id' && /unique/.test(e.message)), 'duplicate id names the second factor');
+  assert.ok(!dup.errors.some((e) => e.field === 'factors[0].id'), 'the first use of an id is valid');
+  // eslint-disable-next-line no-sparse-arrays
+  const holey = variantMatrix(2, [, { id: 'b', count: 2, applies: 1 }]);
+  assert.equal(holey.ok, false);
+  for (const field of ['factors[0].id', 'factors[0].count', 'factors[0].applies']) {
+    assert.ok(holey.errors.some((e) => e.field === field), `hole reported on ${field}`);
+  }
+  const trailing = new Array(2);
+  trailing[0] = { id: 'c', count: 2, applies: 0.5 };
+  const t = variantMatrix(2, trailing);
+  assert.equal(t.ok, false);
+  assert.ok(t.errors.some((e) => e.field === 'factors[1].id'));
+  for (const r of [dup, holey, t]) assert.ok(!('total' in r) && !('rows' in r));
+});

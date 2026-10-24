@@ -237,14 +237,25 @@ export function variantMatrix(concepts, factors) {
   if (!Array.isArray(factors) || factors.length === 0) {
     errors.push({ field: 'factors', message: 'factors must be a non-empty array' });
   } else {
-    factors.forEach((f, i) => {
+    // Indexed loop, not forEach: forEach skips the holes of a sparse array, so a
+    // hole would pass validation and break any consumer that reads rows[i].id.
+    // Ids must be unique because data.js keys claims and assumptions by them.
+    const ids = new Set();
+    for (let i = 0; i < factors.length; i++) {
+      const f = factors[i];
       const src = f && typeof f === 'object' ? f : {};
-      if (typeof src.id !== 'string' || src.id === '') errors.push({ field: `factors[${i}].id`, message: 'id must be a non-empty string' });
+      if (typeof src.id !== 'string' || src.id === '') {
+        errors.push({ field: `factors[${i}].id`, message: 'id must be a non-empty string' });
+      } else if (ids.has(src.id)) {
+        errors.push({ field: `factors[${i}].id`, message: `id must be unique; "${src.id}" is repeated` });
+      } else {
+        ids.add(src.id);
+      }
       if (!isInt(src.count)) errors.push({ field: `factors[${i}].count`, message: 'count must be a finite integer of at least 1' });
       if (typeof src.applies !== 'number' || !Number.isFinite(src.applies) || src.applies < 0 || src.applies > 1) {
         errors.push({ field: `factors[${i}].applies`, message: 'applies must be a finite number between 0 and 1' });
       }
-    });
+    }
   }
   if (errors.length) return { ok: false, errors };
   let running = concepts;
