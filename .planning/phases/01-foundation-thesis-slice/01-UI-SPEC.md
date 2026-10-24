@@ -84,7 +84,7 @@ Tokens copied from the reference `:root`. Light theme only.
 | Muted | `--muted` `#62665F` (about 5.2:1 on paper, passes AA) | Kicker, meta, captions, `.sec-num`, th |
 | Rule | `--rule` `#D5D6CE` | Hairline borders, table row rules, figure top rule |
 | Accent (10%) | `--verified` `#17554A` | See reserved list below |
-| Grade: Modelled | `--inferred` `#8A6A12` (about 4.6:1 on paper) | Modelled chip only |
+| Grade: Modelled | `--inferred` `#7A5D0F` (5.6:1 on paper, 5.25:1 on paper-2; darkened from the reference #8A6A12, which was 4.30:1 on paper-2, after code review WR-08) | Modelled chip only |
 | Grade: Speculative | `--low` `#7A3B34` | Speculative chip only |
 | Neutral flag | `--muted` text on `--paper-2`, 1px `--rule` border, no currentColor border | Vendor-claimed / company-reported tag |
 | Destructive | none | No destructive actions on this page (read-only, no forms in Phase 1) |
