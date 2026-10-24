@@ -793,8 +793,85 @@
     </section>
     <section id="s11" aria-labelledby="s11-h">
       <div class="sec-head"><span class="sec-num">11</span><h2 id="s11-h">Your numbers</h2></div>
-      <p>This section will let you replace the assumptions on this page with your own and see the model recompute.</p>
-      <p class="later">Coming in a later update.</p>
+      <div class="calc">
+        <p>Replace the defaults with your own numbers. The page recomputes cost per approved-live asset, reviewer load and the auto-approval share you would need.</p>
+        <p role="status" class="calc-status">Showing: page defaults</p>
+        <p class="calc-nojs">The interactive calculator needs JavaScript. Below is the default scenario, calculated in advance from the same model.</p>
+        <p><output id="calc-summary" aria-live="polite" aria-atomic="true">The table below shows the page defaults.</output></p>
+        <div class="table-scroll" role="region" aria-label="Calculator results" tabindex="0">
+          <table>
+            <caption>Results for your numbers (baseline and 2x)</caption>
+            <thead><tr><th scope="col">Output</th><th scope="col">Baseline</th><th scope="col">2x</th><th scope="col">Change</th><th scope="col">Grade</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row">Approved-live variants per head per quarter</th>
+                <td class="num"><span data-fig="calc-output_per_head-base">83</span></td>
+                <td class="num"><span data-fig="calc-output_per_head-scaled">167</span></td>
+                <td class="num"><span data-fig="calc-output_per_head-change">+100%</span></td>
+                <td><a class="chip c-m" href="#asm-campaigns">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Fully loaded cost per approved-live asset</th>
+                <td class="num"><span data-fig="calc-cost_per_asset-base">$64.71</span></td>
+                <td class="num"><span data-fig="calc-cost_per_asset-scaled">$41.18</span></td>
+                <td class="num"><span data-fig="calc-cost_per_asset-change">−36%</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Total production cost</th>
+                <td class="num"><span data-fig="calc-total_cost-base">$2.59M</span></td>
+                <td class="num"><span data-fig="calc-total_cost-scaled">$3.29M</span></td>
+                <td class="num"><span data-fig="calc-total_cost-change">+27%</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Production share of marketing budget</th>
+                <td class="num"><span data-fig="calc-budget_share-base">3.3%</span></td>
+                <td class="num"><span data-fig="calc-budget_share-scaled">4.2%</span></td>
+                <td class="num"><span data-fig="calc-budget_share-change">0.9 points</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">AI spend</th>
+                <td class="num"><span data-fig="calc-ai_spend-base">$38,421</span></td>
+                <td class="num"><span data-fig="calc-ai_spend-scaled">$340,421</span></td>
+                <td class="num"><span data-fig="calc-ai_spend-change">+786%</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Cycle time, brief to live (days)</th>
+                <td class="num"><span data-fig="calc-cycle_time-base">11.8 days</span></td>
+                <td class="num"><span data-fig="calc-cycle_time-scaled">7.5 days</span></td>
+                <td class="num"><span data-fig="calc-cycle_time-change">−36%</span></td>
+                <td><a class="chip c-m" href="#asm-review-service-days">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Review utilisation</th>
+                <td class="num"><span data-fig="calc-utilisation-base">55.1%</span></td>
+                <td class="num"><span data-fig="calc-utilisation-scaled">61.9%</span></td>
+                <td class="num"><span data-fig="calc-utilisation-change">6.7 points</span></td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Break-even auto-approval at flat reviewer headcount</th>
+                <td>Not applicable</td>
+                <td class="num"><span data-fig="calc-break_even-scaled">41%</span></td>
+                <td>Not applicable</td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+              <tr>
+                <th scope="row">Capacity floor (auto-approval below which review capacity is exceeded)</th>
+                <td>Not applicable</td>
+                <td class="num"><span data-fig="calc-capacity_floor-scaled">29%</span></td>
+                <td>Not applicable</td>
+                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>
+        <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
+      </div>
     </section>
     <section id="s12" aria-labelledby="s12-h">
       <div class="sec-head"><span class="sec-num">12</span><h2 id="s12-h">How this compares</h2></div>
@@ -985,7 +1062,7 @@
             </tbody>
           </table>
         </div>
-        <div class="table-scroll" role="region" aria-label="Assumptions register table" tabindex="0">
+        <div class="table-scroll" id="assumptions-register" role="region" aria-label="Assumptions register table" tabindex="0">
           <table>
             <caption>Assumptions register</caption>
             <thead><tr><th scope="col">ID</th><th scope="col">Assumption</th><th scope="col">Value</th><th scope="col">Grade</th><th scope="col">Basis</th></tr></thead>

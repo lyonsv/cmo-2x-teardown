@@ -115,6 +115,11 @@ tr.shared th { box-shadow: inset 3px 0 0 var(--ink); padding-left: var(--s-md); 
 .btn:active { background: var(--ink); color: var(--paper); }
 .btn-primary { background: var(--ink); color: var(--paper); }
 .btn-primary:hover { background: var(--ink-2); }
+.calc-live { display: none; }
+.js .calc-live { display: block; }
+.calc-nojs { font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--ink); }
+.js .calc-nojs { display: none; }
+.calc-status, .table-note, .fixed-note { font: 400 12px/1.6 var(--mono); color: var(--muted); }
 ol.proof-steps { padding-left: var(--s-lg); max-width: 44em; }
 ol.proof-steps li + li { margin-top: var(--s-md); }
 @media (max-width: 960px) {
@@ -138,6 +143,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
 }
 @media print {
   .btn-primary { display: none; }
+  .calc-nojs { display: none; }
   body { background: #fff; color: #000; font-size: 10.5pt; }
   .toc, .skip { display: none; }
   a { color: #000; }
