@@ -8,8 +8,6 @@ import { chartSpec, renderChart } from './svg.js';
 import { CHIP, writeMaths, writeBelieve } from './panels.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
 
-document.documentElement.classList.add('js');
-
 const ctx = modelContext();
 const defaults = defaultValues(ctx);
 const $ = (id) => document.getElementById(id);
@@ -144,8 +142,7 @@ function showFieldErrors(errors) {
   }
 }
 
-// The summary is a role="alert" region, so it is rebuilt only when the set of
-// messages changes; retyping a value that keeps the same errors announces nothing (WR-05).
+// role="alert": rebuilt only when the set of messages changes (WR-05).
 let summaryShown = '';
 
 function showSummary(errors) {
@@ -180,8 +177,7 @@ function statusText(values) {
   return pendingNotice ? `${pendingNotice} ${line}` : line;
 }
 
-// While any input is invalid the link would describe numbers that are no longer
-// on screen, so it is cleared and Copy link is disabled until the inputs are valid (WR-08).
+// Invalid inputs: no link to numbers that are not on screen (WR-08).
 const SHARE_BLOCKED = ['Fix the highlighted inputs before sharing.', 'Finish entering the inputs before sharing.'];
 
 function setShareStatus(text) {
@@ -294,4 +290,7 @@ window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#s11?')) restore();
 });
 
-restore();
+// `js` reveals the live form, so it is set only after every lookup and listener above
+// succeeded, and removed if restore() throws: a failure keeps the no-JS note (WR-09).
+document.documentElement.classList.add('js');
+try { restore(); } catch (err) { document.documentElement.classList.remove('js'); throw err; }

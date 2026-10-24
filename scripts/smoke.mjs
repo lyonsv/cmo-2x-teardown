@@ -132,6 +132,18 @@ async function cases(base) {
     check('form hidden', hidden === 'none', `calc-live display is ${hidden}`);
   }));
 
+  // WR-09: if setup fails (here, a required element is missing), the no-JS fallback stays visible.
+  await run('m setup failure keeps the no-JS fallback', () => withPage(async ({ send, evalJs }) => {
+    await send('Page.enable');
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: "document.addEventListener('readystatechange', () => { if (document.readyState === 'interactive') { const b = document.getElementById('copy-link'); if (b) b.remove(); } });" });
+    await send('Page.navigate', { url: base });
+    await sleep(1500);
+    check('nojs class', (await evalJs("document.documentElement.classList.contains('js')")) === false, 'html has class js after a failed setup');
+    const note = await evalJs("getComputedStyle(document.querySelector('.calc-nojs')).display");
+    check('note visible', note !== 'none', `no-JS note display is ${note}`);
+    return `note display ${note}`;
+  }));
+
   await run('e zero reviewers in link', () => {
     const dom = dump(`${base}#s11?reviewers=0`);
     check('notice', statusOf(dom).includes('defaults were used for: Reviewer FTE'), `status "${statusOf(dom)}"`);
