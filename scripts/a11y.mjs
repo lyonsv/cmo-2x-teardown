@@ -79,6 +79,7 @@ async function focusChecks(send, evalJs) {
     if (!d) break;
     stops.push(d);
   }
+  test('tab stops found', stops.length > 0, `${stops.length} tab stops`, 'no tab stops were recorded');
   test('first tab stop', stops[0] && stops[0].tag === 'a' && stops[0].href === '#answer', `${stops[0] && stops[0].tag + ' ' + stops[0].href}`);
   const noOutline = stops.filter((s) => (s.os === 'none' || s.ow === '0px') && s.bs === 'none');
   test('visible focus indicator', noOutline.length === 0, `${stops.length} tab stops, all with an outline`,
@@ -101,6 +102,7 @@ async function orderCheck(send, evalJs) {
     if (idx < 0) break;
     idxs.push(idx);
   }
+  test('focus order stops found', idxs.length > 0, `${idxs.length} stops`, 'no focus stops were recorded');
   let backwards = 0;
   for (let i = 1; i < idxs.length; i++) if (idxs[i] < idxs[i - 1]) backwards++;
   test('focus order follows DOM', backwards === 0, `${idxs.length} stops in DOM order`, `${backwards} stops jump backwards`);

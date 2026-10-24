@@ -83,7 +83,12 @@ export async function withPage(fn) {
     pending.set(key, { res, rej, timer, method });
     ws.send(JSON.stringify({ id: key, method, params }));
   });
-  const evalJs = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true })).result.result.value;
+  // WR-03: a page-side exception is an error, never a silent undefined.
+  const evalJs = async (expression) => {
+    const r = (await send('Runtime.evaluate', { expression, returnByValue: true })).result;
+    if (r.exceptionDetails) throw new Error(`page eval failed: ${r.exceptionDetails.exception?.description || r.exceptionDetails.text}`);
+    return r.result.value;
+  };
   try {
     return await fn({ send, evalJs });
   } finally {
