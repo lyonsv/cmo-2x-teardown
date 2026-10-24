@@ -267,17 +267,23 @@ test('reference datum is Modelled and company-reported', () => {
 // ---- Plan 02-06: reviewer capacity claims, fatigue, harness and telemetry ----
 
 test('capacity claims recompute under their own scenario', () => {
-  // Test-local scenario table, deliberately not imported from data.js.
+  // Test-local scenario and provenance table, deliberately not imported from data.js.
+  // [multiplier, auto-approval share, ref, flag] (code review WR-01: each claim
+  // refs the register row that explains it).
   const SCENARIOS = {
-    'cap-1x-nogate': [1, 0], 'cap-1x-gate': [1, 0.2], 'cap-2x-nogate': [2, 0], 'cap-2x-gate': [2, 0.6],
-    'cap-2x-ref-low': [2, 0.192], 'cap-2x-ref-high': [2, 0.284], 'cap-capacity-hours': [1, 0.2],
+    'cap-1x-nogate': [1, 0, 'asm-auto-approval', null], 'cap-1x-gate': [1, 0.2, 'asm-auto-approval', null],
+    'cap-2x-nogate': [2, 0, 'asm-auto-approval', null], 'cap-2x-gate': [2, 0.6, 'asm-auto-approval', null],
+    'cap-1x-variants': [1, 0.2, 'asm-variants-per-concept', null], 'cap-2x-variants': [2, 0.6, 'asm-variants-per-concept', null],
+    'cap-2x-ref-low': [2, 0.192, 'src-intercom-2x-teardown', 'company-reported'],
+    'cap-2x-ref-high': [2, 0.284, 'src-intercom-2x-teardown', 'company-reported'],
+    'cap-capacity-hours': [1, 0.2, 'asm-reviewer-hours', null],
   };
   const over = Object.values(claims).filter((c) => c.override);
-  assert.ok(over.length >= 14, `only ${over.length} override claims`);
+  assert.ok(over.length >= 13, `only ${over.length} override claims`);
   for (const c of over) {
     const key = Object.keys(SCENARIOS).find((k) => c.id === k || c.id.startsWith(`${k}-`));
     assert.ok(key, `${c.id}: no scenario`);
-    const [m, s] = SCENARIOS[key];
+    const [m, s, ref, flag] = SCENARIOS[key];
     assert.deepEqual(c.override, { multiplier: m, auto_approval_share: s }, `${c.id} override`);
     const a = { ...defaultAssumptions(), auto_approval_share: { baseline: s, scaled: s } };
     const r = compute({ ...defaultInputs(), multiplier: m }, a);
@@ -286,17 +292,20 @@ test('capacity claims recompute under their own scenario', () => {
     assert.equal(Number(v.toFixed(c.decimals)), c.value, `${c.id} drifted`);
     assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
     assert.equal(c.grade, 'Modelled');
-    assert.equal(c.flag, null);
-    assert.equal(c.ref, 'asm-auto-approval');
+    assert.equal(c.flag, flag, `${c.id} flag`);
+    assert.equal(c.ref, ref, `${c.id} ref`);
   }
   const pin = {
     'cap-2x-nogate-util': '134.5%', 'cap-2x-gate-util': '61.9%', 'cap-2x-ref-low-util': '111.3%',
     'cap-2x-ref-high-util': '100.1%', 'cap-2x-nogate-hours': '16,842', 'cap-capacity-hours': '14,400',
+    'cap-1x-variants': '40,000', 'cap-2x-variants': '80,000',
   };
   for (const [id, d] of Object.entries(pin)) assert.equal(claims[id]?.display, d, id);
   for (const row of ['1x-nogate', '1x-gate', '2x-nogate', '2x-gate']) {
-    for (const f of ['variants', 'hours', 'util']) assert.ok(claims[`cap-${row}-${f}`], `cap-${row}-${f}`);
+    for (const f of ['hours', 'util']) assert.ok(claims[`cap-${row}-${f}`], `cap-${row}-${f}`);
   }
+  // capacity is reviewer headcount times review hours per reviewer
+  assert.equal(claims['cap-capacity-hours'].value, assumptions['asm-reviewer-fte'].value * assumptions['asm-reviewer-hours'].value);
 });
 
 test('evidence assumptions for fatigue, harness and telemetry', () => {

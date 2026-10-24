@@ -372,27 +372,34 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
 
 // ---- Plan 02-06: reviewer capacity, fatigue, harness and telemetry ----
 // Capacity claims are literal values re-checked by data.test under their own
-// scenario (override = the multiplier and a flat auto-approval share).
+// scenario (override = the multiplier and a flat auto-approval share). Each claim
+// refs the row that explains it (code review WR-01): hours and utilisation move
+// with the auto-approval share; volume with variants per concept; capacity with
+// review hours per reviewer; the reference-rate utilisations rest on the
+// reference's company-reported clearance rates.
 
 {
   const ROWS = [['1x-nogate', 1, 0, 'baseline'], ['1x-gate', 1, 0.2, 'baseline'], ['2x-nogate', 2, 0, 'scenario'], ['2x-gate', 2, 0.6, 'scenario']];
   const VALUES = {
-    '1x-nogate': [40000, 8421, 0.673], '1x-gate': [40000, 6905, 0.551],
-    '2x-nogate': [80000, 16842, 1.345], '2x-gate': [80000, 7747, 0.619],
+    '1x-nogate': [8421, 0.673], '1x-gate': [6905, 0.551],
+    '2x-nogate': [16842, 1.345], '2x-gate': [7747, 0.619],
   };
-  const put = (id, value, unit, derived, decimals, format, override) => {
-    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', derived, decimals, format, override };
+  const put = (id, value, unit, derived, decimals, format, override, ref, flag = null) => {
+    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag, ref, derived, decimals, format, override };
   };
   for (const [row, multiplier, share, side] of ROWS) {
     const override = { multiplier, auto_approval_share: share };
-    const [variants, hours, util] = VALUES[row];
-    put(`cap-${row}-variants`, variants, 'approved-live variants per year', `${side}.variants_per_year`, 0, 'int', override);
-    put(`cap-${row}-hours`, hours, 'human review hours per year, before rework', `${side}.review_hours`, 0, 'int', override);
-    put(`cap-${row}-util`, util, 'reviewer utilisation, including rework', `${side}.utilisation`, 3, 'pct1', override);
+    const [hours, util] = VALUES[row];
+    put(`cap-${row}-hours`, hours, 'human review hours per year, before rework', `${side}.review_hours`, 0, 'int', override, 'asm-auto-approval');
+    put(`cap-${row}-util`, util, 'reviewer utilisation, including rework', `${side}.utilisation`, 3, 'pct1', override, 'asm-auto-approval');
   }
-  put('cap-capacity-hours', 14400, 'reviewer capacity, hours per year', 'baseline.review_capacity_hours', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 });
-  put('cap-2x-ref-low-util', 1.113, '2x utilisation at the reference low clearance rate', 'scenario.utilisation', 3, 'pct1', { multiplier: 2, auto_approval_share: 0.192 });
-  put('cap-2x-ref-high-util', 1.001, '2x utilisation at the reference high clearance rate', 'scenario.utilisation', 3, 'pct1', { multiplier: 2, auto_approval_share: 0.284 });
+  put('cap-1x-variants', 40000, 'approved-live variants per year at 1x', 'baseline.variants_per_year', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-variants-per-concept');
+  put('cap-2x-variants', 80000, 'approved-live variants per year at 2x', 'scenario.variants_per_year', 0, 'int', { multiplier: 2, auto_approval_share: 0.6 }, 'asm-variants-per-concept');
+  put('cap-capacity-hours', 14400, 'reviewer capacity, hours per year', 'baseline.review_capacity_hours', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-reviewer-hours');
+  put('cap-2x-ref-low-util', 1.113, '2x utilisation at the reference low clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
+    { multiplier: 2, auto_approval_share: 0.192 }, 'src-intercom-2x-teardown', 'company-reported');
+  put('cap-2x-ref-high-util', 1.001, '2x utilisation at the reference high clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
+    { multiplier: 2, auto_approval_share: 0.284 }, 'src-intercom-2x-teardown', 'company-reported');
 }
 
 function evidence(id, label, grade, display, basis) {

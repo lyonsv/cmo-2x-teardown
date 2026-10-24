@@ -762,24 +762,34 @@ function tableByCaption(sec, caption) {
 test('s07 reviewer capacity', () => {
   const s = sectionHtml('s07');
   const t = tableByCaption(s, 'Reviewer capacity, 1x and 2x');
-  assert.deepEqual(t.head, ['Scenario', 'Approved-live variants per year', 'Human review hours per year (before rework)', 'Reviewer capacity (hours per year)', 'Utilisation', 'Grade']);
+  // WR-01: volume and capacity are stated once before the table under their own
+  // chips; each row holds only figures that move with the auto-approval share.
+  assert.deepEqual(t.head, ['Scenario', 'Human review hours per year (before rework)', 'Utilisation of reviewer capacity', 'Grade']);
   const names = t.rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
   assert.deepEqual(names, ['1x without gate', '1x with gate', '2x without gate', '2x with gate']);
   const keys = ['1x-nogate', '1x-gate', '2x-nogate', '2x-gate'];
   t.rows.forEach((r, i) => {
     const k = keys[i];
-    for (const id of [`cap-${k}-variants`, `cap-${k}-hours`, 'cap-capacity-hours', `cap-${k}-util`]) assert.ok(r.includes(`data-fig="${id}"`), `${k} ${id}`);
+    for (const id of [`cap-${k}-hours`, `cap-${k}-util`]) assert.ok(r.includes(`data-fig="${id}"`), `${k} ${id}`);
     assert.equal((r.match(/class="chip /g) || []).length, 1);
     assert.ok(r.includes('href="#asm-auto-approval"'));
+    for (const id of [`cap-${k}-hours`, `cap-${k}-util`]) assert.equal(claims[id].ref, 'asm-auto-approval', `${id} ref`);
     const tds = [...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((x) => x[1]);
-    const util = strip(tds[3]);
+    const util = strip(tds[1]);
     assert.equal(util.includes('over capacity'), claims[`cap-${k}-util`].value > 1, `${k} over-capacity wording`);
   });
-  assert.equal(strip([...t.rows[2].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][3][1]), '134.5% over capacity');
+  assert.equal(strip([...t.rows[2].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][1][1]), '134.5% over capacity');
+  const lead = s.slice(0, s.indexOf(t.html)).match(/<p\b[^>]*>[\s\S]*?<\/p>\s*$/);
+  assert.ok(lead, 'a paragraph states volume and capacity directly above the table');
+  assert.match(lead[0], /<span data-fig="cap-1x-variants">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-variants-per-concept">Modelled<\/a>/);
+  assert.ok(lead[0].includes('data-fig="cap-2x-variants"'));
+  assert.match(lead[0], /<span data-fig="cap-capacity-hours">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-reviewer-hours">Modelled<\/a>/);
   const text = strip(s);
   assert.ok(text.includes('With the gate, human review hours fall; without it, 2x volume exceeds reviewer capacity. Utilisation is the binding constraint, not generation.'));
   for (const id of ['asm-rework-rate', 'break-even-auto-approval', 'capacity-auto-approval', 'cap-2x-ref-low-util', 'cap-2x-ref-high-util']) assert.ok(s.includes(`data-fig="${id}"`), id);
   assert.ok(/auto-approval share of zero|no auto-approval/.test(text));
+  // The reference-rate utilisations link to the reference and carry its flag.
+  assert.match(s, /<span data-fig="cap-2x-ref-high-util">[^<]*<\/span>\s*<a class="chip c-m" href="#src-intercom-2x-teardown">Modelled<\/a>\s*<span class="flag">company-reported<\/span>/);
 });
 
 test('s07 fatigue controls', () => {
