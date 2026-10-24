@@ -172,6 +172,21 @@ export const claims = {
   ].map(([id, value, derived, ref, unit, decimals, format]) => [id, {
     id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
   }])),
+  ...Object.fromEntries(['base', 'scaled'].flatMap((side) => [
+    ['generation', 'asm-variant-cost', { base: 34.21, scaled: 18.68 }],
+    ['review', 'asm-review-minutes', { base: 17.26, scaled: 9.68 }],
+    ['rework', 'asm-rework-rate', { base: 3.22, scaled: 1.58 }],
+    ['tooling', 'asm-tooling', { base: 3.75, scaled: 7.5 }],
+    ['rights', 'asm-rights-per-concept', { base: 6.25, scaled: 3.72 }],
+    ['storage', 'asm-storage-per-variant', { base: 0.02, scaled: 0.02 }],
+  ].map(([comp, ref, vals]) => {
+    const id = `cpa-${comp}-${side}`;
+    return [id, {
+      id, value: vals[side], unit: `USD per approved-live asset, ${comp}`, display: formatValue(vals[side], 'usd2'),
+      grade: 'Modelled', flag: null, ref,
+      derived: `${side === 'base' ? 'baseline' : 'scenario'}.cost_per_asset_by_component.${comp}`, decimals: 2, format: 'usd2',
+    }];
+  }))),
   'weighted-ratio': {
     id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,
     ref: 'asm-tier-weights', derived: 'ratios.weighted_output_per_head', decimals: 1, format: 'x1',
