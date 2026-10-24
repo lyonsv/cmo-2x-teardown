@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  GRADES, FLAGS, claims, assumptions, sources, defaultInputs, defaultAssumptions,
+  GRADES, FLAGS, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions,
 } from '../site/js/data.js';
 import { compute } from '../site/js/calc.js';
 
@@ -44,5 +44,28 @@ test('derived claims equal compute() output on default inputs', () => {
     if (!c.derived) continue;
     const v = c.derived.split('.').reduce((o, k) => o[k], r);
     assert.equal(Number(v.toFixed(c.decimals ?? 0)), c.value, `${c.id} drifted`);
+  }
+});
+
+test('formatValue formats int and x1', () => {
+  assert.equal(formatValue(1189.2, 'int'), '1,189');
+  assert.equal(formatValue(1.626, 'x1'), '1.6x');
+});
+
+test('derived claims carry a format and display === formatValue(value, format)', () => {
+  for (const c of Object.values(claims)) {
+    if (!c.derived) continue;
+    assert.ok(c.format, `${c.id}: no format`);
+    assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
+  }
+});
+
+test('six lever evidence entries exist, ungraded Benchmark never, no company names', () => {
+  for (let n = 1; n <= 6; n++) {
+    const e = assumptions[`asm-lever-0${n}-evidence`];
+    assert.ok(e, `lever ${n}`);
+    assert.equal(e.kind, 'evidence');
+    assert.notEqual(e.grade, 'Benchmark');
+    assert.ok(!/gradial|airops|profound|optimizely|klarna|unilever/i.test(e.display + e.basis));
   }
 });

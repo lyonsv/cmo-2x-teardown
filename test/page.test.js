@@ -196,3 +196,42 @@ test('numeric gate: no ungraded numerals in the frame', () => {
     }
   }
 });
+
+// ---- Plan 01-04: section 01 ----
+
+const FALSIFIER = 'If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org.';
+const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.';
+
+test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
+  const s = sectionHtml('s01');
+  assert.ok(s.includes('What 2x does not mean'));
+  assert.ok(s.includes(NOT_MEAN));
+  assert.ok(s.includes('Falsifier'));
+  assert.ok(s.includes(FALSIFIER));
+  assert.equal(html.split('the 2x claim is false for that org').length - 1, 1);
+  assert.equal(html.split('What 2x does not mean').length - 1, 1);
+});
+
+test('s01 metric trio carries the six figures', () => {
+  const s = sectionHtml('s01');
+  const m = s.match(/<div class="metric-trio">[\s\S]*?<\/div>\s*(?=<p|<div class="table-scroll)/);
+  assert.ok(m, 'no metric-trio');
+  for (const id of ['output-per-head-base', 'output-per-head-scaled', 'concepts-base', 'concepts-scaled', 'vpc-base', 'vpc-scaled']) {
+    assert.ok(s.includes(`data-fig="${id}"`), id);
+  }
+  assert.ok(s.includes('data-fig="asm-approval-yield"'));
+  assert.ok(s.includes('data-fig="weighted-ratio"'));
+  assert.match(s, /sensitivity/);
+});
+
+test('s01 six-lever table', () => {
+  const s = sectionHtml('s01');
+  assert.ok(s.includes('<caption>The six levers</caption>'));
+  assert.match(s, /<div class="table-scroll"[^>]*role="region"[^>]*>\s*<table>\s*<caption>The six levers/);
+  const body = s.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
+  const rows = [...body.matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
+  assert.equal(rows.length, 6);
+  rows.forEach((r, i) => {
+    assert.match(r[1], new RegExp(`<a class="chip c-[ms]" href="#asm-lever-0${i + 1}-evidence">(Modelled|Speculative)</a>\\s*</td>\\s*$`));
+  });
+});
