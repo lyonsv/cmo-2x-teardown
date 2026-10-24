@@ -13,14 +13,134 @@
   <header class="masthead">
     <p class="kicker">A forward-looking teardown · projection, not retrospective</p>
     <h1>CMO 2x: <em>what doubling a marketing organisation's output would take</em></h1>
+    <p class="standfirst">A sceptical look at what it would take for a large marketing organisation to double its approved output without doubling its cost, and how a CFO could check each step.</p>
     <p class="byline">Vincent Lyons</p>
   </header>
   <main id="main">
-    <section id="answer" class="answer">
-      <p><strong>This page is a projection, not a report of something that has happened.</strong> Marketing budgets sit at about <span data-fig="gartner-share-2025">7.7%</span> <a class="chip c-b" href="#src-gartner-2025-cmo-spend">Benchmark</a> of company revenue, so doubling output has to come from the same money. Under the stated assumptions, a governed 2x moves approved-and-live asset-variants per marketing head per quarter from <span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a>. Every number carries a grade; follow its chip to the source or assumption behind it.</p>
+    <div class="meta">
+      <p><b>Date</b> 2026-10-24</p>
+      <p><b>Evidence base</b> A few checkable primary sources plus modelled assumptions; every number is graded.</p>
+      <p><b>Revenue</b> <span data-fig="asm-revenue">~$1B</span> <a class="chip c-m" href="#asm-revenue">Modelled</a></p>
+      <p><b>Marketing budget</b> <span data-fig="asm-marketing-budget">~$78M</span> <a class="chip c-m" href="#asm-marketing-budget">Modelled</a> or <span data-fig="asm-budget-share">7.8%</span> <a class="chip c-m" href="#asm-budget-share">Modelled</a> of revenue</p>
+      <p><b>Marketing FTE</b> <span data-fig="asm-marketing-fte">~120</span> <a class="chip c-m" href="#asm-marketing-fte">Modelled</a></p>
+      <p><b>Campaigns a year</b> <span data-fig="asm-campaigns">~40</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a></p>
+    </div>
+    <div class="callout coi">
+      <span class="lbl">Conflict of interest</span>
+      <p>The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.</p>
+    </div>
+    <section id="answer" class="answer" aria-label="Summary">
+      <p><strong>A marketing organisation can roughly double approved-and-live asset-variants per marketing head per quarter, from <span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a>, at a flat budget.</strong> Gartner puts spend at <span data-fig="gartner-share-2025">7.7%</span> <a class="chip c-b" href="#src-gartner-2025-cmo-spend">Benchmark</a> of revenue, so the extra output must come from the same money. That holds only if review is governed: a tiered gate, a review agent and an eval harness. The falsifier: the claim is false if output doubles but holdout-measured conversion and CAC do not improve and first-pass compliance falls within 2–3 quarters.</p>
+    </section>
+    <div class="legend">
+      <h3>How to read the grades</h3>
+      <dl>
+        <dt><span class="chip c-b">Benchmark</span></dt>
+        <dd>Published by a primary or otherwise checkable source, and the figure matches it.</dd>
+        <dt><span class="chip c-m">Modelled</span></dt>
+        <dd>Derived by this page from stated assumptions; change the assumption and the number changes.</dd>
+        <dt><span class="chip c-s">Speculative</span></dt>
+        <dd>A judgement with no checkable source; shown so you can discount it.</dd>
+        <dt><span class="flag">vendor-claimed</span> <span class="flag">company-reported</span></dt>
+        <dd>Says who made the claim. It never raises a grade.</dd>
+      </dl>
+    </div>
+    <div class="callout">
+      <span class="lbl">What 2x does not mean</span>
+      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.</p>
+    </div>
+    <div class="callout">
+      <span class="lbl">Falsifier</span>
+      <p>If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org.</p>
+    </div>
+    <nav class="toc" aria-label="Sections">
+      <a href="#s01"><span class="n">01</span><span>Claim &amp; measurement</span></a>
+      <a href="#s02"><span class="n">02</span><span>The CFO answer</span></a>
+      <a href="#s03"><span class="n">03</span><span>The factory and the content supply chain</span></a>
+      <a href="#s04"><span class="n">04</span><span>Platform and skills</span></a>
+      <a href="#s05"><span class="n">05</span><span>The 10,000-asset campaign</span></a>
+      <a href="#s06"><span class="n">06</span><span>The review agent</span></a>
+      <a href="#s07"><span class="n">07</span><span>The auto-approval gate</span></a>
+      <a href="#s08"><span class="n">08</span><span>Eval harness and telemetry</span></a>
+      <a href="#s09"><span class="n">09</span><span>The other five levers</span></a>
+      <a href="#s10"><span class="n">10</span><span>The outcome case</span></a>
+      <a href="#s11"><span class="n">11</span><span>Your numbers</span></a>
+      <a href="#s12"><span class="n">12</span><span>How this compares</span></a>
+      <a href="#s13"><span class="n">13</span><span>Adoption and Backlog 0</span></a>
+      <a href="#s14"><span class="n">14</span><span>What goes wrong</span></a>
+      <a href="#s15"><span class="n">15</span><span>Source register</span></a>
+    </nav>
+    <section id="s01" aria-labelledby="s01-h">
+      <div class="sec-head"><span class="sec-num">01</span><h2 id="s01-h">Claim &amp; measurement</h2></div>
+      <p>This section will define the output metric, the outcome measures that must move with it, and the six levers, so that the claim can be tested rather than admired.</p>
+    </section>
+    <section id="s02" aria-labelledby="s02-h">
+      <div class="sec-head"><span class="sec-num">02</span><h2 id="s02-h">The CFO answer</h2></div>
+      <p>This section will show why the extra output does not need extra budget, and how cost per approved, live asset is the measure that matters.</p>
+    </section>
+    <section id="s03" aria-labelledby="s03-h">
+      <div class="sec-head"><span class="sec-num">03</span><h2 id="s03-h">The factory and the content supply chain</h2></div>
+      <p>This section will set out the content supply chain as a factory with inputs, stages and queues, and where governance sits inside it.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s04" aria-labelledby="s04-h">
+      <div class="sec-head"><span class="sec-num">04</span><h2 id="s04-h">Platform and skills</h2></div>
+      <p>This section will describe the platform layers and the skills a team needs, using tool categories rather than products.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s05" aria-labelledby="s05-h">
+      <div class="sec-head"><span class="sec-num">05</span><h2 id="s05-h">The 10,000-asset campaign</h2></div>
+      <p>This section will walk through a campaign of more than ten thousand assets, including imagery sourcing, and the conflict-of-interest note will be repeated there.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s06" aria-labelledby="s06-h">
+      <div class="sec-head"><span class="sec-num">06</span><h2 id="s06-h">The review agent</h2></div>
+      <p>This section will explain what a review agent checks, what it cannot check, and how its judgement is measured.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s07" aria-labelledby="s07-h">
+      <div class="sec-head"><span class="sec-num">07</span><h2 id="s07-h">The auto-approval gate</h2></div>
+      <p>This section will define the tiers of risk, the list of work that stays human-only, and the reviewer capacity the gate implies.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s08" aria-labelledby="s08-h">
+      <div class="sec-head"><span class="sec-num">08</span><h2 id="s08-h">Eval harness and telemetry</h2></div>
+      <p>This section will show how an eval harness and telemetry keep quality visible once volume grows.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s09" aria-labelledby="s09-h">
+      <div class="sec-head"><span class="sec-num">09</span><h2 id="s09-h">The other five levers</h2></div>
+      <p>This section will cover localisation, experimentation, insight, operations and answer-engine optimisation, each with its output and outcome measure.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s10" aria-labelledby="s10-h">
+      <div class="sec-head"><span class="sec-num">10</span><h2 id="s10-h">The outcome case</h2></div>
+      <p>This section will argue, with evidence graded honestly, why more approved output should improve outcomes and not only volume.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s11" aria-labelledby="s11-h">
+      <div class="sec-head"><span class="sec-num">11</span><h2 id="s11-h">Your numbers</h2></div>
+      <p>This section will let you replace the assumptions on this page with your own and see the model recompute.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s12" aria-labelledby="s12-h">
+      <div class="sec-head"><span class="sec-num">12</span><h2 id="s12-h">How this compares</h2></div>
+      <p>This section will compare named tools fairly without naming them here, with every claim sourced and dated.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s13" aria-labelledby="s13-h">
+      <div class="sec-head"><span class="sec-num">13</span><h2 id="s13-h">Adoption and Backlog 0</h2></div>
+      <p>This section will describe how a team starts, beginning with a backlog of work that is safe to automate first.</p>
+      <p class="later">Coming in a later update.</p>
+    </section>
+    <section id="s14" aria-labelledby="s14-h">
+      <div class="sec-head"><span class="sec-num">14</span><h2 id="s14-h">What goes wrong</h2></div>
+      <p>This section will list the ways the programme fails, including governance gaps, rework and measurement drift.</p>
+      <p class="later">Coming in a later update.</p>
     </section>
     <section id="s15" aria-labelledby="s15-h">
       <div class="sec-head"><span class="sec-num">15</span><h2 id="s15-h">Source register</h2></div>
+      <p>Every grade chip on this page links to a row below. A source row says who published the claim and when it was read; an assumption row says what this page chose and why.</p>
       <div class="register">
         <div class="table-scroll" role="region" aria-label="Source register table" tabindex="0">
           <table>
@@ -114,7 +234,7 @@
     </section>
   </main>
   <footer>
-    <p>Vincent Lyons · 2026-10-24</p>
+    <p>Vincent Lyons · 2026-10-24 · Projection, not retrospective</p>
   </footer>
 </div>
 </body>
