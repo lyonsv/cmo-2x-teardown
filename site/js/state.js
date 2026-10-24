@@ -3,7 +3,7 @@
 import { FIELDS, SCENARIOS } from './fields.js';
 import { defaultValues, run } from './model.js';
 
-const PLAIN = /^\d+(\.\d+)?$/;
+const PLAIN = /^(\d+(\.\d+)?|\.\d+)$/; // a leading '.5' is accepted (IN-10)
 const THOUSANDS = /^\d{1,3}(,\d{3})+(\.\d+)?$/;
 const MAX = 1e9;
 const HASH_PREFIX = '#s11?';
@@ -17,7 +17,8 @@ export function coerce(field, text) {
   if (raw === '') return { ok: false, message: `${label}: enter a number.` };
   const bad = { ok: false, message: `${label}: use digits only, for example ${field.example}.` };
   const rule = { ok: false, message: `${label}: enter ${field.rule}.` };
-  const body = field.kind === 'pct' && raw.endsWith('%') ? raw.slice(0, -1) : raw;
+  let body = field.kind === 'pct' && raw.endsWith('%') ? raw.slice(0, -1) : raw;
+  if (field.kind === 'usd' && body.startsWith('$')) body = body.slice(1); // '$0.80' in a $ field (IN-10)
   if (!PLAIN.test(body) && !THOUSANDS.test(body)) return bad;
   const n = Number(body.replaceAll(',', ''));
   if (!Number.isFinite(n) || n > MAX) return rule;

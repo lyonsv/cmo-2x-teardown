@@ -18,6 +18,13 @@ test('coerce accepts plain, thousands and percent text', () => {
   assert.deepEqual(coerce(F.rework, '0'), { ok: true, value: 0 });
   assert.deepEqual(coerce(F.auto1, '0'), { ok: true, value: 0 });
   assert.deepEqual(coerce(F.vcost, '0.80'), { ok: true, value: 0.8 });
+  // IN-10: a leading $ in a $ field and a bare leading decimal point are accepted.
+  assert.deepEqual(coerce(F.vcost, '$0.80'), { ok: true, value: 0.8 });
+  assert.deepEqual(coerce(F.mconcept, '$1,200'), { ok: true, value: 1200 });
+  assert.deepEqual(coerce(F.vcost, '.5'), { ok: true, value: 0.5 });
+  assert.deepEqual(coerce(F.yield, '.5%'), { ok: true, value: 0.005 });
+  assert.equal(coerce(F.minutes, '$12').ok, false, '$ only in $ fields');
+  for (const t of ['$', '$$1', '.', '1.', '$-1', '.5.5']) assert.equal(coerce(F.vcost, t).ok, false, t);
 });
 
 test('coerce messages follow the copy templates', () => {
