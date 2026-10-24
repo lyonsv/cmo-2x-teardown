@@ -101,9 +101,18 @@ test('run maps compute errors to field keys', () => {
   assert.ok(keyOf({ auto2: 0.9 }).includes('auto2'));
   assert.ok(keyOf({ yield: 0 }).includes('yield'));
   assert.ok(keyOf({ markets: 0 }).includes('markets'));
-  // marketing FTE is not a compute() input, so it has no error key (the field itself rejects 0).
-  assert.equal(run({ ...defaultValues(ctx), marketers: 0 }, ctx).ok, true);
+  // marketing FTE is not a compute() input, but run() still validates it and keys the error to the field (WR-03).
   assert.equal(Object.values(COMPUTE_FIELD_TO_KEY).includes('marketers'), false);
+  for (const bad of [0, -50, NaN, Infinity, -Infinity, undefined, '120']) {
+    const r = run({ ...defaultValues(ctx), marketers: bad }, ctx);
+    assert.equal(r.ok, false, String(bad));
+    assert.deepEqual(r.errors, [{ key: 'marketers', message: 'Marketing FTE: enter a number above 0.' }], String(bad));
+    const s = scenarioOutcomes({ ...defaultValues(ctx), marketers: bad }, ctx, 'redeploy');
+    assert.equal(s.ok, false, String(bad));
+    assert.ok(s.errors.some((e) => e.key === 'marketers'), String(bad));
+  }
+  // A marketers error sits alongside compute() errors, not instead of them.
+  assert.deepEqual(keyOf({ marketers: -1, reviewers: 0 }).sort(), ['marketers', 'reviewers']);
   // keyFor maps the growth share error to the route field when an unknown route falls back to an invalid default share.
   const badRoute = run({ ...defaultValues(ctx), route: 'evil' }, { ...ctx, assumptions: { ...ctx.assumptions, campaign_growth_share: 2 } });
   assert.equal(badRoute.ok, false);

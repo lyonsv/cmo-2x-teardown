@@ -67,11 +67,23 @@ function keyFor(error) {
   return null;
 }
 
+// Marketing FTE is not a compute() input (the headline has no per-head
+// denominator), but it feeds the one-off change cost, so the model checks it
+// here and keys the error to the field (WR-03).
+function marketerErrors(values) {
+  const m = values.marketers;
+  return typeof m === 'number' && Number.isFinite(m) && m > 0
+    ? []
+    : [{ key: 'marketers', message: 'Marketing FTE: enter a number above 0.' }];
+}
+
 export function run(values, ctx) {
   const { inputs, assumptions } = toCompute(values, ctx);
   const r = compute(inputs, assumptions);
-  if (r.ok) return { ok: true, result: r };
-  return { ok: false, errors: r.errors.map((e) => ({ key: keyFor(e), message: e.message })) };
+  const own = marketerErrors(values);
+  if (r.ok && own.length === 0) return { ok: true, result: r };
+  const computeErrors = r.ok ? [] : r.errors.map((e) => ({ key: keyFor(e), message: e.message }));
+  return { ok: false, errors: [...own, ...computeErrors] };
 }
 
 // Most influential first (measured at the defaults, see 03-RESEARCH). The link
