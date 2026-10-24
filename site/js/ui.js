@@ -253,8 +253,8 @@ form.addEventListener('input', (e) => {
   const key = e.target.name;
   clearTimeout(tableTimer);
   pendingNotice = '';
-  tableTimer = setTimeout(() => update(false, false), 250);
   if (touched.has(key)) update(false, false);
+  else tableTimer = setTimeout(() => update(false, false), 250); // never both (IN-05)
 });
 form.addEventListener('change', (e) => {
   clearTimeout(tableTimer);
