@@ -1,7 +1,8 @@
 ---
 phase: 3
 slug: levers-outcomes-calculator-comparison-slice
-status: draft
+status: approved
+reviewed_at: 2026-10-24
 shadcn_initialized: false
 preset: none
 created: 2026-10-24
@@ -261,11 +262,18 @@ Voice unchanged. Figures come from `data.js` via `data-fig` or live from `calc.j
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-10-24 (gsd-ui-checker)
+
+## Checker notes (applied at approval, 2026-10-24)
+
+- **s11 focal point and reading order:** the summary sentence (Body 600, in the polite `<output>`) is the anchor; then the results table; the "2x" accent bars in Figure 8 are the only accent in s11; the chart's "How to read this" paragraph and the form hints are secondary.
+- **Live regions:** `.calc-status` is the same region as the hash-notice status (one `role="status"`), so the list is: summary `<output aria-live="polite">`, one status region (hash notices + calc status), one share-result status, one `role="alert"` error summary. Structural tests count roles accordingly.
+- "Run your own numbers" CTA text is identical in s02 and s10 (tested).
+- `--s-md` = 16px and `--s-xl` = 32px (existing tokens).
