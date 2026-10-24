@@ -1,7 +1,8 @@
 ---
 phase: 4
 slug: adoption-risk-evidence-publish-slice
-status: draft
+status: approved
+reviewed_at: 2026-10-24
 shadcn_initialized: false
 preset: none
 created: 2026-10-24
@@ -37,7 +38,7 @@ Unchanged. Accent `--verified` reserved list is unchanged (no new item). Specifi
 
 | Component | Spec |
 |-----------|------|
-| `.legal-flag` | The legal-review note. `<aside class="callout legal-flag" aria-label="Legal review status">` with `<span class="lbl">Legal review</span>` and one `<p>`. Reuses `.callout` (3px `--ink` left bar, 44em max). Adds only `background:var(--paper-2); border:1px solid var(--rule); border-left:3px solid var(--ink); padding:var(--s-md) var(--s-lg)`. Not a banner: not sticky, not dismissible, no close button, no JS. |
+| `.legal-flag` | The legal-review note. `<div class="callout legal-flag" role="note" aria-label="Legal review status">` with `<span class="lbl">Legal review</span>` and one `<p>`. Reuses `.callout` (3px `--ink` left bar, 44em max). Adds only `background:var(--paper-2); border:1px solid var(--rule); border-left:3px solid var(--ink); padding:var(--s-md) var(--s-lg)`. Not a banner: not sticky, not dismissible, no close button, no JS. |
 | `.status` | Inline text marker in the incident table. `font:600 12px/1.6 var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--ink); border:1px solid var(--ink); border-radius:2px; padding:4px 8px; white-space:nowrap; display:inline-block`. Variants add a **border-style cue as well as the word**: `.status-established` solid; `.status-alleged` dashed; `.status-disputed` `border-style:double; border-width:3px`. The word is always present, so colour/border is redundant, never the only cue (WCAG 1.4.1). Same box shape as `.default-mark` (reuse its rules where identical). |
 | `.asat` | Date-stamped "as at" callout inside each risk block. `<p class="asat"><b>As at <time datetime="2026-10-24">24 October 2026</time></b>: {state of play, one or two sentences}. <a class="cite" …>…</a></p>`. Label mono 12px for the lead-in (`<b>` is 600), body Body 400. `border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); padding:var(--s-sm) 0; margin:var(--s-md) 0`. Also present: "Check again before relying on it." as a closing clause only on regulation and litigation blocks. Date format is the same in every block (day, month name, year). |
 | `.risk` | A risk block: `<h3 id="s14-{slug}">`, one answer-first sentence (Body, 30 words or fewer), 120–220 words of prose, a **Mitigation** line (`<p class="mitigation"><b>Mitigation:</b> …</p>`, Body, 600 lead-in), then `.asat`. Blocks are separated by 32px; no boxes, no cards. Five blocks, this order: Slop and sameness; Reviewer fatigue; Goodhart on counts and spend; IP, copyrightability and Getty v Stability; Regulation. |
@@ -195,11 +196,18 @@ Automated where marked (A) via the CDP harness (`scripts/smoke.mjs`); manual ite
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting
-- [ ] Dimension 2 Visuals
-- [ ] Dimension 3 Color
-- [ ] Dimension 4 Typography
-- [ ] Dimension 5 Spacing
-- [ ] Dimension 6 Registry Safety
+- [x] Dimension 1 Copywriting
+- [x] Dimension 2 Visuals
+- [x] Dimension 3 Color
+- [x] Dimension 4 Typography
+- [x] Dimension 5 Spacing
+- [x] Dimension 6 Registry Safety
 
-**Approval:** pending (gsd-ui-checker)
+**Approval:** approved 2026-10-24 (gsd-ui-checker) (gsd-ui-checker)
+
+## Checker notes (applied at approval, 2026-10-24)
+
+- **Focal points:** s13 anchor = the Backlog 0 definition sentence; s14 anchor = the incident table, led by the newest verified incident.
+- **Legal flag markup:** `<div class="callout legal-flag" role="note">` (never `<aside>`; no extra landmark).
+- **Placement:** the legal flag sits between the page-top COI callout and `#answer`; the skip link still targets `#answer`.
+- **Dates:** `.asat` and re-verification stamps use each source's actual re-check date in `<time datetime>`, not a fixed string.
