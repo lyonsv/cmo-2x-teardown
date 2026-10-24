@@ -166,6 +166,9 @@ test('answer-first paragraph is short and states the falsifier', () => {
   const text = strip(sectionHtml('answer'));
   assert.ok(text.split(' ').length <= 120, `answer is ${text.split(' ').length} words`);
   assert.match(text, /falsifier|false/);
+  // The falsifier is a disjunction (code review WR-04): flat outcomes alone falsify the claim.
+  assert.ok(text.includes('do not improve, or first-pass compliance falls, within 2–3 quarters'), 'answer falsifier must use OR');
+  assert.ok(!/do not improve and first-pass compliance falls/.test(html), 'AND falsifier wording is back');
 });
 
 test('landmarks and CSP hygiene', () => {
@@ -199,7 +202,7 @@ test('numeric gate: no ungraded numerals in the frame', () => {
 
 // ---- Plan 01-04: section 01 ----
 
-const FALSIFIER = 'If approved-live variants per head double but holdout-measured conversion/CAC does not improve and first-pass compliance falls within 2–3 quarters, the 2x claim is false for that org.';
+const FALSIFIER = 'If approved-live variants per head double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
 const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.';
 
 test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
