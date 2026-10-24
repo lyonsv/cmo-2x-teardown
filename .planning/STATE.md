@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-10-24T09:18:10.379Z"
+last_updated: "2026-10-24T09:18:14.456Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 4
@@ -48,6 +48,8 @@ Progress: [█░░░░░░░░░] 14%
 
 ## Accumulated Context
 
+| Phase 1 P01 | 15min | 3 tasks | 11 files |
+
 ### Decisions
 
 - Roadmap: 4 vertical-slice phases (coarse), each ending in a deployed page increment on GitHub Pages
@@ -55,6 +57,7 @@ Progress: [█░░░░░░░░░] 14%
 - Roadmap: CALC-08 (tested `calc.js`) lands in Phase 1, the calculator UI and remaining CALC requirements in Phase 3
 - Research: headline metric is approved-live variants per marketing head per quarter; tier weighting is a sensitivity only
 - Research: grade key is Benchmark / Modelled / Speculative plus a separate vendor-claimed/company-reported flag
+- [Phase 1]: Register value cells use data-fig plus self-linking chip; include-hidden-files ships .nojekyll
 
 ### Pending Todos
 
