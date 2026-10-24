@@ -19,7 +19,7 @@
 
 - [x] **CRED-01**: Reader sees a grade key (Benchmark / Modelled / Speculative) plus a separate source flag (vendor-claimed / company-reported) that never upgrades a claim to Benchmark
 - [x] **CRED-02**: Every quantitative claim on the page shows a text grade chip (not colour-only) linked to a source-register or assumptions-register entry
-- [x] **CRED-03**: Reader sees the headline output metric defined as approved-and-live asset-variants per marketing head per quarter (all marketing FTE in the denominator), always shown beside the unique-concept count and variants per concept, with tier weighting offered only as a sensitivity
+- [x] **CRED-03**: Reader sees the headline output metric defined as campaign-markets in market per quarter (one campaign live in one market counts once), reported as an organisation total within a flat total marketing budget and flat headcount with no per-head denominator, always shown beside brief-to-live time and fully loaded cost per approved asset; extra crops, sizes or locales of the same campaign-market do not count, and variant counts appear only as internal throughput in the factory and review-capacity sections (revised Phase 3.1)
 - [x] **CRED-05**: Reader can see a "what 2x does not mean" statement and a stated falsifier for the 2x claim
 - [x] **CRED-06**: All numbers, defaults, grades and source IDs come from one `data.js` used by both prose and calculator, so they cannot diverge
 
@@ -64,7 +64,7 @@
 
 ### Calculator
 
-- [x] **CALC-01**: Reader can enter their own inputs (assets per campaign, campaigns per year, team size, cost per asset, locales, tier mix, etc.) and see baseline vs 2x output, fully loaded cost per approved-live asset, and cycle time update live
+- [x] **CALC-01**: Reader can enter their own inputs (assets per campaign, campaigns per year, markets per campaign, how you get to 2x (more campaigns, more markets or both), team size, cost per asset, tier mix, etc.) and see baseline vs 2x output, fully loaded cost per approved-live asset, and brief-to-live time update live
 - [x] **CALC-02**: Reader sees every assumption with its grade, the "show the maths" breakdown, and a "what you must believe" panel; each output inherits the grade of its weakest input
 - [x] **CALC-03**: Reader sees the break-even auto-approval rate required for 2x at flat review headcount
 - [x] **CALC-04**: Reader can switch between headcount scenarios (redeploy / hold / reduce), with change-management cost included
@@ -134,7 +134,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHELL-05 | Phase 1 | Complete |
 | CRED-01 | Phase 1 | Complete |
 | CRED-02 | Phase 1 | Complete |
-| CRED-03 | Phase 1 | Complete |
+| CRED-03 | Phase 1, revised Phase 3.1 | Complete |
 | CRED-04 | Phase 1 | Out of Scope (removed at author's request) |
 | CRED-05 | Phase 1 | Complete |
 | CRED-06 | Phase 1 | Complete |

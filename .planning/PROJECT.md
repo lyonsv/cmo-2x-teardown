@@ -14,8 +14,8 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 - ✓ Editorial page shell, title block, metadata, grade key and 15-section TOC, live on GitHub Pages behind a test-gated workflow — Phase 1
 - ✓ Confidence grades (Benchmark / Modelled / Speculative + vendor/company flag) on every number, linked to a register, all from one `data.js` — Phase 1
-- ✓ Headline metric (approved-live variants per head per quarter, with concepts and variants per concept), six-lever table, "what 2x does not mean" and falsifier — Phase 1
-- ✓ CFO answer: Gartner-anchored flat budget, fully loaded cost per approved-live asset ($64.71 → $41.18, Modelled), AI spend as a floor, Figure 1 — Phase 1
+- ✓ Headline metric (campaign-markets in market per quarter, with brief-to-live time and cost per approved asset), six-lever table, "what 2x does not mean" and falsifier — Phase 1, reframed Phase 3.1
+- ✓ CFO answer: Gartner-anchored flat budget, fully loaded cost per approved asset ($64.71 → $45.26, Modelled), AI spend as a floor, Figure 1 — Phase 1
 - ✓ Tested pure `calc.js` model (identity, monotonicity, golden cases, edge inputs, cost per asset falling) — Phase 1
 - ✓ Factory and content supply chain (Figures 2–3), layered operating architecture with one shared versioned policy source — Phase 2
 - ✓ 10,000+ asset campaign: worked variant matrix (12,000 derived → 11,400 approved-live), derive-don't-generate, neutral imagery-sourcing table, personalisation/feeds with NYU/Emory (Benchmark) — Phase 2
@@ -33,7 +33,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 - [ ] Other 2x opportunities, each with an output metric and an outcome argument: localisation/transcreation, experimentation, insight & reporting, and ops (briefs, approvals, DAM tagging/metadata, rights tracking)
 - [ ] Outcome case across revenue/pipeline (conversion, CAC, ROAS), speed to market (brief-to-live, market launch lag), quality & brand (compliance, rejection rate, rights incidents), and learning velocity (experiments per quarter, creative fatigue detection)
 - [ ] A CFO answer: cost per asset or per campaign trends down as AI spend rises; spend treated as a floor, not a KPI
-- [ ] An interactive calculator where the reader sets assets per campaign, campaigns per year, team size, cost per asset, locales, and so on, and sees the baseline vs 2x output, cost, and cycle-time maths
+- [ ] An interactive calculator where the reader sets assets per campaign, campaigns per year, markets per campaign, how they get to 2x (more campaigns, more markets or both), team size, cost per asset, and so on, and sees the baseline vs 2x output, cost, and brief-to-live time maths
 - [ ] Adoption section: how to pull up the floor across creative, brand, and regional teams
 - [ ] A candid "what goes wrong" section: slop at scale, brand dilution, rights/IP exposure, Goodhart on output counts, reviewer fatigue
 - [ ] Source register and evidence-gaps section
@@ -78,8 +78,8 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 | Static GitHub Pages delivery | Matches the reference | — Pending |
 | Named comparison vs Gradial, AirOps, Profound on the page | The user wants the CMO to see how this approach compares to market offerings | — Pending |
 | Falsifier uses OR (outcomes flat OR compliance falls) | Code review: AND let flat outcomes escape falsification; a CFO would spot it | ✓ Phase 1 |
-| Flat budget stated with explicit reallocation (~$0.71M from agency/production lines) | Model shows production cost rising 27%; honesty constraint | ✓ Phase 1 |
-| Headline 2x metric reframed from "approved-live variants per marketing head" to campaigns and market launches in market per quarter, with brief-to-live time and cost per approved asset (Phase 3.1) | User review: no CMO benchmark or practice for assets per head; most variants are crops/locales, so the count is mechanical and gameable. Variants stay as an internal factory/capacity measure | — Pending |
+| Flat budget stated with explicit reallocation (~$1.03M from agency/production lines) | Model shows production cost rising 40% at the default route, because doubling campaigns adds master concepts; honesty constraint | ✓ Phase 1, figure updated Phase 3.1 |
+| Headline 2x metric reframed from "approved-live variants per marketing head" to campaigns and market launches in market per quarter, with brief-to-live time and cost per approved asset (Phase 3.1) | User review: no CMO benchmark or practice for assets per head; most variants are crops/locales, so the count is mechanical and gameable. Variants stay as an internal factory/capacity measure. No CMO practice or benchmark exists for assets per head; most variants are crops, sizes and locales, so the count is mechanical and gameable (Goodhart). The 2x now doubles campaigns x markets with a reader-chosen route (default both); variants stay as internal factory and review-capacity throughput | ✓ Phase 3.1 |
 | Add AEO/GEO as a sixth lever | Answer-engine visibility is an emerging output/outcome channel (Profound) that the original five levers missed | — Pending |
 
 ## Evolution
