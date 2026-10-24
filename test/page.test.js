@@ -670,7 +670,9 @@ test('one dated Getty v Stability line', () => {
   assert.ok(p, 'Getty line must follow the table');
   assert.ok(p.includes('<time datetime="2025-11-04">'));
   assert.ok(strip(p).includes('permission to appeal'));
-  assert.ok(p.includes('href="#src-getty-v-stability-uk"'));
+  // WR-05: graded and linked to the source actually read; no unsourced US clause.
+  assert.ok(p.includes('<a class="chip c-m" href="#src-ailawsuittracker-getty-uk">Modelled</a>'));
+  assert.ok(!/California|refiled|US action/.test(strip(p)), 'unsourced US-action clause is back');
   assert.ok(p.includes('<a href="#s14">section 14</a>'));
   assert.ok(strip(p).replace(/\s+([.,;])/g, '$1').includes('Full treatment in section 14.'));
 });
@@ -895,4 +897,14 @@ test('imagery table qualifies every route symmetrically and scopes the Copyright
   assert.ok(!copy[0].includes('src-usco') && !copy[1].includes('src-usco'));
   assert.ok(!table.includes('class="chip c-b"'), 'no route cell is graded Benchmark on a source that does not cover it');
   assert.ok(assumptions['asm-imagery-routes'].basis.includes('US Copyright Office'));
+});
+
+// ---- Code review WR-05: no pre-publication to-do in the published register ----
+
+test('source register carries no unresolved pre-publication to-do (WR-05)', () => {
+  for (const [k, src] of Object.entries(sources)) {
+    assert.ok(!/before publishing|is to confirm|to be confirmed|\bTODO\b/i.test(src.read_via + src.bias), `src-${k}: unresolved to-do`);
+  }
+  assert.ok(/Not read/.test(sources['getty-v-stability-uk'].read_via));
+  assert.ok(sources['ailawsuittracker-getty-uk'].read_via.includes('2025-12-16'));
 });
