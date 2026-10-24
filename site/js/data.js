@@ -65,7 +65,8 @@ export const sources = {
     read_via: 'Page returned 403 to automation on 2026-10-24, so the judgment date and the grant of permission to appeal rest on search summaries of this and a second law-firm note; publication month taken from the URL; the author is to confirm both and the Court of Appeal status in a browser before publishing; a US action was refiled in California per a Bloomberg Law report (headline only)',
     grade: 'Modelled',
     flag: null,
-  },  'intercom-2x-teardown': {
+  },
+  'intercom-2x-teardown': {
     title: 'Intercom / Fin 2x — Teardown',
     publisher: 'Vincent Lyons (author of this page)',
     published: '2026-08-25',
