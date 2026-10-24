@@ -45,7 +45,9 @@ export function profile() {
 export function dump(url, extra = []) {
   const r = spawnSync(CHROME, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     `--user-data-dir=${profile()}`, '--virtual-time-budget=4000', ...extra, '--dump-dom', url], { encoding: 'utf8', timeout: 60000, maxBuffer: 64 * 1024 * 1024 });
-  if (r.status !== 0 && !r.stdout) throw new Error(`chrome failed: ${r.stderr}`);
+  // IN-06: a missing binary (r.error), a timeout kill (status null) or a non-zero exit is a
+  // failure, even when partial stdout came back.
+  if (r.error || r.status !== 0) throw new Error(`chrome failed: ${r.error?.message || (r.status === null ? `killed by ${r.signal} (timeout?)` : r.stderr)}`);
   return r.stdout;
 }
 
