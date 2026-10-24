@@ -59,7 +59,7 @@ test('validate: cross-field caps and clean defaults', () => {
   const hi1 = validate({ ...defaults, auto1: 0.8 }, ctx);
   assert.equal(hi1[0].key, 'auto1');
   assert.match(hi1[0].message, /cannot exceed 75%/);
-  assert.match(hi1[0].message, /^Auto-approval share today/);
+  assert.equal(hi1[0].message, 'Auto-approval share today: cannot exceed 75%, the share of assets that can clear without a person (T0 and T1).');
 });
 
 test('validate: overflow becomes a key-null message', () => {

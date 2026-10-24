@@ -46,7 +46,7 @@ export function validate(values, ctx) {
   const cap1 = mix.baseline[0] + mix.baseline[1];
   const cap2 = mix.scaled[0] + mix.scaled[1];
   if (values.auto1 > cap1 + 1e-9) {
-    errors.push({ key: 'auto1', message: 'Auto-approval share today: cannot exceed ' + `${whole(cap1)}%, the share of assets that can clear without a person (T0 and T1).` });
+    errors.push({ key: 'auto1', message: capMessage('Auto-approval share today', cap1, '') });
   }
   if (values.auto2 > cap2 + 1e-9) {
     errors.push({ key: 'auto2', message: capMessage('Auto-approval share at 2x', cap2, '') });
