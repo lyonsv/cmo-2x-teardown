@@ -67,7 +67,7 @@ Progress: [██████████] 100%
 
 ### Pending Todos
 
-None yet.
+- Phase 1 UI review (16/24, advisory): Figure 1 text ~7px on phones (raise svg min-width / narrower viewBox); add `strong,b{font-weight:600}` and style `.metric-trio .lbl`; restyle `tbody th[scope=row]` (ink, normal case); reduce chip saturation (one unlinked chip per register row, once per source per paragraph); dedupe lever-evidence Value/Basis; copy nits (h3 "Flat budget", s12 stub, "not rising"). See 01-UI-REVIEW.md. Fold into Phase 2 plans.
 
 ### Blockers/Concerns
 
