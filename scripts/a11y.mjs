@@ -100,7 +100,9 @@ async function orderCheck(send, evalJs) {
   const key = (type) => send('Input.dispatchKeyEvent', { type, key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
   for (let i = 0; i < 600; i++) {
     await key('rawKeyDown'); await key('keyUp');
-    const idx = await evalJs(`(() => { const e = document.activeElement; return !e || e === document.body ? -1 : ${all}.indexOf(e); })()`);
+    // IN-02: stop on wrap-around to the first stop, as focusChecks does.
+    const idx = await evalJs(`(() => { const e = document.activeElement; if (!e || e === document.body || window.__orderFirst === e) return -1;
+      if (!window.__orderFirst) window.__orderFirst = e; return ${all}.indexOf(e); })()`);
     if (idx < 0) break;
     idxs.push(idx);
   }
