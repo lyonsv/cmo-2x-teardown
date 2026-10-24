@@ -1,0 +1,152 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { modelContext } from '../site/js/data.js';
+import { FIELDS, SCENARIOS } from '../site/js/fields.js';
+import { present, defaultValues } from '../site/js/model.js';
+import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from '../site/js/state.js';
+
+const ctx = modelContext();
+const F = Object.fromEntries(FIELDS.map((f) => [f.key, f]));
+const defaults = defaultValues(ctx);
+
+test('coerce accepts plain, thousands and percent text', () => {
+  assert.deepEqual(coerce(F.campaigns, '40'), { ok: true, value: 40 });
+  assert.deepEqual(coerce(F.campaigns, ' 1,200 '), { ok: true, value: 1200 });
+  assert.deepEqual(coerce(F.yield, '85%'), { ok: true, value: 0.85 });
+  assert.deepEqual(coerce(F.yield, '7'), { ok: true, value: 0.07 });
+  assert.deepEqual(coerce(F.rework, '0'), { ok: true, value: 0 });
+  assert.deepEqual(coerce(F.auto1, '0'), { ok: true, value: 0 });
+  assert.deepEqual(coerce(F.vcost, '0.80'), { ok: true, value: 0.8 });
+});
+
+test('coerce messages follow the copy templates', () => {
+  assert.equal(coerce(F.campaigns, '').message, 'Campaigns per year: enter a number.');
+  assert.equal(coerce(F.campaigns, '   ').message, 'Campaigns per year: enter a number.');
+  const fmt = 'Campaigns per year: use digits only, for example 40.';
+  for (const t of ['abc', '1e3', '0x10', 'NaN', 'Infinity', '-3', '1,5', '1 000', '1e999', '%', '--1']) {
+    assert.deepEqual(coerce(F.campaigns, t), { ok: false, message: fmt }, t);
+  }
+  const rule = 'Campaigns per year: enter a whole number of 1 or more.';
+  assert.equal(coerce(F.campaigns, '0').message, rule);
+  assert.equal(coerce(F.campaigns, '2.5').message, rule);
+  assert.equal(coerce(F.campaigns, '1000000001').message, rule);
+  assert.equal(coerce(F.yield, '101').message, 'Approval yield: enter a percentage above 0 and up to 100.');
+  assert.equal(coerce(F.yield, '0').message, 'Approval yield: enter a percentage above 0 and up to 100.');
+  assert.equal(coerce(F.marketers, '0').message, 'Marketing FTE: enter a number above 0.');
+});
+
+test('validate: cross-field caps and clean defaults', () => {
+  assert.deepEqual(validate(defaults, ctx), []);
+  const hi2 = validate({ ...defaults, auto2: 0.9 }, ctx);
+  assert.equal(hi2.length, 1);
+  assert.equal(hi2[0].key, 'auto2');
+  assert.match(hi2[0].message, /^Auto-approval share at 2x: cannot exceed 85%, the share of assets that can clear without a person \(T0 and T1\)\.$/);
+  const hi1 = validate({ ...defaults, auto1: 0.8 }, ctx);
+  assert.equal(hi1[0].key, 'auto1');
+  assert.match(hi1[0].message, /cannot exceed 75%/);
+  assert.match(hi1[0].message, /^Auto-approval share today/);
+});
+
+test('validate: overflow becomes a key-null message', () => {
+  const errs = validate({ ...defaults, campaigns: 1e9, concepts: 1e9, locales: 1e9 }, ctx);
+  for (const e of errs) assert.ok(e.key === null || typeof e.key === 'string');
+  if (errs.length) assert.ok(errs.every((e) => e.message.length > 0));
+});
+
+test('parseHash: non-calculator hashes give defaults and restored false', () => {
+  for (const h of ['', '#s11', '#src-gartner-2025-cmo-spend', '#s10?locales=3', undefined]) {
+    const r = parseHash(h, ctx);
+    assert.deepEqual(r.values, defaults);
+    assert.equal(r.restored, false);
+    assert.deepEqual(r.notices, []);
+  }
+});
+
+test('parseHash: restores valid values and reports invalid ones by label', () => {
+  const ok = parseHash('#s11?locales=6&auto2=70', ctx);
+  assert.equal(ok.values.locales, 6);
+  assert.equal(ok.values.auto2, 0.7);
+  assert.equal(ok.restored, true);
+  assert.deepEqual(ok.notices, []);
+  const bad = parseHash('#s11?locales=abc', ctx);
+  assert.equal(bad.values.locales, defaults.locales);
+  assert.deepEqual(bad.notices, ['Locales']);
+  assert.deepEqual(parseHash('#s11?reviewers=0', ctx).notices, ['Reviewer FTE']);
+  assert.equal(parseHash('#s11?locales=6&locales=9', ctx).values.locales, 6);
+  assert.equal(parseHash('#s11?scenario=hold', ctx).values.scenario, 'hold');
+  const evil = parseHash('#s11?scenario=evil', ctx);
+  assert.equal(evil.values.scenario, defaults.scenario);
+  assert.deepEqual(evil.notices, ['Headcount scenario']);
+});
+
+test('parseHash: hostile keys cannot pollute prototypes', () => {
+  const before = Object.getOwnPropertyNames(Object.prototype).sort();
+  const r = parseHash('#s11?__proto__=1&constructor=2&prototype=3&toString=4', ctx);
+  assert.deepEqual(r.values, defaults);
+  assert.deepEqual(Object.getOwnPropertyNames(Object.prototype).sort(), before);
+  assert.equal({}.polluted, undefined);
+  const r2 = parseHash('#s11?__proto__[polluted]=1&locales=4', ctx);
+  assert.equal(r2.values.locales, 4);
+  assert.equal({}.polluted, undefined);
+});
+
+test('serialiseHash: defaults give an empty string, order follows FIELDS', () => {
+  assert.equal(serialiseHash(defaults, ctx), '');
+  assert.equal(serialiseHash({ ...defaults, auto2: 0.7, locales: 6 }, ctx), '#s11?locales=6&auto2=70');
+  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', locales: 6 }, ctx), '#s11?locales=6&scenario=hold');
+  assert.equal(changedCount(defaults, ctx), 0);
+  assert.equal(changedCount({ ...defaults, auto2: 0.7, locales: 6 }, ctx), 2);
+  assert.equal(changedCount({ ...defaults, scenario: 'reduce' }, ctx), 1);
+});
+
+test('toText: whole percents, no separators, no exponent', () => {
+  assert.equal(toText(F.yield, 0.95), '95');
+  assert.equal(toText(F.mconcept, 1200), '1200');
+  assert.equal(toText(F.vcost, 0.8), '0.8');
+  assert.equal(toText(F.vcost, 1e-7), '0.0000001');
+  for (const f of FIELDS) assert.ok(!/[,e]/i.test(toText(f, defaults[f.key])), f.key);
+});
+
+function rng(seed) {
+  let s = seed;
+  return () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
+}
+
+test('round trip over 200 random valid value sets', () => {
+  const r = rng(7);
+  for (let i = 0; i < 200; i++) {
+    const v = { scenario: SCENARIOS[Math.floor(r() * 3)] };
+    for (const f of FIELDS) {
+      if (r() < 0.3) { v[f.key] = defaults[f.key]; continue; }
+      if (f.kind === 'int') v[f.key] = 1 + Math.floor(r() * 500);
+      else if (f.kind === 'pct') v[f.key] = (f.zeroOk ? Math.floor(r() * 101) : 1 + Math.floor(r() * 100)) / 100;
+      else v[f.key] = Math.round((0.01 + r() * 300) * 100) / 100;
+    }
+    const hash = serialiseHash(v, ctx);
+    const back = parseHash(hash, ctx);
+    assert.deepEqual(back.values, v, hash);
+    assert.deepEqual(back.notices, []);
+  }
+});
+
+test('hostile text never reaches the presenter as NaN, Infinity or undefined', () => {
+  for (const f of FIELDS) {
+    for (const t of ['', 'abc', '1e999', '-3', '0', 'Infinity', 'NaN']) {
+      const c = coerce(f, t);
+      const values = { ...defaults, ...(c.ok ? { [f.key]: c.value } : {}) };
+      const out = JSON.stringify([present(values, ctx), validate(values, ctx), c.ok ? '' : c.message]);
+      assert.ok(!/NaN|Infinity|undefined|null/.test(out), `${f.key} ${JSON.stringify(t)}`);
+      if (!c.ok) assert.ok(c.message.startsWith(`${f.label}: `));
+    }
+  }
+});
+
+test('state.js source avoids DOM, storage, network and dynamic code', () => {
+  const src = readFileSync(new URL('../site/js/state.js', import.meta.url), 'utf8');
+  for (const bad of ['innerHTML', 'localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'XMLHttpRequest', 'eval(', 'new Function']) {
+    assert.ok(!src.includes(bad), bad);
+  }
+  assert.ok(!/params\[|params\.get\([^)]*\)\]/.test(src), 'no bracket assignment from URLSearchParams');
+  for (const [, spec] of src.matchAll(/from '([^']+)'/g)) assert.ok(spec.startsWith('./'), spec);
+});
