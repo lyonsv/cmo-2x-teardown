@@ -77,7 +77,18 @@ Plans:
   4. Reader sees a static reviewer-capacity worked example showing review throughput is the binding constraint at 2x, and reviewer-fatigue controls.
   5. Reader sees the eval harness (ground truth from reviewer decisions, seeded known-bad and rights-trap assets, escape-rate sampling, per-tier precision/recall/drift, no-regression rule) and the telemetry asset-ID join with the dashboard metrics.
 
-**Plans**: TBD
+**Plans**: 8 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Phase 1 UI-review fixes and test-contract evolution (governing-chip rule, register chips, numeric-gate pre-strips, s03 title, vendor list)
+- [ ] 02-02-PLAN.md — s03 factory model (Figures 2, 3) and s04 layered architecture; diagram contract and CSS
+- [ ] 02-03-PLAN.md — variantMatrix() with tests; s05 derive lead, Figure 4 and the 12,000-variant matrix
+- [ ] 02-04-PLAN.md — s05 imagery sourcing (COI note, neutral table, Getty line) and personalisation/feeds with NYU/Emory (Benchmark)
+- [ ] 02-05-PLAN.md — s06 review agent (Figure 5, single Intercom mention, reference datum) and s07 tier ladder (Figure 6, tier table, legal note, Always human)
+- [ ] 02-06-PLAN.md — s07 reviewer capacity and fatigue controls; s08 eval harness (Figure 7), metrics table and telemetry
+- [ ] 02-07-PLAN.md — Local preview checkpoint (widths and print) and fixes
+- [ ] 02-08-PLAN.md — Getty re-check, approve-push checkpoint, W3C, push and live verification
+
 **UI hint**: yes
 **Research flag**: Visually review the live Intercom reference sections 05-14 (base64 screenshots) before locking tiers, harness metrics and Backlog 0 framing. Tier shares and review rates set here become calculator defaults in Phase 3, so expect one iteration with the Phase 1 `calc.js` model.
 
