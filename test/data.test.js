@@ -363,3 +363,31 @@ test('percentage claims store fractions and display through their format', () =>
   }
   assert.equal(assumptions['asm-budget-share'].value, claims['gartner-share-2026'].value);
 });
+
+test('Plan 03-01 localisation sources and claims', () => {
+  for (const k of ['laubli-2019', 'translation-vendor-case']) {
+    const s = sources[k];
+    assert.ok(s, k);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) {
+      assert.equal(typeof s[f], 'string', `${k}.${f}`);
+      assert.ok(s[f].length > 0, `${k}.${f} empty`);
+    }
+    assert.equal(s.accessed, '2026-10-24');
+    assert.equal(s.grade, 'Modelled');
+  }
+  assert.equal(sources['laubli-2019'].url, 'https://arxiv.org/abs/1906.01685');
+  assert.equal(sources['laubli-2019'].flag, null);
+  assert.equal(sources['translation-vendor-case'].flag, 'vendor-claimed');
+  const want = [
+    ['mt-speed-lo', 0.0926, '9.26%', 'src-laubli-2019', null],
+    ['mt-speed-hi', 0.5974, '59.74%', 'src-laubli-2019', null],
+    ['loc-case-saving', 3400000, '$3.4M', 'src-translation-vendor-case', 'vendor-claimed'],
+    ['loc-case-faster', 0.5, '50%', 'src-translation-vendor-case', 'vendor-claimed'],
+  ];
+  for (const [id, value, display, ref, flag] of want) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value); assert.equal(c.display, display);
+    assert.equal(c.ref, ref); assert.equal(c.grade, 'Modelled'); assert.equal(c.flag, flag);
+  }
+});

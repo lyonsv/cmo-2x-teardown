@@ -308,10 +308,10 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s09', 's10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s10', 's11', 's12', 's13', 's14'];
 
-test('skeleton ids are s09 to s14', () => {
-  assert.deepEqual(SKELETON_IDS, ['s09', 's10', 's11', 's12', 's13', 's14']);
+test('skeleton ids are s10 to s14', () => {
+  assert.deepEqual(SKELETON_IDS, ['s10', 's11', 's12', 's13', 's14']);
 });
 
 test('skeleton sections carry a scope sentence and the later note', () => {
@@ -993,4 +993,37 @@ test('s02 says budgets have flattened', () => {
   const s = sectionHtml('s02');
   assert.ok(s.includes('budgets have flattened'));
   assert.ok(!s.includes('not rising to meet the ambition'));
+});
+
+// ---- Plan 03-01: s09 lead and localisation block (LEVER-01) ----
+
+test('s09 opens with the lead and the localisation block', () => {
+  const s = sectionHtml('s09');
+  assert.ok(!s.includes('class="later"'));
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'The factory doubles output; five other levers decide whether the extra output is worth having.');
+  assert.ok(s.includes('<h3 id="s09-localisation">Localisation and transcreation</h3>'));
+  const { head, rows } = tableByCaption(s, 'Localisation and transcreation: output, outcome and evidence');
+  assert.deepEqual(head, ['Measure', 'Metric', 'Evidence grade']);
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows.map((r) => strip(r.match(/<th[^>]*>([\s\S]*?)<\/th>/)[1])), ['Output', 'Outcome']);
+  for (const r of rows) {
+    assert.equal((r.match(/class="chip /g) || []).length, 1);
+    assert.ok(r.includes('<a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td>'));
+  }
+});
+
+test('localisation block carries the graded evidence and caveats, anonymised', () => {
+  const s = sectionHtml('s09');
+  const block = s.slice(s.indexOf('id="s09-localisation"'));
+  const t = strip(block.replace(/<table>[\s\S]*?<\/table>/g, ' '));
+  assert.ok(t.includes('we did not find a primary source'));
+  assert.ok(/pre-LLM/.test(t) && /one domain/.test(t) && /few translators/.test(t));
+  for (const n of ['Smartling', 'Intel', 'Lilt']) assert.ok(!t.includes(n), n);
+  assert.ok(block.includes('data-fig="mt-speed-lo"') && block.includes('data-fig="mt-speed-hi"'));
+  assert.ok(block.includes('href="#src-laubli-2019"') && block.includes('href="#src-translation-vendor-case"'));
+  assert.ok(block.includes('<a href="#s05">'));
+  const prose = (block.replace(/<table>[\s\S]*?<\/table>/g, ' ').match(/<(p|li)\b[^>]*>[\s\S]*?<\/\1>/g) || []);
+  const words = strip(prose.join(' ')).split(' ').filter(Boolean).length;
+  assert.ok(words >= 250 && words <= 450, `localisation prose ${words} words`);
 });

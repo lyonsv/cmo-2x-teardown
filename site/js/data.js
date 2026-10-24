@@ -88,6 +88,28 @@ export const sources = {
     grade: 'Modelled',
     flag: 'company-reported',
   },
+  'laubli-2019': {
+    title: 'Post-editing Productivity with Neural Machine Translation: An Empirical Assessment of Speed and Quality in the Banking and Finance Domain',
+    publisher: 'arXiv (Läubli et al.)',
+    published: '2019-06-04',
+    accessed: '2026-10-24',
+    url: 'https://arxiv.org/abs/1906.01685',
+    bias: 'Academic study; pre-LLM neural MT, one banking and finance domain, few translators; shows variance, not a rate',
+    read_via: 'arXiv abstract page read 2026-10-24',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'translation-vendor-case': {
+    title: 'How a Fortune 500 enterprise translated millions of words at scale',
+    publisher: 'Smartling (translation-technology vendor)',
+    published: '2025-03-10',
+    accessed: '2026-10-24',
+    url: 'https://smartling.com/resources/case-study/technology-customer-case-study',
+    bias: 'Vendor-selected anonymised customer case study; the savings and speed figures are the vendor\'s own',
+    read_via: 'Case-study page read 2026-10-24',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
 };
 
 // Negative values format the absolute value and put a true minus sign (U+2212)
@@ -202,7 +224,7 @@ function lever(n, label, grade, display, basis) {
     basis };
 }
 lever(1, 'Lever 1 evidence: content generation', 'Modelled', 'Company-reported anchors', 'Company-reported anchors only, plus one controlled click-through study; the rest is modelled.');
-lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies', 'Vendor case studies and a wide academic range; per-word rates are a gap.');
+lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies', 'Vendor case studies and a wide academic range. Post-editing speed-ups from 9 to 60 percent in one pre-LLM study and one vendor case study; per-word rates are a gap.');
 lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Vendor-biased anchors', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
 lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap', 'Almost entirely an evidence gap; kept brief and modelled.');
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
@@ -324,6 +346,22 @@ export const claims = {
       derived: `${side === 'base' ? 'baseline' : 'scenario'}.cost_per_asset_by_component.${comp}`, decimals: 2, format: 'usd2',
     }];
   }))),
+  'mt-speed-lo': {
+    id: 'mt-speed-lo', value: 0.0926, unit: 'post-editing time saving, low end, one pre-LLM study', display: '9.26%',
+    grade: 'Modelled', flag: null, ref: 'src-laubli-2019',
+  },
+  'mt-speed-hi': {
+    id: 'mt-speed-hi', value: 0.5974, unit: 'post-editing time saving, high end, one pre-LLM study', display: '59.74%',
+    grade: 'Modelled', flag: null, ref: 'src-laubli-2019',
+  },
+  'loc-case-saving': {
+    id: 'loc-case-saving', value: 3400000, unit: 'USD translation cost saved, one vendor case study', display: '$3.4M',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-translation-vendor-case',
+  },
+  'loc-case-faster': {
+    id: 'loc-case-faster', value: 0.5, unit: 'share faster to market, one vendor case study', display: '50%', format: 'pct0',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-translation-vendor-case',
+  },
   'weighted-ratio': {
     id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,
     ref: 'asm-tier-weights', derived: 'ratios.weighted_output_per_head', decimals: 1, format: 'x1',

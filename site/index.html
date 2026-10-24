@@ -621,8 +621,24 @@
     </section>
     <section id="s09" aria-labelledby="s09-h">
       <div class="sec-head"><span class="sec-num">09</span><h2 id="s09-h">The other five levers</h2></div>
-      <p>This section will cover localisation, experimentation, insight, operations and answer-engine optimisation, each with its output and outcome measure.</p>
-      <p class="later">Coming in a later update.</p>
+      <p>The factory doubles output; five other levers decide whether the extra output is worth having.</p>
+      <h3 id="s09-localisation">Localisation and transcreation</h3>
+      <p>Machine translation with human post-editing can plausibly shorten localisation time, but the published evidence is wide and mostly from vendors.</p>
+      <div class="table-scroll" role="region" aria-label="Localisation and transcreation table" tabindex="0">
+        <table>
+          <caption>Localisation and transcreation: output, outcome and evidence</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Metric</th><th scope="col">Evidence grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Output</th><td>Approved localised assets per locale per quarter; lag from master to last locale.</td><td><a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td></tr>
+            <tr><th scope="row">Outcome</th><td>Launch lag; locale rejection rate; quality sampled by linguists.</td><td><a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Locales are a large part of the variant count in <a href="#s05">the 10,000-asset campaign</a>, so localisation is where a doubling of output is most visible. The output metric is approved localised assets per locale, not words translated: an asset only counts once a linguist or the review process has cleared it, and the lag from the master asset to the last locale shows whether the extra volume is arriving in time to be used.</p>
+      <p>The best-documented academic result is wide. One study of professional translators post-editing machine output reported time savings from <span data-fig="mt-speed-lo">9.26%</span> <a class="chip c-m" href="#src-laubli-2019">Modelled</a> to <span data-fig="mt-speed-hi">59.74%</span>, with equal or slightly better quality. We grade it Modelled because it is pre-LLM neural translation, in one domain, with few translators. It shows how much the result varies between people and texts, not a rate that any one organisation should expect.</p>
+      <p>A translation-technology vendor's case study for a large software company reports more than <span data-fig="loc-case-saving">$3.4M</span> <a class="chip c-m" href="#src-translation-vendor-case">Modelled</a> <span class="flag">vendor-claimed</span> saved in translation costs and content reaching market <span data-fig="loc-case-faster">50%</span> <span class="flag">vendor-claimed</span> faster. The customer is anonymous, the vendor chose the example, and the baseline is not published, so the figures stay vendor-claimed and Modelled.</p>
+      <p>Per-word rates are the usual cost figure, but we did not find a primary source for them, so the page gives none. Any cost per word in a business case should come from your own contracts. The model does not rest on a translation price; it rests on how many assets clear review per locale.</p>
+      <p>The outcome argument is speed to market. When every locale launches within days of the master asset, a campaign reaches its whole audience while the offer is live, instead of reaching later markets after it has ended. Quality is sampled by linguists, not assumed, and a rising locale rejection rate is the signal that speed is costing accuracy, which would make the extra output worse rather than better.</p>
     </section>
     <section id="s10" aria-labelledby="s10-h">
       <div class="sec-head"><span class="sec-num">10</span><h2 id="s10-h">The outcome case</h2></div>
@@ -658,6 +674,24 @@
             <caption>Source register</caption>
             <thead><tr><th scope="col">ID</th><th scope="col">Claim</th><th scope="col">Publisher</th><th scope="col">Date accessed</th><th scope="col">Grade</th><th scope="col">Flag</th><th scope="col">URL</th></tr></thead>
             <tbody>
+            <tr id="src-laubli-2019">
+              <th scope="row" class="id">src-laubli-2019</th>
+              <td>Post-editing Productivity with Neural Machine Translation: An Empirical Assessment of Speed and Quality in the Banking and Finance Domain<br>Published 2019-06-04. Academic study; pre-LLM neural MT, one banking and finance domain, few translators; shows variance, not a rate. Read via: arXiv abstract page read 2026-10-24.</td>
+              <td>arXiv (Läubli et al.)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>none</td>
+              <td><a href="https://arxiv.org/abs/1906.01685">https://arxiv.org/abs/1906.01685</a></td>
+            </tr>
+            <tr id="src-translation-vendor-case">
+              <th scope="row" class="id">src-translation-vendor-case</th>
+              <td>How a Fortune 500 enterprise translated millions of words at scale<br>Published 2025-03-10. Vendor-selected anonymised customer case study; the savings and speed figures are the vendor's own. Read via: Case-study page read 2026-10-24.</td>
+              <td>Smartling (translation-technology vendor)</td>
+              <td>2026-10-24</td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>vendor-claimed</td>
+              <td><a href="https://smartling.com/resources/case-study/technology-customer-case-study">https://smartling.com/resources/case-study/technology-customer-case-study</a></td>
+            </tr>
             <tr id="src-gartner-2025-cmo-spend">
               <th scope="row" class="id">src-gartner-2025-cmo-spend</th>
               <td>Gartner 2025 CMO Spend Survey Reveals Marketing Budgets Have Flatlined at 7.7% of Overall Company Revenue<br>Published 2025-05-12. Analyst firm; self-reported survey of 402 CMOs in North America, the UK and Europe, mostly companies above $1B revenue. Read via: Business Wire reproduction of the Gartner release (gartner.com returns 403 to automation).</td>
@@ -1056,7 +1090,7 @@
               <td>Lever 2 evidence: localisation</td>
               <td><span data-fig="asm-lever-02-evidence">Vendor case studies</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>Vendor case studies and a wide academic range; per-word rates are a gap.</td>
+              <td>Vendor case studies and a wide academic range. Post-editing speed-ups from 9 to 60 percent in one pre-LLM study and one vendor case study; per-word rates are a gap.</td>
             </tr>
             <tr id="asm-lever-03-evidence">
               <th scope="row" class="id">asm-lever-03-evidence</th>
