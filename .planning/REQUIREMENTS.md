@@ -91,7 +91,7 @@
 ### Quality & Publish
 
 - [ ] **QA-01**: The page meets WCAG 2.2 AA: labelled inputs, `aria-live` outputs, data-table equivalents for charts, and grades not conveyed by colour alone
-- [ ] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet
+- [x] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet
 - [x] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, EU AI Act Art. 50, and Getty v Stability status are re-verified, and the page's legal wording is flagged for review
 - [x] **QA-04**: An automated or scripted cross-check confirms every graded number on the page has a register entry and every calculator default matches the prose
 
@@ -179,7 +179,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLOSE-02 | Phase 4 | Complete |
 | CLOSE-03 | Phase 4 | Complete |
 | QA-01 | Phase 4 | Pending |
-| QA-02 | Phase 4 | Pending |
+| QA-02 | Phase 4 | Complete |
 | QA-03 | Phase 4 | Complete |
 | QA-04 | Phase 4 | Complete |
 
