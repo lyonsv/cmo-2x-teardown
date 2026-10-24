@@ -135,6 +135,7 @@ test('OUTPUT_DEPS: ten outputs, valid ids, reviewer and marketing FTE are not co
   assert.deepEqual(Object.keys(OUTPUT_DEPS), RESULT_ROWS.map((r) => r.id));
   for (const [out, ids] of Object.entries(OUTPUT_DEPS)) {
     assert.ok(ids.length > 0);
+    assert.equal(new Set(ids).size, ids.length, `${out} lists an id twice (IN-03)`);
     for (const id of ids) assert.ok(assumptions[id], `${out}: ${id} is not an assumption`);
   }
   assert.deepEqual(OUTPUT_DEPS.cost_per_asset.slice(0, 5), [

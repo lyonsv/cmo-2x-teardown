@@ -97,30 +97,33 @@ export function run(values, ctx) {
 // target of an output's grade chip is the first id here that carries the weakest
 // grade. Reviewer FTE and marketing FTE are not dependencies of the cost rows:
 // review cost is hours worked, not idle capacity.
+// uniq keeps the first occurrence, so the most-influential-first order is
+// unchanged and every list names each id once (IN-03).
+const uniq = (ids) => [...new Set(ids)];
 const VOLUME = ['asm-campaigns', 'asm-markets', 'asm-concepts-per-campaign', 'asm-formats-per-market', 'asm-growth-route'];
-const COST = [
+const COST = uniq([
   'asm-markets', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
-  'asm-rework-rate', 'asm-variant-cost', ...VOLUME.slice(0, 4), 'asm-growth-route', 'asm-sampling-rate',
+  'asm-rework-rate', 'asm-variant-cost', ...VOLUME, 'asm-sampling-rate',
   'asm-escalation-rate', 'asm-reviewer-rate', 'asm-rights-per-concept', 'asm-storage-per-variant', 'asm-tooling',
-];
-const UTIL = [
+]);
+const UTIL = uniq([
   'asm-markets', 'asm-reviewer-fte', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield', 'asm-rework-rate',
   'asm-sampling-rate', 'asm-escalation-rate', 'asm-reviewer-hours', ...VOLUME,
-];
+]);
 
 export const OUTPUT_DEPS = {
   campaign_markets: ['asm-campaigns', 'asm-markets', 'asm-growth-route'],
-  brief_to_live: ['asm-review-service-days', 'asm-build-days', ...UTIL],
+  brief_to_live: uniq(['asm-review-service-days', 'asm-build-days', ...UTIL]),
   cost_per_asset: COST,
   cost_per_campaign_market: COST,
   total_cost: COST,
-  budget_share: [...COST, 'asm-marketing-budget'],
-  ai_spend: [
+  budget_share: uniq([...COST, 'asm-marketing-budget']),
+  ai_spend: uniq([
     'asm-markets', 'asm-variant-cost', 'asm-ai-share-variant', 'asm-tooling', 'asm-ai-share-tooling', 'asm-approval-yield', ...VOLUME,
-  ],
+  ]),
   utilisation: UTIL,
-  break_even: [...UTIL, 'asm-tier-mix', 'asm-target-utilisation'],
-  capacity_floor: [...UTIL, 'asm-tier-mix'],
+  break_even: uniq([...UTIL, 'asm-tier-mix', 'asm-target-utilisation']),
+  capacity_floor: uniq([...UTIL, 'asm-tier-mix']),
 };
 
 const GRADE_ORDER = ['Speculative', 'Modelled', 'Benchmark'];
