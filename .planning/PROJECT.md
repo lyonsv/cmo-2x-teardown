@@ -17,6 +17,9 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 - ✓ Headline metric (approved-live variants per head per quarter, with concepts and variants per concept), six-lever table, "what 2x does not mean" and falsifier — Phase 1
 - ✓ CFO answer: Gartner-anchored flat budget, fully loaded cost per approved-live asset ($64.71 → $41.18, Modelled), AI spend as a floor, Figure 1 — Phase 1
 - ✓ Tested pure `calc.js` model (identity, monotonicity, golden cases, edge inputs, cost per asset falling) — Phase 1
+- ✓ Factory and content supply chain (Figures 2–3), layered operating architecture with one shared versioned policy source — Phase 2
+- ✓ 10,000+ asset campaign: worked variant matrix (12,000 derived → 11,400 approved-live), derive-don't-generate, neutral imagery-sourcing table with COI note, personalisation/feeds with NYU/Emory (Benchmark) — Phase 2
+- ✓ Build-and-review spine: review agent, T0–T3 tiers with human-only list, reviewer-capacity worked example, fatigue controls, eval harness and telemetry — Phase 2 (author UAT on indemnity wording and Getty facts pending)
 
 ### Active
 
@@ -94,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-24 after Phase 1 (live at https://lyonsv.github.io/cmo-2x-teardown/)*
+*Last updated: 2026-10-24 after Phase 2 (live at https://lyonsv.github.io/cmo-2x-teardown/)*
