@@ -307,7 +307,7 @@ test('zero-cost baseline: cost ratios and their change are null, not NaN', () =>
   const r = compute(goldenInputs(), zero);
   assert.equal(r.ok, true);
   assert.equal(r.baseline.cost.total, 0);
-  for (const k of ['cost_per_asset', 'cost_per_asset_change', 'total_cost', 'ai_spend']) assert.equal(r.ratios[k], null, k);
+  for (const k of ['cost_per_asset', 'cost_per_asset_change', 'total_cost', 'total_cost_change', 'ai_spend']) assert.equal(r.ratios[k], null, k);
   assert.deepEqual([...r.undefined_ratios].sort(), ['ai_spend', 'cost_per_asset', 'total_cost']);
   walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
 });
@@ -378,4 +378,12 @@ test('break-even with sampling + escalation = 1 is finite and infeasible when re
   assert.equal(r.ok, true);
   assert.equal(r.break_even_auto_approval.status, 'infeasible');
   walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
+});
+
+test('deltas: production cost rise and budget-share points equal scenario minus baseline', () => {
+  const r = compute(inputs(), assumptions);
+  close(r.deltas.total_cost, r.scenario.cost.total - r.baseline.cost.total);
+  close(r.deltas.production_share_of_budget, r.deltas.total_cost / 78000000);
+  close(r.ratios.total_cost_change, r.ratios.total_cost - 1);
+  assert.ok(r.deltas.total_cost > 0, 'at the defaults production cost rises, so the flat-budget claim needs a funded offset');
 });

@@ -44,6 +44,10 @@ export function formatValue(value, format) {
     const text = body(Math.abs(value));
     return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
   }
+  if (format === 'pts1') {
+    const text = `${n(Math.abs(value) * 100, 1)} points`;
+    return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
+  }
   if (format === 'pctchg0') {
     const p = Math.round(value * 100);
     return `${p < 0 ? '\u2212' : p > 0 ? '+' : ''}${Math.abs(p)}%`;
@@ -123,6 +127,10 @@ m('asm-review-service-days', 'Review turnaround per touch', 'review_service_days
 m('asm-target-utilisation', 'Target reviewer utilisation', 'target_utilisation', 0.85, 'share of capacity', '85%',
   'Utilisation above which queues grow quickly; used for the break-even auto-approval share. No published benchmark.');
 
+assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the production cost rise', 'context', null, null, null,
+  'reallocated from other marketing lines, chiefly agency and production fees',
+  'The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.');
+
 function lever(n, label, grade, display) {
   const id = `asm-lever-0${n}-evidence`;
   assumptions[id] = { id, label, kind: 'evidence', key: null, value: null, unit: null, display, grade, flag: null,
@@ -172,6 +180,9 @@ export const claims = {
     ['cpa-change', -0.36, 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved-live asset', 2, 'pctchg0'],
     ['total-cost-base', 2588589, 'baseline.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
     ['total-cost-scaled', 3294371, 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['total-cost-delta', 705782, 'deltas.total_cost', 'asm-variant-cost', 'USD per year, 2x minus baseline', 0, 'usdm2'],
+    ['total-cost-change', 0.27, 'ratios.total_cost_change', 'asm-variant-cost', 'change in production-attributable cost', 2, 'pctchg0'],
+    ['budget-share-delta', 0.009, 'deltas.production_share_of_budget', 'asm-marketing-budget', 'percentage points of marketing budget', 3, 'pts1'],
     ['budget-share-base', 0.033, 'baseline.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
     ['budget-share-scaled', 0.042, 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
     ['ai-spend-base', 38421, 'baseline.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],

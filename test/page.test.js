@@ -203,7 +203,7 @@ test('numeric gate: no ungraded numerals in the frame', () => {
 // ---- Plan 01-04: section 01 ----
 
 const FALSIFIER = 'If approved-live variants per head double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
-const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, at flat budget, with outcomes that hold.';
+const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many approved-and-live asset-variants per marketing head per quarter, within a flat total marketing budget, with outcomes that hold.';
 
 test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
   const s = sectionHtml('s01');
@@ -269,4 +269,18 @@ test('answer carries the cost per asset and stays short', () => {
 
 test('gartner 2026 source row is registered', () => {
   assert.equal((html.match(/id="src-gartner-2026-cmo-spend"/g) || []).length, 1);
+});
+
+// ---- Code review CR-02: flat total budget, with the production cost rise shown and its funding graded ----
+
+test('answer and s02 show the production cost rise and how a flat total budget funds it', () => {
+  const a = sectionHtml('answer');
+  assert.ok(a.includes('flat total marketing budget'));
+  assert.ok(a.includes('data-fig="total-cost-change"'));
+  assert.ok(a.includes('href="#asm-reallocation"'));
+  assert.ok(!/same money|at a flat budget/.test(html), 'unqualified flat-budget wording is back');
+  const s = sectionHtml('s02');
+  for (const id of ['total-cost-delta', 'total-cost-change', 'budget-share-delta', 'asm-reallocation']) {
+    assert.ok(s.includes(`data-fig="${id}"`), id);
+  }
 });

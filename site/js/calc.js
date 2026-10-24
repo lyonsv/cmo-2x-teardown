@@ -201,8 +201,15 @@ export function compute(inputs, assumptions) {
     total_cost: ratio('total_cost', scenario.cost.total, baseline.cost.total),
   };
   ratios.cost_per_asset_change = ratios.cost_per_asset === null ? null : ratios.cost_per_asset - 1;
+  ratios.total_cost_change = ratios.total_cost === null ? null : ratios.total_cost - 1;
+  // Absolute changes, scenario minus baseline: the production cost rise that a
+  // flat total marketing budget has to fund by reallocation (CR-02).
+  const deltas = {
+    total_cost: scenario.cost.total - baseline.cost.total,
+    production_share_of_budget: scenario.production_share_of_budget - baseline.production_share_of_budget,
+  };
   const break_even_auto_approval = breakEven(assumptions, scenario);
-  const out = { ok: true, baseline, scenario, ratios, undefined_ratios, break_even_auto_approval };
+  const out = { ok: true, baseline, scenario, ratios, undefined_ratios, deltas, break_even_auto_approval };
   // Last resort only: validation should stop every bad input first. Reaching
   // this means overflow from extreme but individually valid inputs, so no single
   // field can honestly be blamed.
