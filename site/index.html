@@ -29,6 +29,10 @@
       <span class="lbl">Conflict of interest</span>
       <p>The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.</p>
     </div>
+    <div class="callout legal-flag" role="note" aria-label="Legal review status">
+      <span class="lbl">Legal review</span>
+      <p>Legal wording on this page has been flagged for review and has not yet been reviewed by counsel. Nothing here is legal advice.</p>
+    </div>
     <section id="answer" class="answer" aria-label="Summary">
       <p><strong>A marketing organisation can roughly double approved-and-live asset-variants per marketing head per quarter, from <span data-fig="output-per-head-base">83</span> <a class="chip c-m" href="#asm-variants-per-concept">Modelled</a> to <span data-fig="output-per-head-scaled">167</span>, within a flat total marketing budget.</strong> Gartner puts spend at <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> of revenue and has flatlined: cost per approved, live asset falls from <span data-fig="cpa-base">$64.71</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$41.18</span>, while production cost rises <span data-fig="total-cost-change">+27%</span>, funded by reallocating agency and production fees <a class="chip c-m" href="#asm-reallocation">Modelled</a>. That holds only if review is governed: a tiered gate, a review agent and an eval harness. The falsifier: the claim is false if output doubles but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
     </section>
@@ -402,19 +406,19 @@
         <p>The author works at iStock/Getty Images. This page is vendor-neutral by design; the table below sets out three routes to imagery without ranking them.</p>
       </div>
       <div class="table-scroll" role="region" aria-label="Imagery sourcing table" tabindex="0">
-        <table>
+        <table id="legal-s05-imagery">
           <caption>Imagery sourcing: three routes</caption>
           <thead><tr><th scope="col">Criterion</th><th scope="col">Retrieve approved</th><th scope="col">License</th><th scope="col">Generate</th><th scope="col">Basis</th></tr></thead>
           <tbody>
             <tr><th scope="row">Rights</th><td>Existing licence terms govern use.</td><td>Per-licence terms govern use.</td><td>Depends on the model terms and any third-party material in the output.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
-            <tr><th scope="row">Indemnity</th><td>Inherits the original licence's indemnity, if any.</td><td>Conditional; caps and exclusions vary by licence tier.</td><td>Conditional; caps and exclusions vary by provider and tier.</td><td><a class="chip c-m" href="#asm-imagery-indemnity">Modelled</a></td></tr>
+            <tr id="legal-s05-indemnity"><th scope="row">Indemnity</th><td>Inherits the original licence's indemnity, if any.</td><td>Conditional; caps and exclusions vary by licence tier.</td><td>Conditional; caps and exclusions vary by provider and tier.</td><td><a class="chip c-m" href="#asm-imagery-indemnity">Modelled</a></td></tr>
             <tr><th scope="row">Copyrightability</th><td>Rights sit with the existing owner.</td><td>Rights sit with the licensor.</td><td><a href="#src-usco-copyright-ai-part2">Per the US Copyright Office</a>, purely AI output may not be protectable; human selection and modification may be.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
             <tr><th scope="row">Cost visibility</th><td>Low per asset once licensed.</td><td>Per asset or by subscription.</td><td>Metered inference plus review time.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
             <tr><th scope="row">Speed</th><td>Search time.</td><td>Search time.</td><td>Fast to a first draft; review dominates.</td><td><a class="chip c-m" href="#asm-imagery-routes">Modelled</a></td></tr>
           </tbody>
         </table>
       </div>
-      <p>Getty v Stability (UK): as at <time datetime="2026-10-24">2026-10-24</time>, the High Court had dismissed Getty's secondary copyright claim against Stability AI and upheld a narrower trade mark claim in a judgment dated <time datetime="2025-11-04">2025-11-04</time>; Getty has permission to appeal the copyright ruling, and the appeal is pending. <a class="chip c-m" href="#src-ailawsuittracker-getty-uk">Modelled</a> Full treatment in <a href="#s14">section 14</a>.</p>
+      <p id="legal-s05-getty">Getty v Stability (UK): as at <time datetime="2026-10-24">2026-10-24</time>, the High Court had dismissed Getty's secondary copyright claim against Stability AI and upheld a narrower trade mark claim in a judgment dated <time datetime="2025-11-04">2025-11-04</time>; Getty has permission to appeal the copyright ruling, and the appeal is pending. <a class="chip c-m" href="#src-ailawsuittracker-getty-uk">Modelled</a> Full treatment in <a href="#s14">section 14</a>.</p>
       <h3>Personalisation and feeds</h3>
       <p>Dynamic creative optimisation (DCO) and product-catalogue feeds are the main source of variants at this scale. A template is bound to a feed, and each catalogue item, audience or locale renders its own version, which the review agent checks like any other asset. These variants are mechanical, so they are the cheapest to govern.</p>
       <p>Outcomes and disclosure pull in different directions. A field study of display ads found that fully AI-created images raised click-through by up to <span data-fig="nyu-ctr-lift">19%</span> <a class="chip c-b" href="#src-nyu-emory-ai-ads-2025">Benchmark</a>, while disclosing AI involvement changed click-through by <span data-fig="nyu-disclosure-drop">−31.5%</span> on the same source. Disclosure rules therefore belong in the policy source, and outcomes must be measured by holdout, not assumed.</p>
@@ -694,7 +698,7 @@
         </table>
       </div>
       <p>Operations is the unglamorous lever. A brief that states the audience, the offer and the constraints cuts review rounds. Approval routing that matches the review tiers keeps the queue moving. Asset metadata that records the source, the model and the licence of each asset makes rights checkable after the fact. A rights register records where each licensed element may be used and until when. None of these raises output on its own; together they stop extra output from turning into extra rework or extra exposure.</p>
-      <div class="table-scroll" role="region" aria-label="Statutory damages table" tabindex="0">
+      <div class="table-scroll" id="legal-s09-statutory" role="region" aria-label="Statutory damages table" tabindex="0">
         <table>
           <caption><span class="statute">17 U.S.C. 504(c)</span>: statutory damages per work infringed</caption>
           <thead><tr><th scope="col">Case</th><th scope="col">Range per work</th><th scope="col">Grade</th></tr></thead>
@@ -707,7 +711,7 @@
       </div>
       <div class="callout">
         <span class="lbl">Not legal advice</span>
-        <p>Illustrative, not legal advice; depends on jurisdiction.</p>
+        <p id="legal-s09-notadvice">Illustrative, not legal advice; depends on jurisdiction.</p>
       </div>
       <p>Rights attach to the master concept, and under the statute all the parts of a derivative work constitute one work. The illustration is therefore per master concept, not per variant. Multiplying a damages figure by the number of variants would overstate the exposure, and this page does not do it.</p>
       <p>Suppose the rate of rights problems is <span data-fig="asm-incident-rate">1 in 1,000 master concepts</span> <a class="chip c-s" href="#asm-incident-rate">Speculative</a>. Treat this rate as yours to replace. We invented it for illustration, and we did not find a published benchmark for it.</p>
@@ -1117,7 +1121,7 @@
       <p>Named tools cover parts of this operating model, and the pages read for this comparison describe none that covers the whole spine. One of them documents oversight levels per task type, which is the closest match to the gate designed here. Every cell below is sourced and dated, and the source register holds each vendor page, graded Modelled and flagged vendor-claimed.</p>
       <div class="callout">
         <span class="lbl">Design, not a product</span>
-        <p>The CMO 2x spine in this column is a design described on this page. It is not a shipped product and has no customers.</p>
+        <p id="legal-s12-admission">The CMO 2x spine in this column is a design described on this page. It is not a shipped product and has no customers.</p>
       </div>
       <div class="table-scroll" role="region" aria-label="Comparison matrix" tabindex="0">
         <table class="matrix">
@@ -1919,6 +1923,8 @@
             </tbody>
           </table>
         </div>
+        <p class="nd">McKinsey: no figure is used on this page.</p>
+        <p class="nd">Gartner's generative-AI return percentages: not used on this page.</p>
         <div class="table-scroll" id="assumptions-register" role="region" aria-label="Assumptions register table" tabindex="0">
           <table>
             <caption>Assumptions register</caption>
@@ -2369,6 +2375,23 @@
           </table>
         </div>
       </div>
+      <h3 id="s15-gaps">Evidence gaps</h3>
+      <p>These are the numbers this page could not find. Each is a gap, not an estimate.</p>
+      <ul class="gaps">
+          <li><b>Cost per asset, by asset type and route.</b> Would be closed by: The reader's finance and production ledger, joined to asset IDs over several quarters, or a vendor-neutral benchmark with stated scope.</li>
+          <li><b>Approval times and queue ages.</b> Would be closed by: Workflow-tool timestamps from brief to approval for each touch, by tier.</li>
+          <li><b>Rights and compliance incident rates.</b> Would be closed by: The reader's own legal and takedown log divided by assets published; no public rate exists.</li>
+          <li><b>Auto-approval share that stays safe.</b> Would be closed by: A calibrated evaluation harness run against human reviewer decisions, with sampling audit results.</li>
+          <li><b>First-pass compliance rate.</b> Would be closed by: Gate logs of first submissions against brand and legal rules, before any fix loop.</li>
+          <li><b>Analyst hours and insight turnaround.</b> Would be closed by: Time tracking on reporting tasks before and after automation.</li>
+          <li><b>DAM metadata completeness and decay.</b> Would be closed by: An audit of rights, expiry and usage metadata against a sample of live assets.</li>
+          <li><b>Answer-engine (AEO) outcomes.</b> Would be closed by: Independent, pre-registered traffic and pipeline studies with holdouts; current evidence is vendor or panel based.</li>
+          <li><b>Localisation cost per word for LLM-era workflows.</b> Would be closed by: Current vendor-neutral rate cards and post-edit effort studies on modern models.</li>
+          <li><b>Win rate of marketing experiments, by definition.</b> Would be closed by: Several independent datasets with the win definition stated, not one vendor's.</li>
+          <li><b>Reviewer fatigue in marketing review.</b> Would be closed by: A time-on-task and error-rate study of reviewers at AI-era volumes.</li>
+          <li><b>Indemnity caps and exclusions in practice.</b> Would be closed by: Current licence and provider contract terms read by counsel for the reader's own suppliers.</li>
+      </ul>
+      <p>Replace any of these with your own data in the calculator. See <a href="#s11">section 11</a>.</p>
     </section>
   </main>
   <footer>

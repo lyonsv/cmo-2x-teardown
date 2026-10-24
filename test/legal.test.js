@@ -1,0 +1,57 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+const inv = readFileSync(new URL('../.planning/LEGAL-REVIEW.md', import.meta.url), 'utf8');
+
+const FLAG_TEXT = 'Legal wording on this page has been flagged for review and has not yet been reviewed by counsel. Nothing here is legal advice.';
+
+test('legal-review flag is present once, verbatim, between the COI note and the summary', () => {
+  // Removal is an author edit after counsel's review; update this test only then.
+  const flag = '<div class="callout legal-flag" role="note" aria-label="Legal review status">';
+  assert.equal(html.split(flag).length - 1, 1);
+  const iCoi = html.indexOf('<div class="callout coi">');
+  const iFlag = html.indexOf(flag);
+  const iAnswer = html.indexOf('<section id="answer"');
+  assert.ok(iCoi > -1 && iCoi < iFlag && iFlag < iAnswer, 'order: coi, flag, answer');
+  const between = html.slice(iCoi, iFlag);
+  assert.equal((between.match(/<div/g) || []).length, 1, 'nothing between the COI callout and the flag');
+  const block = html.slice(iFlag, html.indexOf('</div>', iFlag));
+  assert.ok(block.includes('<span class="lbl">Legal review</span>'));
+  assert.ok(block.includes(`<p>${FLAG_TEXT}</p>`));
+});
+
+test('legal ids on the page equal the ids in LEGAL-REVIEW.md', () => {
+  const onPage = [...html.matchAll(/id="(legal-[a-z0-9-]+)"/g)].map((m) => m[1]);
+  assert.equal(new Set(onPage).size, onPage.length, 'legal ids unique');
+  const inFile = [...inv.matchAll(/^\| (legal-[a-z0-9-]+) \|/gm)].map((m) => m[1]);
+  assert.equal(new Set(inFile).size, inFile.length, 'inventory ids unique');
+  assert.deepEqual([...new Set(onPage)].sort(), [...new Set(inFile)].sort());
+  assert.equal(onPage.length, 10);
+});
+
+test('s15 lists evidence gaps with closers and the not-used notes', () => {
+  const s15 = html.slice(html.indexOf('<section id="s15"'));
+  assert.ok(s15.includes('<h3 id="s15-gaps">Evidence gaps</h3>'));
+  assert.ok(s15.includes('These are the numbers this page could not find. Each is a gap, not an estimate.'));
+  const ul = s15.match(/<ul class="gaps">([\s\S]*?)<\/ul>/);
+  assert.ok(ul);
+  const items = [...ul[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1]);
+  assert.equal(items.length, 12);
+  for (const li of items) {
+    assert.match(li, /^<b>[^<]+<\/b> Would be closed by: /);
+    const text = li.replace(/<[^>]+>/g, '');
+    assert.ok(text.split(/\s+/).length <= 35, 'at most 35 words: ' + text);
+    assert.doesNotMatch(text, /\d/, 'numeral-free');
+  }
+  for (const lead of ['Cost per asset', 'Approval times', 'incident rates', 'Auto-approval share', 'First-pass compliance', 'Analyst hours', 'DAM metadata', 'Answer-engine']) {
+    assert.ok(ul[1].includes(lead), lead);
+  }
+  assert.ok(s15.includes('Replace any of these with your own data in the calculator.'));
+  assert.ok(/<a href="#s11">/.test(s15.slice(s15.indexOf('Replace any of these'))));
+  assert.ok(html.includes('<p class="nd">McKinsey: no figure is used on this page.</p>'));
+  assert.ok(html.includes("<p class=\"nd\">Gartner's generative-AI return percentages: not used on this page.</p>"));
+  assert.equal((html.match(/mckinsey/gi) || []).length, 1);
+  assert.doesNotMatch(html, /\b49%[\s\S]{0,200}\b40%[\s\S]{0,200}\b27%/);
+});

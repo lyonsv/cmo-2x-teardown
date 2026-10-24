@@ -750,7 +750,7 @@ const COI_S05 = 'The author works at iStock/Getty Images. This page is vendor-ne
 
 function imageryTable() {
   const s = sectionHtml('s05');
-  const m = s.match(/<table>\s*<caption>Imagery sourcing: three routes<\/caption>[\s\S]*?<\/table>/);
+  const m = s.match(/<table(?: id=\"legal-s05-imagery\")?>\s*<caption>Imagery sourcing: three routes<\/caption>[\s\S]*?<\/table>/);
   assert.ok(m, 'imagery table missing');
   return { s, table: m[0], at: s.indexOf(m[0]) };
 }
@@ -1214,7 +1214,7 @@ test('ops block: statutory table, callout, reader-owned incident rate, per-work 
   assert.deepEqual(t.rows.map((r) => strip(r.match(/<th[^>]*>([\s\S]*?)<\/th>/)[1])), ['Ordinary', 'Innocent', 'Wilful']);
   for (const r of t.rows) assert.ok(r.includes('<a class="chip c-b" href="#src-cornell-17usc504">Benchmark</a></td>'));
   const after = block.slice(block.indexOf('</table>', block.indexOf('statutory damages per work infringed')));
-  assert.match(after, /^<\/table>\s*<\/div>\s*<div class="callout">\s*<span class="lbl">Not legal advice<\/span>\s*<p>Illustrative, not legal advice; depends on jurisdiction\.<\/p>/);
+  assert.match(after, /^<\/table>\s*<\/div>\s*<div class="callout">\s*<span class="lbl">Not legal advice<\/span>\s*<p id="legal-s09-notadvice">Illustrative, not legal advice; depends on jurisdiction\.<\/p>/);
   const text = strip(block);
   assert.ok(text.includes('Treat this rate as yours to replace.'));
   assert.ok(block.includes('<a class="chip c-s" href="#asm-incident-rate">Speculative</a>'));

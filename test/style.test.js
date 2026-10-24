@@ -285,3 +285,17 @@ test('.asat is ruled top and bottom, .risk is spaced, no status colours', () => 
   assert.ok(rule('.risk').includes('margin: var(--s-xl) 0'));
   for (const s of ['.asat', '.risk', '.mitigation']) assert.ok(!/--low|--verified/.test(rule(s)), s);
 });
+
+test('legal flag and gaps list rules', () => {
+  const f = rule('.callout.legal-flag');
+  for (const d of ['background: var(--paper-2)', 'border: 1px solid var(--rule)', 'border-left: 3px solid var(--ink)', 'padding: var(--s-md) var(--s-lg)']) assert.ok(f.includes(d), d);
+  const g = rule('.gaps');
+  assert.ok(g.includes('max-width: 44em'));
+  assert.ok(rule('.gaps li').includes('margin: 0 0 var(--s-md)'));
+  for (const s of ['.callout.legal-flag', '.gaps', '.gaps li']) assert.ok(!/--low|--verified/.test(rule(s)), s);
+  // The flag must never be hidden, in print or anywhere else (author removes it by editing the page).
+  for (const r of rules()) if (/legal-flag/.test(r.sel)) assert.ok(!/display:\s*none|visibility:\s*hidden/.test(r.body), r.sel);
+  const print = css.slice(css.indexOf('@media print'));
+  assert.match(print, /\.callout\.legal-flag \{[^}]*background: none[^}]*border: 1px solid #555[^}]*border-left: 3px solid #000/);
+  assert.match(print, /break-inside: avoid/);
+});
