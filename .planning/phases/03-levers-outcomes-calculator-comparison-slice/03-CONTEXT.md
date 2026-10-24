@@ -88,3 +88,14 @@ Delivers sections 09 (other five levers), 10 (outcome case), 11 (calculator), 12
 - Imagery cost comparison (V2-02).
 
 </deferred>
+
+## Post-research decisions (2026-10-24, orchestrator accepting 03-RESEARCH recommendations; user away)
+
+- Experimentation win-rate range becomes ~10–33% by definition (Optimizely 12% vendor-claimed; Microsoft ~1/3 company-reported via Kohavi et al. KDD 2013; Google ~10% second-hand in the same paper). DRIP 36.3% dropped (no primary source). ROADMAP's "12–36%" wording is superseded by the sourced range.
+- Vendor matrix uses the corrected facts: Gradial documents per-task-type oversight (full review / spot-check / auto-approve); what is "not publicly documented" is a risk-class tier gate and a human-decision-calibrated eval harness. Gradial CMS/DAM list may name AEM etc. with citation. AirOps Human Review "listed on all three plans" (MEDIUM). Omit all funding figures from s12.
+- AEO/GEO graded Speculative with "we did not find…" phrasing, citing the independent traffic studies found; SparkToro/Gumshoe omitted.
+- 17 U.S.C. 504(c) ranges Benchmark (Cornell LII); page must not multiply damages by variant count (derivatives = one work); §412 registration precondition noted.
+- Localisation 9.26–59.74% (Läubli et al. 2019) graded Modelled with scope caveats.
+- Calculator: locales folded into variants per concept (8 formats × 5 locales); headcount scenarios via a new pure `scenarioOutcomes()` with Modelled $150k loaded FTE cost and $3k change cost per affected FTE; sensitivity and "what you must believe" ranked by measured influence (locales, master concept cost, 2x auto-approval, review minutes, yield…); perturbations clamped to valid ranges; add cost per master concept as an input.
+- Module split: pure `fields.js` → `model.js` → `state.js` (model.js does not import data.js); `ui.js` thin, `textContent` only; headless-Chrome JS-on smoke check as an automated gate (no human needed).
+- Non-s12 prose anonymises vendor/company names (VENDOR_RE); names appear only in s12 and register rows.
