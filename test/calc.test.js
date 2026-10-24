@@ -118,13 +118,19 @@ test('identity: multiplier 1 with scaled values copied from baseline', () => {
   }
 });
 
-test('monotonicity of variants_per_year', () => {
+test('monotonicity: more volume gives more variants and more total cost on both sides', () => {
   for (const f of ['variants_per_concept', 'concepts_per_campaign', 'campaigns_per_year']) {
     let prev = -Infinity;
+    let prevCost = { baseline: -Infinity, scenario: -Infinity };
     for (const v of [1, 2, 5, 10, 50]) {
       const r = compute(inputs({ [f]: v }), assumptions);
-      assert.ok(r.scenario.variants_per_year >= prev, f);
+      assert.equal(r.ok, true, `${f}=${v}`);
+      assert.ok(r.scenario.variants_per_year > prev, `${f}=${v} variants`);
       prev = r.scenario.variants_per_year;
+      for (const which of ['baseline', 'scenario']) {
+        assert.ok(r[which].cost.total > prevCost[which], `${f}=${v} ${which} cost`);
+        prevCost = { ...prevCost, [which]: r[which].cost.total };
+      }
     }
   }
 });
