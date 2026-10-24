@@ -40,7 +40,7 @@ s15 now states what the page could not prove (twelve gaps, each with "Would be c
 | Task | Commit | Result |
 |------|--------|--------|
 | 1. Gaps, not-used notes, legal flag, legal ids, LEGAL-REVIEW.md | 22ffa3e | s15 gaps list, two `.nd` notes, `.callout.legal-flag` (CSS and print), ten ids, inventory, legal.test.js, style test |
-| 2. QA-03 re-verification | (this plan's task 2 commit) | scripts/reverify.mjs, run, Re-check failed stamps in data.js and the register |
+| 2. QA-03 re-verification | fa07745 | scripts/reverify.mjs, run, Re-check failed stamps in data.js and the register |
 
 `node --test`: 320 pass, 0 fail. `node scripts/smoke.mjs`: all PASS.
 
