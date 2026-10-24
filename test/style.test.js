@@ -106,7 +106,18 @@ test('Figure 1 stays legible on phones: 12px text scaled by 800/960 is at least 
   const m = css.match(/@media \(max-width: 960px\) {([\s\S]*?)\n}/);
   assert.ok(m, 'missing 960px media block');
   assert.ok(m[1].includes('svg.fig { min-width: 800px; }'));
-  assert.ok((12 * 800) / 960 >= 10);
+  // Code review IN-02: compute the ratio from the real viewBox, CSS text size and
+  // minimum rendered width, so a change to any of them is caught.
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const figs = [...page.matchAll(/<svg\b[^>]*\bclass="fig"[^>]*>/g)].map((x) => x[0]);
+  assert.ok(figs.length >= 1, 'no svg.fig on the page');
+  const textPx = Number(css.match(/\.fig text\s*{[^}]*font:\s*\d+\s+(\d+(?:\.\d+)?)px/)[1]);
+  const minWidth = Number(m[1].match(/svg\.fig\s*{\s*min-width:\s*(\d+)px/)[1]);
+  for (const open of figs) {
+    const vbWidth = Number(open.match(/viewBox="0 0 (\d+(?:\.\d+)?) \d+(?:\.\d+)?"/)[1]);
+    const effective = (textPx * Math.min(minWidth, vbWidth)) / vbWidth;
+    assert.ok(effective >= 10, `svg.fig text renders at ${effective.toFixed(2)}px at its minimum width`);
+  }
 });
 
 test('font sizes stay on the scale', () => {
