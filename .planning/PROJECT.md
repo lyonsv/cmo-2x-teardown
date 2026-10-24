@@ -78,6 +78,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 | Named comparison vs Gradial, AirOps, Profound on the page | The user wants the CMO to see how this approach compares to market offerings | — Pending |
 | Falsifier uses OR (outcomes flat OR compliance falls) | Code review: AND let flat outcomes escape falsification; a CFO would spot it | ✓ Phase 1 |
 | Flat budget stated with explicit reallocation (~$0.71M from agency/production lines) | Model shows production cost rising 27%; honesty constraint | ✓ Phase 1 |
+| Headline 2x metric reframed from "approved-live variants per marketing head" to campaigns and market launches in market per quarter, with brief-to-live time and cost per approved asset (Phase 3.1) | User review: no CMO benchmark or practice for assets per head; most variants are crops/locales, so the count is mechanical and gameable. Variants stay as an internal factory/capacity measure | — Pending |
 | Add AEO/GEO as a sixth lever | Answer-engine visibility is an emerging output/outcome channel (Profound) that the original five levers missed | — Pending |
 
 ## Evolution

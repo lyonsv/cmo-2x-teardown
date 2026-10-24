@@ -183,6 +183,21 @@ Plans:
 **UI hint**: yes
 **Research flag**: Re-verify all vendor claims against primary pages (Gradial CMS/DAM list, which AirOps tier includes Human Review, Profound engine count and methodology). Check whether any independent AEO measurement study exists. Open primary sources before assigning any Benchmark grade.
 
+### Phase 03.1: Headline Metric Reframe (INSERTED)
+
+**Goal**: A CMO reads the 2x claim in terms they already use: twice the campaigns and market launches in market per quarter at flat budget and headcount, with brief-to-live time and cost per approved asset beside it, while variant counts become an internal factory and capacity measure rather than the headline.
+**Mode:** mvp
+**Depends on**: Phase 3
+**Requirements**: CRED-03 (revised), CRED-05, CFO-02, CFO-04, LEVER-06, CALC-01, CALC-02
+**Success Criteria** (what must be TRUE):
+  1. Answer-first paragraph, s01 metric definition, metric trio and six-lever table lead with campaigns and market launches in market per quarter (plus brief-to-live time and cost per approved asset); "variants per marketing head" no longer appears as the headline claim anywhere.
+  2. The falsifier and "what 2x does not mean" are restated against the new headline, and state plainly that more crops, sizes or locales do not count as 2x.
+  3. s02 Figure 1 and its data table, and the calculator's results, summary sentence, chart and "what you must believe" panel, report the new headline metric(s); variant counts remain only in s05/s07 (factory and review capacity) and the s15 registers, labelled as internal throughput.
+  4. data.js, calc/model code and all drift, crosscheck and smoke tests are updated so every new number is graded, registered and traced; no test is loosened to make the change pass.
+  5. The reason for the change (no CMO benchmark for assets per head; Goodhart risk from mechanical variants) is recorded in PROJECT.md Key Decisions.
+**Plans**: TBD
+**UI hint**: yes
+
 ### Phase 4: Adoption, Risk, Evidence & Publish Slice
 
 **Goal**: A reader can finish the page with an honest view of adoption, what goes wrong and the evidence gaps, and the published page is accessible, cross-checked, re-verified and flagged for legal review.

@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 04-06-PLAN.md
-last_updated: "2026-10-24T18:47:54.732Z"
+last_updated: "2026-10-24T18:48:31.423Z"
 last_activity: 2026-10-24
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 3
   total_plans: 36
   completed_plans: 33
-  percent: 75
+  percent: 60
 ---
 
 # Project State
@@ -66,6 +66,10 @@ Progress: [█████████░] 92%
 | Phase 4 P05 | 40min | 2 tasks | 8 files |
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 03.1 inserted after Phase 3: Headline metric reframe: user challenged assets-per-marketing-head as a CMO metric (no benchmark, mostly crops/locales); reframe to campaigns and market launches in market per quarter + brief-to-live time + cost per approved asset; Phase 4 plans 04-08/04-09 held until 03.1 completes (URGENT)
 
 | Phase 1 P01 | 15min | 3 tasks | 11 files |
 | Phase 1 P05 | session | 4 tasks | 6 files |
