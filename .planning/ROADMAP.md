@@ -123,13 +123,63 @@ Plans:
 **Requirements**: LEVER-01, LEVER-02, LEVER-03, LEVER-04, LEVER-05, OUTC-01, OUTC-02, CALC-01, CALC-02, CALC-03, CALC-04, CALC-05, CALC-06, CALC-07, COMP-01, COMP-02, COMP-03, COMP-04, COMP-05
 **Success Criteria** (what must be TRUE):
 
-  1. Reader sees localisation, experimentation (12-36% win-rate maths), insight and reporting, ops (with the 17 U.S.C. 504(c) tail-risk illustration graded Speculative) and AEO/GEO blocks, each with output metric, outcome argument and grade.
+  1. Reader sees localisation, experimentation (win-rate maths; sourced range about 10-33% by definition, superseding the earlier 12-36% per 03-CONTEXT post-research decisions), insight and reporting, ops (with the 17 U.S.C. 504(c) tail-risk illustration graded Speculative) and AEO/GEO blocks, each with output metric, outcome argument and grade.
   2. Reader sees the outcome scorecard across revenue/pipeline, speed to market, quality and brand, and learning velocity, plus how lift would be proven (holdouts, pre-registration, multiple-comparison correction, MMM calibrated by incrementality).
   3. Reader enters their own inputs and sees baseline vs 2x output, fully loaded cost per approved-live asset and cycle time update live, with each assumption graded, "show the maths", a "what you must believe" panel, and outputs inheriting the weakest input grade.
   4. Reader sees the break-even auto-approval rate at flat review headcount, redeploy/hold/reduce scenarios with change-management cost, and a sensitivity table. Invalid or zero inputs show a message, never NaN or Infinity, and a URL hash restores a shared scenario.
   5. Reader sees the comparison matrix and per-vendor slot-in/alternative/falls-short text ("not publicly documented" wording), each vendor outcome flagged vendor-claimed with source URL and access date, category-level build-vs-buy and lock-in guidance, and the admission that the spine is a design not a shipped product. Vendor names appear only here and in the source register.
 
-**Plans**: TBD
+**Plans:** 12 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Phase 2 UI-review fixes; s09 lead and localisation lever (LEVER-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — s09 experimentation (win rates by definition, traffic bound) and insight levers
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — s09 operations (17 U.S.C. 504(c) illustration) and AEO/GEO levers; s09 complete
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 03-04-PLAN.md — s10 outcome scorecard, proof block, "Run your own numbers" CTAs
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 03-05-PLAN.md — Pure calculator core (format/fields/model, weakest grade) and static s11 default results
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 03-06-PLAN.md — Live calculator: state.js hash/validation, form, ui.js, CSP script-src 'self', headless smoke
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [ ] 03-07-PLAN.md — Headcount scenarios (redeploy/hold/reduce) and sensitivity table
+
+**Wave 8** *(blocked on Wave 7 completion)*
+
+- [ ] 03-08-PLAN.md — Show the maths, what you must believe, live Figure 8 (svg.js)
+
+**Wave 9** *(blocked on Wave 8 completion)*
+
+- [ ] 03-09-PLAN.md — Vendor primary-page re-verification, s12 admission and comparison matrix
+
+**Wave 10** *(blocked on Wave 9 completion)*
+
+- [ ] 03-10-PLAN.md — Vendor-published outcomes (flagged), vendor panels, build/buy and lock-in
+
+**Wave 11** *(blocked on Wave 10 completion)*
+
+- [ ] 03-11-PLAN.md — Automated gates and local preview checkpoint (widths, print, JS off) and fixes
+
+**Wave 12** *(blocked on Wave 11 completion)*
+
+- [ ] 03-12-PLAN.md — Approve-push checkpoint, W3C, single push, live verification and live smoke
+
 **UI hint**: yes
 **Research flag**: Re-verify all vendor claims against primary pages (Gradial CMS/DAM list, which AirOps tier includes Human Review, Profound engine count and methodology). Check whether any independent AEO measurement study exists. Open primary sources before assigning any Benchmark grade.
 
@@ -157,5 +207,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
-| 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
+| 3. Levers, Outcomes, Calculator & Comparison Slice | 0/12 | Planned | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
