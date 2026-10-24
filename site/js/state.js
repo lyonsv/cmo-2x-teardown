@@ -23,12 +23,17 @@ export function coerce(field, text) {
   if (!Number.isFinite(n) || n > MAX) return rule;
   if (field.kind === 'int' && !Number.isInteger(n)) return rule;
   if (n === 0 && !field.zeroOk) return rule;
-  if (field.kind === 'pct') {
-    const v = Number((n / 100).toPrecision(12));
-    if (v > 1) return rule;
-    return { ok: true, value: v };
-  }
-  return { ok: true, value: n };
+  const v = field.kind === 'pct' ? Number((n / 100).toPrecision(12)) : n;
+  if (v > 1 && field.kind === 'pct') return rule;
+  // A value the share link cannot write back exactly (for example 1e-22, which
+  // prints as 0) would not restore, so it is rejected here (IN-01).
+  if (!sameAfterText(field, v)) return { ok: false, message: `${label}: use fewer decimal places.` };
+  return { ok: true, value: v };
+}
+
+function sameAfterText(field, v) {
+  const n = Number(toText(field, v));
+  return (field.kind === 'pct' ? Number((n / 100).toPrecision(12)) : n) === v;
 }
 
 function capMessage(label, cap, when) {

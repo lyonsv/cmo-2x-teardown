@@ -36,6 +36,20 @@ test('coerce messages follow the copy templates', () => {
   assert.equal(coerce(F.marketers, '0').message, 'Marketing FTE: enter a number above 0.');
 });
 
+test('coerce rejects values the share link cannot write back exactly (IN-01)', () => {
+  const minutes = FIELDS.find((f) => f.key === 'minutes');
+  assert.deepEqual(coerce(minutes, '0.0000000000000000000001'), { ok: false, message: 'Minutes per review: use fewer decimal places.' });
+  for (const f of FIELDS) {
+    for (const t of ['1', '0.5', '12.25', '0.00000001', '1,200.5']) {
+      const r = coerce(f, t);
+      if (!r.ok) continue;
+      const back = parseHash(`#s11?${f.key}=${toText(f, r.value)}`, ctx);
+      assert.deepEqual(back.notices, [], `${f.key}=${t} restores`);
+      assert.equal(back.values[f.key], r.value, `${f.key}=${t} round-trips`);
+    }
+  }
+});
+
 test('validate: cross-field caps and clean defaults', () => {
   assert.deepEqual(validate(defaults, ctx), []);
   const hi2 = validate({ ...defaults, auto2: 0.9 }, ctx);
