@@ -595,3 +595,20 @@ test('maths items: every figure in a step shares its chip ref and grade', () => 
     assert.equal(chips[0][2], figs[0].grade);
   }
 });
+
+// ---- 03-09: vendor primary-page sources ----
+
+test('vendor sources are Modelled, vendor-claimed, https and dated; no Benchmark claim cites them', () => {
+  const keys = Object.keys(sources).filter((k) => /^(gradial|airops|profound)-/.test(k));
+  assert.equal(keys.length, 18);
+  for (const k of keys) {
+    const s = sources[k];
+    assert.equal(s.grade, 'Modelled', k);
+    assert.equal(s.flag, 'vendor-claimed', k);
+    assert.match(s.url, /^https:\/\//, k);
+    assert.match(s.accessed, /^\d{4}-\d{2}-\d{2}$/, k);
+  }
+  for (const c of Object.values(claims)) {
+    if (/^src-(gradial|airops|profound)-/.test(c.ref)) assert.notEqual(c.grade, 'Benchmark', c.id);
+  }
+});
