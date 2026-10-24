@@ -52,8 +52,8 @@
 ### Other Levers
 
 - [x] **LEVER-01**: Reader sees a localisation/transcreation block with its output metric (approved localised assets per locale; master-to-last-locale lag), its outcome argument and graded evidence
-- [ ] **LEVER-02**: Reader sees an experimentation block with win-rate maths (≈12–36% depending on definition; superseded by the sourced ≈10–33% range, see 03-CONTEXT post-research decisions) explaining why test velocity improves outcomes, bounded by traffic
-- [ ] **LEVER-03**: Reader sees an insight & reporting block with its output/outcome metrics, marked Modelled where evidence is a gap
+- [x] **LEVER-02**: Reader sees an experimentation block with win-rate maths (≈12–36% depending on definition; superseded by the sourced ≈10–33% range, see 03-CONTEXT post-research decisions) explaining why test velocity improves outcomes, bounded by traffic
+- [x] **LEVER-03**: Reader sees an insight & reporting block with its output/outcome metrics, marked Modelled where evidence is a gap
 - [ ] **LEVER-04**: Reader sees an ops block (briefs, approvals, DAM metadata, rights tracking) including a statutory-damages tail-risk illustration (17 U.S.C. 504(c)) with the incident rate graded Speculative
 - [ ] **LEVER-05**: Reader sees an answer-engine visibility (AEO/GEO) block: answer assets published/refreshed per head as output; citation share, AI-referred sessions and pipeline as outcomes; citation loss feeding refresh briefs back into the factory
 - [x] **LEVER-06**: Reader sees a six-lever summary table (output metric, outcome metric, evidence grade) in section 01
@@ -157,8 +157,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SPINE-06 | Phase 2 | Complete |
 | SPINE-07 | Phase 2 | Complete |
 | LEVER-01 | Phase 3 | Complete |
-| LEVER-02 | Phase 3 | Pending |
-| LEVER-03 | Phase 3 | Pending |
+| LEVER-02 | Phase 3 | Complete |
+| LEVER-03 | Phase 3 | Complete |
 | LEVER-04 | Phase 3 | Pending |
 | LEVER-05 | Phase 3 | Pending |
 | OUTC-01 | Phase 3 | Pending |
