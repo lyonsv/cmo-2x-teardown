@@ -53,6 +53,20 @@ test('chartSpec: over capacity adds a second line and rescales the utilisation p
   assert.ok(u.bars.every((b) => !b.lines[0].includes('capacity')));
 });
 
+test('chartSpec: over capacity marks the 2x campaign-markets bar as not achievable (CR-01)', () => {
+  const spec = specFor({ auto2: 0.2 });
+  const [base, scaled] = spec.panels[0].bars;
+  assert.deepEqual(scaled.lines, ['100', 'unachievable']);
+  assert.deepEqual(base.lines, ['50']);
+  assert.ok(spec.desc.includes('baseline 50, 2x 100 (not achievable: over capacity).'), spec.desc);
+  const both = specFor({ reviewers: 4 });
+  assert.ok(both.panels[0].bars.every((b) => b.lines[1] === 'unachievable'));
+  assert.ok(both.desc.includes('baseline 50 (not achievable: over capacity), 2x 100 (not achievable: over capacity).'), both.desc);
+  const fine = specFor({});
+  assert.ok(fine.panels[0].bars.every((b) => b.lines.length === 1));
+  assert.ok(!fine.desc.includes('not achievable'));
+});
+
 test('chartSpec: every label line fits between x=200 and the viewBox edge', () => {
   for (const v of [{}, { reviewers: 4 }, { campaigns: 1e6 }, { campaigns: 1e9, concepts: 1e6, marketers: 0.001 }]) {
     const spec = specFor(v);

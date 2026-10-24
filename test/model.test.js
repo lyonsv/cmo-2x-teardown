@@ -238,7 +238,24 @@ test('present with too few reviewers: over capacity wording', () => {
   assert.ok(row('utilisation').scaled.text.includes('over capacity'));
   assert.equal(row('brief_to_live').scaled.text, 'unbounded (over capacity)');
   assert.equal(row('brief_to_live').change.text, 'n/a: over capacity');
-  assert.match(p.summary, /^With more campaigns and more markets, at 2x you have 100 campaign-markets live per quarter at \$\d[\d,.]* per approved asset and \$[\d,]+ per campaign-market, but reviewers are over capacity, at \d+%, so brief-to-live time is unbounded\.$/);
+  // CR-01: over capacity the 2x campaign-markets are demand, never called live.
+  assert.equal(row('campaign_markets').scaled.text, '100 (not achievable: over capacity)');
+  assert.ok(Math.abs(row('campaign_markets').scaled.value - 100) < 1e-9);
+  // Four reviewers are over capacity at baseline too, so today's volume is also marked.
+  assert.equal(row('campaign_markets').base.text, '50 (not achievable: over capacity)');
+  assert.equal(row('campaign_markets').change.text, 'n/a: over capacity');
+  assert.match(p.summary, /^With more campaigns and more markets, 2x would mean 100 campaign-markets launched per quarter, but reviewers are over capacity, at \d+%, so that volume cannot go live and brief-to-live time is unbounded\.$/);
+  assert.ok(!p.summary.includes('live per quarter'));
+  assert.ok(p.summary.includes('cannot go live'));
+  // Over capacity at 2x only (the reviewer's repro): baseline stays plain.
+  const q = present({ ...defaultValues(ctx), auto2: 0.2 }, ctx);
+  const qrow = (id) => q.rows.find((r) => r.id === id);
+  assert.equal(q.overCapacity, true);
+  assert.equal(qrow('campaign_markets').base.text, '50');
+  assert.equal(qrow('campaign_markets').scaled.text, '100 (not achievable: over capacity)');
+  assert.equal(qrow('campaign_markets').change.text, 'n/a: over capacity');
+  assert.equal(q.summary, 'With more campaigns and more markets, 2x would mean 100 campaign-markets launched per quarter, but reviewers are over capacity, at 110%, so that volume cannot go live and brief-to-live time is unbounded.');
+  assert.ok(!q.summary.includes('live per quarter'));
   assert.ok(!p.summary.includes('of capacity'));
 });
 

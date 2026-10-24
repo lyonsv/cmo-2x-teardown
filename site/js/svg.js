@@ -30,17 +30,20 @@ export function chartSpec(p) {
     const top = i * 140;
     const bars = [['Baseline', 'bar-base', 'base'], ['2x', 'bar-scaled', 'scaled']].map(([series, cls, side], b) => {
       const value = row[side].value;
-      const over = def.id === 'utilisation' && value >= 1;
+      // Over-capacity campaign-markets are demand that cannot go live (CR-01).
+      let note = null;
+      if (def.id === 'utilisation' && value >= 1) note = ['over capacity', ' (over capacity)'];
+      else if (row[side].text.includes('not achievable')) note = ['unachievable', ' (not achievable: over capacity)'];
       const text = fit(formatValue(value, def.fmt), value, def.kind);
       const sameAsRow = text === row[side].text;
       const y = top + 36 + b * 48;
       return {
         series, cls, x: 0, y, width: max > 0 ? snap((value / max) * AREA) : 0, height: 24, seriesY: y - 4,
         value: { fig: sameAsRow ? `calc-${def.id}-${side}` : `calc-chart-${def.id}-${side}`, text },
-        textY: over ? y + 12 : y + 16, lines: over ? [text, 'over capacity'] : [text],
+        textY: note ? y + 12 : y + 16, lines: note ? [text, note[0]] : [text], note: note ? note[1] : '',
       };
     });
-    desc.push(`${def.label}: baseline ${bars[0].value.text}, 2x ${bars[1].value.text}${bars[1].lines.length > 1 ? ' (over capacity)' : ''}.`);
+    desc.push(`${def.label}: baseline ${bars[0].value.text}${def.id === 'utilisation' ? '' : bars[0].note}, 2x ${bars[1].value.text}${bars[1].note}.`);
     const panel = { label: def.label, labelY: top + 12, bars };
     if (def.id === 'utilisation') panel.refLine = { x: snap(AREA / max), y1: top + 16, y2: top + 108, label: '100% capacity' };
     return panel;

@@ -177,10 +177,16 @@ function buildRows(r) {
   else if (b.brief_to_live_days === 0) briefChange = { text: ZERO_BASE };
   else briefChange = cell(s.brief_to_live_days / b.brief_to_live_days - 1, formatValue(s.brief_to_live_days / b.brief_to_live_days - 1, 'pctchg0'));
   const na = { text: NOT_APPLICABLE };
+  // Over capacity the queue never clears, so the campaign-markets are demand, not
+  // launches: the number stays, marked not achievable, and the change is n/a (CR-01).
+  const cmCell = (side) => {
+    const text = formatValue(side.campaign_markets_per_quarter, 'int');
+    return cell(side.campaign_markets_per_quarter, side.review_capacity_exceeded ? `${text} (not achievable: over capacity)` : text);
+  };
+  const cmChange = b.review_capacity_exceeded || s.review_capacity_exceeded
+    ? { text: 'n/a: over capacity' } : ratioChange('campaign_markets', r.ratios.campaign_markets);
   const by = {
-    campaign_markets: [cell(b.campaign_markets_per_quarter, formatValue(b.campaign_markets_per_quarter, 'int')),
-      cell(s.campaign_markets_per_quarter, formatValue(s.campaign_markets_per_quarter, 'int')),
-      ratioChange('campaign_markets', r.ratios.campaign_markets)],
+    campaign_markets: [cmCell(b), cmCell(s), cmChange],
     brief_to_live: [brief(b.brief_to_live_days), brief(s.brief_to_live_days), briefChange],
     cost_per_asset: [cell(b.cost_per_asset, formatValue(b.cost_per_asset, 'usd2')),
       cell(s.cost_per_asset, formatValue(s.cost_per_asset, 'usd2')),
@@ -449,10 +455,11 @@ export function present(values, ctx) {
   const y = formatValue(sSide.cost_per_asset, 'usd2');
   const zc = formatValue(sSide.cost_per_campaign_market, 'usd0');
   const z = formatValue(sSide.utilisation, 'pct0');
-  const lead = `With ${route}, at 2x you have ${cm} campaign-markets live per quarter`;
+  // Over capacity the 2x volume is demand that cannot go live, so it is never
+  // called live (CR-01).
   const summary = over
-    ? `${lead} at ${y} per approved asset and ${zc} per campaign-market, but reviewers are over capacity, at ${z}, so brief-to-live time is unbounded.`
-    : `${lead}, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
+    ? `With ${route}, 2x would mean ${cm} campaign-markets launched per quarter, but reviewers are over capacity, at ${z}, so that volume cannot go live and brief-to-live time is unbounded.`
+    : `With ${route}, at 2x you have ${cm} campaign-markets live per quarter, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
     scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),

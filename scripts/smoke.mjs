@@ -215,10 +215,12 @@ async function cases(base) {
 
   await run('i over capacity in the chart', () => {
     const dom = dump(`${base}#s11?reviewers=4`);
-    const label = decode((dom.match(/<text class="over-lbl"[^>]*>([^<]*)</) || [])[1] || '');
-    check('label', label === 'over capacity', `over label "${label}"`);
+    const labels = [...dom.matchAll(/<text class="over-lbl"[^>]*>([^<]*)</g)].map((m) => decode(m[1]));
+    const label = labels.join(', ');
+    check('label', labels.includes('over capacity'), `over labels "${label}"`);
+    check('demand', labels.includes('unachievable'), `over labels "${label}" lack the campaign-markets mark`);
     const sum = decode((dom.match(/<output id="calc-summary"[^>]*>([^<]*)</) || [])[1] || '');
-    check('summary', sum.includes('over capacity, at'), `summary "${sum}"`);
+    check('summary', sum.includes('over capacity, at') && sum.includes('cannot go live') && !sum.includes('live per quarter'), `summary "${sum}"`);
     check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
     return label;
   });
