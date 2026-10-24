@@ -111,16 +111,19 @@ test('run maps compute errors to field keys', () => {
   for (const e of run({ ...defaultValues(ctx), reviewers: 0 }, ctx).errors) assert.equal(typeof e.message, 'string');
 });
 
-test('OUTPUT_DEPS: nine outputs, valid ids, reviewer and marketing FTE are not cost deps', () => {
+test('OUTPUT_DEPS: ten outputs, valid ids, reviewer and marketing FTE are not cost deps', () => {
   assert.deepEqual(Object.keys(OUTPUT_DEPS), RESULT_ROWS.map((r) => r.id));
   for (const [out, ids] of Object.entries(OUTPUT_DEPS)) {
     assert.ok(ids.length > 0);
     for (const id of ids) assert.ok(assumptions[id], `${out}: ${id} is not an assumption`);
   }
   assert.deepEqual(OUTPUT_DEPS.cost_per_asset.slice(0, 5), [
-    'asm-locales', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
+    'asm-markets', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
   ]);
-  assert.deepEqual(OUTPUT_DEPS.output_per_head.slice(0, 3), ['asm-campaigns', 'asm-concepts-per-campaign', 'asm-locales']);
+  assert.deepEqual(OUTPUT_DEPS.campaign_markets, ['asm-campaigns', 'asm-markets', 'asm-growth-route']);
+  assert.deepEqual(OUTPUT_DEPS.cost_per_campaign_market, OUTPUT_DEPS.cost_per_asset);
+  for (const id of ['asm-markets', 'asm-formats-per-market', 'asm-growth-route']) assert.ok(OUTPUT_DEPS.cost_per_asset.includes(id), id);
+  for (const ids of Object.values(OUTPUT_DEPS)) for (const gone of ['asm-locales', 'asm-formats-per-locale', 'asm-concept-growth']) assert.ok(!ids.includes(gone), gone);
   for (const out of ['cost_per_asset', 'total_cost', 'ai_spend']) {
     assert.ok(!OUTPUT_DEPS[out].includes('asm-reviewer-fte'), out);
     assert.ok(!OUTPUT_DEPS[out].includes('asm-marketing-fte'), out);
@@ -140,11 +143,11 @@ test('weakest grade flows into present(): injected Speculative input', () => {
   const p = present(defaultValues(ctx), { ...ctx, grades });
   const row = (id) => p.rows.find((r) => r.id === id);
   assert.deepEqual([row('cost_per_asset').grade, row('cost_per_asset').ref], ['Speculative', 'asm-review-minutes']);
-  assert.equal(row('output_per_head').grade, 'Modelled');
-  assert.equal(row('output_per_head').ref, OUTPUT_DEPS.output_per_head[0]);
+  assert.equal(row('campaign_markets').grade, 'Modelled');
+  assert.equal(row('campaign_markets').ref, OUTPUT_DEPS.campaign_markets[0]);
 });
 
-test('present(defaults): nine rows in order with golden texts', () => {
+test('present(defaults): ten rows in order with golden texts', () => {
   const p = present(defaultValues(ctx), ctx);
   assert.equal(p.ok, true);
   assert.equal(p.overCapacity, false);
@@ -152,12 +155,26 @@ test('present(defaults): nine rows in order with golden texts', () => {
   assert.deepEqual(p.rows.map((r) => r.label), RESULT_ROWS.map((r) => r.label));
   const row = (id) => p.rows.find((r) => r.id === id);
   assert.equal(row('cost_per_asset').base.text, '$64.71');
-  assert.equal(row('cost_per_asset').scaled.text, '$41.18');
-  assert.equal(row('cost_per_asset').change.text, '−36%');
-  assert.equal(row('output_per_head').base.text, '83');
-  assert.equal(row('output_per_head').scaled.text, '167');
-  assert.equal(row('total_cost').scaled.text, '$3.29M');
-  assert.equal(row('budget_share').scaled.text, '4.2%');
+  assert.equal(row('cost_per_asset').scaled.text, '$45.26');
+  assert.equal(row('cost_per_asset').change.text, '−30%');
+  assert.equal(row('campaign_markets').base.text, '50');
+  assert.equal(row('campaign_markets').scaled.text, '100');
+  assert.equal(row('campaign_markets').change.text, '+100%');
+  assert.equal(row('brief_to_live').base.text, '11.8 days');
+  assert.equal(row('brief_to_live').scaled.text, '7.5 days');
+  assert.equal(row('brief_to_live').change.text, '−36%');
+  assert.equal(row('cost_per_campaign_market').base.text, '$12,943');
+  assert.equal(row('cost_per_campaign_market').scaled.text, '$9,052');
+  assert.equal(row('cost_per_campaign_market').change.text, '−30%');
+  assert.equal(row('total_cost').base.text, '$2.59M');
+  assert.equal(row('total_cost').scaled.text, '$3.62M');
+  assert.equal(row('total_cost').change.text, '+40%');
+  assert.equal(row('budget_share').base.text, '3.3%');
+  assert.equal(row('budget_share').scaled.text, '4.6%');
+  assert.equal(row('budget_share').change.text, '+1.3 points');
+  assert.equal(row('utilisation').base.text, '55.1%');
+  assert.deepEqual(p.rows.slice(0, 4).map((r) => r.id), ['campaign_markets', 'brief_to_live', 'cost_per_asset', 'cost_per_campaign_market']);
+  assert.equal(p.rows.length, 10);
   assert.equal(row('ai_spend').scaled.text, '$340,421');
   assert.equal(row('utilisation').scaled.text, '61.9%');
   assert.equal(row('break_even').scaled.text, '41%');
@@ -172,7 +189,24 @@ test('present(defaults): nine rows in order with golden texts', () => {
   for (const r of p.rows) {
     if (r.base.value !== undefined) assert.equal(r.base.text, formatValue(r.base.value, rr[r.id].format));
   }
-  assert.equal(p.summary, 'At 2x, your team approves 167 variants per head per quarter at $41.18 per approved asset, with reviewers at 62% of capacity.');
+  assert.equal(p.summary, 'With more campaigns and more markets, at 2x you have 100 campaign-markets live per quarter, brief to live in 7.5 days, at $45.26 per approved asset and $9,052 per campaign-market, with reviewers at 62% of capacity.');
+  assert.ok(!/per head|cycle/i.test(p.summary));
+});
+
+test('route effect: markets cheapest, campaigns dearest, headline identical; summary names the route', () => {
+  const at = (route) => present({ ...defaultValues(ctx), route }, ctx);
+  const row = (p, id) => p.rows.find((r) => r.id === id);
+  assert.equal(row(at('markets'), 'cost_per_asset').scaled.text, '$37.75');
+  assert.equal(row(at('both'), 'cost_per_asset').scaled.text, '$45.26');
+  assert.equal(row(at('campaigns'), 'cost_per_asset').scaled.text, '$55.88');
+  for (const route of ROUTES) assert.equal(row(at(route), 'campaign_markets').scaled.text, '100', route);
+  assert.ok(at('campaigns').summary.startsWith('With more campaigns, at 2x you have 100'));
+  assert.ok(at('markets').summary.startsWith('With more markets, at 2x you have 100'));
+  for (const route of ROUTES) assert.ok(!/per head|cycle/i.test(at(route).summary));
+});
+
+test('model.js carries no cycle-time or per-head wording and no removed ids', () => {
+  assert.ok(!/cycle time|per head|output_per_head|asm-locales|concept-growth/i.test(read('model.js')));
 });
 
 test('present with too few reviewers: over capacity wording', () => {
@@ -181,8 +215,9 @@ test('present with too few reviewers: over capacity wording', () => {
   assert.equal(p.overCapacity, true);
   const row = (id) => p.rows.find((r) => r.id === id);
   assert.ok(row('utilisation').scaled.text.includes('over capacity'));
-  assert.equal(row('cycle_time').scaled.text, 'unbounded (over capacity)');
-  assert.ok(p.summary.endsWith('with reviewers over capacity, at 186%.') || /with reviewers over capacity, at \d+%\.$/.test(p.summary), p.summary);
+  assert.equal(row('brief_to_live').scaled.text, 'unbounded (over capacity)');
+  assert.equal(row('brief_to_live').change.text, 'n/a: over capacity');
+  assert.match(p.summary, /^With more campaigns and more markets, at 2x you have 100 campaign-markets live per quarter at \$\d[\d,.]* per approved asset and \$[\d,]+ per campaign-market, but reviewers are over capacity, at \d+%, so brief-to-live time is unbounded\.$/);
   assert.ok(!p.summary.includes('of capacity'));
 });
 
@@ -281,9 +316,9 @@ test('scenarioOutcomes goldens at defaults', () => {
   assert.equal(red.reviewer_fte_required.toFixed(2), '8.73');
   assert.equal(red.reviewer_fte_delta.toFixed(2), '3.27');
   assert.equal(red.people_cost_change, 0);
-  assert.equal(Math.round(red.production_cost_change), 705782);
+  assert.equal(Math.round(red.production_cost_change), 1032041);
   assert.equal(red.change_mgmt_one_off, 396000);
-  assert.equal(Math.round(red.first_year_net), 1101782);
+  assert.equal(Math.round(red.first_year_net), 1428041);
   const hold = scenarioOutcomes(v, ctx, 'hold');
   assert.equal(Math.round(hold.production_cost_change), -53579);
   assert.equal(hold.people_cost_change, 0);
@@ -291,7 +326,7 @@ test('scenarioOutcomes goldens at defaults', () => {
   assert.ok(Math.abs(hold.production_cost_change) < 60000, 'Hold saving stays small');
   const cut = scenarioOutcomes(v, ctx, 'reduce');
   assert.equal(Math.round(cut.people_cost_change), -489783);
-  assert.equal(Math.round(cut.first_year_net), 611999);
+  assert.equal(Math.round(cut.first_year_net), 938258);
   for (const o of [red, hold, cut]) assert.equal(o.change_mgmt_one_off, 396000, 'change cost in every scenario');
 });
 
@@ -308,11 +343,11 @@ test('scenarioOutcomes: too few reviewers needs more, reduce cuts nothing; failu
 
 test('sensitivity ranking, clamping and reviewer-only utilisation effect at defaults', () => {
   const rows = sensitivity(defaultValues(ctx), ctx);
-  assert.deepEqual(rows.map((r) => r.key), ['locales', 'mconcept', 'auto2', 'minutes', 'yield']);
+  assert.deepEqual(rows.map((r) => r.key), ['markets', 'mconcept', 'auto2', 'minutes', 'yield']);
   const y = rows.find((r) => r.key === 'yield');
   assert.equal(y.capped.up, true);
   assert.equal(y.capped.down, false);
-  assert.equal(rows[0].ref, 'asm-locales');
+  assert.equal(rows[0].ref, 'asm-markets');
   assert.equal(rows[0].grade, 'Modelled');
   const finiteOrNull = (x) => x === null || Number.isFinite(x);
   for (const r of rows) for (const g of [r.cost, r.util]) assert.ok(finiteOrNull(g.down) && finiteOrNull(g.up));
@@ -322,18 +357,18 @@ test('sensitivity ranking, clamping and reviewer-only utilisation effect at defa
 
 test('sensitivity: small integer volumes move exactly the stated step (CR-01)', () => {
   const d = defaultValues(ctx);
-  const two = sensitivity({ ...d, locales: 2 }, ctx);
-  assert.equal(two[0].key, 'locales', 'locales stays the most influential input at 2 locales');
+  const two = sensitivity({ ...d, markets: 2 }, ctx);
+  assert.ok(two.some((r) => r.key === 'markets'), 'markets stays ranked at 2 markets');
   for (const loc of [2, 3]) {
-    const v = { ...d, locales: loc };
-    const row = sensitivity(v, ctx).find((r) => r.key === 'locales');
-    assert.ok(row, `locales ranked at ${loc}`);
+    const v = { ...d, markets: loc };
+    const row = sensitivity(v, ctx).find((r) => r.key === 'markets');
+    assert.ok(row, `markets ranked at ${loc}`);
     assert.deepEqual(row.capped, { down: false, up: false });
     const util = (x) => run(x, ctx).result.scenario.utilisation;
-    // Utilisation is linear in locales, so a 20% move gives exactly -20% and +20%.
-    assert.ok(Math.abs(row.util.down - (util({ ...v, locales: loc * 0.8 }) / util(v) - 1)) < 1e-12);
-    assert.ok(Math.abs(row.util.down + SENSITIVITY_STEP) < 1e-9, `util.down at ${loc} locales`);
-    assert.ok(Math.abs(row.util.up - SENSITIVITY_STEP) < 1e-9, `util.up at ${loc} locales`);
+    // Utilisation is linear in markets, so a 20% move gives exactly -20% and +20%.
+    assert.ok(Math.abs(row.util.down - (util({ ...v, markets: loc * 0.8 }) / util(v) - 1)) < 1e-12);
+    assert.ok(Math.abs(row.util.down + SENSITIVITY_STEP) < 1e-9, `util.down at ${loc} markets`);
+    assert.ok(Math.abs(row.util.up - SENSITIVITY_STEP) < 1e-9, `util.up at ${loc} markets`);
   }
   const small = sensitivity({ ...d, campaigns: 2, concepts: 2 }, ctx);
   for (const key of ['campaigns', 'concepts']) {
@@ -377,10 +412,10 @@ test('present().scenario and .sensitivity are finite and labelled', () => {
   const p = present(defaultValues(ctx), ctx);
   assert.equal(p.scenario.name, 'Redeploy');
   assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
-  assert.equal(p.scenario.rows[3].text, '$705,782');
+  assert.equal(p.scenario.rows[3].text, '$1,032,041');
   assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '−$53,579');
-  assert.equal(p.sensitivity[0].cells.costDown.text, '+17.6%');
-  assert.equal(p.sensitivity[0].cells.costUp.text, '−11.8%');
+  assert.equal(p.sensitivity[0].cells.costDown.text, '+18.3%');
+  assert.equal(p.sensitivity[0].cells.costUp.text, '−12.2%');
   assert.equal(p.sensitivity.length, 5);
 });
 
@@ -405,7 +440,7 @@ test('fuzz: scenario and sensitivity never emit NaN, Infinity, undefined or null
 
 test('present().maths: eight steps, digit-free formulas, results equal the table rows', () => {
   const p = present(defaultValues(ctx), ctx);
-  assert.deepEqual(p.maths.map((m) => m.id), ['volume', 'output', 'generated', 'touch', 'hours', 'utilisation', 'cost', 'breakeven']);
+  assert.deepEqual(p.maths.map((m) => m.id), ['campaign_markets', 'generated', 'touch', 'hours', 'utilisation', 'cost', 'cost_campaign_market', 'breakeven']);
   for (const m of p.maths) {
     assert.ok(!/\d/.test(m.formula), `${m.id} formula has a digit`);
     for (const part of m.parts.filter((x) => !x.fig)) assert.ok(!/\d/.test(part.text), `${m.id} text part "${part.text}"`);
@@ -414,21 +449,26 @@ test('present().maths: eight steps, digit-free formulas, results equal the table
   }
   const by = Object.fromEntries(p.maths.map((m) => [m.id, m]));
   const row = (id) => p.rows.find((r) => r.id === id);
-  assert.equal(by.output.result.text, row('output_per_head').scaled.text);
+  assert.equal(by.campaign_markets.result.text, row('campaign_markets').scaled.text);
   assert.equal(by.cost.result.text, row('cost_per_asset').scaled.text);
+  assert.equal(by.cost_campaign_market.result.text, row('cost_per_campaign_market').scaled.text);
+  assert.match(by.generated.name, /internal throughput, not the claim/);
   assert.equal(by.utilisation.result.text, row('utilisation').scaled.text);
   assert.equal(by.breakeven.result.text, row('break_even').scaled.text);
-  assert.equal(by.volume.result.text, '80,000');
+  assert.equal(by.generated.result.text, '84,211', 'generated variants 80,000 / 0.95 = 84,210.5');
+  assert.equal(by.campaign_markets.result.text, '100');
 });
 
 test('present().maths substitutes the reader values', () => {
-  const p = present({ ...defaultValues(ctx), locales: 6 }, ctx);
-  assert.ok(p.maths[0].parts.some((x) => x.text === '48'), 'forty-eight variants per concept');
+  const p = present({ ...defaultValues(ctx), markets: 6, campaigns: 10 }, ctx);
+  assert.ok(p.maths[0].parts.some((x) => x.text === '6'), 'six markets per campaign');
+  assert.ok(p.maths[0].parts.some((x) => x.text === '10'), 'ten campaigns a year');
+  assert.equal(p.maths[0].result.text, '30', '10 x 6 x 2 / 4');
 });
 
 test('present().believe: seven items, top three carry the result, variant cost effect is computed and small', () => {
   const p = present(defaultValues(ctx), ctx);
-  assert.deepEqual(p.believe.map((b) => b.key), ['locales', 'mconcept', 'auto2', 'minutes', 'yield', 'tooling', 'vcost']);
+  assert.deepEqual(p.believe.map((b) => b.key), ['markets', 'mconcept', 'auto2', 'minutes', 'yield', 'tooling', 'vcost']);
   assert.deepEqual(p.believe.map((b) => b.asm).slice(5), ['asm-tooling', 'asm-variant-cost']);
   assert.deepEqual(p.believe.map((b) => b.carries), [true, true, true, false, false, false, false]);
   for (const b of p.believe) assert.ok(!/\d/.test(b.parts.filter((x) => !x.fig).map((x) => x.text).join('').replace(/20%|2x/g, '')), b.key);
@@ -442,10 +482,16 @@ test('present().believe: seven items, top three carry the result, variant cost e
 });
 
 test('present().believe follows the live ranking and never lists a key twice', () => {
-  const p = present({ ...defaultValues(ctx), locales: 8, vcost: 60 }, ctx);
+  const p = present({ ...defaultValues(ctx), markets: 8, vcost: 60 }, ctx);
   const keys = p.believe.map((b) => b.key);
   assert.equal(new Set(keys).size, keys.length);
   assert.ok(keys.length >= 5 && keys.length <= 7);
   assert.equal(p.believe.filter((b) => b.carries).length, 3);
   assert.equal(present({ ...defaultValues(ctx), campaigns: 0 }, ctx).maths, undefined);
+});
+
+test('believe says markets, not locales', () => {
+  const p = present(defaultValues(ctx), ctx);
+  assert.equal(p.believe[0].statement.startsWith('Each campaign runs in this many markets: '), true);
+  assert.ok(!p.believe.some((b) => /locale/i.test(b.statement)));
 });

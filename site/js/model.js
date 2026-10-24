@@ -78,26 +78,27 @@ export function run(values, ctx) {
 // target of an output's grade chip is the first id here that carries the weakest
 // grade. Reviewer FTE and marketing FTE are not dependencies of the cost rows:
 // review cost is hours worked, not idle capacity.
-const VOLUME = ['asm-campaigns', 'asm-concepts-per-campaign', 'asm-formats-per-locale', 'asm-concept-growth'];
+const VOLUME = ['asm-campaigns', 'asm-markets', 'asm-concepts-per-campaign', 'asm-formats-per-market', 'asm-growth-route'];
 const COST = [
-  'asm-locales', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
-  'asm-rework-rate', 'asm-variant-cost', ...VOLUME.slice(0, 3), 'asm-concept-growth', 'asm-sampling-rate',
+  'asm-markets', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
+  'asm-rework-rate', 'asm-variant-cost', ...VOLUME.slice(0, 4), 'asm-growth-route', 'asm-sampling-rate',
   'asm-escalation-rate', 'asm-reviewer-rate', 'asm-rights-per-concept', 'asm-storage-per-variant', 'asm-tooling',
 ];
 const UTIL = [
-  'asm-locales', 'asm-reviewer-fte', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield', 'asm-rework-rate',
+  'asm-markets', 'asm-reviewer-fte', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield', 'asm-rework-rate',
   'asm-sampling-rate', 'asm-escalation-rate', 'asm-reviewer-hours', ...VOLUME,
 ];
 
 export const OUTPUT_DEPS = {
-  output_per_head: ['asm-campaigns', 'asm-concepts-per-campaign', 'asm-locales', 'asm-formats-per-locale', 'asm-marketing-fte', 'asm-concept-growth'],
+  campaign_markets: ['asm-campaigns', 'asm-markets', 'asm-growth-route'],
+  brief_to_live: ['asm-review-service-days', 'asm-build-days', ...UTIL],
   cost_per_asset: COST,
+  cost_per_campaign_market: COST,
   total_cost: COST,
   budget_share: [...COST, 'asm-marketing-budget'],
   ai_spend: [
-    'asm-locales', 'asm-variant-cost', 'asm-ai-share-variant', 'asm-tooling', 'asm-ai-share-tooling', 'asm-approval-yield', ...VOLUME,
+    'asm-markets', 'asm-variant-cost', 'asm-ai-share-variant', 'asm-tooling', 'asm-ai-share-tooling', 'asm-approval-yield', ...VOLUME,
   ],
-  cycle_time: ['asm-review-service-days', 'asm-build-days', ...UTIL],
   utilisation: UTIL,
   break_even: [...UTIL, 'asm-tier-mix', 'asm-target-utilisation'],
   capacity_floor: [...UTIL, 'asm-tier-mix'],
@@ -117,12 +118,13 @@ export function weakestGrade(ids, grades) {
 }
 
 export const RESULT_ROWS = [
-  { id: 'output_per_head', label: 'Approved-live variants per head per quarter', format: 'int', changeFormat: 'pctchg0' },
-  { id: 'cost_per_asset', label: 'Fully loaded cost per approved-live asset', format: 'usd2', changeFormat: 'pctchg0' },
+  { id: 'campaign_markets', label: 'Campaign-markets in market per quarter', format: 'int', changeFormat: 'pctchg0' },
+  { id: 'brief_to_live', label: 'Brief-to-live time (days)', format: 'days1', changeFormat: 'pctchg0' },
+  { id: 'cost_per_asset', label: 'Fully loaded cost per approved asset', format: 'usd2', changeFormat: 'pctchg0' },
+  { id: 'cost_per_campaign_market', label: 'Production cost per campaign-market', format: 'usd0', changeFormat: 'pctchg0' },
   { id: 'total_cost', label: 'Total production cost', format: 'usdm2', changeFormat: 'pctchg0' },
   { id: 'budget_share', label: 'Production share of marketing budget', format: 'pct1', changeFormat: 'ptschg1' },
   { id: 'ai_spend', label: 'AI spend', format: 'usd0', changeFormat: 'pctchg0' },
-  { id: 'cycle_time', label: 'Cycle time, brief to live (days)', format: 'days1', changeFormat: 'pctchg0' },
   { id: 'utilisation', label: 'Review utilisation', format: 'pct1', changeFormat: 'ptschg1' },
   { id: 'break_even', label: 'Break-even auto-approval at flat reviewer headcount', format: 'pct0', changeFormat: 'none' },
   { id: 'capacity_floor', label: 'Capacity floor (auto-approval below which review capacity is exceeded)', format: 'pct0', changeFormat: 'none' },
@@ -147,19 +149,23 @@ function buildRows(r) {
   const undef = new Set(r.undefined_ratios);
   const ratioChange = (name, ratio) => (undef.has(name) || ratio === null ? { text: ZERO_BASE } : cell(ratio - 1, formatValue(ratio - 1, 'pctchg0')));
   const util = (v) => (v >= 1 ? `${formatValue(v, 'pct1')} over capacity` : formatValue(v, 'pct1'));
-  const cycle = (v) => (v === null ? { text: 'unbounded (over capacity)' } : cell(v, formatValue(v, 'days1')));
-  let cycleChange;
-  if (b.cycle_days === null || s.cycle_days === null) cycleChange = { text: 'n/a: over capacity' };
-  else if (b.cycle_days === 0) cycleChange = { text: ZERO_BASE };
-  else cycleChange = cell(s.cycle_days / b.cycle_days - 1, formatValue(s.cycle_days / b.cycle_days - 1, 'pctchg0'));
+  const brief = (v) => (v === null ? { text: 'unbounded (over capacity)' } : cell(v, formatValue(v, 'days1')));
+  let briefChange;
+  if (b.brief_to_live_days === null || s.brief_to_live_days === null) briefChange = { text: 'n/a: over capacity' };
+  else if (b.brief_to_live_days === 0) briefChange = { text: ZERO_BASE };
+  else briefChange = cell(s.brief_to_live_days / b.brief_to_live_days - 1, formatValue(s.brief_to_live_days / b.brief_to_live_days - 1, 'pctchg0'));
   const na = { text: NOT_APPLICABLE };
   const by = {
-    output_per_head: [cell(b.output_per_head_per_quarter, formatValue(b.output_per_head_per_quarter, 'int')),
-      cell(s.output_per_head_per_quarter, formatValue(s.output_per_head_per_quarter, 'int')),
-      ratioChange('output_per_head', r.ratios.output_per_head)],
+    campaign_markets: [cell(b.campaign_markets_per_quarter, formatValue(b.campaign_markets_per_quarter, 'int')),
+      cell(s.campaign_markets_per_quarter, formatValue(s.campaign_markets_per_quarter, 'int')),
+      ratioChange('campaign_markets', r.ratios.campaign_markets)],
+    brief_to_live: [brief(b.brief_to_live_days), brief(s.brief_to_live_days), briefChange],
     cost_per_asset: [cell(b.cost_per_asset, formatValue(b.cost_per_asset, 'usd2')),
       cell(s.cost_per_asset, formatValue(s.cost_per_asset, 'usd2')),
       ratioChange('cost_per_asset', r.ratios.cost_per_asset)],
+    cost_per_campaign_market: [cell(b.cost_per_campaign_market, formatValue(b.cost_per_campaign_market, 'usd0')),
+      cell(s.cost_per_campaign_market, formatValue(s.cost_per_campaign_market, 'usd0')),
+      ratioChange('cost_per_campaign_market', r.ratios.cost_per_campaign_market)],
     total_cost: [cell(b.cost.total, formatValue(b.cost.total, 'usdm2')),
       cell(s.cost.total, formatValue(s.cost.total, 'usdm2')),
       ratioChange('total_cost', r.ratios.total_cost)],
@@ -168,7 +174,6 @@ function buildRows(r) {
       cell(r.deltas.production_share_of_budget, formatValue(r.deltas.production_share_of_budget, 'ptschg1'))],
     ai_spend: [cell(b.ai_spend, formatValue(b.ai_spend, 'usd0')), cell(s.ai_spend, formatValue(s.ai_spend, 'usd0')),
       ratioChange('ai_spend', r.ratios.ai_spend)],
-    cycle_time: [cycle(b.cycle_days), cycle(s.cycle_days), cycleChange],
     utilisation: [cell(b.utilisation, util(b.utilisation)), cell(s.utilisation, util(s.utilisation)),
       cell(s.utilisation - b.utilisation, formatValue(s.utilisation - b.utilisation, 'ptschg1'))],
     break_even: [na, breakEvenCell(r.break_even_auto_approval), na],
@@ -220,7 +225,7 @@ export const SENSITIVITY_STEP = 0.2;
 const SENSITIVITY_ROWS = 5;
 
 // Volume inputs are not rounded: compute() accepts fractional volumes, so every
-// move is exactly the stated step (rounding 2 or 3 locales made the move ±33% or
+// move is exactly the stated step (rounding 2 or 3 markets made the move ±33% or
 // zero). Only bounded inputs (shares, auto-approval caps) are clamped, and those
 // cells are marked capped.
 function perturb(field, base, step, ctx) {
@@ -332,20 +337,20 @@ function mathsPresentation(values, ctx, r, rows) {
   const c = s.cost;
   const S = (id, name, formula, list, result, deps) => stepOf(id, name, formula, list, result, deps, ctx);
   return [
-    S('volume', 'Approved-live variants a year at 2x', 'campaigns times concepts per campaign times variants per concept, each grown by the scale factor',
-      [num(inputs.campaigns_per_year), ' × ', num(inputs.concepts_per_campaign), ' × ', num(inputs.variants_per_concept), ' × ', num(inputs.multiplier), ' = '], res(s.variants_per_year, 'int'), 'output_per_head'),
-    S('output', 'Output per head per quarter', 'approved-live variants a year, divided by four quarters, divided by marketing FTE',
-      [int(s.variants_per_year), ' ÷ four quarters ÷ ', num(inputs.marketing_fte), ' = '], rowRes('output_per_head'), 'output_per_head'),
-    S('generated', 'Variants generated a year', 'approved-live variants divided by approval yield, because rejected variants are regenerated',
-      [int(s.variants_per_year), ' ÷ ', pctT(A.approval_yield), ' = '], res(s.generated_variants_per_year, 'int'), 'cost_per_asset'),
+    S('campaign_markets', 'Campaign-markets per quarter at 2x', 'campaigns a year times markets per campaign times the scale factor, divided by four quarters; the route only decides whether the extra comes from campaigns, markets or both',
+      [num(inputs.campaigns_per_year), ' × ', num(inputs.markets_per_campaign), ' × ', num(inputs.multiplier), ' ÷ four quarters = '], rowRes('campaign_markets'), 'campaign_markets'),
+    S('generated', 'Derived variants generated a year (internal throughput, not the claim)', 'campaign-markets a year times concepts per campaign times formats per market, divided by approval yield, because rejected variants are regenerated',
+      [int(s.campaign_markets_per_year), ' × ', num(inputs.concepts_per_campaign), ' × ', num(inputs.formats_per_market), ' ÷ ', pctT(A.approval_yield), ' = '], res(s.generated_variants_per_year, 'int'), 'cost_per_asset'),
     S('touch', 'Share of variants a person touches', 'one minus auto-approval share times (one minus the sampled and escalated share)',
       ['one minus ', pct0(sc(A.auto_approval_share)), ' × (one minus ', pct0(q), ') = '], res(s.human_touch_share, 'pct1'), 'utilisation'),
     S('hours', 'Review hours a year', 'generated variants times human-touch share times minutes per review, divided by sixty',
       [int(s.generated_variants_per_year), ' × ', pct1(s.human_touch_share), ' × ', num(A.review_minutes_per_variant), ' ÷ sixty = '], res(s.review_hours, 'int'), 'utilisation'),
     S('utilisation', 'Review utilisation', 'review hours times (one plus rework rate), divided by reviewer capacity hours',
       [int(s.review_hours), ' × (one plus ', pctT(A.rework_rate), ') ÷ ', int(s.review_capacity_hours), ' = '], rowRes('utilisation'), 'utilisation'),
-    S('cost', 'Cost per approved-live asset', 'generation, review, rework, tooling, rights and storage cost added up, divided by approved-live variants',
+    S('cost', 'Cost per approved asset', 'generation, review, rework, tooling, rights and storage cost added up, divided by approved variants',
       [usd(c.generation), ' + ', usd(c.review), ' + ', usd(c.rework), ' + ', usd(c.tooling), ' + ', usd(c.rights), ' + ', usd(c.storage), ' = ', usd(c.total), ' ÷ ', int(s.variants_per_year), ' = '], rowRes('cost_per_asset'), 'cost_per_asset'),
+    S('cost_campaign_market', 'Production cost per campaign-market', 'total production cost divided by campaign-markets a year',
+      [usd(c.total), ' ÷ ', int(s.campaign_markets_per_year), ' = '], rowRes('cost_per_campaign_market'), 'cost_per_campaign_market'),
     S('breakeven', 'Break-even auto-approval', 'the auto-approval share at which utilisation equals the target, at flat reviewer headcount',
       [pct0(A.target_utilisation), ' × ', int(s.review_capacity_hours), ' ÷ ', int(denom), ' = the most variants people can touch, ', Number.isFinite(hStar) ? pct1(hStar) : 'no limit',
         '; (one minus that) ÷ (one minus the sampled and escalated share ', pct0(q), ') = '], rowRes('break_even'), 'break_even'),
@@ -356,7 +361,7 @@ function mathsPresentation(values, ctx, r, rows) {
 
 const SAYS = {
   campaigns: 'You run this many campaigns a year', concepts: 'Each campaign needs this many master concepts',
-  locales: 'Each concept is localised into this many locales', marketers: 'This many marketing FTE do the work',
+  markets: 'Each campaign runs in this many markets', marketers: 'This many marketing FTE do the work',
   reviewers: 'This many reviewer FTE check the work', minutes: 'A reviewer needs this many minutes per variant',
   vcost: 'Variant generation at 2x costs this much per variant', mconcept: 'A master concept costs this much to make',
   yield: 'This share of generated variants is approved', rework: 'This share of reviewed work is reworked',
@@ -391,7 +396,7 @@ function believePresentation(values, ctx, sens) {
     let extra = null;
     if (i.key === 'vcost' && d !== null) {
       const small = Math.abs(d) < 0.02;
-      extra = [tx(`. A ${formatValue(SENSITIVITY_STEP, 'pct0')} rise moves cost per approved-live asset ${small ? 'only slightly, by ' : 'by '}`),
+      extra = [tx(`. A ${formatValue(SENSITIVITY_STEP, 'pct0')} rise moves cost per approved asset ${small ? 'only slightly, by ' : 'by '}`),
         { fig: 'calc-believe-vcost-swing', value: d, text: formatValue(d, 'pctchg1') }, tx('.')];
     }
     const item = make(i.key, i.asm, i.grade, i.v, i.text, extra);
@@ -416,10 +421,16 @@ export function present(values, ctx) {
     return { id: def.id, label: def.label, base, scaled, change, grade, ref };
   });
   const over = r.scenario.review_capacity_exceeded;
-  const x = formatValue(r.scenario.output_per_head_per_quarter, 'int');
-  const y = formatValue(r.scenario.cost_per_asset, 'usd2');
-  const z = formatValue(r.scenario.utilisation, 'pct0');
-  const summary = `At 2x, your team approves ${x} variants per head per quarter at ${y} per approved asset, with reviewers ${over ? `over capacity, at ${z}.` : `at ${z} of capacity.`}`;
+  const sSide = r.scenario;
+  const route = { both: 'more campaigns and more markets', campaigns: 'more campaigns', markets: 'more markets' }[ROUTES.includes(values.route) ? values.route : defaultRoute(ctx)];
+  const cm = formatValue(sSide.campaign_markets_per_quarter, 'int');
+  const y = formatValue(sSide.cost_per_asset, 'usd2');
+  const zc = formatValue(sSide.cost_per_campaign_market, 'usd0');
+  const z = formatValue(sSide.utilisation, 'pct0');
+  const lead = `With ${route}, at 2x you have ${cm} campaign-markets live per quarter`;
+  const summary = over
+    ? `${lead} at ${y} per approved asset and ${zc} per campaign-market, but reviewers are over capacity, at ${z}, so brief-to-live time is unbounded.`
+    : `${lead}, brief to live in ${formatValue(sSide.brief_to_live_days, 'days1')}, at ${y} per approved asset and ${zc} per campaign-market, with reviewers at ${z} of capacity.`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
     scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),
