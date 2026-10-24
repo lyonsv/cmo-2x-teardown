@@ -1,6 +1,7 @@
 :root {
   --paper: #F4F4F0; --paper-2: #EDEDE6; --ink: #1A1C1B; --ink-2: #2C2F2C;
   --muted: #62665F; --rule: #D5D6CE;
+  --seg-1: #1A1C1B; --seg-2: #4A4E48; --seg-3: #7C8077; --seg-4: #A3A69C; --seg-5: #C4C6BC; --seg-6: #DCDDD5;
   --verified: #17554A; --inferred: #8A6A12; --low: #7A3B34;
   --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-2xl: 48px; --s-3xl: 64px;
   --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Charter","Source Serif 4",Georgia,serif;
@@ -70,6 +71,17 @@ thead th { border-bottom: 2px solid var(--ink); }
 .register a { overflow-wrap: anywhere; }
 .register tr:target { background: var(--paper-2); box-shadow: inset 3px 0 0 var(--ink); }
 footer { border-top: 1px solid var(--rule); margin-top: var(--s-2xl); padding-top: var(--s-md); font: 400 12px/1.6 var(--mono); color: var(--muted); }
+svg.fig { display: block; width: 100%; height: auto; }
+.fig text { font: 400 12px var(--mono); fill: var(--ink); }
+.fig .panel-lbl { font-weight: 600; }
+.fig .gridline { stroke: var(--rule); stroke-width: 1; }
+.bar-base { fill: var(--muted); }
+.bar-scaled { fill: var(--verified); }
+.seg { stroke: var(--paper); stroke-width: 1; }
+.seg-1 { fill: var(--seg-1); } .seg-2 { fill: var(--seg-2); } .seg-3 { fill: var(--seg-3); }
+.seg-4 { fill: var(--seg-4); } .seg-5 { fill: var(--seg-5); } .seg-6 { fill: var(--seg-6); }
+.fig-scroll { overflow-x: auto; }
+.fig-scroll:focus-visible { outline: 2px solid var(--verified); outline-offset: 2px; }
 @media (max-width: 720px) {
   body { font-size: 16px; }
   .wrap { padding: 0 var(--s-md) var(--s-3xl); }
@@ -81,6 +93,7 @@ footer { border-top: 1px solid var(--rule); margin-top: var(--s-2xl); padding-to
   .meta { grid-template-columns: 1fr; }
   .metric-trio { grid-template-columns: 1fr; }
   .legend dl { grid-template-columns: 1fr; }
+  svg.fig { min-width: 560px; }
 }
 @media print {
   body { background: #fff; color: #000; font-size: 10.5pt; }
@@ -90,7 +103,9 @@ footer { border-top: 1px solid var(--rule); margin-top: var(--s-2xl); padding-to
   figure, table, .callout, .legend, tr { break-inside: avoid; }
   section { break-inside: auto; }
   .later { background: none; }
-  .table-scroll { overflow: visible; }
+  .table-scroll, .fig-scroll { overflow: visible; }
+  .bar-base { fill: #bbb; }
+  .bar-scaled { fill: #000; }
   .masthead, .meta, section + section, footer, th, td, figure, .legend { border-color: #ccc; }
   h2 { break-after: avoid; }
 }
