@@ -9,7 +9,7 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
 ## Phases
 
 - [x] **Phase 1: Foundation & Thesis Slice** - Live shell with front matter, sections 01-02, `data.js`, tested `calc.js`, baseline-vs-2x figure, tested Pages deploy (completed 2026-10-24)
-- [ ] **Phase 2: Factory & Spine Slice** - Sections 03-08: factory, supply chain, 10,000-asset campaign, review agent, T0-T3 gate, eval harness and telemetry
+- [x] **Phase 2: Factory & Spine Slice** - Sections 03-08: factory, supply chain, 10,000-asset campaign, review agent, T0-T3 gate, eval harness and telemetry (completed 2026-10-24)
 - [ ] **Phase 3: Levers, Outcomes, Calculator & Comparison Slice** - Sections 09-12: five other levers incl. AEO, outcome case, interactive calculator, Gradial/AirOps/Profound comparison
 - [ ] **Phase 4: Adoption, Risk, Evidence & Publish Slice** - Sections 13-15, register reconciliation, WCAG/mobile/print pass, re-verification, legal flag, production deploy
 
@@ -110,7 +110,7 @@ Plans:
 
 **Wave 8** *(blocked on Wave 7 completion)*
 
-- [ ] 02-08-PLAN.md — Getty re-check, approve-push checkpoint, W3C, push and live verification
+- [x] 02-08-PLAN.md — Getty re-check, approve-push checkpoint, W3C, push and live verification
 
 **UI hint**: yes
 **Research flag**: Visually review the live Intercom reference sections 05-14 (base64 screenshots) before locking tiers, harness metrics and Backlog 0 framing. Tier shares and review rates set here become calculator defaults in Phase 3, so expect one iteration with the Phase 1 `calc.js` model.
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 7/8 | In Progress|  |
+| 2. Factory & Spine Slice | 8/8 | Complete   | 2026-10-24 |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
