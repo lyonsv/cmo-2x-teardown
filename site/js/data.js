@@ -246,7 +246,7 @@ assumptions['asm-matrix-concepts'] = a('asm-matrix-concepts', 'Master concepts i
 }
 assumptions['asm-matrix-independence'] = a('asm-matrix-independence', 'Independence of matrix factors', 'matrix', null, null, null,
   'Factors treated as independent; an upper-bound sketch',
-  'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent for illustration. Real campaigns have correlated factors: sizes follow channel placement specs, so not every channel takes every size. The total is therefore an upper-bound sketch, not a count of distinct valid variants; the applies fractions stand in only roughly for those exclusions.');
+  'Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent for illustration. Real campaigns have correlated factors: sizes follow channel placement specs, so not every channel takes every size. The total is therefore an upper-bound sketch, not a count of distinct valid variants; the applies fractions stand in only roughly for those exclusions. With fractional shares the counts are expected counts, rounded only for display.');
 
 // Shares and percentage changes are stored as fractions throughout (code review
 // IN-08), so 0.19 displays as 19% via its format.

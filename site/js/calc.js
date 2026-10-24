@@ -230,6 +230,10 @@ export function compute(inputs, assumptions) {
 // multiplies only the stated share (applies) of the running set by its count, so
 // multiplier = 1 + applies x (count - 1) and factors are independent. Never throws,
 // never returns NaN or Infinity; bad input comes back as { ok: false, errors }.
+// Counts are EXPECTED counts: with a fractional `applies` the running set is not
+// a whole number (variantMatrix(1, [{ id, count: 2, applies: 0.3 }]).total is
+// 1.3). Nothing is rounded here; callers round for display only (formatValue
+// 'int'), so totals stay exact for further arithmetic such as the approval yield.
 export function variantMatrix(concepts, factors) {
   const errors = [];
   const isInt = (x) => typeof x === 'number' && Number.isInteger(x) && x >= 1;

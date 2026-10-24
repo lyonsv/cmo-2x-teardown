@@ -551,3 +551,15 @@ test('variantMatrix rejects duplicate factor ids and holes, naming the field', (
   assert.ok(t.errors.some((e) => e.field === 'factors[1].id'));
   for (const r of [dup, holey, t]) assert.ok(!('total' in r) && !('rows' in r));
 });
+
+// ---- Code review IN-12: fractional shares give expected counts, unrounded ----
+
+test('variantMatrix returns expected (unrounded) counts for fractional shares', () => {
+  const r = variantMatrix(1, [{ id: 'a', count: 2, applies: 0.3 }]);
+  assert.equal(r.ok, true);
+  close(r.total, 1.3);
+  close(r.rows[0].variants, 1.3);
+  const r2 = variantMatrix(3, [{ id: 'a', count: 4, applies: 0.25 }, { id: 'b', count: 3, applies: 0.1 }]);
+  close(r2.total, 3 * 1.75 * 1.2);
+  assert.ok(!Number.isInteger(r2.total), 'not rounded inside the model');
+});
