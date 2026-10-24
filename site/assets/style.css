@@ -106,6 +106,8 @@ svg.fig-d { display: block; width: 100%; max-width: 360px; height: auto; margin:
 .steps-h { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 var(--s-sm); }
 .fig-steps { margin: 0; padding-left: var(--s-lg); max-width: 44em; }
 .fig-steps li + li { margin-top: var(--s-sm); }
+th.tier { font: 400 12px/1.6 var(--mono); }
+.default-mark { display: inline-block; font: 600 12px/1.6 var(--mono); color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; padding: var(--s-xs) var(--s-sm); margin-left: var(--s-xs); }
 tr.shared th { box-shadow: inset 3px 0 0 var(--ink); padding-left: var(--s-md); }
 @media (max-width: 960px) {
   svg.fig { min-width: 800px; }
@@ -144,4 +146,5 @@ tr.shared th { box-shadow: inset 3px 0 0 var(--ink); padding-left: var(--s-md); 
   .fig-d .edge-review, .fig-d .node-review rect { stroke: #000; stroke-width: 3; }
   .fig-d .arrow-head-review { fill: #000; }
   .fig-d .node-review rect { fill: #fff; }
+  .default-mark { border-color: #000; }
 }

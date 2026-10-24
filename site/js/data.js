@@ -51,6 +51,14 @@ export const sources = {
     url: 'https://www.taylorwessing.com/en/insights-and-events/insights/2026/01/next-steps-for-getty-v-stability-why-has-permission-to-appeal-been-granted',
     bias: 'Law-firm commentary on a UK High Court judgment, not the judgment itself; appeal status is time-sensitive',
     read_via: 'Page returned 403 to automation on 2026-10-24, so the judgment date and the grant of permission to appeal rest on search summaries of this and a second law-firm note; publication month taken from the URL; the author is to confirm both and the Court of Appeal status in a browser before publishing; a US action was refiled in California per a Bloomberg Law report (headline only)',
+  },  'intercom-2x-teardown': {
+    title: 'Intercom / Fin 2x — Teardown',
+    publisher: 'Vincent Lyons (author of this page)',
+    published: '2026-08-25',
+    accessed: '2026-10-24',
+    url: 'https://lyonsv.github.io/intercom-2x-teardown/',
+    bias: "The author's own secondary reading of company-presented webinar screenshots dated 2026-05-19; every figure is company-reported and concerns an engineering organisation reviewing code, not marketing assets",
+    read_via: 'Page read in full and key screenshots viewed, 2026-10-24',
   },
 };
 
@@ -321,4 +329,37 @@ export function defaultAssumptions() {
     id: 'avg-campaign-variants', value: 1000, unit: 'approved-live variants per campaign in the model', display: '1,000',
     grade: 'Modelled', flag: null, ref: 'asm-campaigns',
   };
+}
+
+// ---- Plan 02-05: review agent design, tier ranges, reference datum ----
+
+assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label: 'Review agent design', kind: 'evidence', key: null, value: null, unit: null,
+  display: 'Design pattern from one public reference', grade: 'Modelled', flag: null,
+  basis: 'Behaviours adapted from one company-reported engineering example (rule citations, audit trail, admitting what was not checked, separate eligibility and quality); untested in marketing. No published benchmark.' };
+
+{
+  const RANGES = [[0.45, 0.65], [0.25, 0.35], [0.08, 0.16], [0.02, 0.05]];
+  RANGES.forEach(([lo, hi], i) => {
+    const id = `asm-tier-range-t${i}`;
+    assumptions[id] = { id, label: `Tier T${i} share range`, kind: 'evidence', key: null, value: { lo, hi }, unit: 'share of variants at 2x',
+      display: `${Math.round(lo * 100)}\u2013${Math.round(hi * 100)}%`, grade: 'Modelled', flag: null,
+      basis: 'Illustrative range at 2x around the model default; no published benchmark. Default from the review tier mix.' };
+  });
+  const scaled = assumptions['asm-tier-mix'].value.scaled;
+  scaled.forEach((v, i) => {
+    const id = `tier-default-t${i}`;
+    claims[id] = { id, value: v, unit: 'model default share of variants at 2x', display: formatValue(v, 'pct0'),
+      grade: 'Modelled', flag: null, ref: `asm-tier-range-t${i}`, format: 'pct0' };
+  });
+  const eligible = scaled[0] + scaled[1];
+  const auto = assumptions['asm-auto-approval'].value.scaled;
+  const autoOfEligible = Number((auto / eligible).toFixed(2));
+  claims['tier-eligible-share-scaled'] = { id: 'tier-eligible-share-scaled', value: eligible, unit: 'share of variants in tiers T0 and T1 at 2x',
+    display: formatValue(eligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
+  claims['auto-share-of-eligible'] = { id: 'auto-share-of-eligible', value: autoOfEligible, unit: 'share of tier-eligible variants the agent must clear with no human',
+    display: formatValue(autoOfEligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
+  claims['ref-auto-approved-share'] = { id: 'ref-auto-approved-share', value: 0.192, unit: 'share of merged code changes approved with no human, reference organisation',
+    display: '19.2%', grade: 'Modelled', flag: 'company-reported', ref: 'src-intercom-2x-teardown' };
+  claims['ref-bot-approval-rate'] = { id: 'ref-bot-approval-rate', value: 0.284, unit: 'rolling bot approval rate, reference organisation',
+    display: '28.4%', grade: 'Modelled', flag: 'company-reported', ref: 'src-intercom-2x-teardown' };
 }

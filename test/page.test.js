@@ -14,7 +14,7 @@ function figEntry(id) {
 const FIG_RE = /<span data-fig="([^"]+)">([^<]*)<\/span>/g;
 const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 // Source rows are Benchmark unless listed here (law-firm commentary is a Modelled basis, not a Benchmark).
-const SRC_GRADE = { 'getty-v-stability-uk': 'Modelled' };
+const SRC_GRADE = { 'getty-v-stability-uk': 'Modelled', 'intercom-2x-teardown': 'Modelled' };
 
 test('every data-fig matches data.js display', () => {
   const found = [...html.matchAll(FIG_RE)];
@@ -373,7 +373,7 @@ test('Intercom exactly once outside s12 and s15, in s06', () => {
   for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
   assert.equal((strip(rest).match(/\bintercom\b/gi) || []).length, 1);
   const s6 = sectionHtml('s06');
-  assert.ok(strip(s6).includes("This is the equivalent of Intercom's review agent, which inspired the design described here."));
+  assert.ok(strip(s6).replace(/\s+([.,;])/g, '$1').includes("This is the equivalent of Intercom's review agent, which inspired the design described here."));
   assert.ok(s6.includes('<a href="#src-intercom-2x-teardown">Intercom\'s review agent</a>'));
 });
 
