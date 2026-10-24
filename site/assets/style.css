@@ -90,6 +90,23 @@ svg.fig { display: block; width: 100%; height: auto; }
 .hatch-line { stroke: var(--paper); stroke-width: 2; }
 .fig-scroll { overflow-x: auto; }
 .fig-scroll:focus-visible { outline: 2px solid var(--verified); outline-offset: 2px; }
+/* Phase 2 diagrams (Figures 2-7): vertical, 300-unit viewBox, accent only on review/gate strokes. */
+.fig-grid { display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: var(--s-lg); align-items: start; }
+svg.fig-d { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; }
+.fig-d text { font: 400 12px var(--mono); fill: var(--ink); }
+.fig-d .node-t { font-weight: 600; }
+.fig-d .note { fill: var(--muted); }
+.fig-d .node rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+.fig-d .node-review rect { fill: var(--paper-2); stroke: var(--verified); stroke-width: 2; }
+.fig-d .edge { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.fig-d .edge-review { stroke: var(--verified); stroke-width: 2; }
+.fig-d .edge-soft { stroke: var(--muted); stroke-dasharray: 4 4; }
+.fig-d .arrow-head { fill: var(--ink); }
+.fig-d .arrow-head-review { fill: var(--verified); }
+.steps-h { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 var(--s-sm); }
+.fig-steps { margin: 0; padding-left: var(--s-lg); max-width: 44em; }
+.fig-steps li + li { margin-top: var(--s-sm); }
+tr.shared th { box-shadow: inset 3px 0 0 var(--ink); padding-left: var(--s-md); }
 @media (max-width: 960px) {
   svg.fig { min-width: 800px; }
 }
@@ -101,6 +118,7 @@ svg.fig { display: block; width: 100%; height: auto; }
   .sec-head { grid-template-columns: 32px 1fr; column-gap: var(--s-sm); }
   h2 { font-size: 25px; }
   .claim, .toc a { grid-template-columns: 32px 1fr; column-gap: var(--s-sm); }
+  .fig-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .meta { grid-template-columns: 1fr; }
@@ -112,7 +130,7 @@ svg.fig { display: block; width: 100%; height: auto; }
   .toc, .skip { display: none; }
   a { color: #000; }
   /* No href ::after: register link text is already the full URL (IN-05). */
-  figure, table, .callout, .legend, tr { break-inside: avoid; }
+  figure, .fig-grid, table, .callout, .legend, tr { break-inside: avoid; }
   section { break-inside: auto; }
   .later { background: none; }
   .table-scroll, .fig-scroll { overflow: visible; }
@@ -120,4 +138,10 @@ svg.fig { display: block; width: 100%; height: auto; }
   .bar-scaled { fill: #000; }
   .masthead, .meta, section + section, footer, th, td, figure, .legend { border-color: #ccc; }
   h2 { break-after: avoid; }
+  .fig-grid { display: block; }
+  svg.fig-d { max-width: 320px; }
+  .fig-d .edge, .fig-d .node rect { stroke: #555; }
+  .fig-d .edge-review, .fig-d .node-review rect { stroke: #000; stroke-width: 3; }
+  .fig-d .arrow-head-review { fill: #000; }
+  .fig-d .node-review rect { fill: #fff; }
 }
