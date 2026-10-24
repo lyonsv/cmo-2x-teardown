@@ -26,7 +26,7 @@ Requirements: GEN-01..05, SPINE-01..07.
 ### Figures
 - Six inline SVGs: (a) factory model (s03), (b) content supply chain (s03), (c) brief → approved-asset flow (s05), (d) review loop/escalation (s06), (e) T0–T3 tier ladder (s07), (f) eval-harness loop (s08). Operating architecture (s04) as a layered table, with one versioned policy source shared by generator and reviewer shown explicitly.
 - Style: monochrome line diagrams in Phase 1 tokens; accent reserved for the review/gate path; labels are real `<text>`; ≥12px effective text at all widths.
-- Mobile: author vertical-first at viewBox ~480 wide so diagrams scale without horizontal scroll; same SVG centred on desktop.
+- Mobile: author vertical-first so diagrams scale without horizontal scroll; same SVG centred on desktop. (Refined in UI-SPEC: viewBox 300 wide, max-width 360px, so 12px text stays ≥~12px effective on phones; ~480 would render 7–9px.)
 - Accessibility: every figure has `<title>` and `<desc>` plus a visible ordered-list or table text equivalent beside it.
 
 ### Sensitive claims & evidence
