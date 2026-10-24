@@ -25,7 +25,7 @@ created: 2026-10-24
 | Font | System stacks, nothing downloaded. Serif: `"Iowan Old Style","Palatino Linotype",Palatino,"Charter","Source Serif 4",Georgia,serif`. Mono: `ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace` |
 | Theme | Light only plus `@media print`. No dark mode (deferred) |
 | Files | `site/assets/style.css` (all CSS, one file), `site/index.html`. No base64 images. Figures are inline SVG |
-| Layout width | `.wrap` max-width 1080px, padding `0 28px 120px` (`0 18px 80px` at <=720px) |
+| Layout width | `.wrap` max-width 1080px, padding `0 24px 64px` (`0 16px 64px` at <=720px) |
 
 ---
 
@@ -43,9 +43,9 @@ Declared values (multiples of 4). Reference uses ad-hoc px; the executor must sn
 | 2xl | 48px | Masthead top padding, TOC bottom margin, gap between legend/TOC/answer block |
 | 3xl | 64px | `.sec-head` number column width (desktop); masthead top padding on desktop |
 
-Layout constants (not spacing tokens): `.sec-head` / `.toc a` grid columns `64px 1fr` desktop, `40px 1fr` at <=720px (**Changed** from 38px, to stay on the 4px grid); column gap 16px desktop (**Changed** from 18px), 12px mobile.
+Layout constants (not spacing tokens): `.sec-head` / `.toc a` grid columns `64px 1fr` desktop, `32px 1fr` at <=720px (**Changed** from 38px, to stay on the declared scale); column gap 16px desktop (**Changed** from 18px), 8px mobile.
 
-Exceptions: 1px/1.5px/2px/3px rules and borders (hairlines, table rules, callout bar) are not spacing. Touch targets: TOC rows and any link-only row must be at least 44px tall (row padding 14px top/bottom with 16px line box = 44px). Grade chips that are links need a 24x24 CSS px minimum target (WCAG 2.2 target size minimum), met by 12px mono text with 4px/8px padding plus surrounding inline space.
+Exceptions (explicit list): 1px/1.5px/2px/3px rules and borders (hairlines, table rules, callout bar) are not spacing. Touch targets: TOC rows and any link-only row must be at least 48px tall (`min-height:48px`, row padding 16px top/bottom). Grade chips that are links need a 24x24 CSS px minimum target (WCAG 2.2 target size minimum), met by 12px mono text with 4px/8px padding plus surrounding inline space.
 
 ---
 
@@ -65,7 +65,7 @@ Rules:
 - Prose measure: `p, ul, ol` max-width 44em. Answer-first paragraph and standfirst max-width 46em.
 - Standfirst is Body size, 400, colour `--ink-2`, line-height 1.5 (**Changed**: reference 20px; dropped to keep four sizes).
 - **Changed** chips: 12px (reference 9.5px) so grade text is legible and meets target-size needs. Chip letter-spacing .08em to compensate for width.
-- Documented reference-parity exception: table body cells 14.5px/1.5 serif at 400, and `td.num` 13px mono. Do not add other sizes. If the checker rejects it, fall back to Body 16px in cells.
+- Tables: body cells use Body size (17px; 16px on mobile) at 400, line-height 1.5; `td.num` and `th` use Label 12px mono. No other sizes exist anywhere; there are no exceptions.
 - Numbers in tables and prose figures use `font-variant-numeric: tabular-nums`.
 
 ---
@@ -118,7 +118,7 @@ Order of the page (single column inside `.wrap`):
 4. **COI box** (`.callout.coi`, bg `--paper-2`, 3px `--ink` left bar), label "Conflict of interest", copy from CONTEXT verbatim. The same component (class `.callout.coi`, shortened label "COI note") is reused in Phase 2 next to imagery sourcing and Getty v Stability.
 5. **Answer-first block** (`<section id="answer" class="answer">`, no number): <=120 words in Body size at max-width 46em, stating claim, condition (governed review), falsifier. First sentence in 600 weight. Contains `data-fig` tagged numbers with chips.
 6. **Grade key / legend** (`.legend`, bg `--paper-2`, 1px `--rule` border, padding 24px): `<dl>` with three rows (chip + definition for Benchmark, Modelled, Speculative) and a fourth row for the source flag (neutral tag + "flags who said it; never upgrades a grade"). Includes the "what 2x does not mean" statement as a `.callout` directly after or inside the legend block, and the falsifier statement as a second `.callout` labelled "Falsifier".
-7. **TOC** (`<nav class="toc" aria-label="Sections">`): 15 rows, each `<a href="#sNN"><span class="n">NN</span><span>Title</span></a>`. Mono Label size, rows 44px min-height, hover bg `--paper-2`. Current-section highlight is not required in Phase 1 (no JS). Sticky behaviour is not required; do not add.
+7. **TOC** (`<nav class="toc" aria-label="Sections">`): 15 rows, each `<a href="#sNN"><span class="n">NN</span><span>Title</span></a>`. Mono Label size, rows 48px min-height, hover bg `--paper-2`. Current-section highlight is not required in Phase 1 (no JS). Sticky behaviour is not required; do not add.
 8. **Sections s01 to s15** as `<section id="sNN" aria-labelledby="sNN-h">` with `.sec-head`.
 
 Section pattern (fixed snippet, grep-checkable):
@@ -135,9 +135,9 @@ Section pattern (fixed snippet, grep-checkable):
 
 | Component | Spec |
 |-----------|------|
-| `.chip` | Inline-block, Label size, 600, uppercase, letter-spacing .08em, 1px solid currentColor, radius 2px, padding 2px 8px, `white-space:nowrap`. Text is the grade word. Element is `<a class="chip c-b|c-m|c-s" href="#src-…|#asm-…">`; link underline removed but hover gives underline and `:focus-visible` outline. |
+| `.chip` | Inline-block, Label size, 600, uppercase, letter-spacing .08em, 1px solid currentColor, radius 2px, padding 4px 8px, `white-space:nowrap`. Text is the grade word. Element is `<a class="chip c-b|c-m|c-s" href="#src-…|#asm-…">`; link underline removed but hover gives underline and `:focus-visible` outline. |
 | `.flag` | Same metrics as chip but 400 weight, sentence case text "vendor-claimed" / "company-reported", colour `--muted`, bg `--paper-2`, border 1px `--rule`. Follows a chip, 4px left margin. Not a link. |
-| `.claim` | Grid `64px 1fr` (40px mobile) with chip rail left and body right, per reference. Used for claim paragraphs where the chip sits in the rail; inline chips after a number are used inside tables, `.meta` and prose. |
+| `.claim` | Grid `64px 1fr` (32px mobile) with chip rail left and body right, per reference. Used for claim paragraphs where the chip sits in the rail; inline chips after a number are used inside tables, `.meta` and prose. |
 | `data-fig` values | `<span data-fig="id">7.8%</span>` followed by its chip. No visual treatment of its own (no underline, no highlight). |
 | Six-lever table (s01) | `<table>` with `<caption>` "The six levers", columns: Lever, Output metric, Outcome metric, Evidence grade (chip). Wrapped in `<div class="table-scroll" role="region" aria-label="The six levers table" tabindex="0">` with `overflow-x:auto`. |
 | Headline metric block (s01) | Three-up `.metric-trio` grid (`repeat(auto-fit,minmax(200px,1fr))`, gap 24px): headline "approved-and-live asset-variants per marketing head per quarter", "unique concepts", "variants per concept". Each cell: Label caption above, Heading-size value is NOT used (keep to 4 sizes); value is Body size 600. 1px top rule `--ink`. Always rendered together. |
@@ -145,7 +145,7 @@ Section pattern (fixed snippet, grep-checkable):
 | Source register (s15) | Two tables, "Source register" and "Assumptions register". Each row has `id="src-…"` / `id="asm-…"`, `scroll-margin-top: 16px`, and `:target` styling: `background:var(--paper-2)` plus 3px `--ink` left box-shadow inset so a chip click visibly lands on its row. Columns source: ID, Claim, Publisher, Date accessed, Grade chip, Flag, URL. Assumptions: ID, Assumption, Value, Grade chip, Basis. URLs are real `<a>` with visible text, `overflow-wrap:anywhere`. |
 | `.callout` | Border-left 3px `--ink`, padding 4px 0 4px 24px, margin 24px 0, max-width 44em; `.lbl` Label size uppercase muted above text. |
 | `figure` | margin 32px 0, top border 1px `--rule`, padding-top 16px. `figcaption` Label size muted, max-width 52em, `<b>` prefix "Figure N" uppercase. |
-| Figure data table | Directly after each SVG figure, inside `<details class="datatable">` (`<summary>Data table equivalent</summary>`), open by default in print. The `<table>` has caption, `th scope`, numbers in `.num`. Summary styled as Label mono with 44px min-height, underline on hover, focus ring. If `<details>` is judged too hidden, render the table always visible; default is always visible for the s02 figure so CFO readers see numbers. **Decision: always visible, no `<details>`, in Phase 1.** |
+| Figure data table | Directly after each SVG figure, inside `<details class="datatable">` (`<summary>Data table equivalent</summary>`), open by default in print. The `<table>` has caption, `th scope`, numbers in `.num`. Summary styled as Label mono with 48px min-height, underline on hover, focus ring. If `<details>` is judged too hidden, render the table always visible; default is always visible for the s02 figure so CFO readers see numbers. **Decision: always visible, no `<details>`, in Phase 1.** |
 
 ---
 
@@ -165,7 +165,7 @@ Inline `<svg role="img" aria-labelledby="f2-t f2-d" viewBox="0 0 960 H" width="1
 
 ## Interaction & State Contract
 
-Phase 1 has no JavaScript on the page (the page must work fully with JS off). Interactions are native only.
+The Phase 1 page loads no script at all (it must work fully with JS off). `data.js` and `calc.js` are ES modules used by the `node:test` tests only in Phase 1 (and by the calculator UI in Phase 3). Interactions are native only.
 
 | Interaction | Contract |
 |-------------|----------|
@@ -180,7 +180,7 @@ Phase 1 has no JavaScript on the page (the page must work fully with JS off). In
 
 ## Responsive & Print Contract
 
-- Breakpoint: single breakpoint at `max-width:720px` (as reference): body 16px, `.wrap` padding 18px, sec-head/claim/toc grids `40px 1fr`, h2 25px.
+- Breakpoint: single breakpoint at `max-width:720px` (as reference): body 16px, `.wrap` padding 16px, sec-head/claim/toc grids `32px 1fr` with 8px gap, h2 25px.
 - At <=480px `.meta` becomes one column; `.metric-trio` one column.
 - `@media print` (CFO print/PDF): `body{background:#fff;color:#000;font-size:10.5pt}`; `.toc` and `.skip` hidden (**same as reference**), but keep the grade key visible; `a{color:#000}` and show hrefs for register URLs only (`.register a[href^="http"]::after{content:" (" attr(href) ")"}`); `figure, table, .callout, .legend, tr{break-inside:avoid}`; `section{break-inside:auto}`; chips keep their 1px border and text so grades survive in B&W; remove `.later` bg; `.table-scroll{overflow:visible}`; hairlines `#ccc`; `h2{break-after:avoid}`.
 
@@ -215,7 +215,7 @@ Voice: British English, analytical and sceptical, like the reference. No exclama
 | Skeleton note | "Coming in a later update." plus one-sentence scope per section |
 | Empty state heading | Not applicable (no data-driven UI in Phase 1). Skeleton sections are the only "empty" content: see "Skeleton note" |
 | Empty state body | "Coming in a later update." followed by the scope sentence, e.g. "This section will show how localisation doubles output without doubling review." |
-| Error state | Not applicable (no inputs). Broken-JS fallback is moot as the page uses no JS. Dead anchor = test failure |
+| Error state | Not applicable (no inputs). No script is loaded, so there is no JS failure state. Dead anchor = test failure |
 | Gartner caveat (if not confirmed) | "Secondary source: the Gartner 7.8% figure is reported by trade press; we could not confirm the primary release." (shown only when graded Modelled per CONTEXT) |
 | Destructive confirmation | None: no destructive actions exist on the page |
 
@@ -229,7 +229,7 @@ Section titles for the 15 TOC rows: use the research structure; s01 "Claim & mea
 |----------|-------------|-------------|
 | shadcn official | none | not applicable (shadcn not used) |
 | Third-party | none | not applicable |
-| CDN libraries | none | no scripts or CDN assets on the page in Phase 1 |
+| CDN libraries | none | no `<script>` or CDN assets loaded by the page in Phase 1 |
 
 ---
 
