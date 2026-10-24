@@ -151,6 +151,13 @@ async function cases(base) {
     check('nan', !/NaN|Infinity/.test(body), 'NaN or Infinity in s11');
     const hash = await evalJs('location.hash');
     check('hash untouched', hash === '', `hash "${hash}"`);
+    // WR-08: no stale share link while inputs are invalid.
+    const share = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
+    check('share blocked', share[0] === '' && share[1] === true && share[2] === 'Fix the highlighted inputs before sharing.', `share ${JSON.stringify(share)}`);
+    await evalJs("(() => { const i = document.getElementById('in-campaigns'); i.value = '50'; i.dispatchEvent(new Event('change', { bubbles: true })); })()");
+    await sleep(300);
+    const back = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
+    check('share restored', back[0].endsWith('#s11?campaigns=50') && back[1] === false && back[2] === '', `share ${JSON.stringify(back)}`);
   }));
 
   await run('l error summary is not rebuilt while the errors stay the same', () => withPage(async ({ send, evalJs }) => {

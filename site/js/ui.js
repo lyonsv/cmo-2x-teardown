@@ -18,6 +18,7 @@ const summary = $('calc-summary');
 const errBox = document.querySelector('.calc-errors');
 const shareLink = $('share-link');
 const shareStatus = document.querySelector('.share-status');
+const copyBtn = $('copy-link');
 const rows = [...document.querySelectorAll('[aria-label="Calculator results"] tbody tr')];
 const inputs = Object.fromEntries(FIELDS.map((f) => [f.key, $(`in-${f.key}`)]));
 
@@ -179,6 +180,26 @@ function statusText(values) {
   return pendingNotice ? `${pendingNotice} ${line}` : line;
 }
 
+// While any input is invalid the link would describe numbers that are no longer
+// on screen, so it is cleared and Copy link is disabled until the inputs are valid (WR-08).
+const SHARE_BLOCKED = ['Fix the highlighted inputs before sharing.', 'Finish entering the inputs before sharing.'];
+
+function setShareStatus(text) {
+  if (shareStatus.textContent !== text) shareStatus.textContent = text;
+}
+
+function blockShare(highlighted) {
+  shareLink.value = '';
+  copyBtn.disabled = true;
+  setShareStatus(SHARE_BLOCKED[highlighted ? 0 : 1]);
+}
+
+function allowShare(link) {
+  shareLink.value = link;
+  copyBtn.disabled = false;
+  if (SHARE_BLOCKED.includes(shareStatus.textContent)) setShareStatus('');
+}
+
 // Re-reads every input and repaints. `commit` is true for change/blur/reset/restore.
 function update(commit, immediateSummary) {
   const { values, errors: fieldErrors } = read();
@@ -191,6 +212,7 @@ function update(commit, immediateSummary) {
     dashResults();
     summary.textContent = 'Results are not available until the inputs are fixed.';
     status.textContent = pendingNotice || 'Showing: results not available';
+    blockShare(visible.length > 0);
     return;
   }
   const p = present(values, ctx);
@@ -207,7 +229,7 @@ function update(commit, immediateSummary) {
   else summaryTimer = setTimeout(writeSummary, 400);
   status.textContent = statusText(values);
   const hash = serialiseHash(values, ctx);
-  shareLink.value = location.href.split('#')[0] + hash;
+  allowShare(location.href.split('#')[0] + hash);
   if (commit) history.replaceState(null, '', hash || location.pathname + location.search);
 }
 
@@ -243,8 +265,9 @@ form.addEventListener('change', (e) => {
   update(true, true);
 });
 
-$('copy-link').addEventListener('click', () => {
+copyBtn.addEventListener('click', () => {
   const done = (msg) => { shareStatus.textContent = msg; };
+  if (copyBtn.disabled || shareLink.value === '') return;
   const fail = () => {
     shareLink.select();
     done('Could not copy. Select the link and copy it manually.');
