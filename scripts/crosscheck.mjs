@@ -10,7 +10,6 @@ import { formatValue } from '../site/js/format.js';
 
 // Register rows that no page link points at, each with the reason. Each entry was inspected.
 export const JUSTIFIED_UNREFERENCED = {
-  'src-getty-v-stability-uk': 'Law-firm commentary that was not read (the page returned 403), kept in the register for transparency while the s13 status row cites the CMS source instead.',
   'asm-formats-per-locale': 'A fixed model constant shown only in the register because the calculator does not expose it.',
   'asm-concept-growth': 'A model assumption shown only in the register because the calculator does not expose it.',
   'asm-sampling-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',

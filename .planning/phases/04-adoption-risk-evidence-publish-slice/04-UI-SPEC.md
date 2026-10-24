@@ -11,6 +11,8 @@ extends: 03-levers-outcomes-calculator-comparison-slice/03-UI-SPEC.md
 
 # Phase 4 — UI Design Contract (Adoption, Risk, Evidence & Publish)
 
+> Note (2026-10-24): the conflict-of-interest callouts and the Getty v Stability treatment were removed at the author's request (quick task 261024-s14). The legal-review flag now sits directly before #answer. References to `.callout.coi`, `s14-getty` and the COI page-1 print check below are superseded.
+
 > Extends the approved Phase 1, 2 and 3 contracts. Everything in 01/02/03-UI-SPEC.md still applies (tokens, 4 sizes 12 / 17(16) / 31(25) / clamp 34–58, 2 weights 400 and 600, spacing 4/8/16/24/32/48/64, `.chip`, `.flag`, `.callout`, `.cite`, `.nd`, `.table-scroll` regions, chip density rule, CSP, print). This file states only what is new. Upstream: 04-CONTEXT.md (locked), REQUIREMENTS.md (CLOSE-01..03, QA-01..04). No questions were asked; every answer is from CONTEXT or a default noted here.
 
 Scope: s13, s14 replace their skeletons. s15 gains one register column, an evidence-gaps block, and a "not used" note. A legal-review flag is added near the top of the page. Page-wide QA checklist (last section) is the contract for QA-01/02.

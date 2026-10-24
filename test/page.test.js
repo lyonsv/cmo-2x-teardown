@@ -323,11 +323,6 @@ test('meta grid carries the subject-org assumptions and the date', () => {
   assert.ok(meta.includes('2026-10-24'));
 });
 
-test('conflict-of-interest box uses the CONTEXT wording', () => {
-  assert.match(html, /class="callout coi"/);
-  assert.ok(html.includes('The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.'));
-});
-
 test('grade key defines three grades and a neutral flag', () => {
   const start = html.indexOf('class="legend"');
   assert.ok(start >= 0, 'missing .legend');
@@ -412,19 +407,14 @@ test('vendor names stay inside s12 and s15', () => {
   assert.ok(!/gradial|airops|profound/i.test(rest));
 });
 
-// Getty and Stability are named by design (conflict-of-interest note, s05), so they are not listed.
 // Code review IN-04: extended with ad-platform, model, DAM and creative-tool names.
 // Ordinary English words that are also product names (writer, typeface, meta,
 // flux) are matched only in their branded forms to avoid false positives.
 const VENDOR_RE = /\b(gradial|airops|profound|adobe|firefly|midjourney|dall-?e|openai|chatgpt|anthropic|claude|gemini|google|microsoft|copilot|canva|shutterstock|runway|synthesia|jasper|salesforce|hubspot|bynder|aprimo|contentful|amazon|aws|azure|honeycomb|athena|optimizely|klarna|unilever|tiktok|linkedin|facebook|instagram|youtube|meta ads|meta platforms|sora|veo|imagen|flux\.1|black forest labs|ideogram|leonardo\.ai|stable diffusion|figma|workfront|sprinklr|celtra|persado|typeface\.ai|writer\.com|smartling|phrase tms|deepl|seismic|sitecore|bria)\b/i;
 
-test('no vendor names outside s12 and s15, apart from the COI notes and the Getty line (IN-04)', () => {
+test('no vendor names outside s12 and s15 (IN-04)', () => {
   let rest = html.replace(/<head>[\s\S]*?<\/head>/, '');
   for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
-  rest = rest.replace(/<div class="callout coi">[\s\S]*?<\/div>/g, ' ');
-  const getty = (rest.match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).filter((p) => strip(p).startsWith('Getty v Stability'));
-  assert.equal(getty.length, 1, 'exactly one Getty line is exempt');
-  rest = rest.replace(getty[0], ' ');
   const m = strip(rest).match(VENDOR_RE);
   assert.ok(!m, `page names a vendor outside s12/s15: ${m && m[0]}`);
 });
@@ -655,7 +645,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [1200, 1600] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [900, 1600] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -744,9 +734,7 @@ test('s05 derive lead and matrix table', () => {
   assert.ok(tail.includes('data-fig="matrix-per-concept"') && tail.includes('data-fig="avg-campaign-variants"'));
 });
 
-// ---- Plan 02-04: s05 imagery sourcing, Getty line, personalisation ----
-
-const COI_S05 = 'The author works at iStock/Getty Images. This page is vendor-neutral by design; the table below sets out three routes to imagery without ranking them.';
+// ---- Plan 02-04: s05 imagery sourcing, personalisation ----
 
 function imageryTable() {
   const s = sectionHtml('s05');
@@ -755,15 +743,13 @@ function imageryTable() {
   return { s, table: m[0], at: s.indexOf(m[0]) };
 }
 
-test('s05 COI note sits directly above the imagery table', () => {
+test('s05 intro paragraph is immediately followed by the imagery table region', () => {
   const s = sectionHtml('s05');
-  const m = s.match(/<div class="callout coi">\s*<span class="lbl">COI note<\/span>\s*<p>([\s\S]*?)<\/p>\s*<\/div>(\s*)<div class="table-scroll"/);
-  assert.ok(m, 'COI callout must be immediately followed by the table region');
-  assert.equal(strip(m[1]), COI_S05);
-  const before = s.slice(0, s.indexOf('<div class="callout coi">')).trimEnd();
-  assert.ok(before.endsWith('</p>'), 'a lead-in paragraph must come immediately before the callout');
   const { table } = imageryTable();
-  assert.ok(s.indexOf(m[0]) < s.indexOf(table));
+  const m = s.match(/<p>[^<]*Every campaign needs images[\s\S]*?<\/p>\s*<div class="table-scroll" role="region" aria-label="Imagery sourcing table" tabindex="0">\s*<table/);
+  assert.ok(m, 'intro p must be immediately followed by the table region');
+  assert.ok(table.includes('<caption>Imagery sourcing: three routes</caption>'));
+  assert.ok(table.includes('href="#src-usco-copyright-ai-part2"'));
 });
 
 test('imagery table is neutral', () => {
@@ -783,22 +769,6 @@ test('imagery table is neutral', () => {
   for (const c of table.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) {
     assert.ok(strip(c).split(' ').length <= 20, `cell over 20 words: ${strip(c)}`);
   }
-});
-
-test('one dated Getty v Stability line', () => {
-  const { s, table } = imageryTable();
-  const text = strip(s.replace(/<svg[\s\S]*?<\/svg>/g, ' '));
-  assert.equal((text.match(/Getty v Stability/g) || []).length, 1);
-  const after = s.slice(s.indexOf(table) + table.length);
-  const p = (after.match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).find((x) => strip(x).includes('Getty v Stability'));
-  assert.ok(p, 'Getty line must follow the table');
-  assert.ok(p.includes('<time datetime="2025-11-04">'));
-  assert.ok(strip(p).includes('permission to appeal'));
-  // WR-05: graded and linked to the source actually read; no unsourced US clause.
-  assert.ok(p.includes('<a class="chip c-m" href="#src-ailawsuittracker-getty-uk">Modelled</a>'));
-  assert.ok(!/California|refiled|US action/.test(strip(p)), 'unsourced US-action clause is back');
-  assert.ok(p.includes('<a href="#s14">section 14</a>'));
-  assert.ok(strip(p).replace(/\s+([.,;])/g, '$1').includes('Full treatment in section 14.'));
 });
 
 test('personalisation and feeds block', () => {
@@ -1000,7 +970,7 @@ test('legend states the grade rule for company-reported figures and every such f
   }
 });
 
-// ---- Code review WR-04: the imagery routes are qualified symmetrically (author COI) ----
+// ---- Code review WR-04: the imagery routes are qualified symmetrically ----
 
 test('imagery table qualifies every route symmetrically and scopes the Copyright Office source (WR-04)', () => {
   const { table } = imageryTable();
@@ -1029,8 +999,6 @@ test('source register carries no unresolved pre-publication to-do (WR-05)', () =
   for (const [k, src] of Object.entries(sources)) {
     assert.ok(!/before publishing|is to confirm|to be confirmed|\bTODO\b/i.test(src.read_via + src.bias), `src-${k}: unresolved to-do`);
   }
-  assert.ok(/Not read/.test(sources['getty-v-stability-uk'].read_via));
-  assert.ok(sources['ailawsuittracker-getty-uk'].read_via.includes('2025-12-16'));
 });
 
 // ---- Code review WR-06: every chip and every flag is checked against data.js ----
@@ -1416,7 +1384,7 @@ const RISK_BLOCKS = [
   ['slop', 'Slop and sameness'],
   ['fatigue', 'Reviewer fatigue'],
   ['goodhart', 'Goodhart on counts and spend'],
-  ['ip', 'IP, copyrightability and Getty v Stability'],
+  ['ip', 'IP and copyrightability'],
   ['regulation', 'Regulation'],
 ];
 
@@ -1475,38 +1443,6 @@ test('s14 risk register table', () => {
   assert.ok(!/--low|--verified|\b(green|amber|red)\b/i.test(t[0]));
 });
 
-const COI_TEXT = 'The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.';
-
-test('s14 Getty v Stability: COI repeated directly above, neutral treatment, mini-table', () => {
-  const s = sectionHtml('s14');
-  assert.equal((html.match(/class="callout coi"/g) || []).length, 3);
-  const m = s.match(/(<div class="callout coi">[\s\S]*?<\/div>)\s*(<h4 id="s14-getty">Getty v Stability<\/h4>)/);
-  assert.ok(m, 'COI callout must sit directly above h4#s14-getty');
-  assert.equal(strip(m[1].match(/<p>([\s\S]*?)<\/p>/)[1]), COI_TEXT);
-  assert.equal(strip(html.match(/<div class="callout coi">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]), COI_TEXT);
-  const b = riskBlock('ip');
-  const t = strip(b);
-  assert.ok(!t.includes('Stable Diffusion'));
-  for (const p of s.match(/<p\b[^>]*>[\s\S]*?<\/p>/g)) assert.ok(!strip(p).startsWith('Getty v Stability'), 'no s14 p starts with Getty v Stability');
-  const prose = b.match(/<p id="legal-s14-getty">([\s\S]*?)<\/p>/);
-  assert.ok(prose, 'legal-s14-getty on the Getty prose p');
-  for (const w of ['4 November 2025', 'secondary', 'trade mark', 'December 2025', 'No Court of Appeal', 'California']) assert.ok(t.includes(w), w);
-  assert.ok(!/December 1[67]/.test(t), 'no day for the permission to appeal');
-  const afterH4 = b.slice(b.indexOf('<h4'));
-  const words = strip(afterH4.replace(/<table>[\s\S]*?<\/table>/g, ' ')).split(' ').filter(Boolean).length;
-  assert.ok(words <= 250 + 40, `Getty sub-section prose is ${words} words`);
-  assert.ok(strip(b.match(/<p class="asat">[\s\S]*?<\/p>/)[0]).endsWith('Check again before relying on it.'));
-  assert.match(b, /href="#src-ailawsuittracker-getty-uk"/);
-  assert.match(b, /href="#src-getty-v-stability-uk-cms"/);
-  assert.match(b, /href="#src-usco-copyright-ai-part2"/);
-  const tbl = b.match(/<table>[\s\S]*?<\/table>/)[0];
-  assert.ok(/<caption>[^<]*Getty v Stability[^<]*<\/caption>/.test(tbl));
-  assert.deepEqual([...tbl.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((x) => x[1]), ['Claim', 'Status', 'Source']);
-  const rows = tbl.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr>[\s\S]*?<\/tr>/g);
-  assert.equal(rows.length, 4);
-  for (const r of rows) assert.match(r, /class="cite" href="#src-/);
-});
-
 test('s14 regulation block states Article 50 dates exactly and does not overstate', () => {
   const b = riskBlock('regulation');
   const t = strip(b);
@@ -1523,7 +1459,16 @@ test('s14 regulation block states Article 50 dates exactly and does not overstat
 });
 
 test('s14 carries four legal ids', () => {
-  for (const id of ['legal-s14-copyright', 'legal-s14-getty', 'legal-s14-regulation', 'legal-s14-agent-liability']) {
+  for (const id of ['legal-s14-copyright', 'legal-s14-regulation', 'legal-s14-agent-liability']) {
     assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, id);
   }
+});
+
+test('no COI callout or Getty, Stability or iStock mention remains (CRED-04 removed at author\'s request)', () => {
+  const css = readFileSync(new URL('../site/assets/style.css', import.meta.url), 'utf8');
+  assert.ok(!/callout coi/.test(html));
+  assert.ok(!/\.coi\b/.test(css));
+  assert.ok(!/getty|istock|stability ai|v stability/i.test(html));
+  assert.ok(!html.includes('id="s14-getty"') && !html.includes('id="legal-s05-getty"'));
+  assert.ok(!Object.keys(sources).some((k) => /getty|stability/i.test(k)));
 });

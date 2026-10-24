@@ -208,19 +208,17 @@ test('every source is complete', () => {
     assert.ok(PUBLISHER_TYPES.includes(s.publisherType), `${k}: publisherType "${s.publisherType}"`);
     assert.ok(s.event === undefined || /^\d{4}-\d{2}(-\d{2})?$/.test(s.event), `${k}: event`);
   }
-  for (const k of ['nyu-emory-ai-ads-2025', 'usco-copyright-ai-part2', 'getty-v-stability-uk']) {
+  for (const k of ['nyu-emory-ai-ads-2025', 'usco-copyright-ai-part2']) {
     assert.equal(sources[k].accessed, '2026-10-24');
   }
-  const g = sources['getty-v-stability-uk'];
-  assert.ok(g.title.includes('2025-11-04') || g.bias.includes('2025-11-04'));
 });
 
-test('publisherType of the 36 earlier sources is pinned', () => {
+test('publisherType of the 34 earlier sources is pinned', () => {
   const want = {
     'gartner-2025-cmo-spend': 'company', 'gartner-2026-cmo-spend': 'company',
     'nyu-emory-ai-ads-2025': 'academic', 'laubli-2019': 'academic', 'aggarwal-geo-2024': 'academic', 'kohavi-2013': 'academic',
     'usco-copyright-ai-part2': 'government', 'cornell-17usc504': 'government', 'cornell-17usc412': 'government',
-    'getty-v-stability-uk': 'law-firm commentary', 'ailawsuittracker-getty-uk': 'tracker', 'intercom-2x-teardown': 'company',
+    'intercom-2x-teardown': 'company',
     'translation-vendor-case': 'vendor', 'experimentation-vendor-playbook': 'vendor', 'mmm-geox': 'vendor',
     'haynes-2026': 'vendor', 'seoworks-2026': 'vendor', 'indig-2026': 'press',
   };
@@ -231,7 +229,7 @@ test('publisherType of the 36 earlier sources is pinned', () => {
   const vendorRows = Object.keys(sources).filter((k) => /^(gradial|airops|profound)-/.test(k));
   assert.equal(vendorRows.length, 18);
   for (const k of vendorRows) assert.equal(sources[k].publisherType, 'vendor', k);
-  assert.equal(Object.keys(want).length + vendorRows.length, 36);
+  assert.equal(Object.keys(want).length + vendorRows.length, 34);
 });
 
 test('Phase 4 sources carry the researched grade, publisherType and event date', () => {
@@ -243,8 +241,6 @@ test('Phase 4 sources carry the researched grade, publisherType and event date',
     'eu-code-of-practice-transparency': ['government', 'Benchmark', undefined],
     'asa-ai-disclosure-2025': ['government', 'Benchmark', undefined],
     'ftc-fake-reviews-rule-2024': ['government', 'Benchmark', undefined],
-    'getty-v-stability-us': ['tracker', 'Modelled', undefined],
-    'getty-v-stability-uk-cms': ['law-firm commentary', 'Modelled', undefined],
     'incident-mcdonalds-nl-2025': ['press', 'Modelled', '2025-12-10'],
     'incident-cocacola-2025': ['press', 'Modelled', '2025-11-03'],
     'incident-guess-vogue-2025': ['press', 'Modelled', '2025-08'],
@@ -258,7 +254,7 @@ test('Phase 4 sources carry the researched grade, publisherType and event date',
     assert.equal(sources[k].accessed, '2026-10-24', `${k} accessed`);
   }
   assert.equal(sources['incident-levis-2023'].flag, 'company-reported');
-  assert.equal(Object.keys(sources).length, 49);
+  assert.equal(Object.keys(sources).length, 45);
 });
 
 test('Phase 4 context assumptions: backlog 0 N, adoption design, risk likelihood', () => {

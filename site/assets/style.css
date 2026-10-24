@@ -33,7 +33,6 @@ p { margin: 0 0 var(--s-md); }
 .callout { border-left: 3px solid var(--ink); padding: var(--s-xs) 0 var(--s-xs) var(--s-lg); margin: var(--s-lg) 0; max-width: 44em; }
 .callout p { margin: 0; }
 .callout .lbl { display: block; font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
-.callout.coi { background: var(--paper-2); }
 .callout.legal-flag { background: var(--paper-2); border: 1px solid var(--rule); border-left: 3px solid var(--ink); padding: var(--s-md) var(--s-lg); }
 .gaps { max-width: 44em; }
 .gaps li { margin: 0 0 var(--s-md); }

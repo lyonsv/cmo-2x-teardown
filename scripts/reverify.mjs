@@ -28,10 +28,6 @@ export const verifyPhrase = {
   'eu-code-of-practice-transparency': 'adequate voluntary tool',
   'asa-ai-disclosure-2025': 'regardless of how content is generated',
   'ftc-fake-reviews-rule-2024': 'fake reviews',
-  'getty-v-stability-uk': 'permission to appeal',
-  'ailawsuittracker-getty-uk': 'Stability',
-  'getty-v-stability-us': 'Stability',
-  'getty-v-stability-uk-cms': 'Stability',
 };
 const phraseFor = (id) => {
   if (verifyPhrase[id]) return verifyPhrase[id];

@@ -20,7 +20,6 @@
 - [x] **CRED-01**: Reader sees a grade key (Benchmark / Modelled / Speculative) plus a separate source flag (vendor-claimed / company-reported) that never upgrades a claim to Benchmark
 - [x] **CRED-02**: Every quantitative claim on the page shows a text grade chip (not colour-only) linked to a source-register or assumptions-register entry
 - [x] **CRED-03**: Reader sees the headline output metric defined as approved-and-live asset-variants per marketing head per quarter (all marketing FTE in the denominator), always shown beside the unique-concept count and variants per concept, with tier weighting offered only as a sensitivity
-- [x] **CRED-04**: Reader sees a conflict-of-interest note (author works at iStock/Getty Images) in the front matter and repeated next to imagery sourcing and Getty v Stability
 - [x] **CRED-05**: Reader can see a "what 2x does not mean" statement and a stated falsifier for the 2x claim
 - [x] **CRED-06**: All numbers, defaults, grades and source IDs come from one `data.js` used by both prose and calculator, so they cannot diverge
 
@@ -92,7 +91,7 @@
 
 - [ ] **QA-01**: The page meets WCAG 2.2 AA: labelled inputs, `aria-live` outputs, data-table equivalents for charts, and grades not conveyed by colour alone
 - [x] **QA-02**: The page is usable at 320 CSS px with tables in their own horizontal-scroll regions, and prints cleanly via an `@media print` stylesheet
-- [x] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, EU AI Act Art. 50, and Getty v Stability status are re-verified, and the page's legal wording is flagged for review
+- [x] **QA-03**: Before publishing, primary sources (Gartner, McKinsey, NYU/Emory, Optimizely), vendor facts, and EU AI Act Art. 50 are re-verified, and the page's legal wording is flagged for review
 - [x] **QA-04**: An automated or scripted cross-check confirms every graded number on the page has a register entry and every calculator default matches the prose
 
 ## v2 Requirements
@@ -116,7 +115,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | Precise creative-fatigue thresholds, per-word localisation rate tables | Sources contradict one another or can't be verified |
 | Invented typical variant counts, approval times or incident rates | Evidence gaps are stated as gaps or as reader-overridable Modelled defaults |
 | Vendor names outside the comparison section and source register | Operating model stays vendor-neutral by category |
-| Teardown of a named company's (or Getty/iStock's) own marketing org | User chose a generic enterprise CMO |
+| Conflict-of-interest note and Getty v Stability treatment (former CRED-04) | Removed at author's request (2026-10-24) |
+| Teardown of a named company's own marketing org | User chose a generic enterprise CMO |
 | Backend, accounts, persistence, `localStorage` for scenarios | Static, client-side only; sharing via URL hash |
 | Building the actual agents/pipelines | The page describes the operating model; it doesn't implement it |
 | Frameworks, bundlers, Chart.js, Tailwind | Stack research: no build step earns its keep for one page |
@@ -135,7 +135,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CRED-01 | Phase 1 | Complete |
 | CRED-02 | Phase 1 | Complete |
 | CRED-03 | Phase 1 | Complete |
-| CRED-04 | Phase 1 | Complete |
+| CRED-04 | Phase 1 | Out of Scope (removed at author's request) |
 | CRED-05 | Phase 1 | Complete |
 | CRED-06 | Phase 1 | Complete |
 | CFO-01 | Phase 1 | Complete |
@@ -184,8 +184,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | QA-04 | Phase 4 | Complete |
 
 **Coverage:**
-- v1 requirements: 55 total
-- Mapped to phases: 55
+- v1 requirements: 54 total (CRED-04 retired, removed at author's request)
+- Mapped to phases: 54
 - Unmapped: 0
 
 ---

@@ -7,16 +7,15 @@ const inv = readFileSync(new URL('../.planning/LEGAL-REVIEW.md', import.meta.url
 
 const FLAG_TEXT = 'Legal wording on this page has been flagged for review and has not yet been reviewed by counsel. Nothing here is legal advice.';
 
-test('legal-review flag is present once, verbatim, between the COI note and the summary', () => {
+test('legal-review flag is present once, verbatim, directly before the summary', () => {
   // Removal is an author edit after counsel's review; update this test only then.
   const flag = '<div class="callout legal-flag" role="note" aria-label="Legal review status">';
   assert.equal(html.split(flag).length - 1, 1);
-  const iCoi = html.indexOf('<div class="callout coi">');
   const iFlag = html.indexOf(flag);
   const iAnswer = html.indexOf('<section id="answer"');
-  assert.ok(iCoi > -1 && iCoi < iFlag && iFlag < iAnswer, 'order: coi, flag, answer');
-  const between = html.slice(iCoi, iFlag);
-  assert.equal((between.match(/<div/g) || []).length, 1, 'nothing between the COI callout and the flag');
+  assert.ok(iFlag > -1 && iFlag < iAnswer, 'order: flag, answer');
+  const afterFlag = html.slice(html.indexOf('</div>', iFlag) + '</div>'.length, iAnswer);
+  assert.equal(afterFlag.trim(), '', 'only whitespace between the flag and the summary');
   const block = html.slice(iFlag, html.indexOf('</div>', iFlag));
   assert.ok(block.includes('<span class="lbl">Legal review</span>'));
   assert.ok(block.includes(`<p>${FLAG_TEXT}</p>`));
@@ -28,7 +27,7 @@ test('legal ids on the page equal the ids in LEGAL-REVIEW.md', () => {
   const inFile = [...inv.matchAll(/^\| (legal-[a-z0-9-]+) \|/gm)].map((m) => m[1]);
   assert.equal(new Set(inFile).size, inFile.length, 'inventory ids unique');
   assert.deepEqual([...new Set(onPage)].sort(), [...new Set(inFile)].sort());
-  assert.equal(onPage.length, 10);
+  assert.equal(onPage.length, 8);
 });
 
 test('s15 lists evidence gaps with closers and the not-used notes', () => {

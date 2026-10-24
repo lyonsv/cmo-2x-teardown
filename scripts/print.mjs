@@ -67,7 +67,6 @@ async function main(base) {
       test('no blank pages', blank.length === 0, `${pages.length} pages read, all over 20 characters`, `blank/near-blank pages: ${blank.map(([i]) => i).join(', ')}`);
       const p1 = pages[0].replace(/\s+/g, ' ');
       test('page 1 has legal flag', p1.includes('has not yet been reviewed by counsel'), 'found');
-      test('page 1 has COI note', p1.includes('The author works at iStock/Getty Images'), 'found');
     });
   } finally {
     rmSync(dir, { recursive: true, force: true });

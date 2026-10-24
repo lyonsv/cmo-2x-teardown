@@ -137,13 +137,13 @@ async function reflow(evalJs, label) {
     const unfocusable = scrolls.filter((s) => s.tabIndex < 0 || !(s.getAttribute('aria-label') || s.getAttribute('aria-labelledby'))).length;
     const inside = (e) => { if (!e) return false; const b = e.getBoundingClientRect(); return b.left >= -0.5 && b.right <= 320.5; };
     return { sw: document.documentElement.scrollWidth, out: [...new Set(out)], scrolls: scrolls.length, unfocusable,
-      legal: inside(document.querySelector('.legal-flag')), coi: inside(document.querySelector('.callout.coi')),
+      legal: inside(document.querySelector('.legal-flag')),
       clipped: [...document.querySelectorAll('body *')].filter((e) => { const cs = getComputedStyle(e); return cs.overflow === 'hidden' && cs.display !== 'none' && e.scrollHeight > e.clientHeight + 1 && e.clientHeight > 0; }).map((e) => e.tagName.toLowerCase() + '.' + e.className) };
   })()`);
   test(`${label} no horizontal scroll`, r.sw <= 320, `scrollWidth ${r.sw}`);
   test(`${label} overflow only in scroll regions`, r.out.length === 0, `${r.scrolls} scroll regions, none else overflow`, r.out.slice(0, 8).join('; '));
   test(`${label} scroll regions focusable and named`, r.unfocusable === 0, `${r.scrolls} regions`);
-  test(`${label} legal flag and COI inside viewport`, r.legal && r.coi, `legal ${r.legal}, coi ${r.coi}`);
+  test(`${label} legal flag inside viewport`, r.legal, `legal ${r.legal}`);
   return r;
 }
 

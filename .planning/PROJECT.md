@@ -12,14 +12,14 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 ### Validated
 
-- ✓ Editorial page shell, title block, metadata, COI note, grade key and 15-section TOC, live on GitHub Pages behind a test-gated workflow — Phase 1
+- ✓ Editorial page shell, title block, metadata, grade key and 15-section TOC, live on GitHub Pages behind a test-gated workflow — Phase 1
 - ✓ Confidence grades (Benchmark / Modelled / Speculative + vendor/company flag) on every number, linked to a register, all from one `data.js` — Phase 1
 - ✓ Headline metric (approved-live variants per head per quarter, with concepts and variants per concept), six-lever table, "what 2x does not mean" and falsifier — Phase 1
 - ✓ CFO answer: Gartner-anchored flat budget, fully loaded cost per approved-live asset ($64.71 → $41.18, Modelled), AI spend as a floor, Figure 1 — Phase 1
 - ✓ Tested pure `calc.js` model (identity, monotonicity, golden cases, edge inputs, cost per asset falling) — Phase 1
 - ✓ Factory and content supply chain (Figures 2–3), layered operating architecture with one shared versioned policy source — Phase 2
-- ✓ 10,000+ asset campaign: worked variant matrix (12,000 derived → 11,400 approved-live), derive-don't-generate, neutral imagery-sourcing table with COI note, personalisation/feeds with NYU/Emory (Benchmark) — Phase 2
-- ✓ Build-and-review spine: review agent, T0–T3 tiers with human-only list, reviewer-capacity worked example, fatigue controls, eval harness and telemetry — Phase 2 (author UAT on indemnity wording and Getty facts pending)
+- ✓ 10,000+ asset campaign: worked variant matrix (12,000 derived → 11,400 approved-live), derive-don't-generate, neutral imagery-sourcing table, personalisation/feeds with NYU/Emory (Benchmark) — Phase 2
+- ✓ Build-and-review spine: review agent, T0–T3 tiers with human-only list, reviewer-capacity worked example, fatigue controls, eval harness and telemetry — Phase 2 (author UAT on indemnity wording pending)
 - ✓ Five other levers incl. AEO/GEO, outcome case with proof design, interactive calculator (scenarios, sensitivity, show the maths, what you must believe, share link), and the sourced Gradial/AirOps/Profound comparison — Phase 3 (author UAT on tone, vendor fairness, legal wording pending)
 
 ### Active
@@ -44,7 +44,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 ### Out of Scope
 
-- A teardown of a specific named company or of Getty Images/iStock's own marketing org — the user chose a generic enterprise CMO
+- A teardown of a specific named company's own marketing org — the user chose a generic enterprise CMO
 - Real internal data — the figures are modelled from public benchmarks and stated assumptions
 - Naming or favouring vendors outside the comparison section — the operating model stays neutral by category
 - Backend services, accounts, or data persistence for the calculator — it is client-side only
@@ -56,7 +56,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 - Intercom's key framings to translate: the per-head output metric (not per engineer), a factory metaphor, spend as a floor rather than a KPI to avoid Goodhart, a tiered auto-approval gate, and honest self-critique.
 - The audience is a CMO deciding whether to invest, with the CFO as a secondary reader, so the case must hold up to a finance reader's scrutiny.
 - The working directory name `build-and-review` reflects the generation-plus-governance spine.
-- The author works at iStock/Getty, but the page is deliberately generic and vendor-neutral.
+- The page is deliberately generic and vendor-neutral.
 
 ## Constraints
 
@@ -74,6 +74,7 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 | Review/approval gate is the central spine | Without governance, 2x volume means 2x risk; this is the "review" in build-and-review | — Pending |
 | Include an interactive calculator | Puts the reader's own numbers into the model, which strengthens the CFO case | — Pending |
 | Candid risks section | Credibility with a sceptical CMO/CFO reader | — Pending |
+| Removed the conflict-of-interest note and the Getty v Stability content; CRED-04 retired | Author's request, 2026-10-24 | Done |
 | Static GitHub Pages delivery | Matches the reference | — Pending |
 | Named comparison vs Gradial, AirOps, Profound on the page | The user wants the CMO to see how this approach compares to market offerings | — Pending |
 | Falsifier uses OR (outcomes flat OR compliance falls) | Code review: AND let flat outcomes escape falsification; a CFO would spot it | ✓ Phase 1 |

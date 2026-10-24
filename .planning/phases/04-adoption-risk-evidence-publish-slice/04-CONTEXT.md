@@ -1,5 +1,7 @@
 # Phase 4: Adoption, Risk, Evidence & Publish Slice - Context
 
+> Note (2026-10-24): the conflict-of-interest callouts and the Getty v Stability treatment were removed at the author's request (quick task 261024-s14). The legal-review flag now sits directly before #answer. References to `.callout.coi`, `s14-getty` and the COI page-1 print check below are superseded.
+
 **Gathered:** 2026-10-24
 **Status:** Ready for planning
 **Mode:** Smart discuss with the recommended answers auto-accepted by the orchestrator. The user was away and had said "keep going and approve everything until done". Every choice below is the recommended option and can be revisited.
