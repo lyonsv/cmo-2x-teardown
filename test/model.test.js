@@ -318,3 +318,52 @@ test('fuzz: scenario and sensitivity never emit NaN, Infinity, undefined or null
     assert.equal(BAD.test(JSON.stringify({ s: p.scenario, n: p.sensitivity })), false, JSON.stringify(v));
   }
 });
+
+// ---- Plan 03-08: maths and believe ----
+
+test('present().maths: eight steps, digit-free formulas, results equal the table rows', () => {
+  const p = present(defaultValues(ctx), ctx);
+  assert.deepEqual(p.maths.map((m) => m.id), ['volume', 'output', 'generated', 'touch', 'hours', 'utilisation', 'cost', 'breakeven']);
+  for (const m of p.maths) {
+    assert.ok(!/\d/.test(m.formula), `${m.id} formula has a digit`);
+    for (const part of m.parts.filter((x) => !x.fig)) assert.ok(!/\d/.test(part.text), `${m.id} text part "${part.text}"`);
+    assert.ok(m.parts.some((x) => x.fig));
+    assert.ok(['Modelled', 'Speculative', 'Benchmark'].includes(m.grade) && ctx.grades[m.ref]);
+  }
+  const by = Object.fromEntries(p.maths.map((m) => [m.id, m]));
+  const row = (id) => p.rows.find((r) => r.id === id);
+  assert.equal(by.output.result.text, row('output_per_head').scaled.text);
+  assert.equal(by.cost.result.text, row('cost_per_asset').scaled.text);
+  assert.equal(by.utilisation.result.text, row('utilisation').scaled.text);
+  assert.equal(by.breakeven.result.text, row('break_even').scaled.text);
+  assert.equal(by.volume.result.text, '80,000');
+});
+
+test('present().maths substitutes the reader values', () => {
+  const p = present({ ...defaultValues(ctx), locales: 6 }, ctx);
+  assert.ok(p.maths[0].parts.some((x) => x.text === '48'), 'forty-eight variants per concept');
+});
+
+test('present().believe: seven items, top three carry the result, variant cost effect is computed and small', () => {
+  const p = present(defaultValues(ctx), ctx);
+  assert.deepEqual(p.believe.map((b) => b.key), ['locales', 'mconcept', 'auto2', 'minutes', 'yield', 'tooling', 'vcost']);
+  assert.deepEqual(p.believe.map((b) => b.asm).slice(5), ['asm-tooling', 'asm-variant-cost']);
+  assert.deepEqual(p.believe.map((b) => b.carries), [true, true, true, false, false, false, false]);
+  for (const b of p.believe) assert.ok(!/\d/.test(b.parts.filter((x) => !x.fig).map((x) => x.text).join('').replace(/20%|2x/g, '')), b.key);
+  const v = p.believe[6];
+  assert.match(v.statement, /only slightly/);
+  const swing = v.parts.find((x) => x.fig === 'calc-believe-vcost-swing');
+  assert.ok(swing && Math.abs(swing.value) < 0.02);
+  const up = present({ ...defaultValues(ctx), vcost: 0.8 * 1.2 }, ctx).rows.find((r) => r.id === 'cost_per_asset').scaled.value;
+  const was = p.rows.find((r) => r.id === 'cost_per_asset').scaled.value;
+  assert.ok(Math.abs(swing.value - (up / was - 1)) < 1e-9);
+});
+
+test('present().believe follows the live ranking and never lists a key twice', () => {
+  const p = present({ ...defaultValues(ctx), locales: 8, vcost: 60 }, ctx);
+  const keys = p.believe.map((b) => b.key);
+  assert.equal(new Set(keys).size, keys.length);
+  assert.ok(keys.length >= 5 && keys.length <= 7);
+  assert.equal(p.believe.filter((b) => b.carries).length, 3);
+  assert.equal(present({ ...defaultValues(ctx), campaigns: 0 }, ctx).maths, undefined);
+});

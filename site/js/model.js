@@ -272,13 +272,112 @@ function scenarioPresentation(values, ctx) {
   return { mode, name: SCENARIO_NAMES[mode], rows };
 }
 
-function sensitivityPresentation(values, ctx) {
+function sensitivityPresentation(rows) {
   const node = (v) => (v === null ? { text: 'n/a' } : { value: v, text: formatValue(v, 'pctchg1') });
-  return sensitivity(values, ctx).map((row) => ({
+  return rows.map((row) => ({
     key: row.key, label: row.label,
     cells: { costDown: node(row.cost.down), costUp: node(row.cost.up), utilDown: node(row.util.down), utilUp: node(row.util.up) },
     capped: row.capped, grade: row.grade, ref: row.ref,
   }));
+}
+
+// ---- Show the maths (CALC-02): each step in words, with the reader's numbers ----
+
+const sc = (v) => (v && typeof v === 'object' && !Array.isArray(v) && 'baseline' in v ? v.scaled : v);
+const numText = (v) => (Number.isInteger(v) ? formatValue(v, 'int') : formatValue(v, 'num1'));
+const pctText = (v) => `${Number((v * 100).toFixed(1))}%`;
+const tx = (text) => ({ text });
+
+// `list` mixes plain strings and [value, text] pairs; figs are numbered in order.
+function stepOf(id, name, formula, list, result, deps, ctx) {
+  let n = 0;
+  const parts = list.map((x) => (typeof x === 'string' ? tx(x) : { fig: `calc-maths-${id}-${(n += 1)}`, value: x[0], text: x[1] }));
+  const g = weakestGrade(OUTPUT_DEPS[deps], ctx.grades);
+  return { id, name, formula, parts, result: { fig: `calc-maths-${id}-r`, ...result }, grade: g.grade, ref: g.ref };
+}
+
+function mathsPresentation(values, ctx, r, rows) {
+  const { inputs, assumptions: A } = toCompute(values, ctx);
+  const s = r.scenario;
+  const int = (v) => [v, formatValue(v, 'int')];
+  const usd = (v) => [v, formatValue(v, 'usd0')];
+  const pct0 = (v) => [v, formatValue(v, 'pct0')];
+  const pct1 = (v) => [v, formatValue(v, 'pct1')];
+  const pctT = (v) => [v, pctText(v)];
+  const num = (v) => [v, numText(v)];
+  const res = (v, fmt) => ({ value: v, text: formatValue(v, fmt) });
+  const rowRes = (id) => ({ value: rows.find((x) => x.id === id).scaled.value, text: rows.find((x) => x.id === id).scaled.text });
+  const q = sc(A.sampling_rate) + sc(A.escalation_rate);
+  const denom = s.generated_variants_per_year * (1 + A.rework_rate) * (A.review_minutes_per_variant / 60);
+  const hStar = (A.target_utilisation * s.review_capacity_hours) / denom;
+  const c = s.cost;
+  const S = (id, name, formula, list, result, deps) => stepOf(id, name, formula, list, result, deps, ctx);
+  return [
+    S('volume', 'Approved-live variants a year at 2x', 'campaigns times concepts per campaign times variants per concept, each grown by the scale factor',
+      [num(inputs.campaigns_per_year), ' × ', num(inputs.concepts_per_campaign), ' × ', num(inputs.variants_per_concept), ' × ', num(inputs.multiplier), ' = '], res(s.variants_per_year, 'int'), 'output_per_head'),
+    S('output', 'Output per head per quarter', 'approved-live variants a year, divided by four quarters, divided by marketing FTE',
+      [int(s.variants_per_year), ' ÷ four quarters ÷ ', num(inputs.marketing_fte), ' = '], rowRes('output_per_head'), 'output_per_head'),
+    S('generated', 'Variants generated a year', 'approved-live variants divided by approval yield, because rejected variants are regenerated',
+      [int(s.variants_per_year), ' ÷ ', pctT(A.approval_yield), ' = '], res(s.generated_variants_per_year, 'int'), 'cost_per_asset'),
+    S('touch', 'Share of variants a person touches', 'one minus auto-approval share times (one minus the sampled and escalated share)',
+      ['one minus ', pct0(sc(A.auto_approval_share)), ' × (one minus ', pct0(q), ') = '], res(s.human_touch_share, 'pct1'), 'utilisation'),
+    S('hours', 'Review hours a year', 'generated variants times human-touch share times minutes per review, divided by sixty',
+      [int(s.generated_variants_per_year), ' × ', pct1(s.human_touch_share), ' × ', num(A.review_minutes_per_variant), ' ÷ sixty = '], res(s.review_hours, 'int'), 'utilisation'),
+    S('utilisation', 'Review utilisation', 'review hours times (one plus rework rate), divided by reviewer capacity hours',
+      [int(s.review_hours), ' × (one plus ', pctT(A.rework_rate), ') ÷ ', int(s.review_capacity_hours), ' = '], rowRes('utilisation'), 'utilisation'),
+    S('cost', 'Cost per approved-live asset', 'generation, review, rework, tooling, rights and storage cost added up, divided by approved-live variants',
+      [usd(c.generation), ' + ', usd(c.review), ' + ', usd(c.rework), ' + ', usd(c.tooling), ' + ', usd(c.rights), ' + ', usd(c.storage), ' = ', usd(c.total), ' ÷ ', int(s.variants_per_year), ' = '], rowRes('cost_per_asset'), 'cost_per_asset'),
+    S('breakeven', 'Break-even auto-approval', 'the auto-approval share at which utilisation equals the target, at flat reviewer headcount',
+      [pct0(A.target_utilisation), ' × ', int(s.review_capacity_hours), ' ÷ ', int(denom), ' = the most variants people can touch, ', Number.isFinite(hStar) ? pct1(hStar) : 'no limit',
+        '; (one minus that) ÷ (one minus the sampled and escalated share ', pct0(q), ') = '], rowRes('break_even'), 'break_even'),
+  ];
+}
+
+// ---- What you must believe (CALC-02): the live sensitivity ranking plus two fixed items ----
+
+const SAYS = {
+  campaigns: 'You run this many campaigns a year', concepts: 'Each campaign needs this many master concepts',
+  locales: 'Each concept is localised into this many locales', marketers: 'This many marketing FTE do the work',
+  reviewers: 'This many reviewer FTE check the work', minutes: 'A reviewer needs this many minutes per variant',
+  vcost: 'Variant generation at 2x costs this much per variant', mconcept: 'A master concept costs this much to make',
+  yield: 'This share of generated variants is approved', rework: 'This share of reviewed work is reworked',
+  auto1: 'This share of variants is auto-approved today', auto2: 'This share of variants can be auto-approved at 2x',
+  tooling: 'Tooling costs this much a year at 2x',
+};
+
+function believePresentation(values, ctx, sens) {
+  const A = toCompute(values, ctx).assumptions;
+  const show = (key, v) => {
+    const f = FIELDS.find((x) => x.key === key);
+    if (key === 'vcost') return formatValue(v, 'usd2');
+    return { int: numText, num: numText, usd: (x) => formatValue(x, 'usd0'), pct: pctText }[f.kind](v);
+  };
+  const make = (key, asm, grade, v, text, extra) => {
+    const value = { fig: `calc-believe-${key}`, value: v, text };
+    return { key, asm, grade, ref: asm, parts: [tx(`${SAYS[key]}: `), value, ...(extra || [])], value };
+  };
+  const swing = () => {
+    const up = run({ ...values, vcost: values.vcost * (1 + SENSITIVITY_STEP) }, ctx);
+    const was = run(values, ctx);
+    if (!up.ok || !was.ok) return null;
+    const d = up.result.scenario.cost_per_asset / was.result.scenario.cost_per_asset - 1;
+    return Number.isFinite(d) ? d : null;
+  };
+  const items = sens.map((r) => ({ key: r.key, asm: r.ref, grade: r.grade, ref: r.ref, v: values[r.key], text: show(r.key, values[r.key]) }));
+  if (!items.some((i) => i.key === 'vcost')) items.push({ key: 'vcost', asm: 'asm-variant-cost', grade: ctx.grades['asm-variant-cost'], ref: 'asm-variant-cost', v: values.vcost, text: show('vcost', values.vcost) });
+  const tool = sc(A.tooling_cost_annual);
+  items.splice(5, 0, { key: 'tooling', asm: 'asm-tooling', grade: ctx.grades['asm-tooling'], ref: 'asm-tooling', v: tool, text: formatValue(tool, 'usd0') });
+  const d = swing();
+  return items.map((i, n) => {
+    let extra = null;
+    if (i.key === 'vcost' && d !== null) {
+      const small = Math.abs(d) < 0.02;
+      extra = [tx(`. A 20% rise moves cost per approved-live asset ${small ? 'only slightly, by ' : 'by '}`),
+        { fig: 'calc-believe-vcost-swing', value: d, text: formatValue(d, 'pctchg1') }, tx('.')];
+    }
+    const item = make(i.key, i.asm, i.grade, i.v, i.text, extra);
+    return { ...item, statement: item.parts.map((x) => x.text).join(''), carries: n < 3 };
+  });
 }
 
 export function present(values, ctx) {
@@ -291,6 +390,7 @@ export function present(values, ctx) {
   }
   const r = out.result;
   const cells = buildRows(r);
+  const sens = sensitivity(values, ctx);
   const rows = RESULT_ROWS.map((def) => {
     const [base, scaled, change] = cells[def.id];
     const { grade, ref } = weakestGrade(OUTPUT_DEPS[def.id], ctx.grades);
@@ -303,6 +403,7 @@ export function present(values, ctx) {
   const summary = `At 2x, your team approves ${x} variants per head per quarter at ${y} per approved asset, with reviewers ${over ? 'over capacity at' : 'at'} ${z} of capacity.`;
   return {
     ok: true, summary, overCapacity: over, rows, errors: [],
-    scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(values, ctx),
+    scenario: scenarioPresentation(values, ctx), sensitivity: sensitivityPresentation(sens),
+    maths: mathsPresentation(values, ctx, r, rows), believe: believePresentation(values, ctx, sens),
   };
 }
