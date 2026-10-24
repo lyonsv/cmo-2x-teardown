@@ -896,40 +896,46 @@
             <thead><tr><th scope="col">Output</th><th scope="col">Baseline</th><th scope="col">2x</th><th scope="col">Change</th></tr></thead>
             <tbody>
               <tr>
-                <th scope="row">Approved-live variants per head per quarter</th>
-                <td class="num"><span data-fig="calc-output_per_head-base">83</span></td>
-                <td class="num"><span data-fig="calc-output_per_head-scaled">167</span></td>
-                <td class="num"><span data-fig="calc-output_per_head-change">+100%</span></td>
+                <th scope="row">Campaign-markets in market per quarter</th>
+                <td class="num"><span data-fig="calc-campaign_markets-base">50</span></td>
+                <td class="num"><span data-fig="calc-campaign_markets-scaled">100</span></td>
+                <td class="num"><span data-fig="calc-campaign_markets-change">+100%</span></td>
               </tr>
               <tr>
-                <th scope="row">Fully loaded cost per approved-live asset</th>
+                <th scope="row">Brief-to-live time (days)</th>
+                <td class="num"><span data-fig="calc-brief_to_live-base">11.8 days</span></td>
+                <td class="num"><span data-fig="calc-brief_to_live-scaled">7.5 days</span></td>
+                <td class="num"><span data-fig="calc-brief_to_live-change">−36%</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Fully loaded cost per approved asset</th>
                 <td class="num"><span data-fig="calc-cost_per_asset-base">$64.71</span></td>
-                <td class="num"><span data-fig="calc-cost_per_asset-scaled">$41.18</span></td>
-                <td class="num"><span data-fig="calc-cost_per_asset-change">−36%</span></td>
+                <td class="num"><span data-fig="calc-cost_per_asset-scaled">$45.26</span></td>
+                <td class="num"><span data-fig="calc-cost_per_asset-change">−30%</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Production cost per campaign-market</th>
+                <td class="num"><span data-fig="calc-cost_per_campaign_market-base">$12,943</span></td>
+                <td class="num"><span data-fig="calc-cost_per_campaign_market-scaled">$9,052</span></td>
+                <td class="num"><span data-fig="calc-cost_per_campaign_market-change">−30%</span></td>
               </tr>
               <tr>
                 <th scope="row">Total production cost</th>
                 <td class="num"><span data-fig="calc-total_cost-base">$2.59M</span></td>
-                <td class="num"><span data-fig="calc-total_cost-scaled">$3.29M</span></td>
-                <td class="num"><span data-fig="calc-total_cost-change">+27%</span></td>
+                <td class="num"><span data-fig="calc-total_cost-scaled">$3.62M</span></td>
+                <td class="num"><span data-fig="calc-total_cost-change">+40%</span></td>
               </tr>
               <tr>
                 <th scope="row">Production share of marketing budget</th>
                 <td class="num"><span data-fig="calc-budget_share-base">3.3%</span></td>
-                <td class="num"><span data-fig="calc-budget_share-scaled">4.2%</span></td>
-                <td class="num"><span data-fig="calc-budget_share-change">+0.9 points</span></td>
+                <td class="num"><span data-fig="calc-budget_share-scaled">4.6%</span></td>
+                <td class="num"><span data-fig="calc-budget_share-change">+1.3 points</span></td>
               </tr>
               <tr>
                 <th scope="row">AI spend</th>
                 <td class="num"><span data-fig="calc-ai_spend-base">$38,421</span></td>
                 <td class="num"><span data-fig="calc-ai_spend-scaled">$340,421</span></td>
                 <td class="num"><span data-fig="calc-ai_spend-change">+786%</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Cycle time, brief to live (days)</th>
-                <td class="num"><span data-fig="calc-cycle_time-base">11.8 days</span></td>
-                <td class="num"><span data-fig="calc-cycle_time-scaled">7.5 days</span></td>
-                <td class="num"><span data-fig="calc-cycle_time-change">−36%</span></td>
               </tr>
               <tr>
                 <th scope="row">Review utilisation</th>
@@ -952,7 +958,7 @@
             </tbody>
           </table>
         </div>
-        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-campaigns">Modelled</a>. Register rows: <a href="#asm-campaigns">asm-campaigns</a>, <a href="#asm-locales">asm-locales</a>, <a href="#asm-review-service-days">asm-review-service-days</a>.</p>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-campaigns">Modelled</a>. Register rows: <a href="#asm-campaigns">asm-campaigns</a>, <a href="#asm-markets">asm-markets</a>, <a href="#asm-review-service-days">asm-review-service-days</a>.</p>
         <p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>
         <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
         <div class="table-scroll" role="region" aria-label="Headcount scenario" tabindex="0">
@@ -974,7 +980,7 @@
               </tr>
               <tr>
                 <th scope="row">Annual production cost change</th>
-                <td class="num"><span data-fig="calc-scen-production_cost_change">$705,782</span></td>
+                <td class="num"><span data-fig="calc-scen-production_cost_change">$1,032,041</span></td>
               </tr>
               <tr>
                 <th scope="row">One-off change cost (year one)</th>
@@ -982,33 +988,33 @@
               </tr>
               <tr>
                 <th scope="row">First-year net cost change</th>
-                <td class="num"><span data-fig="calc-scen-first_year_net">$1,101,782</span></td>
+                <td class="num"><span data-fig="calc-scen-first_year_net">$1,428,041</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-locales">Modelled</a>. Register rows: <a href="#asm-locales">asm-locales</a>, <a href="#asm-loaded-fte-cost">asm-loaded-fte-cost</a>, <a href="#asm-change-mgmt">asm-change-mgmt</a>.</p>
-        <p class="table-note">At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">−$53,579</span> <a class="chip c-m" href="#asm-locales">Modelled</a> (a saving), because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-markets">Modelled</a>. Register rows: <a href="#asm-markets">asm-markets</a>, <a href="#asm-loaded-fte-cost">asm-loaded-fte-cost</a>, <a href="#asm-change-mgmt">asm-change-mgmt</a>.</p>
+        <p class="table-note">At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">−$53,579</span> <a class="chip c-m" href="#asm-markets">Modelled</a> (a saving), because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
         <figure>
           <div class="fig-grid">
             <div>
               <svg class="fig fig-live" viewBox="0 0 300 392" role="img" aria-labelledby="f8-t f8-d">
                 <title id="f8-t">Baseline against 2x for your numbers</title>
-                <desc id="f8-d">Baseline against 2x for your numbers. Approved-live variants per head: baseline 83, 2x 167. Cost per approved-live asset: baseline $64.71, 2x $41.18. Review utilisation: baseline 55.1%, 2x 61.9%. A dashed line marks 100% capacity.</desc>
-                <text class="panel-lbl" x="0" y="12">Approved-live variants per head</text>
+                <desc id="f8-d">Baseline against 2x for your numbers. Campaign-markets per quarter: baseline 50, 2x 100. Cost per approved asset: baseline $64.71, 2x $45.26. Review utilisation: baseline 55.1%, 2x 61.9%. A dashed line marks 100% capacity.</desc>
+                <text class="panel-lbl" x="0" y="12">Campaign-markets per quarter</text>
                 <text class="series-lbl" x="0" y="32">Baseline</text>
                 <rect class="bar-base" x="0" y="36" width="96" height="24"/>
-                <text data-fig="calc-output_per_head-base" x="200" y="52">83</text>
+                <text data-fig="calc-campaign_markets-base" x="200" y="52">50</text>
                 <text class="series-lbl" x="0" y="80">2x</text>
                 <rect class="bar-scaled" x="0" y="84" width="192" height="24"/>
-                <text data-fig="calc-output_per_head-scaled" x="200" y="100">167</text>
-                <text class="panel-lbl" x="0" y="152">Cost per approved-live asset</text>
+                <text data-fig="calc-campaign_markets-scaled" x="200" y="100">100</text>
+                <text class="panel-lbl" x="0" y="152">Cost per approved asset</text>
                 <text class="series-lbl" x="0" y="172">Baseline</text>
                 <rect class="bar-base" x="0" y="176" width="192" height="24"/>
                 <text data-fig="calc-cost_per_asset-base" x="200" y="192">$64.71</text>
                 <text class="series-lbl" x="0" y="220">2x</text>
-                <rect class="bar-scaled" x="0" y="224" width="124" height="24"/>
-                <text data-fig="calc-cost_per_asset-scaled" x="200" y="240">$41.18</text>
+                <rect class="bar-scaled" x="0" y="224" width="136" height="24"/>
+                <text data-fig="calc-cost_per_asset-scaled" x="200" y="240">$45.26</text>
                 <text class="panel-lbl" x="0" y="292">Review utilisation</text>
                 <text class="series-lbl" x="0" y="312">Baseline</text>
                 <rect class="bar-base" x="0" y="316" width="88" height="24"/>
@@ -1031,27 +1037,27 @@
         <details class="maths">
           <summary>Show the maths</summary>
           <ol class="maths-steps">
-            <li><b>Approved-live variants a year at 2x</b> <code>campaigns times concepts per campaign times variants per concept, each grown by the scale factor</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-volume-1">40</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> × <span data-fig="calc-maths-volume-2">25</span> × <span data-fig="calc-maths-volume-3">40</span> × <span data-fig="calc-maths-volume-4">2</span> = <span data-fig="calc-maths-volume-r">80,000</span></code></span></li>
-            <li><b>Output per head per quarter</b> <code>approved-live variants a year, divided by four quarters, divided by marketing FTE</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-output-1">80,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> ÷ four quarters ÷ <span data-fig="calc-maths-output-2">120</span> = <span data-fig="calc-maths-output-r">167</span></code></span></li>
-            <li><b>Variants generated a year</b> <code>approved-live variants divided by approval yield, because rejected variants are regenerated</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-generated-1">80,000</span> <a class="chip c-m" href="#asm-locales">Modelled</a> ÷ <span data-fig="calc-maths-generated-2">95%</span> = <span data-fig="calc-maths-generated-r">84,211</span></code></span></li>
-            <li><b>Share of variants a person touches</b> <code>one minus auto-approval share times (one minus the sampled and escalated share)</code><span class="maths-with">With your numbers: <code>one minus <span data-fig="calc-maths-touch-1">60%</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × (one minus <span data-fig="calc-maths-touch-2">10%</span>) = <span data-fig="calc-maths-touch-r">46.0%</span></code></span></li>
-            <li><b>Review hours a year</b> <code>generated variants times human-touch share times minutes per review, divided by sixty</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-hours-1">84,211</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × <span data-fig="calc-maths-hours-2">46.0%</span> × <span data-fig="calc-maths-hours-3">12</span> ÷ sixty = <span data-fig="calc-maths-hours-r">7,747</span></code></span></li>
-            <li><b>Review utilisation</b> <code>review hours times (one plus rework rate), divided by reviewer capacity hours</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-utilisation-1">7,747</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × (one plus <span data-fig="calc-maths-utilisation-2">15%</span>) ÷ <span data-fig="calc-maths-utilisation-3">14,400</span> = <span data-fig="calc-maths-utilisation-r">61.9%</span></code></span></li>
-            <li><b>Cost per approved-live asset</b> <code>generation, review, rework, tooling, rights and storage cost added up, divided by approved-live variants</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-cost-1">$1,494,417</span> <a class="chip c-m" href="#asm-locales">Modelled</a> + <span data-fig="calc-maths-cost-2">$774,737</span> + <span data-fig="calc-maths-cost-3">$126,316</span> + <span data-fig="calc-maths-cost-4">$600,000</span> + <span data-fig="calc-maths-cost-5">$297,302</span> + <span data-fig="calc-maths-cost-6">$1,600</span> = <span data-fig="calc-maths-cost-7">$3,294,371</span> ÷ <span data-fig="calc-maths-cost-8">80,000</span> = <span data-fig="calc-maths-cost-r">$41.18</span></code></span></li>
-            <li><b>Break-even auto-approval</b> <code>the auto-approval share at which utilisation equals the target, at flat reviewer headcount</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-breakeven-1">85%</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × <span data-fig="calc-maths-breakeven-2">14,400</span> ÷ <span data-fig="calc-maths-breakeven-3">19,368</span> = the most variants people can touch, <span data-fig="calc-maths-breakeven-4">63.2%</span>; (one minus that) ÷ (one minus the sampled and escalated share <span data-fig="calc-maths-breakeven-5">10%</span>) = <span data-fig="calc-maths-breakeven-r">41%</span></code></span></li>
+            <li><b>Campaign-markets per quarter at 2x</b> <code>campaigns a year times markets per campaign times the scale factor, divided by four quarters; the route only decides whether the extra comes from campaigns, markets or both</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-campaign_markets-1">40</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> × <span data-fig="calc-maths-campaign_markets-2">5</span> × <span data-fig="calc-maths-campaign_markets-3">2</span> ÷ four quarters = <span data-fig="calc-maths-campaign_markets-r">100</span></code></span></li>
+            <li><b>Derived variants generated a year (internal throughput, not the claim)</b> <code>campaign-markets a year times concepts per campaign times formats per market, divided by approval yield, because rejected variants are regenerated</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-generated-1">400</span> <a class="chip c-m" href="#asm-markets">Modelled</a> × <span data-fig="calc-maths-generated-2">25</span> × <span data-fig="calc-maths-generated-3">8</span> ÷ <span data-fig="calc-maths-generated-4">95%</span> = <span data-fig="calc-maths-generated-r">84,211</span></code></span></li>
+            <li><b>Share of variants a person touches</b> <code>one minus auto-approval share times (one minus the sampled and escalated share)</code><span class="maths-with">With your numbers: <code>one minus <span data-fig="calc-maths-touch-1">60%</span> <a class="chip c-m" href="#asm-markets">Modelled</a> × (one minus <span data-fig="calc-maths-touch-2">10%</span>) = <span data-fig="calc-maths-touch-r">46.0%</span></code></span></li>
+            <li><b>Review hours a year (internal throughput, not the claim)</b> <code>generated variants times human-touch share times minutes per review, divided by sixty</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-hours-1">84,211</span> <a class="chip c-m" href="#asm-markets">Modelled</a> × <span data-fig="calc-maths-hours-2">46.0%</span> × <span data-fig="calc-maths-hours-3">12</span> ÷ sixty = <span data-fig="calc-maths-hours-r">7,747</span></code></span></li>
+            <li><b>Review utilisation</b> <code>review hours times (one plus rework rate), divided by reviewer capacity hours</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-utilisation-1">7,747</span> <a class="chip c-m" href="#asm-markets">Modelled</a> × (one plus <span data-fig="calc-maths-utilisation-2">15%</span>) ÷ <span data-fig="calc-maths-utilisation-3">14,400</span> = <span data-fig="calc-maths-utilisation-r">61.9%</span></code></span></li>
+            <li><b>Cost per approved asset</b> <code>generation, review, rework, tooling, rights and storage cost added up, divided by approved variants</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-cost-1">$1,764,425</span> <a class="chip c-m" href="#asm-markets">Modelled</a> + <span data-fig="calc-maths-cost-2">$774,737</span> + <span data-fig="calc-maths-cost-3">$126,316</span> + <span data-fig="calc-maths-cost-4">$600,000</span> + <span data-fig="calc-maths-cost-5">$353,553</span> + <span data-fig="calc-maths-cost-6">$1,600</span> = <span data-fig="calc-maths-cost-7">$3,620,631</span> ÷ <span data-fig="calc-maths-cost-8">80,000</span> = <span data-fig="calc-maths-cost-r">$45.26</span></code></span></li>
+            <li><b>Production cost per campaign-market</b> <code>total production cost divided by campaign-markets a year</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-cost_campaign_market-1">$3,620,631</span> <a class="chip c-m" href="#asm-markets">Modelled</a> ÷ <span data-fig="calc-maths-cost_campaign_market-2">400</span> = <span data-fig="calc-maths-cost_campaign_market-r">$9,052</span></code></span></li>
+            <li><b>Break-even auto-approval</b> <code>the auto-approval share at which utilisation equals the target, at flat reviewer headcount</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-breakeven-1">85%</span> <a class="chip c-m" href="#asm-markets">Modelled</a> × <span data-fig="calc-maths-breakeven-2">14,400</span> ÷ <span data-fig="calc-maths-breakeven-3">19,368</span> = the most variants people can touch, <span data-fig="calc-maths-breakeven-4">63.2%</span>; (one minus that) ÷ (one minus the sampled and escalated share <span data-fig="calc-maths-breakeven-5">10%</span>) = <span data-fig="calc-maths-breakeven-r">41%</span></code></span></li>
           </ol>
         </details>
         <div class="believe">
           <h3>What you must believe</h3>
           <p>The result holds only if these hold.</p>
           <ul>
-            <li>Each concept is localised into this many locales: <span data-fig="calc-believe-locales">5</span> <a class="chip c-m" href="#asm-locales">Modelled</a> <b class="default-mark">carries the result</b></li>
+            <li>Each campaign runs in this many markets: <span data-fig="calc-believe-markets">5</span> <a class="chip c-m" href="#asm-markets">Modelled</a> <b class="default-mark">carries the result</b></li>
             <li>A master concept costs this much to make: <span data-fig="calc-believe-mconcept">$1,200</span> <a class="chip c-m" href="#asm-master-concept-cost">Modelled</a> <b class="default-mark">carries the result</b></li>
             <li>This share of variants can be auto-approved at 2x: <span data-fig="calc-believe-auto2">60%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> <b class="default-mark">carries the result</b></li>
             <li>A reviewer needs this many minutes per variant: <span data-fig="calc-believe-minutes">12</span> <a class="chip c-m" href="#asm-review-minutes">Modelled</a></li>
             <li>This share of generated variants is approved: <span data-fig="calc-believe-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a></li>
             <li>Tooling costs this much a year at 2x: <span data-fig="calc-believe-tooling">$600,000</span> <a class="chip c-m" href="#asm-tooling">Modelled</a></li>
-            <li>Variant generation at 2x costs this much per variant: <span data-fig="calc-believe-vcost">$0.80</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a>. A 20% rise moves cost per approved-live asset only slightly, by <span data-fig="calc-believe-vcost-swing">+0.5%</span>.</li>
+            <li>Variant generation at 2x costs this much per variant: <span data-fig="calc-believe-vcost">$0.80</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a>. A 20% rise moves cost per approved asset only slightly, by <span data-fig="calc-believe-vcost-swing">+0.4%</span>.</li>
           </ul>
         </div>
         <div class="table-scroll" role="region" aria-label="Sensitivity" tabindex="0">
@@ -1063,44 +1069,44 @@
             </thead>
             <tbody>
               <tr>
-                <th scope="row">Locales</th>
-                <td class="num"><span data-fig="calc-sens-locales-costDown">+17.6%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-locales-costUp">−11.8%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-locales-utilDown">−20.0%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-locales-utilUp">+20.0%</span> <span class="capped"></span></td>
+                <th scope="row">Markets per campaign</th>
+                <td class="num"><span data-fig="calc-sens-markets-costDown">+18.3%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-markets-costUp">−12.2%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-markets-utilDown">−20.0%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-markets-utilUp">+20.0%</span> <span class="capped"></span></td>
               </tr>
               <tr>
                 <th scope="row">Cost per master concept</th>
-                <td class="num"><span data-fig="calc-sens-mconcept-costDown">−8.7%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-mconcept-costUp">+8.7%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-mconcept-costDown">−9.4%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-mconcept-costUp">+9.4%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-mconcept-utilDown">0.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-mconcept-utilUp">0.0%</span> <span class="capped"></span></td>
               </tr>
               <tr>
                 <th scope="row">Auto-approval share at 2x</th>
-                <td class="num"><span data-fig="calc-sens-auto2-costDown">+6.3%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-auto2-costUp">−6.3%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-auto2-costDown">+5.8%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-auto2-costUp">−5.8%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-auto2-utilDown">+23.5%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-auto2-utilUp">−23.5%</span> <span class="capped"></span></td>
               </tr>
               <tr>
                 <th scope="row">Minutes per review</th>
-                <td class="num"><span data-fig="calc-sens-minutes-costDown">−5.4%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-minutes-costUp">+5.4%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-minutes-costDown">−4.9%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-minutes-costUp">+4.9%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-minutes-utilDown">−20.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-minutes-utilUp">+20.0%</span> <span class="capped"></span></td>
               </tr>
               <tr>
                 <th scope="row">Approval yield</th>
-                <td class="num"><span data-fig="calc-sens-yield-costDown">+7.3%</span> <span class="capped"></span></td>
-                <td class="num"><span data-fig="calc-sens-yield-costUp">−1.5%</span> <span class="capped">capped</span></td>
+                <td class="num"><span data-fig="calc-sens-yield-costDown">+6.7%</span> <span class="capped"></span></td>
+                <td class="num"><span data-fig="calc-sens-yield-costUp">−1.3%</span> <span class="capped">capped</span></td>
                 <td class="num"><span data-fig="calc-sens-yield-utilDown">+25.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-yield-utilUp">−5.0%</span> <span class="capped">capped</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-locales">Modelled</a>. Register rows: <a href="#asm-locales">asm-locales</a>, <a href="#asm-master-concept-cost">asm-master-concept-cost</a>, <a href="#asm-auto-approval">asm-auto-approval</a>, <a href="#asm-review-minutes">asm-review-minutes</a>, <a href="#asm-approval-yield">asm-approval-yield</a>.</p>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-markets">Modelled</a>. Register rows: <a href="#asm-markets">asm-markets</a>, <a href="#asm-master-concept-cost">asm-master-concept-cost</a>, <a href="#asm-auto-approval">asm-auto-approval</a>, <a href="#asm-review-minutes">asm-review-minutes</a>, <a href="#asm-approval-yield">asm-approval-yield</a>.</p>
         <p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>
         <div class="calc-live" id="calc-share-wrap">
           <div class="share">

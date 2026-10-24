@@ -453,6 +453,7 @@ test('present().maths: eight steps, digit-free formulas, results equal the table
   assert.equal(by.cost.result.text, row('cost_per_asset').scaled.text);
   assert.equal(by.cost_campaign_market.result.text, row('cost_per_campaign_market').scaled.text);
   assert.match(by.generated.name, /internal throughput, not the claim/);
+  assert.match(by.hours.name, /internal throughput, not the claim/);
   assert.equal(by.utilisation.result.text, row('utilisation').scaled.text);
   assert.equal(by.breakeven.result.text, row('break_even').scaled.text);
   assert.equal(by.generated.result.text, '84,211', 'generated variants 80,000 / 0.95 = 84,210.5');

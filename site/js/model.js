@@ -343,7 +343,7 @@ function mathsPresentation(values, ctx, r, rows) {
       [int(s.campaign_markets_per_year), ' × ', num(inputs.concepts_per_campaign), ' × ', num(inputs.formats_per_market), ' ÷ ', pctT(A.approval_yield), ' = '], res(s.generated_variants_per_year, 'int'), 'cost_per_asset'),
     S('touch', 'Share of variants a person touches', 'one minus auto-approval share times (one minus the sampled and escalated share)',
       ['one minus ', pct0(sc(A.auto_approval_share)), ' × (one minus ', pct0(q), ') = '], res(s.human_touch_share, 'pct1'), 'utilisation'),
-    S('hours', 'Review hours a year', 'generated variants times human-touch share times minutes per review, divided by sixty',
+    S('hours', 'Review hours a year (internal throughput, not the claim)', 'generated variants times human-touch share times minutes per review, divided by sixty',
       [int(s.generated_variants_per_year), ' × ', pct1(s.human_touch_share), ' × ', num(A.review_minutes_per_variant), ' ÷ sixty = '], res(s.review_hours, 'int'), 'utilisation'),
     S('utilisation', 'Review utilisation', 'review hours times (one plus rework rate), divided by reviewer capacity hours',
       [int(s.review_hours), ' × (one plus ', pctT(A.rework_rate), ') ÷ ', int(s.review_capacity_hours), ' = '], rowRes('utilisation'), 'utilisation'),

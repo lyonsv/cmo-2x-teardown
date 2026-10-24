@@ -55,7 +55,7 @@ function regionOf(label) {
 
 test('s11 reads in order: lead, status, no-JS note, summary output, results table', () => {
   const idx = [
-    s11.indexOf('Replace the defaults with your own numbers. The page recomputes cost per approved-live asset, reviewer load and the auto-approval share you would need.'),
+    s11.indexOf('Replace the defaults with your own numbers. The page recomputes campaign-markets per quarter, brief-to-live time, cost per approved asset and per campaign-market, reviewer load and the auto-approval share you would need.'),
     s11.indexOf('<p role="status" class="calc-status">Showing: page defaults</p>'),
     s11.indexOf('<p class="calc-nojs">The interactive calculator needs JavaScript. Below is the default scenario, calculated in advance from the same model.</p>'),
     s11.indexOf('<output id="calc-summary" aria-live="polite" aria-atomic="true">The table below shows the page defaults.</output>'),
@@ -73,7 +73,7 @@ test('s11 has one live region and the table is not inside an output', () => {
   assert.ok(!out[0].includes('<table'));
 });
 
-test('results table: head, nine rows in model order, cells equal present(defaults)', () => {
+test('results table: head, ten rows in model order, cells equal present(defaults)', () => {
   const region = s11.match(/<div class="table-scroll"[^>]*aria-label="Calculator results"[^>]*>([\s\S]*?)<\/table>/);
   assert.ok(region, 'results region');
   assert.ok(/role="region"/.test(region[0]) && /tabindex="0"/.test(region[0]));
@@ -82,7 +82,7 @@ test('results table: head, nine rows in model order, cells equal present(default
   assert.deepEqual(head, ['Output', 'Baseline', '2x', 'Change']);
   const body = table.slice(table.indexOf('<tbody>'));
   const trs = body.match(/<tr>[\s\S]*?<\/tr>/g);
-  assert.equal(trs.length, 9);
+  assert.equal(trs.length, 10);
   trs.forEach((tr, i) => {
     const def = RESULT_ROWS[i];
     const row = p.rows[i];
@@ -377,7 +377,7 @@ test('sensitivity step text is tied to SENSITIVITY_STEP (IN-03)', () => {
   assert.ok(s11.includes(`<caption>Sensitivity: each input moved ${step} down and up, others unchanged</caption>`));
   assert.ok(s11.includes(`<tr><th scope="col">at −${step}</th><th scope="col">at +${step}</th><th scope="col">at −${step}</th><th scope="col">at +${step}</th></tr>`));
   assert.ok(p.believe.find((b) => b.key === 'vcost').statement.includes(`A ${step} rise moves`));
-  assert.ok(s11.includes(`A ${step} rise moves cost per approved-live asset`));
+  assert.ok(s11.includes(`A ${step} rise moves cost per approved asset`));
 });
 
 test('scenario and sensitivity tables sit before the share panel and outside .calc-live', () => {
@@ -417,12 +417,22 @@ test('details.maths: closed, eight steps with name, formula, "With your numbers:
     assert.match(li, /^<li><b>[^<]+<\/b> <code>[^<]+<\/code><span class="maths-with">With your numbers: <code>/);
     assert.equal(strip(li.match(/<b>([^<]*)<\/b>/)[1]), step.name);
     assert.equal(strip(li.match(/<\/b> <code>([^<]*)<\/code>/)[1]), step.formula);
-    const figs = [...li.matchAll(/<span data-fig="(calc-maths-[a-z]+-[0-9r]+)">([^<]*)<\/span>/g)];
+    const figs = [...li.matchAll(/<span data-fig="(calc-maths-[a-z_]+-[0-9r]+)">([^<]*)<\/span>/g)];
     assert.deepEqual(figs.map((f) => f[1]), [...step.parts, step.result].filter((x) => x.fig).map((x) => x.fig));
     figs.forEach((f, k) => assert.equal(decode(f[2]), [...step.parts, step.result].filter((x) => x.fig)[k].text));
     assert.equal((li.match(/class="chip /g) || []).length, 1);
     assert.ok(li.includes(`<a class="chip ${CHIP_CLASS[step.grade]}" href="#${step.ref}">${step.grade}</a>`));
   });
+  for (const id of ['generated', 'hours']) {
+    const step = p.maths.find((x) => x.id === id);
+    assert.match(step.name, /internal throughput, not the claim/, id);
+  }
+});
+
+test('s11 text has no "cycle time" and no per-head denominator', () => {
+  const text = strip(s11);
+  assert.ok(!/cycle time/i.test(text), 'cycle time');
+  assert.ok(!/per head/i.test(text), 'per head');
 });
 
 test('.believe: lead, 5-7 items with figure and chip, three carry the result', () => {
