@@ -141,6 +141,18 @@ test('serialiseHash: defaults give an empty string, order follows FIELDS', () =>
   assert.equal(changedCount({ ...defaults, route: 'markets', scenario: 'hold', markets: 6 }, ctx), 3);
 });
 
+test('serialiseHash and changedCount never write or count a missing or unknown route or scenario (IN-01)', () => {
+  const { route, scenario, ...bare } = defaults;
+  assert.equal(serialiseHash(bare, ctx), '');
+  assert.equal(changedCount(bare, ctx), 0);
+  for (const v of [{ ...defaults, route: undefined }, { ...defaults, route: 'evil' }, { ...defaults, scenario: undefined }, { ...defaults, scenario: 'evil' }]) {
+    assert.equal(serialiseHash(v, ctx), '', JSON.stringify(v));
+    assert.equal(changedCount(v, ctx), 0);
+  }
+  assert.equal(serialiseHash({ ...bare, markets: 6 }, ctx), '#s11?markets=6');
+  assert.ok(!/undefined/.test(serialiseHash({ ...bare, markets: 6 }, ctx)));
+});
+
 test('toText: whole percents, no separators, no exponent', () => {
   assert.equal(toText(F.yield, 0.95), '95');
   assert.equal(toText(F.mconcept, 1200), '1200');

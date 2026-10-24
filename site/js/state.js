@@ -100,15 +100,16 @@ export function serialiseHash(values, ctx) {
   for (const field of FIELDS) {
     if (!Object.is(values[field.key], defaults[field.key])) parts.push(`${field.key}=${toText(field, values[field.key])}`);
   }
-  if (values.route !== defaults.route) parts.push(`route=${values.route}`);
-  if (values.scenario !== defaults.scenario) parts.push(`scenario=${values.scenario}`);
+  // Only allow-listed values are written: a missing route or scenario is not a change (IN-01).
+  if (ROUTES.includes(values.route) && values.route !== defaults.route) parts.push(`route=${values.route}`);
+  if (SCENARIOS.includes(values.scenario) && values.scenario !== defaults.scenario) parts.push(`scenario=${values.scenario}`);
   return parts.length === 0 ? '' : HASH_PREFIX + parts.join('&');
 }
 
 export function changedCount(values, ctx) {
   const defaults = defaultValues(ctx);
   let n = FIELDS.filter((f) => !Object.is(values[f.key], defaults[f.key])).length;
-  if (values.route !== defaults.route) n += 1;
-  if (values.scenario !== defaults.scenario) n += 1;
+  if (ROUTES.includes(values.route) && values.route !== defaults.route) n += 1;
+  if (SCENARIOS.includes(values.scenario) && values.scenario !== defaults.scenario) n += 1;
   return n;
 }
