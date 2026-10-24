@@ -83,10 +83,12 @@ function validateCost(assumptions, errors) {
   if (!isPositive(a.reviewer_hours_per_fte_year)) {
     errors.push({ field: 'reviewer_hours_per_fte_year', message: 'reviewer_hours_per_fte_year must be a finite number greater than 0' });
   }
-  if (isShare(a.sampling_rate) && isShare(a.escalation_rate) && a.sampling_rate + a.escalation_rate > 1) {
-    errors.push({ field: 'sampling_rate', message: 'sampling_rate + escalation_rate must be at most 1' });
-  }
   for (const which of ['baseline', 'scaled']) {
+    const sampling = pick(a.sampling_rate, which);
+    const escalation = pick(a.escalation_rate, which);
+    if (isShare(sampling) && isShare(escalation) && sampling + escalation > 1) {
+      errors.push({ field: 'sampling_rate', message: `sampling_rate + escalation_rate (${which}) must be at most 1` });
+    }
     const mix = pick(a.tier_mix, which);
     const share = pick(a.auto_approval_share, which);
     if (isMix(mix) && isShare(share) && share > mix[0] + mix[1] + 1e-9) {
@@ -95,7 +97,10 @@ function validateCost(assumptions, errors) {
   }
 }
 
+// Every cost-half assumption may differ by side ({ baseline, scaled }), so every
+// one is read through pick(); validation checks both sides of the same fields.
 function side(inputs, a, which, m) {
+  const S = (name) => pick(a[name], which);
   const k = a.concept_growth_exponent;
   const concepts = inputs.campaigns_per_year * inputs.concepts_per_campaign * Math.pow(m, k);
   const variants_per_concept = inputs.variants_per_concept * Math.pow(m, 1 - k);
@@ -107,32 +112,33 @@ function side(inputs, a, which, m) {
   const weighted_output_per_head_per_quarter = output_per_head_per_quarter * tier_factor;
   const G = generated_variants_per_year;
   const V = variants_per_year;
-  const auto = pick(a.auto_approval_share, which);
-  const q = a.sampling_rate + a.escalation_rate;
+  const auto = S('auto_approval_share');
+  const q = S('sampling_rate') + S('escalation_rate');
   const h = 1 - auto * (1 - q);
-  const r = a.rework_rate;
-  const hoursPer = a.review_minutes_per_variant / 60;
+  const r = S('rework_rate');
+  const hoursPer = S('review_minutes_per_variant') / 60;
+  const rate = S('reviewer_rate_per_hour');
   const review_hours = G * h * hoursPer;
   const review_capacity_hours = inputs.reviewer_fte * a.reviewer_hours_per_fte_year;
   const utilisation = (review_hours * (1 + r)) / review_capacity_hours;
-  const variantCost = pick(a.variant_cost, which);
-  const tooling = pick(a.tooling_cost_annual, which);
+  const variantCost = S('variant_cost');
+  const tooling = S('tooling_cost_annual');
   const cost = {
-    generation: concepts * a.master_concept_cost + G * variantCost,
-    review: review_hours * a.reviewer_rate_per_hour,
-    rework: r * G * variantCost + r * G * h * hoursPer * a.reviewer_rate_per_hour,
+    generation: concepts * S('master_concept_cost') + G * variantCost,
+    review: review_hours * rate,
+    rework: r * G * variantCost + r * G * h * hoursPer * rate,
     tooling,
-    rights: concepts * a.rights_cost_per_concept,
-    storage: V * a.storage_cost_per_variant,
+    rights: concepts * S('rights_cost_per_concept'),
+    storage: V * S('storage_cost_per_variant'),
   };
   cost.total = cost.generation + cost.review + cost.rework + cost.tooling + cost.rights + cost.storage;
   const cost_per_asset_by_component = {};
   for (const k of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) cost_per_asset_by_component[k] = cost[k] / V;
-  const ai_spend = G * variantCost * pick(a.ai_share_of_variant_cost, which) + tooling * pick(a.ai_share_of_tooling, which);
+  const ai_spend = G * variantCost * S('ai_share_of_variant_cost') + tooling * S('ai_share_of_tooling');
   const exceeded = utilisation >= 1;
-  const service = a.review_service_days;
+  const service = S('review_service_days');
   const cycle_days = exceeded ? null
-    : pick(a.build_days, which) + (1 + r) * (service + (service * utilisation) / (1 - utilisation));
+    : S('build_days') + (1 + r) * (service + (service * utilisation) / (1 - utilisation));
   return {
     concepts, variants_per_concept, variants_per_year, generated_variants_per_year,
     output_per_head_per_quarter, weighted_output_per_head_per_quarter,
@@ -143,8 +149,9 @@ function side(inputs, a, which, m) {
 }
 
 function breakEven(inputs, a, scenario) {
-  const q = a.sampling_rate + a.escalation_rate;
-  const denom = scenario.generated_variants_per_year * (1 + a.rework_rate) * (a.review_minutes_per_variant / 60);
+  const S = (name) => pick(a[name], 'scaled');
+  const q = S('sampling_rate') + S('escalation_rate');
+  const denom = scenario.generated_variants_per_year * (1 + S('rework_rate')) * (S('review_minutes_per_variant') / 60);
   const hStar = (a.target_utilisation * scenario.review_capacity_hours) / denom;
   const aStar = (1 - hStar) / (1 - q);
   if (aStar <= 0) return { value: 0, status: 'not_needed' };

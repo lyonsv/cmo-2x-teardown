@@ -316,3 +316,34 @@ test('overflow fallback blames no single field', () => {
   assert.equal(r.errors.length, 1);
   assert.equal(r.errors[0].field, null);
 });
+
+// ---- Code review WR-01: every assumption may be { baseline, scaled } ----
+
+test('per-side values for every cost-half assumption are honoured, not read as scalars', () => {
+  const perSide = ['sampling_rate', 'escalation_rate', 'rework_rate', 'review_minutes_per_variant', 'reviewer_rate_per_hour',
+    'master_concept_cost', 'rights_cost_per_concept', 'storage_cost_per_variant', 'review_service_days'];
+  // Same value on both sides must reproduce the scalar golden case exactly.
+  const wrapped = { ...GOLDEN_ASSUMPTIONS };
+  for (const f of perSide) wrapped[f] = { baseline: GOLDEN_ASSUMPTIONS[f], scaled: GOLDEN_ASSUMPTIONS[f] };
+  const plain = compute(goldenInputs(), GOLDEN_ASSUMPTIONS);
+  const r = compute(goldenInputs(), wrapped);
+  assert.equal(r.ok, true);
+  close(r.baseline.cost.total, plain.baseline.cost.total);
+  close(r.scenario.cost.total, plain.scenario.cost.total);
+  close(r.scenario.cycle_days, plain.scenario.cycle_days);
+  // A lower rework rate at 2x changes only the scaled side.
+  const lower = compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, rework_rate: { baseline: 0.1, scaled: 0.05 } });
+  assert.equal(lower.ok, true);
+  close(lower.baseline.cost.rework, plain.baseline.cost.rework);
+  assert.ok(lower.scenario.cost.rework < plain.scenario.cost.rework);
+  walkNumbers(lower, (v, path) => assert.ok(Number.isFinite(v), path));
+});
+
+test('sampling + escalation over 1 is caught per side, including object values', () => {
+  for (const which of ['baseline', 'scaled']) {
+    const over = { baseline: 0.05, scaled: 0.05, [which]: 0.6 };
+    const r = compute(goldenInputs(), { ...GOLDEN_ASSUMPTIONS, sampling_rate: over, escalation_rate: over });
+    assert.equal(r.ok, false, which);
+    assert.ok(r.errors.some((e) => e.field === 'sampling_rate'), which);
+  }
+});
