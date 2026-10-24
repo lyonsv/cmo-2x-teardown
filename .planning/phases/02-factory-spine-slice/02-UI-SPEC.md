@@ -1,7 +1,8 @@
 ---
 phase: 2
 slug: factory-spine-slice
-status: draft
+status: approved
+reviewed_at: 2026-10-24
 shadcn_initialized: false
 preset: none
 created: 2026-10-24
@@ -79,7 +80,7 @@ Geometry and style (all six):
 - Text: real `<text>`, `font:400 12px var(--mono)` via `.fig-d text`, fill `--ink`; node titles 600 (`.node-t`); max 28 characters per line (use `<tspan x dy>`), no text on top of arrows, no rotated text.
 - Nodes: `rect` fill `--paper`, stroke `--ink` 1.5px, radius 2. Gate/review nodes: stroke `--verified` 2px, fill `--paper-2`. Secondary/annotation text and dashed feedback arrows: `--muted`. Fills never carry meaning alone: review-path nodes also carry the label word "Review" or "Gate" in their text.
 - Review/gate path (accent): all strokes and arrowheads of the review agent, fix loop, escalation, and tier gate. Print: accent maps to `#000` at 3px stroke, other strokes `#555` 1.5px (add to the `@media print` block); every accent element stays labelled.
-- CSS classes: `.fig-d .node`, `.node-t`, `.edge`, `.edge-review`, `.edge-soft` (dashed `4 4`), `.node-review`. Marker fills use `context-stroke` is not relied on; define two markers (`arrow` ink, `arrow-review` verified).
+- CSS classes: `.fig-d .node`, `.node-t`, `.edge`, `.edge-review`, `.edge-soft` (dashed `4 4`), `.node-review`. Two explicit markers are defined instead of relying on `context-stroke`: (`arrow` ink, `arrow-review` verified).
 - Accessibility: `<title id="fN-t">` (one short phrase) and `<desc id="fN-d">` (the flow in one or two sentences) plus the visible `.fig-steps` list. Caption `<figcaption><b>Figure N</b> …</figcaption>` states what the diagram shows and that it is illustrative. Tier ladder (Figure 6) is additionally paired with the tier table (the table is its text equivalent; the `.fig-steps` list may be omitted there and the caption must say "see the table").
 - No animation, no hover states, no tooltips, no links inside SVG.
 
@@ -181,11 +182,11 @@ Skeleton note for s09–s14 unchanged ("Coming in a later update."); s12 scope s
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-10-24 (gsd-ui-checker)
