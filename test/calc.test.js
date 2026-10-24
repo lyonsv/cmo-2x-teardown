@@ -347,3 +347,29 @@ test('sampling + escalation over 1 is caught per side, including object values',
     assert.ok(r.errors.some((e) => e.field === 'sampling_rate'), which);
   }
 });
+
+// ---- Code review WR-02: break-even respects the T0 + T1 cap ----
+
+test('break-even between the T0+T1 cap and 1 is infeasible, not ok', () => {
+  const r = compute(inputs({ reviewer_fte: 3 }), assumptions);
+  assert.equal(r.ok, true);
+  const mix = assumptions.tier_mix.scaled;
+  const cap = mix[0] + mix[1];
+  const be = r.break_even_auto_approval;
+  assert.ok(be.value > cap && be.value <= 1, `value ${be.value} should sit between cap ${cap} and 1`);
+  assert.equal(be.status, 'infeasible');
+  close(be.cap, cap);
+});
+
+test('break-even below the cap stays ok at the defaults', () => {
+  const be = compute(inputs(), assumptions).break_even_auto_approval;
+  assert.equal(be.status, 'ok');
+  assert.ok(be.value <= be.cap);
+});
+
+test('break-even with sampling + escalation = 1 is finite and infeasible when reviewers are short', () => {
+  const r = compute(goldenInputs({ reviewer_fte: 0.05 }), { ...GOLDEN_ASSUMPTIONS, sampling_rate: 0.5, escalation_rate: 0.5 });
+  assert.equal(r.ok, true);
+  assert.equal(r.break_even_auto_approval.status, 'infeasible');
+  walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
+});

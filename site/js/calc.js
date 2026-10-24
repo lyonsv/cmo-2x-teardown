@@ -153,10 +153,18 @@ function breakEven(inputs, a, scenario) {
   const q = S('sampling_rate') + S('escalation_rate');
   const denom = scenario.generated_variants_per_year * (1 + S('rework_rate')) * (S('review_minutes_per_variant') / 60);
   const hStar = (a.target_utilisation * scenario.review_capacity_hours) / denom;
+  // Auto-approval can only clear T0 and T1 work (validation enforces the same cap),
+  // so a break-even share above that cap is infeasible even when it is below 1.
+  const mix = pick(a.tier_mix, 'scaled');
+  const cap = mix[0] + mix[1];
+  if (hStar >= 1) return { value: 0, status: 'not_needed', cap };
+  // Every auto-approved variant is sampled or escalated: auto-approval removes no
+  // human touches, so no share can reach break-even.
+  if (q >= 1) return { value: 1, status: 'infeasible', cap };
   const aStar = (1 - hStar) / (1 - q);
-  if (aStar <= 0) return { value: 0, status: 'not_needed' };
-  if (aStar > 1) return { value: 1, status: 'infeasible' };
-  return { value: aStar, status: 'ok' };
+  if (aStar > 1) return { value: 1, status: 'infeasible', cap };
+  if (aStar > cap + 1e-9) return { value: aStar, status: 'infeasible', cap };
+  return { value: aStar, status: 'ok', cap };
 }
 
 // Every numeric leaf must be finite; null (cycle_days at capacity, undefined ratios) is allowed.
