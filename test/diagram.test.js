@@ -8,7 +8,7 @@ const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 
 // Figure number -> section. 02-03 adds 4: 's05', 02-05 adds 5: 's06' and 6: 's07', 02-06 adds 7: 's08'.
-const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05', 5: 's06', 6: 's07' };
+const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05', 5: 's06', 6: 's07', 7: 's08' };
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`\\s${name}="([^"]*)"`));
@@ -195,4 +195,17 @@ test('Figure 6 ladder', () => {
   });
   assert.deepEqual(ys, [...ys].sort((a, b) => a - b));
   assert.ok(/see the table/i.test(strip(f.html.match(/<figcaption>[\s\S]*?<\/figcaption>/)[0])));
+});
+
+test('all six diagrams present', () => {
+  assert.deepEqual(figures().map((f) => f.n), [2, 3, 4, 5, 6, 7]);
+});
+
+test('Figure 7 is a loop', () => {
+  const f = figures().find((x) => x.n === 7);
+  assert.ok(f, 'Figure 7 present');
+  assert.ok(/<path class="edge edge-(soft|review)/.test(f.svg), 'return path');
+  const titles = nodes(f.svg).map((n) => strip(n.html.match(/<tspan[^>]*class="node-t"[^>]*>([\s\S]*?)<\/tspan>/)[1]).toLowerCase());
+  assert.ok(titles.some((t) => t.includes('ground truth')), 'Ground truth node');
+  assert.ok(titles.some((t) => t.includes('change gate')), 'Change gate node');
 });

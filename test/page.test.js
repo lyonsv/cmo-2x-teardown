@@ -306,7 +306,11 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s08', 's09', 's10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s09', 's10', 's11', 's12', 's13', 's14'];
+
+test('skeleton ids are s09 to s14', () => {
+  assert.deepEqual(SKELETON_IDS, ['s09', 's10', 's11', 's12', 's13', 's14']);
+});
 
 test('skeleton sections carry a scope sentence and the later note', () => {
   for (const id of SKELETON_IDS) {
@@ -528,7 +532,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -728,4 +732,81 @@ test('s07 tier table', () => {
 
 test('time elements are present', () => {
   assert.ok((html.match(/<time datetime="/g) || []).length >= 1);
+});
+
+// ---- Plan 02-06: s07 capacity and fatigue, s08 eval harness and telemetry ----
+
+function proseWords(id) {
+  const s = sectionHtml(id).replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<table>[\s\S]*?<\/table>/g, ' ');
+  const parts = s.match(/<(p|li|figcaption)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
+  return strip(parts.join(' ')).split(' ').filter(Boolean).length;
+}
+
+test('s03 to s08 total prose', () => {
+  const total = ['s03', 's04', 's05', 's06', 's07', 's08'].reduce((n, id) => n + proseWords(id), 0);
+  assert.ok(total >= 2800 && total <= 4200, `total ${total}`);
+});
+
+function tableByCaption(sec, caption) {
+  const m = sec.match(new RegExp(`<div class="table-scroll"[^>]*>\\s*<table>\\s*<caption>${caption}</caption>[\\s\\S]*?</table>\\s*</div>`));
+  assert.ok(m, `table "${caption}" missing`);
+  const head = [...m[0].match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((x) => strip(x[1]));
+  const rows = m[0].match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  return { html: m[0], head, rows };
+}
+
+test('s07 reviewer capacity', () => {
+  const s = sectionHtml('s07');
+  const t = tableByCaption(s, 'Reviewer capacity, 1x and 2x');
+  assert.deepEqual(t.head, ['Scenario', 'Approved-live variants per year', 'Human review hours per year (before rework)', 'Reviewer capacity (hours per year)', 'Utilisation', 'Grade']);
+  const names = t.rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
+  assert.deepEqual(names, ['1x without gate', '1x with gate', '2x without gate', '2x with gate']);
+  const keys = ['1x-nogate', '1x-gate', '2x-nogate', '2x-gate'];
+  t.rows.forEach((r, i) => {
+    const k = keys[i];
+    for (const id of [`cap-${k}-variants`, `cap-${k}-hours`, 'cap-capacity-hours', `cap-${k}-util`]) assert.ok(r.includes(`data-fig="${id}"`), `${k} ${id}`);
+    assert.equal((r.match(/class="chip /g) || []).length, 1);
+    assert.ok(r.includes('href="#asm-auto-approval"'));
+    const tds = [...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((x) => x[1]);
+    const util = strip(tds[3]);
+    assert.equal(util.includes('over capacity'), claims[`cap-${k}-util`].value > 1, `${k} over-capacity wording`);
+  });
+  assert.equal(strip([...t.rows[2].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)][3][1]), '134.5% over capacity');
+  const text = strip(s);
+  assert.ok(text.includes('With the gate, human review hours fall; without it, 2x volume exceeds reviewer capacity. Utilisation is the binding constraint, not generation.'));
+  for (const id of ['asm-rework-rate', 'break-even-auto-approval', 'capacity-auto-approval', 'cap-2x-ref-low-util', 'cap-2x-ref-high-util']) assert.ok(s.includes(`data-fig="${id}"`), id);
+  assert.ok(/auto-approval share of zero|no auto-approval/.test(text));
+});
+
+test('s07 fatigue controls', () => {
+  const s = sectionHtml('s07');
+  const m = s.match(/<h3>Guarding against reviewer fatigue<\/h3>\s*<ul>([\s\S]*?)<\/ul>\s*<p>([\s\S]*?)<\/p>/);
+  assert.ok(m, 'fatigue h3, ul, p');
+  const lis = m[1].match(/<li>[\s\S]*?<\/li>/g);
+  assert.ok(lis.length >= 4 && lis.length <= 6);
+  for (const li of lis) assert.ok(li.startsWith('<li><b>'), 'li starts with b');
+  const list = strip(m[1]).toLowerCase();
+  for (const w of ['blind-first', 'seeded', 'session', 'sampl', 'reason code']) assert.ok(list.includes(w), w);
+  assert.equal((m[2].match(/class="chip /g) || []).length, 1);
+  assert.ok(m[2].includes('<a class="chip c-s" href="#asm-fatigue-controls">Speculative</a>'));
+});
+
+test('s08 eval harness', () => {
+  const s = sectionHtml('s08');
+  const t = tableByCaption(s, 'What the eval harness reports');
+  assert.deepEqual(t.head, ['Metric', 'What it tells you', 'Published threshold', 'Grade']);
+  assert.ok(t.rows.length >= 5);
+  const low = strip(t.html).toLowerCase();
+  for (const w of ['ground truth', 'escape', 'seeded', 'rights-trap', 'precision', 'recall', 'drift', 'noise band']) assert.ok(low.includes(w), w);
+  assert.ok((t.html.match(/data-fig="/g) || []).length <= 2);
+  for (const r of t.rows) {
+    assert.equal((r.match(/class="chip /g) || []).length, 1);
+    assert.ok(r.includes('href="#asm-harness-design"'));
+  }
+  const text = strip(s);
+  assert.ok(text.includes('reason code'));
+  assert.ok(text.includes('No change to a generator, prompt, model or policy ships if it regresses the harness.'));
+  const lower = text.toLowerCase();
+  for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved-live asset', 'cycle time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
+  assert.equal((s.match(/href="#asm-telemetry-metrics"/g) || []).length, 1);
 });

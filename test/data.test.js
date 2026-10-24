@@ -41,7 +41,7 @@ test('derived claims equal compute() output on default inputs', () => {
   const r = compute(defaultInputs(), defaultAssumptions());
   assert.equal(r.ok, true);
   for (const c of Object.values(claims)) {
-    if (!c.derived) continue;
+    if (!c.derived || c.override) continue;
     const v = c.derived.split('.').reduce((o, k) => o[k], r);
     assert.equal(Number(v.toFixed(c.decimals ?? 0)), c.value, `${c.id} drifted`);
   }
@@ -262,4 +262,50 @@ test('reference datum is Modelled and company-reported', () => {
   }
   assert.equal(sources['intercom-2x-teardown'].url, 'https://lyonsv.github.io/intercom-2x-teardown/');
   assert.ok(assumptions['asm-review-agent-design']);
+});
+
+// ---- Plan 02-06: reviewer capacity claims, fatigue, harness and telemetry ----
+
+test('capacity claims recompute under their own scenario', () => {
+  // Test-local scenario table, deliberately not imported from data.js.
+  const SCENARIOS = {
+    'cap-1x-nogate': [1, 0], 'cap-1x-gate': [1, 0.2], 'cap-2x-nogate': [2, 0], 'cap-2x-gate': [2, 0.6],
+    'cap-2x-ref-low': [2, 0.192], 'cap-2x-ref-high': [2, 0.284], 'cap-capacity-hours': [1, 0.2],
+  };
+  const over = Object.values(claims).filter((c) => c.override);
+  assert.ok(over.length >= 14, `only ${over.length} override claims`);
+  for (const c of over) {
+    const key = Object.keys(SCENARIOS).find((k) => c.id === k || c.id.startsWith(`${k}-`));
+    assert.ok(key, `${c.id}: no scenario`);
+    const [m, s] = SCENARIOS[key];
+    assert.deepEqual(c.override, { multiplier: m, auto_approval_share: s }, `${c.id} override`);
+    const a = { ...defaultAssumptions(), auto_approval_share: { baseline: s, scaled: s } };
+    const r = compute({ ...defaultInputs(), multiplier: m }, a);
+    assert.equal(r.ok, true);
+    const v = c.derived.split('.').reduce((o, k) => o[k], r);
+    assert.equal(Number(v.toFixed(c.decimals)), c.value, `${c.id} drifted`);
+    assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
+    assert.equal(c.grade, 'Modelled');
+    assert.equal(c.flag, null);
+    assert.equal(c.ref, 'asm-auto-approval');
+  }
+  const pin = {
+    'cap-2x-nogate-util': '134.5%', 'cap-2x-gate-util': '61.9%', 'cap-2x-ref-low-util': '111.3%',
+    'cap-2x-ref-high-util': '100.1%', 'cap-2x-nogate-hours': '16,842', 'cap-capacity-hours': '14,400',
+  };
+  for (const [id, d] of Object.entries(pin)) assert.equal(claims[id]?.display, d, id);
+  for (const row of ['1x-nogate', '1x-gate', '2x-nogate', '2x-gate']) {
+    for (const f of ['variants', 'hours', 'util']) assert.ok(claims[`cap-${row}-${f}`], `cap-${row}-${f}`);
+  }
+});
+
+test('evidence assumptions for fatigue, harness and telemetry', () => {
+  const want = { 'asm-fatigue-controls': 'Speculative', 'asm-harness-design': 'Modelled', 'asm-telemetry-metrics': 'Modelled' };
+  for (const [id, grade] of Object.entries(want)) {
+    const e = assumptions[id];
+    assert.ok(e, id);
+    assert.equal(e.kind, 'evidence');
+    assert.equal(e.grade, grade);
+    assert.notEqual(e.display, e.basis);
+  }
 });
