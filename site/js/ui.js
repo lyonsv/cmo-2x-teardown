@@ -122,8 +122,11 @@ function showFieldErrors(errors) {
     const input = inputs[f.key];
     const field = input.closest('.field');
     const old = $(`err-${f.key}`);
-    if (old) old.remove();
     const msg = byKey.get(f.key);
+    const rest = msg && (msg.startsWith(`${f.label}: `) ? msg : `${f.label}: ${msg}`);
+    // Unchanged message: leave the node alone so assistive tech does not re-read it (WR-05).
+    if (old && msg && old.textContent === `Error: ${rest}`) continue;
+    if (old) old.remove();
     if (!msg) {
       input.removeAttribute('aria-invalid');
       field.classList.remove('is-invalid');
@@ -134,14 +137,20 @@ function showFieldErrors(errors) {
     field.classList.add('is-invalid');
     const p = el('p', 'field-error');
     p.id = `err-${f.key}`;
-    const rest = msg.startsWith(`${f.label}: `) ? msg : `${f.label}: ${msg}`;
     p.append(el('b', '', 'Error:'), ` ${rest}`);
     field.append(p);
     input.setAttribute('aria-describedby', `hint-${f.key} err-${f.key}`);
   }
 }
 
+// The summary is a role="alert" region, so it is rebuilt only when the set of
+// messages changes; retyping a value that keeps the same errors announces nothing (WR-05).
+let summaryShown = '';
+
 function showSummary(errors) {
+  const shown = errors.map((e) => `${e.key}\u0000${e.message}`).join('\n');
+  if (shown === summaryShown) return;
+  summaryShown = shown;
   const list = errBox.querySelector('ul');
   list.textContent = '';
   if (errors.length === 0) {

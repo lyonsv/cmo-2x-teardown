@@ -153,6 +153,27 @@ async function cases(base) {
     check('hash untouched', hash === '', `hash "${hash}"`);
   }));
 
+  await run('l error summary is not rebuilt while the errors stay the same', () => withPage(async ({ send, evalJs }) => {
+    await send('Page.enable');
+    await send('Page.navigate', { url: base });
+    for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
+    const type = (v, ev) => evalJs(`(() => { const i = document.getElementById('in-campaigns'); i.value = '${v}'; i.dispatchEvent(new Event('${ev}', { bubbles: true })); })()`);
+    await type('0', 'change');
+    await sleep(300);
+    await evalJs("(() => { window.__muts = 0; new MutationObserver((l) => { window.__muts += l.length; }).observe(document.querySelector('.calc-errors'), { childList: true, subtree: true, characterData: true }); new MutationObserver((l) => { window.__muts += l.length; }).observe(document.querySelector('#in-campaigns').closest('.field'), { childList: true, subtree: true, characterData: true }); })()");
+    await type('00', 'input');
+    await sleep(400);
+    await type('0', 'input');
+    await sleep(400);
+    const same = await evalJs('window.__muts');
+    check('same', same === 0, `${same} mutations while the error stayed the same`);
+    await type('', 'input');
+    await sleep(400);
+    const changed = await evalJs('window.__muts');
+    check('changed', changed > 0, 'summary not updated when the error changed');
+    return `${same} then ${changed} mutations`;
+  }));
+
   await run('i over capacity in the chart', () => {
     const dom = dump(`${base}#s11?reviewers=4`);
     const label = decode((dom.match(/<text class="over-lbl"[^>]*>([^<]*)</) || [])[1] || '');
