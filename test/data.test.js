@@ -357,7 +357,9 @@ test('every source has a valid grade and flag, and claims citing a source share 
 test('percentage claims store fractions and display through their format', () => {
   for (const c of Object.values(claims)) {
     if (/%/.test(c.display) && !/^\d+\u2013\d+%$/.test(c.display)) {
-      assert.ok(Math.abs(c.value) <= 2, `${c.id}: ${c.value} looks like a percent, not a fraction`);
+      // Generated calc claims are re-derived from present() in their own test; a change such as
+      // AI spend (+786%) legitimately exceeds the fraction bound.
+      if (!c.calc) assert.ok(Math.abs(c.value) <= 2, `${c.id}: ${c.value} looks like a percent, not a fraction`);
       if (c.format) assert.equal(formatValue(c.value, c.format), c.display, `${c.id} display`);
     }
   }
@@ -491,4 +493,44 @@ test('Plan 03-03 answer-engine sources and claims', () => {
   }
   assert.ok(assumptions['asm-lever-06-evidence'].basis.includes('visibility has not been shown to move pipeline'));
   assert.equal(assumptions['asm-lever-06-evidence'].grade, 'Speculative');
+});
+
+// ---- Plan 03-05: calculator claims generated from present() ----
+
+import { modelContext } from '../site/js/data.js';
+import { present, defaultValues } from '../site/js/model.js';
+
+test('formatValue: days1 and pctchg1 kinds', () => {
+  assert.equal(formatValue(7.52, 'days1'), '7.5 days');
+  assert.equal(formatValue(0.042, 'pctchg1'), '+4.2%');
+  assert.equal(formatValue(-0.031, 'pctchg1'), '−3.1%');
+  assert.equal(formatValue(0, 'pctchg1'), '0.0%');
+});
+
+test('calc claims equal present(defaults)', () => {
+  const ctx = modelContext();
+  const p = present(defaultValues(ctx), ctx);
+  const calcClaims = Object.values(claims).filter((c) => c.calc);
+  assert.ok(calcClaims.length >= 20, `only ${calcClaims.length} calc claims`);
+  for (const c of calcClaims) {
+    const [, rowId, cellName] = c.calc.split('.');
+    const row = p.rows.find((r) => r.id === rowId);
+    assert.ok(row, `${c.id}: no row ${rowId}`);
+    const node = row[cellName];
+    assert.equal(c.display, node.text, `${c.id} display`);
+    assert.equal(c.value, node.value, `${c.id} value`);
+    assert.equal(c.grade, row.grade, `${c.id} grade`);
+    assert.equal(c.ref, row.ref, `${c.id} ref`);
+    assert.equal(c.id, `calc-${rowId}-${cellName}`);
+    if (c.format) assert.equal(c.display, formatValue(c.value, c.format), `${c.id} format`);
+  }
+});
+
+test('calculator assumptions are Modelled calc rows that the model ignores as inputs', () => {
+  for (const id of ['asm-locales', 'asm-formats-per-locale']) {
+    assert.equal(assumptions[id].grade, 'Modelled');
+    assert.equal(assumptions[id].kind, 'calc');
+  }
+  assert.equal('locales' in defaultInputs(), false);
+  assert.equal(defaultInputs().variants_per_concept, 40);
 });

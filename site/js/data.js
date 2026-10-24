@@ -1,6 +1,8 @@
 // Single source of numbers, grades, sources and assumptions (CRED-06).
 // The page's data-fig spans, the register rows and compute() all read from here.
 import { variantMatrix } from './calc.js';
+import { formatValue } from './format.js';
+import { present, defaultValues, RESULT_ROWS } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
@@ -211,36 +213,7 @@ export const sources = {
   },
 };
 
-// Negative values format the absolute value and put a true minus sign (U+2212)
-// first, so -1 in usd2 is "−$1.00", not "$-1.00". A value that rounds to zero
-// carries no sign.
-export function formatValue(value, format) {
-  const n = (v, d) => v.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
-  const body = {
-    int: (v) => Math.round(v).toLocaleString('en-GB', { maximumFractionDigits: 0 }),
-    x1: (v) => `${n(v, 1)}x`,
-    usd0: (v) => `$${n(v, 0)}`,
-    usd2: (v) => `$${n(v, 2)}`,
-    usdm2: (v) => `$${n(v / 1e6, 2)}M`,
-    pct0: (v) => `${n(v * 100, 0)}%`,
-    pct1: (v) => `${n(v * 100, 1)}%`,
-    num1: (v) => n(v, 1),
-  }[format];
-  if (body) {
-    const text = body(Math.abs(value));
-    return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
-  }
-  if (format === 'applies') return value === 1 ? 'all' : formatValue(value, 'pct0');
-  if (format === 'pts1') {
-    const text = `${n(Math.abs(value) * 100, 1)} points`;
-    return value < 0 && /[1-9]/.test(text) ? `\u2212${text}` : text;
-  }
-  if (format === 'pctchg0') {
-    const p = Math.round(value * 100);
-    return `${p < 0 ? '\u2212' : p > 0 ? '+' : ''}${Math.abs(p)}%`;
-  }
-  throw new Error(`unknown format ${format}`);
-}
+export { formatValue };
 
 function a(id, label, kind, key, value, unit, display, basis) {
   return { id, label, kind, key, value, unit, display, grade: 'Modelled', flag: null, basis };
@@ -649,4 +622,45 @@ for (const [id, value, unit, display, ref] of [
   ['aeo-geo-bench', 0.40, 'up to this rise in citation visibility in model answers, author-built benchmark', '40%', 'src-aggarwal-geo-2024'],
 ]) {
   claims[id] = { id, value, unit, display, grade: 'Modelled', flag: null, ref };
+}
+
+// ---- Plan 03-05: calculator assumptions and generated result claims ----
+// Locales are folded into variants per concept as formats per locale x locales
+// (8 x 5 = 40). Both are Modelled and kind 'calc', so defaultInputs() and
+// defaultAssumptions() ignore them.
+
+assumptions['asm-locales'] = a('asm-locales', 'Locales per concept', 'calc', null, 5, 'locales', '5',
+  'A modelled locale count; with eight formats per locale it reproduces the forty variants per concept used across the page. No published benchmark.');
+assumptions['asm-formats-per-locale'] = a('asm-formats-per-locale', 'Formats per locale', 'calc', null, 8, 'formats', '8',
+  'Sizes and channel cuts per locale; fixed in the calculator. No published benchmark.');
+
+// The context model.js needs, so model.js itself never imports this file.
+export function modelContext() {
+  return {
+    inputs: defaultInputs(),
+    assumptions: defaultAssumptions(),
+    grades: Object.fromEntries(Object.values(assumptions).map((e) => [e.id, e.grade])),
+    fixed: { formats_per_locale: assumptions['asm-formats-per-locale'].value, default_locales: assumptions['asm-locales'].value },
+  };
+}
+
+// Every static number in the s11 results table is generated from the same
+// presenter the live calculator uses; `calc` is a path into
+// present(defaultValues(ctx), ctx) that data.test re-resolves.
+{
+  const ctx = modelContext();
+  const p = present(defaultValues(ctx), ctx);
+  for (const row of p.rows) {
+    const def = RESULT_ROWS.find((d) => d.id === row.id);
+    for (const [cellName, node, format] of [['base', row.base, def.format], ['scaled', row.scaled, def.format], ['change', row.change, def.changeFormat]]) {
+      if (node.value === undefined) continue;
+      const id = `calc-${row.id}-${cellName}`;
+      const claim = {
+        id, value: node.value, unit: `${def.label}, ${cellName === 'base' ? 'baseline' : cellName === 'scaled' ? 'at 2x' : 'change'}`,
+        display: node.text, grade: row.grade, flag: null, ref: row.ref, calc: `rows.${row.id}.${cellName}`,
+      };
+      if (format !== 'none' && formatValue(node.value, format) === node.text) claim.format = format;
+      claims[id] = claim;
+    }
+  }
 }
