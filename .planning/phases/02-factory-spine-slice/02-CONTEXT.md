@@ -90,3 +90,12 @@ Requirements: GEN-01..05, SPINE-01..07.
 - Reviewer-capacity table uses **annual** figures (matches compute()); hours column labelled "before rework".
 - s03 title follows UI-SPEC ("The factory model"); update TITLES, TOC and test together.
 - Every tier row shows its calc default.
+
+## Post-review decisions (2026-10-24, made by orchestrator under the user's "keep going and approve everything" instruction)
+
+- CR-01: s05/s07 copy must match the model — at 2x roughly 46% of generated variants are touched by a person (sampling/escalation of auto-approved items counted); no "small chance" wording.
+- CR-02: the variant matrix counts derived variants before the gate; relabel accordingly and show approved-live alongside (at the 95% approval yield ≈ 11,400), via a yield term or derived claim — not by renaming the metric.
+- WR-02: tiers must be internally consistent — T1 = new executions inside already-approved claims (no new claims); any new claim is T2+; Figure 6 labels match the table.
+- WR-03: the 19.2% / 28.4% reference rates carry the `company-reported` flag on every appearance and the grade the legend's definitions actually support (never Benchmark).
+- WR-04: imagery table treats routes symmetrically (licensed-stock indemnity is also capped/conditional); the US Copyright Office chip covers only the cells it supports.
+- WR-05: Getty row: remove the "author must confirm before publishing" wording; register the tracker used for the re-check; every Getty fact on the page is sourced or removed.
