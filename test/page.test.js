@@ -555,12 +555,12 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
     const s = sectionHtml(id).replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<table>[\s\S]*?<\/table>/g, ' ');
-    const parts = s.match(/<(p|li|figcaption)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
+    const parts = s.match(/<(p|li|figcaption|dd)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
     const words = strip(parts.join(' ')).split(' ').filter(Boolean).length;
     assert.ok(words >= lo && words <= hi, `${id} has ${words} prose words (want ${lo}-${hi})`);
   }
@@ -770,7 +770,7 @@ test('time elements are present', () => {
 
 function proseWords(id) {
   const s = sectionHtml(id).replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<table>[\s\S]*?<\/table>/g, ' ');
-  const parts = s.match(/<(p|li|figcaption)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
+  const parts = s.match(/<(p|li|figcaption|dd)\b[^>]*>[\s\S]*?<\/\1>/g) || [];
   return strip(parts.join(' ')).split(' ').filter(Boolean).length;
 }
 

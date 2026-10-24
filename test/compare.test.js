@@ -86,3 +86,76 @@ test('matrix styles', () => {
   assert.match(print, /\.matrix tbody th\[scope=row\]\s*{\s*position:\s*static/);
   assert.equal((css.match(/position:\s*sticky/g) || []).length, 1, 'sticky is limited to the matrix');
 });
+
+// ---- Plan 03-10: vendor outcomes, vendor panels, build/buy, claims callout ----
+
+const outcomesAt = s12.indexOf('<table class="outcomes">');
+const outcomes = s12.slice(outcomesAt, s12.indexOf('</table>', outcomesAt));
+const outRows = [...outcomes.slice(outcomes.indexOf('<tbody>')).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1]);
+
+test('vendor outcome claims are Modelled and vendor-claimed (data)', async () => {
+  const { claims } = await import('../site/js/data.js');
+  const v = Object.values(claims).filter((c) => /^src-(gradial|airops|profound)-/.test(c.ref));
+  assert.ok(v.length >= 4);
+  for (const c of v) {
+    assert.equal(c.grade, 'Modelled', c.id);
+    assert.equal(c.flag, 'vendor-claimed', c.id);
+  }
+});
+
+test('outcomes table: caption, columns, one claim per row, flagged figure, dated source, Modelled chip', () => {
+  assert.ok(outcomesAt > s12.indexOf('<table class="matrix">'), 'after the matrix');
+  assert.ok(outcomes.includes('<caption>Vendor-published outcomes (vendor-claimed, not verified)</caption>'));
+  const head = [...outcomes.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
+  assert.deepEqual(head, ['Vendor', 'Claim', 'Figure', 'Source', 'Grade']);
+  assert.ok(outRows.length >= 4);
+  for (const r of outRows) {
+    const c = cells(r);
+    assert.equal(c.length, 5);
+    assert.equal([...r.matchAll(/data-fig=/g)].length, 1, 'one claim per row');
+    assert.match(r, /<td class="num"><span data-fig="[^"]+">[^<]*<\/span> <span class="flag">vendor-claimed<\/span><\/td>/);
+    const k = r.match(/<a class="cite" href="#src-([a-z-]+)">/)[1];
+    assert.ok(sources[k] && /^(gradial|airops|profound)-/.test(k));
+    assert.ok(r.includes(`<span class="cite-date"> accessed <time datetime="${sources[k].accessed}">${sources[k].accessed}</time></span>`));
+    assert.ok(c[4].includes(`<a class="chip c-m" href="#src-${k}">Modelled</a>`));
+  }
+  assert.ok(!/average|mean|combined/i.test(strip(outcomes)));
+  assert.ok(outcomesAt < s12.indexOf('<h3>AirOps</h3>'));
+});
+
+test('vendor panels: alphabetical, three dt each, <=50 words per dd, dated absences, cites', () => {
+  const names = [...s12.matchAll(/<h3>([^<]*)<\/h3>/g)].map((m) => m[1]);
+  assert.deepEqual(names, ['AirOps', 'Gradial', 'Profound', 'Build, buy and lock-in']);
+  const dls = [...s12.matchAll(/<dl class="vendor-dl">([\s\S]*?)<\/dl>/g)].map((m) => m[1]);
+  assert.equal(dls.length, 3);
+  for (const d of dls) {
+    assert.deepEqual([...d.matchAll(/<dt>([^<]*)<\/dt>/g)].map((m) => m[1]), ['Where it slots in', 'Where it is an alternative', 'Where it falls short']);
+    const dds = [...d.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map((m) => m[1]);
+    assert.equal(dds.length, 3);
+    for (const dd of dds) assert.ok(strip(dd).split(' ').length <= 50, strip(dd));
+    for (const dd of dds.slice(0, 2)) assert.ok(dd.includes('class="cite"'));
+    assert.match(dds[2], /<span class="nd">Not publicly documented<\/span><span class="cite-date"> \(checked <time datetime="(\d{4}-\d{2}-\d{2})">\1<\/time>\)<\/span>/);
+    assert.ok(vendorAccessed.has(dds[2].match(/checked <time datetime="([^"]+)"/)[1]));
+  }
+  assert.ok(!/\d/.test(strip(dls.join(' ').replace(/<time\b[^>]*>[^<]*<\/time>/g, ' '))));
+});
+
+test('build, buy and lock-in: bold-led bullets and closing sentence', () => {
+  const at = s12.indexOf('<h3>Build, buy and lock-in</h3>');
+  const block = s12.slice(at);
+  const lis = [...block.matchAll(/<li><b>[^<]+<\/b>/g)];
+  const all = [...block.matchAll(/<li>/g)];
+  assert.ok(all.length >= 3 && all.length <= 5 && lis.length === all.length);
+  assert.ok(block.includes('<a href="#s04">platform and skills</a>'));
+  const lastP = [...block.matchAll(/<p>([\s\S]*?)<\/p>/g)];
+  assert.equal(strip(lastP[0][1]), 'Own the eval set and the brand rules; rent the rest.');
+  assert.ok(block.indexOf('Own the eval set and the brand rules; rent the rest.') > block.indexOf('</ul>'));
+});
+
+test('vendor-claims callout; no competitor-authored flag; vendor css', () => {
+  assert.ok(s12.includes('<span class="lbl">How we treated vendor claims</span>'));
+  assert.ok(text.includes('never averaged or graded Benchmark'));
+  assert.ok(!s12.includes('competitor-authored'));
+  assert.match(css, /dl\.vendor-dl dt\s*\{[^}]*600[^}]*uppercase[^}]*var\(--muted\)/);
+  assert.match(css, /dl\.vendor-dl dd\s*\{[^}]*margin: 0 0 8px/);
+});

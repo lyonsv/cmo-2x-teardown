@@ -230,3 +230,8 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .believe, details.maths { break-inside: avoid; }
   .ref-line { stroke: #555; }
 }
+
+/* s12 vendor panels (plan 03-10) */
+dl.vendor-dl { margin: 0 0 var(--s-lg); max-width: 44em; }
+dl.vendor-dl dt { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+dl.vendor-dl dd { margin: 0 0 8px; }

@@ -1204,6 +1204,92 @@
         </table>
       </div>
       <p>The pages read do not describe a gate tiered by asset risk class, or an eval harness calibrated against human reviewer decisions. Gradial does document oversight levels per task type.</p>
+      <p>Vendors also publish outcomes for their own customers. They appear below one claim per row, in the vendor’s own framing, each with its source and access date. They are not pooled across vendors, and they do not count as evidence for the 2x claim on this page.</p>
+      <div class="table-scroll" role="region" aria-label="Vendor-published outcomes" tabindex="0">
+        <table class="outcomes">
+          <caption>Vendor-published outcomes (vendor-claimed, not verified)</caption>
+          <thead><tr><th scope="col">Vendor</th><th scope="col">Claim</th><th scope="col">Figure</th><th scope="col">Source</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">AirOps</th>
+              <td>Webflow: content refresh velocity, as stated in the vendor case study.</td>
+              <td class="num"><span data-fig="airops-webflow-refresh">5x</span> <span class="flag">vendor-claimed</span></td>
+              <td><a class="cite" href="#src-airops-webflow">src-airops-webflow</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td><a class="chip c-m" href="#src-airops-webflow">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">AirOps</th>
+              <td>Webflow: signups attributed to ChatGPT, which the vendor says reached nearly this share.</td>
+              <td class="num"><span data-fig="airops-webflow-signups">10%</span> <span class="flag">vendor-claimed</span></td>
+              <td><a class="cite" href="#src-airops-webflow">src-airops-webflow</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td><a class="chip c-m" href="#src-airops-webflow">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">AirOps</th>
+              <td>Chime: increase in citations, as stated in the vendor case study.</td>
+              <td class="num"><span data-fig="airops-chime-citations">3x</span> <span class="flag">vendor-claimed</span></td>
+              <td><a class="cite" href="#src-airops-chime">src-airops-chime</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td><a class="chip c-m" href="#src-airops-chime">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">AirOps</th>
+              <td>Chime: reduction in time spent, as stated in the vendor case study.</td>
+              <td class="num"><span data-fig="airops-chime-time">89%</span> <span class="flag">vendor-claimed</span></td>
+              <td><a class="cite" href="#src-airops-chime">src-airops-chime</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td><a class="chip c-m" href="#src-airops-chime">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Gradial</th>
+              <td>T-Mobile: campaign effort in cumulative hours, as quoted in the vendor customer story. The comparison figure in that story was not re-verified and is omitted.</td>
+              <td class="num"><span data-fig="gradial-tmobile-hours-before">1,000 to 1,200 hours</span> <span class="flag">vendor-claimed</span></td>
+              <td><a class="cite" href="#src-gradial-customers">src-gradial-customers</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td><a class="chip c-m" href="#src-gradial-customers">Modelled</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The three vendors are taken in alphabetical order. Each entry says where the tool fits the operating model on this page, where it could replace part of it, and where the pages read stop short. Absences are stated as not documented on the date checked; they are not claims that a feature is missing.</p>
+      <h3>AirOps</h3>
+      <dl class="vendor-dl">
+        <dt>Where it slots in</dt>
+        <dd>Text and refresh workflows with an AI discovery focus. In the factory it is a generator for answer assets and for refreshing existing pages. <a class="cite" href="#src-airops-home">src-airops-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it is an alternative</dt>
+        <dd>It routes every piece through human review before going live. For text work that is an alternative to the tiered gate, at the cost of more reviewer load. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it falls short</dt>
+        <dd>Imagery and rights handling, and tiered auto-approval: <span class="nd">Not publicly documented</span><span class="cite-date"> (checked <time datetime="2026-10-24">2026-10-24</time>)</span></dd>
+      </dl>
+      <h3>Gradial</h3>
+      <dl class="vendor-dl">
+        <dt>Where it slots in</dt>
+        <dd>Execution inside Adobe Experience Manager, Sitecore, Contentful and similar CMS and DAM tools. In the factory it is the execution layer, with oversight you configure. <a class="cite" href="#src-gradial-integrations">src-gradial-integrations</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it is an alternative</dt>
+        <dd>Oversight is set per task type: full review, spot-check or auto-approve. That is an alternative to the tiered gate; the pages read do not say what sets the level. <a class="cite" href="#src-gradial-docs-faq">src-gradial-docs-faq</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it falls short</dt>
+        <dd>Image generation and licensing, a gate tiered by asset risk class, and an eval harness calibrated against human reviewer decisions: <span class="nd">Not publicly documented</span><span class="cite-date"> (checked <time datetime="2026-10-24">2026-10-24</time>)</span></dd>
+      </dl>
+      <h3>Profound</h3>
+      <dl class="vendor-dl">
+        <dt>Where it slots in</dt>
+        <dd>Answer-engine monitoring, plus agents that draft content. In the factory it feeds refresh briefs from what answer engines currently say. <a class="cite" href="#src-profound-home">src-profound-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it is an alternative</dt>
+        <dd>Agents publish only after an approval step, so it could replace the draft-and-review stage for answer assets. Reviewer calibration would stay with the buyer. <a class="cite" href="#src-profound-agents">src-profound-agents</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></dd>
+        <dt>Where it falls short</dt>
+        <dd>A localisation workflow, rights handling, tiered auto-approval, and how mentions and citations are collected and validated: <span class="nd">Not publicly documented</span><span class="cite-date"> (checked <time datetime="2026-10-24">2026-10-24</time>)</span></dd>
+      </dl>
+      <p>None of this chooses a vendor for you. It shows where each tool maps onto the design, so that a pilot can concentrate on the parts nobody documents: the tiered gate, the calibrated eval set and the holdout measurement of outcomes.</p>
+      <h3>Build, buy and lock-in</h3>
+      <ul>
+        <li><b>Exports and data ownership.</b> Require export of content, review decisions and logs by file or API, and keep a copy in storage you control. The pages read list export or API access on some plans only, and one vendor claims no lock-in; this page has not tested that. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> <a class="cite" href="#src-gradial-platform">src-gradial-platform</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></li>
+        <li><b>Model-agnostic options.</b> Prefer tools that let you choose models or bring your own keys, so a change in model cost or quality does not force a platform change, and so you can test a cheaper model against your own eval set before you switch. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></li>
+        <li><b>Own the eval set.</b> The golden set, seeded defects and reviewer calibration are what let you compare tools and replace one. If a vendor holds them, you cannot do either. See the <a href="#s08">eval harness</a>.</li>
+        <li><b>Keep the policy source outside any one tool.</b> Tier rules, claims rules and rights rules live in versioned skills described under <a href="#s04">platform and skills</a>, and tools read them rather than hold the only copy.</li>
+        <li><b>Buy the replaceable layers.</b> Generation, CMS execution and answer-engine monitoring are categories with several suppliers. Buy where a vendor is ahead and switching is cheap; build the review path and the measurement, because those are where your risk rules and your outcome evidence live.</li>
+      </ul>
+      <p><b>Own the eval set and the brand rules; rent the rest.</b></p>
+      <div class="callout">
+        <span class="lbl">How we treated vendor claims</span>
+        <p>Vendor-published outcomes are flagged vendor-claimed, shown with their source and access date, and never averaged or graded Benchmark. Reviews written by competitors were not used.</p>
+      </div>
     </section>
     <section id="s13" aria-labelledby="s13-h">
       <div class="sec-head"><span class="sec-num">13</span><h2 id="s13-h">Adoption and Backlog 0</h2></div>

@@ -555,6 +555,27 @@ export const claims = {
     id: 'gartner-share-2026', value: 0.078, unit: 'share of revenue', display: '7.8%', format: 'pct1',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2026-cmo-spend',
   },
+  // Vendor-published outcomes (plan 03-10): Modelled, vendor-claimed, never averaged, never Benchmark.
+  'gradial-tmobile-hours-before': {
+    id: 'gradial-tmobile-hours-before', value: 1000, unit: 'cumulative hours before, low end of the vendor-stated range 1,000 to 1,200 (T-Mobile campaign, vendor page)', display: '1,000 to 1,200 hours',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-gradial-customers',
+  },
+  'airops-webflow-refresh': {
+    id: 'airops-webflow-refresh', value: 5, unit: 'multiple of content refresh velocity (Webflow, vendor case study)', display: '5x',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-airops-webflow',
+  },
+  'airops-webflow-signups': {
+    id: 'airops-webflow-signups', value: 0.1, unit: 'share of signups attributed to ChatGPT, stated as nearly this (Webflow, vendor case study)', display: '10%', format: 'pct0',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-airops-webflow',
+  },
+  'airops-chime-citations': {
+    id: 'airops-chime-citations', value: 3, unit: 'multiple of citations (Chime, vendor case study)', display: '3x',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-airops-chime',
+  },
+  'airops-chime-time': {
+    id: 'airops-chime-time', value: 0.89, unit: 'time reduction as a fraction (Chime, vendor case study)', display: '89%', format: 'pct0',
+    grade: 'Modelled', flag: 'vendor-claimed', ref: 'src-airops-chime',
+  },
   'gartner-sample-2025': {
     id: 'gartner-sample-2025', value: 402, unit: 'respondents', display: '402',
     grade: 'Benchmark', flag: null, ref: 'src-gartner-2025-cmo-spend',
