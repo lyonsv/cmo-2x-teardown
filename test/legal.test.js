@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const inv = readFileSync(new URL('../.planning/LEGAL-REVIEW.md', import.meta.url), 'utf8');
 
 test('legal-review flag is absent (dropped by author decision 2026-10-24)', () => {
   assert.doesNotMatch(html, /legal-flag/);
@@ -11,13 +10,10 @@ test('legal-review flag is absent (dropped by author decision 2026-10-24)', () =
   assert.doesNotMatch(html, /aria-label="Legal review status"/);
 });
 
-test('legal ids on the page equal the ids in LEGAL-REVIEW.md', () => {
-  const onPage = [...html.matchAll(/id="(legal-[a-z0-9-]+)"/g)].map((m) => m[1]);
-  assert.equal(new Set(onPage).size, onPage.length, 'legal ids unique');
-  const inFile = [...inv.matchAll(/^\| (legal-[a-z0-9-]+) \|/gm)].map((m) => m[1]);
-  assert.equal(new Set(inFile).size, inFile.length, 'inventory ids unique');
-  assert.deepEqual([...new Set(onPage)].sort(), [...new Set(inFile)].sort());
-  assert.equal(onPage.length, 8);
+// WR-08: counsel review was dropped, so no legal-review inventory ids remain and no
+// test reads planning files (CI must depend only on files that ship or test).
+test('no legal-review inventory ids remain on the page', () => {
+  assert.doesNotMatch(html, /id="legal-/);
 });
 
 test('s15 lists evidence gaps with closers and the not-used notes', () => {
