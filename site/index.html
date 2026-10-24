@@ -157,7 +157,7 @@
             <text class="val" data-fig="cm-scaled" x="848" y="73">100</text>
             </g>
             <g data-panel="cost">
-            <text class="panel-lbl" x="0" y="140">Cost per approved-live asset (USD, fully loaded)</text>
+            <text class="panel-lbl" x="0" y="140">Cost per approved asset (USD, fully loaded)</text>
             <line class="gridline" x1="240" y1="148" x2="240" y2="208"/>
             <text class="row-lbl" x="224" y="169" text-anchor="end">Baseline</text>
             <rect class="seg seg-1" data-bar="cpa-generation-base" x="240" y="152" width="317.2" height="24"/>
@@ -246,7 +246,7 @@
         <div class="fig-grid">
       <svg class="fig-d" role="img" aria-labelledby="fd2-t fd2-d" viewBox="0 0 300 300">
         <title id="fd2-t">The factory model</title>
-        <desc id="fd2-d">Master concepts feed a derivation line, which passes through a review and gate stage before approved-live variants are published and measured.</desc>
+        <desc id="fd2-d">Master concepts feed a derivation line, which passes through a review and gate stage before approved variants are published and measured.</desc>
         <defs>
         <marker id="fd2-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
         <marker id="fd2-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
@@ -258,7 +258,7 @@
         <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Master concepts</tspan><tspan x="150" dy="16">few, human-directed</tspan></text></g>
         <g class="node"><rect x="30" y="72" width="240" height="56" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Derive</tspan><tspan x="150" dy="16">template, localise,</tspan><tspan x="150" dy="16">render feeds</tspan></text></g>
         <g class="node node-review"><rect x="30" y="152" width="240" height="40" rx="2"/><text x="150" y="168" text-anchor="middle"><tspan class="node-t" x="150" y="168">Review and gate</tspan><tspan x="150" dy="16">agent checks, tier decides</tspan></text></g>
-        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Approved-live variants</tspan><tspan x="150" dy="16">published and measured</tspan></text></g>
+        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Approved variants</tspan><tspan x="150" dy="16">published and measured</tspan></text></g>
       </svg>
           <div>
           <h3 class="steps-h">Steps in Figure 2</h3>
@@ -266,7 +266,7 @@
           <li>Master concepts: a few, directed by people.</li>
           <li>Then Derive: templates, localisation and feed rendering produce the variants.</li>
           <li>Then Review and gate: an agent checks each variant and its tier decides who approves.</li>
-          <li>Then Approved-live variants: published and measured.</li>
+          <li>Then Approved variants: published and measured.</li>
           </ol>
           </div>
         </div>
@@ -402,13 +402,13 @@
             <tr><th scope="row">Tests</th><td class="num"><span data-fig="matrix-tests-count">4</span></td><td class="num"><span data-fig="matrix-tests-applies">50%</span></td><td class="num"><span data-fig="matrix-tests-variants">4,800</span></td><td><a class="chip c-m" href="#asm-matrix-tests">Modelled</a></td></tr>
             <tr><th scope="row">Feed items</th><td class="num"><span data-fig="matrix-feeds-count">4</span></td><td class="num"><span data-fig="matrix-feeds-applies">50%</span></td><td class="num"><span data-fig="matrix-feeds-variants">12,000</span></td><td><a class="chip c-m" href="#asm-matrix-feeds">Modelled</a></td></tr>
             <tr class="total"><th scope="row">Total derived variants, before the gate</th><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num"><span data-fig="matrix-total">12,000</span></td><td><a class="chip c-m" href="#asm-matrix-independence">Modelled</a></td></tr>
-            <tr><th scope="row">Approved-live at the approval yield</th><td class="num">&mdash;</td><td class="num"><span data-fig="asm-approval-yield">95%</span></td><td class="num"><span data-fig="matrix-approved">11,400</span></td><td><a class="chip c-m" href="#asm-approval-yield">Modelled</a></td></tr>
+            <tr><th scope="row">Approved at the approval yield</th><td class="num">&mdash;</td><td class="num"><span data-fig="asm-approval-yield">95%</span></td><td class="num"><span data-fig="matrix-approved">11,400</span></td><td><a class="chip c-m" href="#asm-approval-yield">Modelled</a></td></tr>
           </tbody>
         </table>
       </div>
       <p class="table-note">Derived variants: internal throughput, not the claim. The 2x counts campaign-markets, so these counts measure factory load, not output.</p>
       <p>The factors are treated as independent for illustration. Each one expands only the stated share of the set that exists after the previous factor. Real campaigns have correlated factors, because sizes follow the placement specs of each channel, so the total is an upper-bound sketch rather than a count of distinct valid variants. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
-      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live derived variants (internal throughput). Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
+      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved derived variants (internal throughput). Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
       <h3>Where the imagery comes from</h3>
       <p>Every campaign needs images, and there are three routes to them: retrieve approved assets, license new ones, or generate them. The comparison is shown without a ranking.</p>
       <div class="table-scroll" role="region" aria-label="Imagery sourcing table" tabindex="0">
@@ -531,7 +531,7 @@
       </ul>
       <h3>Reviewer capacity is the binding constraint</h3>
       <p>Here, without the gate means an auto-approval share of zero, so a person reviews every variant; with the gate uses the model's shares. Hours are before rework, while utilisation includes the rework loop at <span data-fig="asm-rework-rate">15%</span> <a class="chip c-m" href="#asm-rework-rate">Modelled</a>.</p>
-      <p>Review volume, in derived variants (internal throughput, not the claim), is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-formats-per-market">Modelled</a> approved-live variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
+      <p>Review volume, in derived variants (internal throughput, not the claim), is <span data-fig="cap-1x-variants">40,000</span> <a class="chip c-m" href="#asm-formats-per-market">Modelled</a> approved variants a year at 1x and <span data-fig="cap-2x-variants">80,000</span> at 2x. Reviewer capacity is the same in every row: <span data-fig="cap-capacity-hours">14,400</span> <a class="chip c-m" href="#asm-reviewer-hours">Modelled</a> review hours a year, the reviewer headcount times the productive hours each can give.</p>
       <div class="table-scroll" role="region" aria-label="Reviewer capacity table" tabindex="0">
         <table>
           <caption>Reviewer capacity, 1x and 2x</caption>
@@ -624,7 +624,7 @@
         <li><b>Reviewer utilisation</b> against capacity.</li>
         <li><b>Queue age:</b> how long the oldest items have waited.</li>
         <li><b>Rework rate.</b></li>
-        <li><b>Cost per approved-live asset.</b></li>
+        <li><b>Cost per approved asset.</b></li>
         <li><b>Brief-to-live time.</b></li>
         <li><b>Policy and skill version</b> in use for each asset.</li>
       </ul>
@@ -1079,7 +1079,7 @@
           <table>
             <caption>Sensitivity: each input moved 20% down and up, others unchanged</caption>
             <thead>
-              <tr><th scope="col" rowspan="2">Input</th><th scope="colgroup" colspan="2">Cost per approved-live asset</th><th scope="colgroup" colspan="2">Reviewer utilisation</th></tr>
+              <tr><th scope="col" rowspan="2">Input</th><th scope="colgroup" colspan="2">Cost per approved asset</th><th scope="colgroup" colspan="2">Reviewer utilisation</th></tr>
               <tr><th scope="col">at −20%</th><th scope="col">at +20%</th><th scope="col">at −20%</th><th scope="col">at +20%</th></tr>
             </thead>
             <tbody>
@@ -1385,7 +1385,7 @@
       <div class="risk">
         <h3 id="s14-goodhart">Goodhart on counts and spend</h3>
         <p>When a count or a spend line becomes the target, teams optimise the count. Variants produced and money spent on AI are inputs, not results.</p>
-        <p>A programme praised for approved-live variants will find cheap ways to raise that number, such as near-identical variants, loose approvals and assets nobody uses. A programme rewarded for AI spend will spend. The page's own claim is built to resist this: the falsifier in <a href="#s01">section 1</a> is tested on holdout-measured conversion and acquisition cost, not on how many assets shipped, and <a href="#s10">section 10</a> shows how those holdouts work. A volume figure should only ever be reported next to the outcome it is meant to move.</p>
+        <p>A programme praised for approved variants will find cheap ways to raise that number, such as near-identical variants, loose approvals and assets nobody uses. A programme rewarded for AI spend will spend. The page's own claim is built to resist this: the falsifier in <a href="#s01">section 1</a> is tested on holdout-measured conversion and acquisition cost, not on how many assets shipped, and <a href="#s10">section 10</a> shows how those holdouts work. A volume figure should only ever be reported next to the outcome it is meant to move.</p>
         <p class="mitigation"><b>Mitigation:</b> Report every count beside a holdout-measured outcome, treat spend as a floor and not a target, and revisit the targets whenever a count rises while the outcome does not.</p>
         <p class="asat"><b>As at <time datetime="2026-10-24">24 October 2026</time></b>: an analyst survey of CMOs lists capacity to produce more content among the returns CMOs report from generative AI. It is self-reported and is not a measured outcome, which is the volume framing this block warns about. <a class="cite" href="#src-gartner-2025-cmo-spend">src-gartner-2025-cmo-spend</a></p>
       </div>

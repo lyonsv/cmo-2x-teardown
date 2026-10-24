@@ -717,8 +717,8 @@ test('s05 derive lead and matrix table', () => {
   assert.deepEqual(head, ['Factor', 'Count', 'Applies to', 'Variants after factor', 'Grade']);
   const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
   const names = rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
-  // CR-02: the matrix counts derived variants before the gate; approved-live is shown at the approval yield.
-  assert.deepEqual(names, ['Master concepts', 'Sizes', 'Channels', 'Locales', 'Audiences', 'Tests', 'Feed items', 'Total derived variants, before the gate', 'Approved-live at the approval yield']);
+  // CR-02: the matrix counts derived variants before the gate; the approved count is shown at the approval yield.
+  assert.deepEqual(names, ['Master concepts', 'Sizes', 'Channels', 'Locales', 'Audiences', 'Tests', 'Feed items', 'Total derived variants, before the gate', 'Approved at the approval yield']);
   assert.ok(rows[7].startsWith('<tr class="total">'));
   assert.ok(rows[8].includes('data-fig="matrix-approved"') && rows[8].includes('data-fig="asm-approval-yield"'));
   assert.ok(rows[8].includes('<a class="chip c-m" href="#asm-approval-yield">Modelled</a>'));
@@ -931,7 +931,7 @@ test('s08 eval harness', () => {
   assert.ok(text.includes('reason code'));
   assert.ok(text.includes('No change to a generator, prompt, model or policy ships if it regresses the harness.'));
   const lower = text.toLowerCase();
-  for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved-live asset', 'brief-to-live time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
+  for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved asset', 'brief-to-live time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
   assert.equal((s.match(/href="#asm-telemetry-metrics"/g) || []).length, 1);
 });
 
@@ -1496,6 +1496,11 @@ test('03.1 reframe guards: no variants per head, no cycle time', (t) => {
     assert.ok(!(/variant/i.test(sent) && /per (marketing )?head/i.test(sent)), `variants per head: ${sent}`);
   }
   assert.ok(!/cycle time/i.test(guardText(html)), 'cycle time must read brief-to-live time');
+});
+
+test('03.1 reframe guards: "approved-live" is gone, the metric reads "approved asset" (WR-04)', () => {
+  assert.ok(!/approved-live/i.test(guardText(html)), 'approved-live must read approved');
+  assert.ok(!/approved-live/i.test(html), 'approved-live must not survive in markup or attributes');
 });
 
 test('03.1 reframe guards: definition appears once, in s01', () => {

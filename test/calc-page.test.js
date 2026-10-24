@@ -345,7 +345,7 @@ test('scenario table: six rows equal present(defaults).scenario; one grade note,
 
 test('sensitivity table: header, five ranked rows equal present(defaults), capped marked and footnoted', () => {
   const { table, after } = tableAfter('Sensitivity: each input moved 20% down and up, others unchanged');
-  assert.ok(table.includes('<th scope="colgroup" colspan="2">Cost per approved-live asset</th>'));
+  assert.ok(table.includes('<th scope="colgroup" colspan="2">Cost per approved asset</th>'));
   assert.ok(table.includes('<th scope="colgroup" colspan="2">Reviewer utilisation</th>'));
   assert.equal((table.match(/<th scope="col">at \u221220%<\/th>/g) || []).length, 2);
   assert.equal((table.match(/<th scope="col">at \+20%<\/th>/g) || []).length, 2);
