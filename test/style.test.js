@@ -158,3 +158,11 @@ test('diagram contrast', () => {
   assert.ok(contrast(token('verified'), token('paper-2')) >= 3);
   assert.ok(contrast(token('ink'), token('paper')) >= 4.5);
 });
+
+// ---- Phase 2 plan 05: default mark ----
+
+test('.default-mark is a bordered mono tag and prints with a black border', () => {
+  const r = rule('.default-mark');
+  for (const d of ['font: 600 12px/1.6 var(--mono)', 'border: 1px solid var(--ink)', 'padding: var(--s-xs) var(--s-sm)', 'border-radius: 2px', 'color: var(--ink)']) assert.ok(r.includes(d), d);
+  assert.ok(css.match(/@media print {[\s\S]*$/)[0].includes('.default-mark'));
+});

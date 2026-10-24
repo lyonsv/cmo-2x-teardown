@@ -8,7 +8,7 @@ const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 
 // Figure number -> section. 02-03 adds 4: 's05', 02-05 adds 5: 's06' and 6: 's07', 02-06 adds 7: 's08'.
-const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05' };
+const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05', 5: 's06', 6: 's07' };
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`\\s${name}="([^"]*)"`));
@@ -125,7 +125,6 @@ test('accent discipline', () => {
 
 test('visible text equivalent', () => {
   for (const f of figures()) {
-    assert.ok(f.html.includes('<h3 class="steps-h">Steps in this figure</h3>'), `Figure ${f.n} steps heading`);
     const ol = f.html.match(/<ol class="fig-steps">([\s\S]*?)<\/ol>/);
     if (f.n === 6) {
       assert.ok(/see the table/i.test(strip(f.html.match(/<figcaption>[\s\S]*?<\/figcaption>/)[0])));
@@ -133,6 +132,7 @@ test('visible text equivalent', () => {
       assert.ok(sec.includes('<table>'), 'Figure 6 section has a table');
       continue;
     }
+    assert.ok(f.html.includes('<h3 class="steps-h">Steps in this figure</h3>'), `Figure ${f.n} steps heading`);
     assert.ok(ol, `Figure ${f.n} ol.fig-steps`);
     const items = ol[1].match(/<li>/g) || [];
     assert.ok(items.length >= 3, 'at least 3 steps');
@@ -169,4 +169,30 @@ test('Figure 4 has a two-way fork', () => {
   assert.match(left.text, /auto/i);
   assert.match(right.text, /human/i);
   assert.ok(/<line class="edge edge-review"[^>]*x2="86"/.test(f.svg) || /<(line|path) class="edge edge-review"[^>]*(x2="86"|L86|86 )/.test(f.svg), 'auto branch edge is edge-review');
+});
+
+test('Figure 5 loop', () => {
+  const f = figures().find((x) => x.n === 5);
+  assert.ok(f, 'Figure 5 present');
+  assert.ok(f.svg.includes('<path class="edge edge-review'), 'review loop path');
+  const d = f.svg.match(/<path class="edge edge-review[^>]*\sd="([^"]+)"/)[1];
+  assert.ok((d.match(/[ML]/g) || []).length >= 3, 'loop path has two or more segments');
+  assert.ok(strip(f.svg).includes('never lower'));
+});
+
+test('Figure 6 ladder', () => {
+  const f = figures().find((x) => x.n === 6);
+  assert.ok(f, 'Figure 6 present');
+  const ns = nodes(f.svg);
+  assert.equal(ns.length, 4);
+  const ys = [];
+  ns.forEach((n, i) => {
+    const r = n.html.match(/<rect\b[^>]*>/)[0];
+    assert.equal(Number(attr(r, 'width')), 240);
+    ys.push(Number(attr(r, 'y')));
+    const t = strip(n.html.match(/<tspan[^>]*class="node-t"[^>]*>([\s\S]*?)<\/tspan>/)[1]);
+    assert.ok(t.startsWith(`T${i}`), `node ${i} is ${t}`);
+  });
+  assert.deepEqual(ys, [...ys].sort((a, b) => a - b));
+  assert.ok(/see the table/i.test(strip(f.html.match(/<figcaption>[\s\S]*?<\/figcaption>/)[0])));
 });

@@ -213,3 +213,53 @@ test('imagery assumptions', () => {
     assert.notEqual(e.display, e.basis);
   }
 });
+
+// ---- Plan 02-05: tiers and the reference datum ----
+
+test('tier defaults equal the calc tier mix', () => {
+  for (let i = 0; i < 4; i++) {
+    const c = claims[`tier-default-t${i}`];
+    const v = assumptions['asm-tier-mix'].value.scaled[i];
+    assert.ok(c, `tier-default-t${i}`);
+    assert.equal(c.value, v);
+    assert.equal(c.format, 'pct0');
+    assert.equal(c.display, formatValue(v, 'pct0'));
+    assert.equal(c.ref, `asm-tier-range-t${i}`);
+    const r = assumptions[`asm-tier-range-t${i}`];
+    assert.ok(r, `asm-tier-range-t${i}`);
+    assert.equal(r.kind, 'evidence');
+    assert.equal(r.grade, 'Modelled');
+    assert.ok(r.value.lo <= v && v <= r.value.hi, `T${i} default inside range`);
+    assert.equal(r.display, `${Math.round(r.value.lo * 100)}\u2013${Math.round(r.value.hi * 100)}%`);
+  }
+});
+
+test('eligibility arithmetic', () => {
+  const s = assumptions['asm-tier-mix'].value.scaled;
+  const e = claims['tier-eligible-share-scaled'];
+  const a = claims['auto-share-of-eligible'];
+  assert.ok(Math.abs(e.value - (s[0] + s[1])) < 1e-9);
+  assert.equal(a.value, Number((assumptions['asm-auto-approval'].value.scaled / 0.85).toFixed(2)));
+  for (const c of [e, a]) {
+    assert.equal(c.display, formatValue(c.value, 'pct0'));
+    assert.equal(c.ref, 'asm-auto-approval');
+    assert.equal(c.grade, 'Modelled');
+  }
+  assert.equal(e.display, '85%');
+  assert.equal(a.display, '71%');
+});
+
+test('reference datum is Modelled and company-reported', () => {
+  const want = { 'ref-auto-approved-share': [0.192, '19.2%'], 'ref-bot-approval-rate': [0.284, '28.4%'] };
+  for (const [id, [value, display]] of Object.entries(want)) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value);
+    assert.equal(c.display, display);
+    assert.equal(c.grade, 'Modelled');
+    assert.equal(c.flag, 'company-reported');
+    assert.equal(c.ref, 'src-intercom-2x-teardown');
+  }
+  assert.equal(sources['intercom-2x-teardown'].url, 'https://lyonsv.github.io/intercom-2x-teardown/');
+  assert.ok(assumptions['asm-review-agent-design']);
+});

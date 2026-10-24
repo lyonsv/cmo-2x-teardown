@@ -306,7 +306,7 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s06', 's07', 's08', 's09', 's10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s08', 's09', 's10', 's11', 's12', 's13', 's14'];
 
 test('skeleton sections carry a scope sentence and the later note', () => {
   for (const id of SKELETON_IDS) {
@@ -368,10 +368,13 @@ test('no vendor names in s03 to s08', () => {
   }
 });
 
-test('Intercom at most once outside s12 and s15', () => {
+test('Intercom exactly once outside s12 and s15, in s06', () => {
   let rest = html;
   for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
-  assert.ok((strip(rest).match(/\bintercom\b/gi) || []).length <= 1);
+  assert.equal((strip(rest).match(/\bintercom\b/gi) || []).length, 1);
+  const s6 = sectionHtml('s06');
+  assert.ok(strip(s6).includes("This is the equivalent of Intercom's review agent, which inspired the design described here."));
+  assert.ok(s6.includes('<a href="#src-intercom-2x-teardown">Intercom\'s review agent</a>'));
 });
 
 function regionHtml(open, close) {
@@ -525,7 +528,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -675,6 +678,52 @@ test('personalisation and feeds block', () => {
   const CAVEAT = 'Secondary source: reported in trade press; we could not confirm the primary paper.';
   if (claims['nyu-ctr-lift'].grade === 'Modelled') assert.ok(text.includes(CAVEAT));
   else assert.ok(!text.includes(CAVEAT));
+});
+
+// ---- Plan 02-05: s06 review agent and s07 tier ladder ----
+
+test('s06 review agent rules', () => {
+  const s = sectionHtml('s06');
+  const ul = s.match(/<ul class="rules">[\s\S]*?<\/ul>/);
+  assert.ok(ul, 'ul.rules missing');
+  const t = strip(ul[0]).toLowerCase();
+  for (const w of ['rule id', 'asset manifest', 'bounded fix loop', 'escalate', 'never lower', 'self-report', 'could not check', 'different model']) assert.ok(t.includes(w), w);
+  const datum = (s.match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).filter((p) => p.includes('data-fig="ref-auto-approved-share"'));
+  assert.equal(datum.length, 1);
+  const p = datum[0];
+  assert.ok(p.includes('data-fig="ref-bot-approval-rate"'));
+  assert.match(p, /<span data-fig="ref-auto-approved-share">[^<]*<\/span>\s*<a class="chip c-m" href="#src-intercom-2x-teardown">Modelled<\/a>\s*<span class="flag">company-reported<\/span>/);
+  assert.ok(/\bcode\b/.test(strip(p)), 'must say the reference reviews code');
+  const rest = html.replace(sectionHtml('s15'), '').replace(p, '');
+  assert.ok(!rest.includes('data-fig="ref-auto-approved-share"') && !rest.includes('data-fig="ref-bot-approval-rate"'), 'datum must appear once');
+});
+
+test('s07 tier table', () => {
+  const s = sectionHtml('s07');
+  const wrap = s.match(/<div class="table-scroll"[^>]*>\s*<table>\s*<caption>Approval tiers \(illustrative\)<\/caption>[\s\S]*?<\/table>\s*<\/div>/);
+  assert.ok(wrap, 'tier table missing');
+  const table = wrap[0];
+  const head = [...table.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Tier', 'Example assets', 'Who approves', 'Share of assets', 'Grade']);
+  const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  assert.equal(rows.length, 4);
+  rows.forEach((r, i) => {
+    assert.ok(r.includes(`<th scope="row" class="tier">T${i}</th>`), `T${i} header`);
+    assert.ok(r.includes(`data-fig="asm-tier-range-t${i}"`), `T${i} range`);
+    assert.ok(r.includes('<b class="default-mark">model default</b>'), `T${i} default mark`);
+    assert.ok(r.includes(`data-fig="tier-default-t${i}"`), `T${i} default`);
+    const chips = r.match(/class="chip /g) || [];
+    assert.equal(chips.length, 1);
+    assert.ok(r.includes(`href="#asm-tier-range-t${i}"`));
+  });
+  assert.match(s, /<\/table>\s*<\/div>\s*<div class="callout">\s*<span class="lbl">Not legal advice<\/span>\s*<p>Illustrative, not legal advice; depends on jurisdiction\.<\/p>\s*<\/div>/);
+  const ah = s.match(/<h3>Always human<\/h3>\s*<p>([\s\S]*?)<\/p>\s*<ul>([\s\S]*?)<\/ul>/);
+  assert.ok(ah, 'Always human h3, p, ul');
+  assert.ok(/illustrative/i.test(ah[1]));
+  const list = strip(ah[2]).toLowerCase();
+  for (const w of ['hero', 'testimonial', 'claim', 'likeness', 'children', 'third-party rights']) assert.ok(list.includes(w), w);
+  for (const id of ['asm-auto-approval', 'tier-eligible-share-scaled', 'auto-share-of-eligible']) assert.ok(s.includes(`data-fig="${id}"`), id);
+  assert.ok(/\btarget\b/.test(strip(s)));
 });
 
 test('time elements are present', () => {
