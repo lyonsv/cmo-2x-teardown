@@ -93,7 +93,13 @@ Note: origin/main already contains d66c835 (quick task 261024-s14, COI and Getty
 
 ## Push approval
 
-Push approval: pending user reply
+Approved by the user's standing instruction (not an "approve-push" reply to this checkpoint). The user's words, verbatim, given while the pre-flight ran:
+
+> I want you to keep going until everything is finished. Don't come back to me with questions again, I'll step away from the computer. If a decision needs to be made, use your best judgement and make it.
+
+> Drop the legal review entirely and remove the flag. Drop those UAT items. Keep going other than that
+
+The orchestrator had told the user beforehand that continuing meant recording this checkpoint as approved and running W3C validation (uploading page HTML to validator.w3.org), one `git push origin main` (never force), the test-gated deploy and live checks. Gates re-run after the flag removal (300ac84): node --test 372/372, crosscheck, smoke, a11y, print all exit 0. The legal flag is removed per the author's decision; human UAT items are recorded as dropped by the author, not passed.
 
 ## Notes for Task 3
 
