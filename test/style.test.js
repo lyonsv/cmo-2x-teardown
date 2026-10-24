@@ -267,3 +267,12 @@ test('.backlog0 is a paper-2 panel with tokens only', () => {
   for (const d of ['background: var(--paper-2)', 'border: 1px solid var(--rule)', 'padding: var(--s-lg)', 'max-width: 44em']) assert.ok(r.includes(d), d);
   assert.ok(!/--verified|--low/.test(r));
 });
+
+test('.status is a bordered mono tag with a non-colour cue per variant', () => {
+  const r = rule('.status');
+  for (const d of ['font: 600 12px/1.6 var(--mono)', 'text-transform: uppercase', 'letter-spacing: .08em', 'color: var(--ink)', 'border: 1px solid var(--ink)']) assert.ok(r.includes(d), d);
+  assert.ok(rule('.status-alleged').includes('border-style: dashed'));
+  const d = rule('.status-disputed');
+  assert.ok(d.includes('border-style: double') && d.includes('border-width: 3px'));
+  for (const s of ['.status', '.status-alleged', '.status-disputed']) assert.ok(!/--low|--verified|background/.test(rule(s)), s);
+});

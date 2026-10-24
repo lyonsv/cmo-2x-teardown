@@ -177,6 +177,10 @@ svg.fig-live[hidden], .chart-empty[hidden] { display: none; }
 .backlog0 h3 { margin-top: 0; }
 .backlog0 dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); }
 .backlog0 dt, .backlog0 dd { margin: 0; }
+.status { display: inline-block; font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; padding: var(--s-xs) var(--s-sm); }
+.status-alleged { border-style: dashed; }
+.status-disputed { border-style: double; border-width: 3px; }
+table.incidents { min-width: 840px; }
 .believe ul { margin: 0; padding-left: var(--s-lg); }
 .believe li + li { margin-top: var(--s-sm); }
 details.maths { margin: var(--s-lg) 0; max-width: 44em; }
@@ -238,7 +242,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .fig-d .edge-review, .fig-d .node-review rect { stroke: #000; stroke-width: 3; }
   .fig-d .arrow-head-review { fill: #000; }
   .fig-d .node-review rect { fill: #fff; }
-  .default-mark { border-color: #000; }
+  .default-mark, .status { border-color: #000; }
   .believe, details.maths { break-inside: avoid; }
   .ref-line { stroke: #555; }
 }

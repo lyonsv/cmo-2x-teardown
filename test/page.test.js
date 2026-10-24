@@ -366,20 +366,9 @@ test('fifteen anchored sections with the fixed snippet', () => {
   }
 });
 
-// Plans 04-03 onward remove the sections they fill; s14 is still a skeleton until Task 2.
-const SKELETON_IDS = ['s14'];
-
-test('skeleton ids are s14 only', () => {
-  assert.deepEqual(SKELETON_IDS, ['s14']);
-});
-
-test('skeleton sections carry a scope sentence and the later note', () => {
-  for (const id of SKELETON_IDS) {
-    const s = sectionHtml(id);
-    assert.ok(s.includes('<p class="later">Coming in a later update.</p>'), id);
-    const others = [...s.matchAll(/<p(?![^>]*class="later")[^>]*>/g)];
-    assert.ok(others.length >= 1, `${id} has no scope sentence`);
-  }
+// Every section is now filled; the later note must not appear anywhere.
+test('no section carries the later note', () => {
+  assert.ok(!html.includes('class="later"'));
 });
 
 test('copy nits from the Phase 1 UI review', () => {
@@ -1373,4 +1362,50 @@ test('s13 Backlog 0 definition block', () => {
   const dts = [...blk.matchAll(/<dt>([\s\S]*?)<\/dt>/g)].map((m) => strip(m[1]));
   assert.deepEqual(dts, ['Measure', 'Target', "Reader's number"]);
   assert.equal(assumptions['asm-backlog0-days'].display, '5 working days');
+});
+
+// ---- Plan 04-03: s14 incidents ----
+
+const INCIDENT_ROWS = [
+  ['2025-12-10', '10 December 2025', 'Established', 'src-incident-mcdonalds-nl-2025'],
+  ['2025-11-03', '3 November 2025', 'Disputed', 'src-incident-cocacola-2025'],
+  ['2025-08', 'August 2025', 'Established', 'src-incident-guess-vogue-2025'],
+  ['2024-02-14', '14 February 2024', 'Established', 'src-moffatt-air-canada-2024'],
+  ['2023-03-22', '22 March 2023', 'Established', 'src-incident-levis-2023'],
+];
+
+test('s14 lead, status legend and incident table', () => {
+  const s = sectionHtml('s14');
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'Most failures here are governance failures, and several have already happened to someone.');
+  const legend = s.match(/<div class="legend">[\s\S]*?<\/div>/)[0];
+  assert.deepEqual([...legend.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map((m) => m[1]), [
+    'Established: confirmed by a court, a regulator or the party concerned.',
+    'Alleged: reported but not confirmed.',
+    'Disputed: the parties disagree on the facts.',
+  ]);
+  assert.ok(s.indexOf('class="legend"') < s.indexOf('<table'));
+  assert.ok(s.includes('<caption>Public incidents of AI-generated marketing content and agent liability, with status</caption>'));
+  const head = [...s.match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => strip(m[1]));
+  assert.deepEqual(head, ['Incident', 'Date', 'What happened', 'Status', 'Source']);
+  const rows = s.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  assert.equal(rows.length, INCIDENT_ROWS.length);
+  rows.forEach((r, i) => {
+    const [dt, text, status, src] = INCIDENT_ROWS[i];
+    assert.ok(r.includes(`<time datetime="${dt}">${text}</time>`), `${dt} date pair`);
+    const marks = [...r.matchAll(/<span class="status status-(\w+)">(\w+)<\/span>/g)];
+    assert.equal(marks.length, 1);
+    assert.equal(marks[0][2], status);
+    assert.equal(marks[0][1], status.toLowerCase());
+    assert.ok(!/class="chip/.test(r));
+    const tds = r.match(/<td>[\s\S]*?<\/td>/g);
+    const what = strip(tds[1]);
+    assert.ok(what.split(' ').length <= 25, what);
+    assert.ok(!/\d/.test(what), what);
+    assert.ok(!VENDOR_RE.test(strip(r)));
+    const cites = [...r.matchAll(/class="cite" href="#(src-[^"]+)"/g)].map((m) => m[1]);
+    assert.ok(cites.includes(src));
+    for (const c of cites) assert.equal(sources[c.slice(4)].event, dt, c);
+  });
+  assert.ok(!strip(s).includes('Intercom'));
 });
