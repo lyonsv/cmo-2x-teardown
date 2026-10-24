@@ -1462,7 +1462,7 @@ test('s14 risk blocks appear in order with answer-first, mitigation and as-at', 
 test('s14 IP block asserts no litigation status', () => {
   const t = strip(riskBlock('ip'));
   assert.doesNotMatch(t, /lawsuit|litigation|no final outcome|unresolved/i);
-  assert.ok(t.includes('Treat the rights in the data each model was trained on as an open question too, for the vendor and counsel to answer.'));
+  assert.ok(t.includes('Treat the rights in the data each model was trained on as an open question for the vendor and counsel to answer.'));
 });
 
 test('s14 reviewer fatigue cites Parasuraman and Manzey at abstract level only', () => {
@@ -1587,4 +1587,12 @@ test('03.1 reframe guards: pipeline is not a headline', () => {
   const trio = s01.match(/<div class="metric-trio">[\s\S]*?<\/div>\s*<\/div>|<div class="metric-trio">[\s\S]*?<\/div>/)[0];
   assert.ok(!/pipeline/i.test(strip(paras)), 's01 definition paragraphs');
   assert.ok(!/pipeline/i.test(strip(trio)), 's01 metric trio');
+});
+
+test('AEO lever output is per quarter in s09 and s10, matching s01 (v1.0 polish)', () => {
+  for (const id of ['s09', 's10']) {
+    const t = strip(sectionHtml(id));
+    assert.ok(!/answer assets published or refreshed per head/i.test(t), `${id} per head`);
+  }
+  assert.ok(strip(sectionHtml('s09')).includes('Answer assets published or refreshed per quarter'));
 });

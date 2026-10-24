@@ -36,7 +36,7 @@ test('s15 lists evidence gaps with closers and the not-used notes', () => {
   assert.ok(s15.includes('Replace any of these with your own data in the calculator.'));
   assert.ok(/<a href="#s11">/.test(s15.slice(s15.indexOf('Replace any of these'))));
   assert.ok(html.includes('<p class="nd">McKinsey: no figure is used on this page.</p>'));
-  assert.ok(html.includes("<p class=\"nd\">Gartner's generative-AI return percentages: not used on this page.</p>"));
+  assert.ok(html.includes("<p class=\"nd\">Gartner's generative-AI return percentages: not used on this page; not verified against the primary source.</p>"));
   assert.equal((html.match(/mckinsey/gi) || []).length, 1);
   assert.doesNotMatch(html, /\b49%[\s\S]{0,200}\b40%[\s\S]{0,200}\b27%/);
 });
