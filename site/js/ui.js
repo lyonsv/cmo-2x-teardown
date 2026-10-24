@@ -5,7 +5,7 @@ import { modelContext } from './data.js';
 import { present, defaultValues } from './model.js';
 import { FIELDS } from './fields.js';
 import { chartSpec, renderChart } from './svg.js';
-import { CHIP, writeMaths, writeBelieve } from './panels.js';
+import { writeMaths, writeBelieve } from './panels.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
 
 const ctx = modelContext();
@@ -92,10 +92,6 @@ function writeSensitivity(list) {
   list.forEach((row, i) => {
     const tr = sensRows[i];
     tr.querySelector('th').textContent = row.label;
-    const chip = tr.querySelector('a.chip');
-    chip.setAttribute('href', `#${row.ref}`);
-    chip.className = `chip ${CHIP[row.grade]}`;
-    chip.textContent = row.grade;
     [...tr.querySelectorAll('td.num')].forEach((td, c) => {
       const node = row.cells[SENS_CELLS[c]];
       const fig = td.querySelector('[data-fig]');

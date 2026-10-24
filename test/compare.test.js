@@ -27,7 +27,9 @@ test('s12 has a lead, then the admission callout before the matrix', () => {
 
 test('matrix container, caption, headers and nine rows in order', () => {
   assert.ok(s12.includes('<div class="table-scroll" role="region" aria-label="Comparison matrix" tabindex="0">'));
-  assert.ok(matrix.includes('<caption>How Gradial, AirOps, Profound and the CMO 2x spine compare. Every cell is sourced; access dates are in the source register.</caption>'));
+  assert.ok(matrix.includes(`<caption>How Gradial, AirOps, Profound and the CMO 2x spine compare. Every cell is sourced; access dates are in the source register. Absences were checked on <time datetime="${[...vendorAccessed][0]}">${[...vendorAccessed][0]}</time>.</caption>`));
+  // Cell dates are collapsed into the caption only while every vendor source shares one date.
+  assert.equal(vendorAccessed.size, 1, 'vendor access dates differ: per-cell dates must return in the matrix');
   const head = [...matrix.slice(0, matrix.indexOf('<tbody>')).matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map((m) => m[1]);
   assert.deepEqual(head, ['Dimension', 'Gradial', 'AirOps', 'Profound', 'CMO 2x spine (design)']);
   assert.deepEqual(bodyRows.map((r) => strip(cells(r)[0])), [
@@ -42,14 +44,15 @@ test('every vendor cell cites a registered row or states not publicly documented
     const c = cells(r);
     for (const cell of c.slice(1, 4)) {
       const cites = [...cell.matchAll(/<a class="cite" href="#src-((?:gradial|airops|profound)-[a-z-]+)">/g)].map((m) => m[1]);
-      const nds = [...cell.matchAll(/<span class="nd">Not publicly documented<\/span><span class="cite-date"> checked <time datetime="(\d{4}-\d{2}-\d{2})">\1<\/time><\/span>/g)];
+      const nds = [...cell.matchAll(/<span class="nd">Not publicly documented<\/span>/g)];
+      assert.ok(!cell.includes('cite-date'), 'matrix cells carry no per-cell date');
       assert.ok(cites.length + nds.length > 0, `cell has neither cite nor nd: ${strip(cell).slice(0, 60)}`);
       for (const k of cites) {
         assert.ok(sources[k], `${k} not in data.js`);
         assert.ok(html.includes(`<tr id="src-${k}">`), `${k} not in register`);
-        assert.ok(cell.includes(`<a class="cite" href="#src-${k}">src-${k}</a><span class="cite-date"> accessed <time datetime="${sources[k].accessed}">${sources[k].accessed}</time></span>`), `${k} cite date`);
+        assert.ok(cell.includes(`<a class="cite" href="#src-${k}">src-${k}</a>`), `${k} cite`);
+        assert.ok(vendorAccessed.has(sources[k].accessed), `${k} accessed date is the caption date`);
       }
-      for (const m of nds) assert.ok(vendorAccessed.has(m[1]), 'nd date is not a vendor access date');
     }
     assert.ok(/\bDesign\b/.test(strip(c[4])), 'spine cell lacks Design');
     assert.match(c[4], /<a href="#s0[3-8]">/);

@@ -17,6 +17,42 @@ const ctx = modelContext();
 const p = present(defaultValues(ctx), ctx);
 const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 
+// ---- Phase 4 Plan 1: the s11 group grade rule (chip density amendment) ----
+// GROUPED names the s11 groups. A group shows its grade chip once, in one note, and
+// every member still resolves to a register row through a plain link. The rule is only
+// valid while all members of a group share one grade: assertGroupRule fails loudly
+// otherwise, and per-member chips must be restored.
+const GROUPED = {
+  fieldsets: { volume: 'Volume', people: 'People', cost: 'Cost and quality', automation: 'Automation' },
+  tables: ['Calculator results', 'Headcount scenario', 'Sensitivity'],
+};
+
+function assertGroupRule(name, members, noteHtml) {
+  const grades = new Set(members.map((m) => m.grade));
+  assert.equal(grades.size, 1, `${name}: group members no longer share one grade: restore per-member chips`);
+  const [grade] = grades;
+  const refs = [...new Set(members.map((m) => m.ref))];
+  const chips = [...noteHtml.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
+  assert.equal(chips.length, 1, `${name}: the note carries exactly one chip`);
+  assert.equal(chips[0][3], grade, `${name}: note chip word`);
+  assert.equal(chips[0][1], CHIP_CLASS[grade], `${name}: note chip class`);
+  assert.equal(chips[0][2], refs[0], `${name}: note chip links the first member ref`);
+  const links = [...noteHtml.matchAll(/<a href="#([^"]+)">([^<]+)<\/a>/g)];
+  for (const [, href, text] of links) assert.equal(text, href, `${name}: register link text`);
+  assert.deepEqual([...new Set(links.map((l) => l[1]))].sort(), [...refs].sort(), `${name}: register links equal the member refs`);
+  for (const ref of refs) assert.ok(assumptions[ref], `${name}: ${ref} is an assumption row`);
+}
+
+function regionOf(label) {
+  const i = s11.indexOf(`aria-label="${label}"`);
+  assert.ok(i >= 0, label);
+  const start = s11.lastIndexOf('<div class="table-scroll"', i);
+  const endTable = s11.indexOf('</table>', i);
+  const end = s11.indexOf('</div>', endTable) + '</div>'.length;
+  const note = s11.slice(end).match(/^\s*(<p class="table-note grade-note">[\s\S]*?<\/p>)/);
+  return { region: s11.slice(start, end), note: note && note[1] };
+}
+
 test('s11 reads in order: lead, status, no-JS note, summary output, results table', () => {
   const idx = [
     s11.indexOf('Replace the defaults with your own numbers. The page recomputes cost per approved-live asset, reviewer load and the auto-approval share you would need.'),
@@ -43,7 +79,7 @@ test('results table: head, nine rows in model order, cells equal present(default
   assert.ok(/role="region"/.test(region[0]) && /tabindex="0"/.test(region[0]));
   const table = region[1];
   const head = [...table.match(/<thead>([\s\S]*?)<\/thead>/)[1].matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
-  assert.deepEqual(head, ['Output', 'Baseline', '2x', 'Change', 'Grade']);
+  assert.deepEqual(head, ['Output', 'Baseline', '2x', 'Change']);
   const body = table.slice(table.indexOf('<tbody>'));
   const trs = body.match(/<tr>[\s\S]*?<\/tr>/g);
   assert.equal(trs.length, 9);
@@ -52,7 +88,8 @@ test('results table: head, nine rows in model order, cells equal present(default
     const row = p.rows[i];
     assert.equal(strip(tr.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]), def.label);
     const tds = [...tr.matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td>/g)];
-    assert.equal(tds.length, 4);
+    assert.equal(tds.length, 3);
+    assert.ok(!tr.includes('class="chip'), `${def.id}: grouped rows carry no chip`);
     ['base', 'scaled', 'change'].forEach((name, c) => {
       const node = row[name];
       const [, attrs, inner] = tds[c];
@@ -72,13 +109,10 @@ test('results table: head, nine rows in model order, cells equal present(default
         assert.equal(claim.ref, row.ref);
       }
     });
-    const chip = tds[3][2].match(/^<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>$/);
-    assert.ok(chip, `${def.id}: grade cell is exactly one linked chip`);
-    assert.equal(chip[3], row.grade);
-    assert.equal(chip[1], CHIP_CLASS[row.grade]);
-    assert.equal(chip[2], row.ref);
-    assert.ok(assumptions[row.ref], `${row.ref} is an assumption row`);
   });
+  const { note } = regionOf('Calculator results');
+  assert.ok(note, 'results table is followed by its grade note');
+  assertGroupRule('results', p.rows, note);
 });
 
 test('break-even and capacity floor are rows of their own', () => {
@@ -160,10 +194,11 @@ test('form: five groups, twelve fields in order with label, input, unit, chip an
     const input = `<input id="in-${f.key}" name="${f.key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-${f.key}" value="${toText(f, d)}">`;
     assert.ok(html_.includes(input), `${f.key} input`);
     assert.ok(html_.includes(`<span class="unit">${f.unit}</span>`), `${f.key} unit`);
-    const grade = assumptions[f.asm].grade;
-    assert.ok(html_.includes(`<a class="chip ${CHIP_CLASS[grade]}" href="#${f.asm}">${grade}</a>`), `${f.key} chip`);
-    const hint = html_.match(new RegExp(`<p class="hint" id="hint-${f.key}">([^<]*)</p>`));
+    assert.ok(!html_.includes('class="chip'), `${f.key}: grouped fields carry no chip`);
+    const hint = html_.match(new RegExp(`<p class="hint" id="hint-${f.key}">([^]*?)</p>`));
     assert.ok(hint && hint[1].startsWith(`Default ${f.hintFormat ? formatValue(d, f.hintFormat) : toText(f, d)}`), `${f.key} hint`);
+    assert.ok(hint[1].endsWith(` Register row: <a href="#${f.asm}">${f.asm}</a>.`), `${f.key} hint ends with its register link`);
+    hint[1] = hint[1].replace(/ Register row: <a href="[^"]+">[^<]+<\/a>\.$/, '');
     if (f.key === 'vcost') assert.ok(hint[1].startsWith('Default $0.80.'));
     if (f.key === 'mconcept') assert.ok(hint[1].startsWith('Default $1,200.'));
     // WR-02: hints must not claim an input changes "only" some outputs; both FTE
@@ -174,6 +209,21 @@ test('form: five groups, twelve fields in order with label, input, unit, chip an
     assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
   });
   assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2, 0]);
+  // Group grade rule: each of the four field groups opens with one note and one chip.
+  groups.slice(0, 4).forEach((g, i) => {
+    assert.equal(g[1], Object.values(GROUPED.fieldsets)[i]);
+    const key = Object.keys(GROUPED.fieldsets)[i];
+    const note = g[2].match(/^\s*(<p class="grade-note">[\s\S]*?<\/p>)/);
+    assert.ok(note, `${g[1]}: first element after the legend is the grade note`);
+    assert.ok(note[1].startsWith('<p class="grade-note">Defaults in this group are <a class="chip'), g[1]);
+    const members = FIELDS.filter((f) => f.group === key).map((f) => ({ ref: f.asm, grade: assumptions[f.asm].grade }));
+    const chips = note[1].match(/class="chip /g) || [];
+    assert.equal(chips.length, 1);
+    assert.equal((g[2].match(/class="chip /g) || []).length, 1, `${g[1]}: one chip in the whole group`);
+    // The note carries the chip; each member's register link sits in its own hint.
+    const hintLinks = [...g[2].matchAll(/Register row: (<a href="#[^"]+">[^<]+<\/a>)\./g)].map((m) => m[1]).join(' ');
+    assertGroupRule(g[1], members, note[1] + hintLinks);
+  });
   assert.deepEqual(FIELDS.map((f) => f.group), ['volume', 'volume', 'volume', 'people', 'people', 'people', 'cost', 'cost', 'cost', 'cost', 'automation', 'automation']);
   assert.ok(!/<h2[^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
 });
@@ -244,7 +294,7 @@ function tableAfter(caption) {
   return { table: s11.slice(start, s11.indexOf('</table>', i)), after: s11.slice(s11.indexOf('</table>', i)), start };
 }
 
-test('scenario table: six rows equal present(defaults).scenario with one chip per row', () => {
+test('scenario table: six rows equal present(defaults).scenario; one grade note, no row chips', () => {
   const { table } = tableAfter('Headcount scenario: Redeploy');
   assert.equal(p.scenario.name, 'Redeploy');
   const trs = table.slice(table.indexOf('<tbody>')).match(/<tr>[\s\S]*?<\/tr>/g);
@@ -256,7 +306,7 @@ test('scenario table: six rows equal present(defaults).scenario with one chip pe
     assert.ok(fig, row.id);
     assert.equal(decode(fig[1]), row.text);
     assert.equal(claims[`calc-scen-${row.id}`].display, row.text);
-    assert.ok(tr.includes(`<a class="chip ${CHIP_CLASS[row.grade]}" href="#${row.ref}">${row.grade}</a>`), `${row.id} chip`);
+    assert.ok(!tr.includes('class="chip'), `${row.id}: grouped rows carry no chip`);
   });
   // WR-03: the Hold sentence is scoped to the page defaults and its figure is the presenter's Hold row.
   const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change');
@@ -265,6 +315,14 @@ test('scenario table: six rows equal present(defaults).scenario with one chip pe
   assert.ok(!/Hold changes annual production cost by only/.test(s11), 'the confusing "only" wording is gone');
   assert.ok(Math.abs(hold.value) < 60000, 'Hold change stays small at the defaults');
   assert.ok(!/Hold saves little/.test(s11), 'no unscoped Hold claim');
+  const { note } = regionOf('Headcount scenario');
+  assert.ok(note, 'scenario table is followed by its grade note');
+  assertGroupRule('scenario', p.scenario.rows, note);
+  // The refs do not depend on the chosen scenario, so the one note serves all three.
+  for (const mode of ['redeploy', 'hold', 'reduce']) {
+    const rows = present({ ...defaultValues(ctx), scenario: mode }, ctx).scenario.rows;
+    assert.deepEqual([...new Set(rows.map((r) => r.ref))].sort(), [...new Set(p.scenario.rows.map((r) => r.ref))].sort(), `${mode} refs`);
+  }
   assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-([a-z_]+)/)[1]), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
 });
 
@@ -287,8 +345,12 @@ test('sensitivity table: header, five ranked rows equal present(defaults), cappe
       assert.equal(m[2], row.capped[dir] ? 'capped' : '');
       assert.equal(claims[`calc-sens-${row.key}-${c}`].display, row.cells[c].text);
     }
-    assert.ok(tr.includes(`<a class="chip ${CHIP_CLASS[row.grade]}" href="#${row.ref}">${row.grade}</a>`));
+    assert.ok(!tr.includes('class="chip'), `${row.key}: grouped rows carry no chip`);
   });
+  const { note } = regionOf('Sensitivity');
+  assert.ok(note, 'sensitivity table is followed by its grade note');
+  assertGroupRule('sensitivity', p.sensitivity, note);
+  assert.ok(!table.includes('>Grade<'), 'no Grade column');
   assert.ok(trs.some((tr) => tr.includes('capped</span>')), 'at least one capped cell at defaults');
   assert.ok(after.includes('<p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>'));
 });

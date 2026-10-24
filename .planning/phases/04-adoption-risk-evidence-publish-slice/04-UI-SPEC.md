@@ -211,3 +211,18 @@ Automated where marked (A) via the CDP harness (`scripts/smoke.mjs`); manual ite
 - **Legal flag markup:** `<div class="callout legal-flag" role="note">` (never `<aside>`; no extra landmark).
 - **Placement:** the legal flag sits between the page-top COI callout and `#answer`; the skip link still targets `#answer`.
 - **Dates:** `.asat` and re-verification stamps use each source's actual re-check date in `<time datetime>`, not a fixed string.
+
+## Chip density amendment (Phase 4 Plan 1)
+
+Reason: 03-UI-REVIEW fix 5 measured 49 identical Modelled chips in s11 (results rows, scenario rows, sensitivity rows, 12 field heads, maths and believe items). When every chip says the same thing, grade colour carries no information. The rule is restated, not loosened: every s11 figure keeps a grade and a plain register link, and a test fails the moment the grades of a group diverge.
+
+**Groups (s11 only).** The four calculator fieldsets that hold fields (Volume, People, Cost and quality, Automation) and the three s11 tables (results, headcount scenario, sensitivity).
+
+**Note markup.**
+- Table: the element immediately after the table region is `<p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#REF0">Modelled</a>. Register rows: <a href="#REF0">REF0</a>, <a href="#REF1">REF1</a>.</p>`, listing each distinct member ref once. Rows carry no chip and the table has no Grade column.
+- Fieldset: the first element after `<legend>` is `<p class="grade-note">Defaults in this group are <a class="chip c-m" href="#REF0">Modelled</a>.</p>`. Field heads carry no chip; each hint ends with ` Register row: <a href="#asm-x">asm-x</a>.`
+- Register-id links (text equals the href target, an `src-` or `asm-` key of data.js) are the only link text exempt from the numeric gate; a test checks that each names a real row.
+
+**Shared-grade guard.** `assertGroupRule` in test/calc-page.test.js computes the member grades from data.js and the presenter and fails with "group members no longer share one grade: restore per-member chips" if they differ. There is no silent fallback. The Headcount scenario change-cost line keeps its own chip because it is a paragraph.
+
+**Scope.** s13 and s14 tables keep the per-row Grade column and per-row chips of the approved contract. s11 chip count after the amendment: 24, against a hard cap of 25.

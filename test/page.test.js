@@ -55,8 +55,29 @@ function collectUnits() {
   return { units, total };
 }
 
+// s11 group grade rule (Phase 4 Plan 1, 04-UI-SPEC "Chip density amendment"): the rows of
+// the three s11 tables carry no chip; the p.grade-note after each table region carries one
+// chip, and every member figure's ref must be a register link in that note. calc-page.test
+// pins the shared-grade guard; this rule only governs placement.
+function groupedRows() {
+  const s11 = sectionHtml('s11');
+  const out = new Map();
+  for (const label of ['Calculator results', 'Headcount scenario', 'Sensitivity']) {
+    const i = s11.indexOf(`aria-label="${label}"`);
+    assert.ok(i >= 0, label);
+    const endTable = s11.indexOf('</table>', i);
+    const table = s11.slice(i, endTable);
+    const end = s11.indexOf('</div>', endTable) + '</div>'.length;
+    const note = s11.slice(end).match(/^\s*(<p class="table-note grade-note">[\s\S]*?<\/p>)/);
+    assert.ok(note, `${label}: grade note must follow the table region`);
+    for (const tr of table.slice(table.indexOf('<tbody>')).match(/<tr>[\s\S]*?<\/tr>/g)) out.set(tr, note[1]);
+  }
+  return out;
+}
+
 test('governing chip rule (UI-SPEC chip density)', () => {
   const { units, total } = collectUnits();
+  const grouped = groupedRows();
   const counted = units.reduce((n, u) => n + (u.html.match(FIG_RE) || []).length, 0);
   assert.equal(counted, total, 'a data-fig sits outside every prose, table or register unit');
   const answerP = sectionHtml('answer');
@@ -82,6 +103,17 @@ test('governing chip rule (UI-SPEC chip density)', () => {
         assert.equal(new Set(hrefs).size, hrefs.length, `repeated chip href in: ${strip(u.html).slice(0, 60)}`);
         const max = answerP.includes(u.html) ? 4 : 3;
         assert.ok(hrefs.length <= max, `${hrefs.length} chips (max ${max}) in: ${strip(u.html).slice(0, 60)}`);
+      }
+    } else if (u.kind === 'row' && grouped.has(u.html)) {
+      assert.ok(!u.html.includes('class="chip'), `GROUPED row must carry no chip: ${strip(u.html).slice(0, 60)}`);
+      const note = grouped.get(u.html);
+      const listed = new Set([...note.matchAll(/<a href="#([^"]+)">/g)].map((m) => m[1]));
+      const noteChip = note.match(/<a class="chip (c-[bms])" href="#[^"]+">([^<]+)<\/a>/);
+      for (const m of figs) {
+        const e = figEntry(m[1]);
+        assert.ok(listed.has(e.ref), `${m[1]}: ref ${e.ref} is not listed in the grade note`);
+        assert.equal(noteChip[2], e.grade, `${m[1]}: grade note word`);
+        assert.equal(noteChip[1], CHIP_CLASS[e.grade], `${m[1]}: grade note class`);
       }
     } else if (u.kind === 'row') {
       const linked = [...u.html.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
@@ -434,6 +466,18 @@ test('time elements carry ISO dates that appear in a source register row', () =>
   }
 });
 
+const isRegisterId = (id) => (id.startsWith('src-') ? Boolean(sources[id.slice(4)]) : Boolean(assumptions[id]));
+
+test('register-id links name a real row', () => {
+  const links = [...html.matchAll(/<a(?: class="cite")? href="#([^"]+)">((?:src|asm)-[^<]*)<\/a>/g)];
+  assert.ok(links.length > 0);
+  for (const [, href, text] of links) {
+    assert.equal(text, href, `link text ${text} differs from its target #${href}`);
+    assert.ok(isRegisterId(href), `#${href} is not a data.js key`);
+  }
+  assert.equal(links.length, [...html.matchAll(/<a\b[^>]*>(?:src|asm)-[^<]*<\/a>/g)].length, 'a register-id link the check cannot parse');
+});
+
 test('numeric gate: no ungraded numerals anywhere on the page', () => {
   const parts = [
     regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
@@ -454,6 +498,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
       part
         .replace(/<span class="statute">17 U\.S\.C\. (?:504\(c\)|412)<\/span>/g, ' ') // statute citations, span text pinned below
         .replace(/<a href="#s\d\d">[^<]*<\/a>/g, ' ') // in-page section cross-links
+        .replace(/<a(?: class="cite")? href="#((?:src|asm)-[^"]+)">([^<]*)<\/a>/g, (all, id, text) => (text === `#${id}`.slice(1) && isRegisterId(id) ? ' ' : all)) // register-id links, see test below
         .replace(/<time datetime="\d{4}-\d{2}-\d{2}">[^<]*<\/time>/g, ' ') // ISO dates, checked below
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')

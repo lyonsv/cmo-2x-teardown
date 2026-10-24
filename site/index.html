@@ -801,74 +801,78 @@
           <form class="calc-form" novalidate>
             <fieldset class="calc-group">
               <legend>Volume</legend>
+              <p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-campaigns">Modelled</a>.</p>
               <div class="field">
-                <div class="field-head"><label for="in-campaigns">Campaigns per year</label><a class="chip c-m" href="#asm-campaigns">Modelled</a></div>
+                <div class="field-head"><label for="in-campaigns">Campaigns per year</label></div>
                 <div class="control"><input id="in-campaigns" name="campaigns" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-campaigns" value="40"><span class="unit">campaigns</span></div>
-                <p class="hint" id="hint-campaigns">Default 40.</p>
+                <p class="hint" id="hint-campaigns">Default 40. Register row: <a href="#asm-campaigns">asm-campaigns</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-concepts">Concepts per campaign</label><a class="chip c-m" href="#asm-concepts-per-campaign">Modelled</a></div>
+                <div class="field-head"><label for="in-concepts">Concepts per campaign</label></div>
                 <div class="control"><input id="in-concepts" name="concepts" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-concepts" value="25"><span class="unit">concepts</span></div>
-                <p class="hint" id="hint-concepts">Default 25. With locales, this gives the page's average campaign.</p>
+                <p class="hint" id="hint-concepts">Default 25. With locales, this gives the page's average campaign. Register row: <a href="#asm-concepts-per-campaign">asm-concepts-per-campaign</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-locales">Locales</label><a class="chip c-m" href="#asm-locales">Modelled</a></div>
+                <div class="field-head"><label for="in-locales">Locales</label></div>
                 <div class="control"><input id="in-locales" name="locales" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-locales" value="5"><span class="unit">locales</span></div>
-                <p class="hint" id="hint-locales">Default 5.</p>
+                <p class="hint" id="hint-locales">Default 5. Register row: <a href="#asm-locales">asm-locales</a>.</p>
               </div>
             </fieldset>
             <fieldset class="calc-group">
               <legend>People</legend>
+              <p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-marketing-fte">Modelled</a>.</p>
               <div class="field">
-                <div class="field-head"><label for="in-marketers">Marketing FTE</label><a class="chip c-m" href="#asm-marketing-fte">Modelled</a></div>
+                <div class="field-head"><label for="in-marketers">Marketing FTE</label></div>
                 <div class="control"><input id="in-marketers" name="marketers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-marketers" value="120"><span class="unit">FTE</span></div>
-                <p class="hint" id="hint-marketers">Default 120. Changes output per head and the one-off change cost.</p>
+                <p class="hint" id="hint-marketers">Default 120. Changes output per head and the one-off change cost. Register row: <a href="#asm-marketing-fte">asm-marketing-fte</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-reviewers">Reviewer FTE</label><a class="chip c-m" href="#asm-reviewer-fte">Modelled</a></div>
+                <div class="field-head"><label for="in-reviewers">Reviewer FTE</label></div>
                 <div class="control"><input id="in-reviewers" name="reviewers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-reviewers" value="12"><span class="unit">FTE</span></div>
-                <p class="hint" id="hint-reviewers">Default 12. Changes utilisation, cycle time, break-even, the capacity floor and the headcount scenario, but not production cost.</p>
+                <p class="hint" id="hint-reviewers">Default 12. Changes utilisation, cycle time, break-even, the capacity floor and the headcount scenario, but not production cost. Register row: <a href="#asm-reviewer-fte">asm-reviewer-fte</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-minutes">Minutes per review</label><a class="chip c-m" href="#asm-review-minutes">Modelled</a></div>
+                <div class="field-head"><label for="in-minutes">Minutes per review</label></div>
                 <div class="control"><input id="in-minutes" name="minutes" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-minutes" value="12"><span class="unit">minutes</span></div>
-                <p class="hint" id="hint-minutes">Default 12.</p>
+                <p class="hint" id="hint-minutes">Default 12. Register row: <a href="#asm-review-minutes">asm-review-minutes</a>.</p>
               </div>
             </fieldset>
             <fieldset class="calc-group">
               <legend>Cost and quality</legend>
+              <p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-variant-cost">Modelled</a>.</p>
               <div class="field">
-                <div class="field-head"><label for="in-vcost">Variant generation cost at 2x</label><a class="chip c-m" href="#asm-variant-cost">Modelled</a></div>
+                <div class="field-head"><label for="in-vcost">Variant generation cost at 2x</label></div>
                 <div class="control"><input id="in-vcost" name="vcost" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-vcost" value="0.8"><span class="unit">$ per variant</span></div>
-                <p class="hint" id="hint-vcost">Default $0.80.</p>
+                <p class="hint" id="hint-vcost">Default $0.80. Register row: <a href="#asm-variant-cost">asm-variant-cost</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-mconcept">Cost per master concept</label><a class="chip c-m" href="#asm-master-concept-cost">Modelled</a></div>
+                <div class="field-head"><label for="in-mconcept">Cost per master concept</label></div>
                 <div class="control"><input id="in-mconcept" name="mconcept" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-mconcept" value="1200"><span class="unit">$ per concept</span></div>
-                <p class="hint" id="hint-mconcept">Default $1,200.</p>
+                <p class="hint" id="hint-mconcept">Default $1,200. Register row: <a href="#asm-master-concept-cost">asm-master-concept-cost</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-yield">Approval yield</label><a class="chip c-m" href="#asm-approval-yield">Modelled</a></div>
+                <div class="field-head"><label for="in-yield">Approval yield</label></div>
                 <div class="control"><input id="in-yield" name="yield" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-yield" value="95"><span class="unit">%</span></div>
-                <p class="hint" id="hint-yield">Default 95%.</p>
+                <p class="hint" id="hint-yield">Default 95%. Register row: <a href="#asm-approval-yield">asm-approval-yield</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-rework">Rework rate</label><a class="chip c-m" href="#asm-rework-rate">Modelled</a></div>
+                <div class="field-head"><label for="in-rework">Rework rate</label></div>
                 <div class="control"><input id="in-rework" name="rework" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-rework" value="15"><span class="unit">%</span></div>
-                <p class="hint" id="hint-rework">Default 15%.</p>
+                <p class="hint" id="hint-rework">Default 15%. Register row: <a href="#asm-rework-rate">asm-rework-rate</a>.</p>
               </div>
             </fieldset>
             <fieldset class="calc-group">
               <legend>Automation</legend>
+              <p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-auto-approval">Modelled</a>.</p>
               <div class="field">
-                <div class="field-head"><label for="in-auto1">Auto-approval share today</label><a class="chip c-m" href="#asm-auto-approval">Modelled</a></div>
+                <div class="field-head"><label for="in-auto1">Auto-approval share today</label></div>
                 <div class="control"><input id="in-auto1" name="auto1" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-auto1" value="20"><span class="unit">%</span></div>
-                <p class="hint" id="hint-auto1">Default 20%.</p>
+                <p class="hint" id="hint-auto1">Default 20%. Register row: <a href="#asm-auto-approval">asm-auto-approval</a>.</p>
               </div>
               <div class="field">
-                <div class="field-head"><label for="in-auto2">Auto-approval share at 2x</label><a class="chip c-m" href="#asm-auto-approval">Modelled</a></div>
+                <div class="field-head"><label for="in-auto2">Auto-approval share at 2x</label></div>
                 <div class="control"><input id="in-auto2" name="auto2" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-auto2" value="60"><span class="unit">%</span></div>
-                <p class="hint" id="hint-auto2">Default 60%.</p>
+                <p class="hint" id="hint-auto2">Default 60%. Register row: <a href="#asm-auto-approval">asm-auto-approval</a>.</p>
               </div>
             </fieldset>
             <fieldset class="calc-group">
@@ -887,114 +891,101 @@
         <div class="table-scroll" role="region" aria-label="Calculator results" tabindex="0">
           <table>
             <caption>Results for your numbers (baseline and 2x)</caption>
-            <thead><tr><th scope="col">Output</th><th scope="col">Baseline</th><th scope="col">2x</th><th scope="col">Change</th><th scope="col">Grade</th></tr></thead>
+            <thead><tr><th scope="col">Output</th><th scope="col">Baseline</th><th scope="col">2x</th><th scope="col">Change</th></tr></thead>
             <tbody>
               <tr>
                 <th scope="row">Approved-live variants per head per quarter</th>
                 <td class="num"><span data-fig="calc-output_per_head-base">83</span></td>
                 <td class="num"><span data-fig="calc-output_per_head-scaled">167</span></td>
                 <td class="num"><span data-fig="calc-output_per_head-change">+100%</span></td>
-                <td><a class="chip c-m" href="#asm-campaigns">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Fully loaded cost per approved-live asset</th>
                 <td class="num"><span data-fig="calc-cost_per_asset-base">$64.71</span></td>
                 <td class="num"><span data-fig="calc-cost_per_asset-scaled">$41.18</span></td>
                 <td class="num"><span data-fig="calc-cost_per_asset-change">−36%</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Total production cost</th>
                 <td class="num"><span data-fig="calc-total_cost-base">$2.59M</span></td>
                 <td class="num"><span data-fig="calc-total_cost-scaled">$3.29M</span></td>
                 <td class="num"><span data-fig="calc-total_cost-change">+27%</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Production share of marketing budget</th>
                 <td class="num"><span data-fig="calc-budget_share-base">3.3%</span></td>
                 <td class="num"><span data-fig="calc-budget_share-scaled">4.2%</span></td>
                 <td class="num"><span data-fig="calc-budget_share-change">+0.9 points</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">AI spend</th>
                 <td class="num"><span data-fig="calc-ai_spend-base">$38,421</span></td>
                 <td class="num"><span data-fig="calc-ai_spend-scaled">$340,421</span></td>
                 <td class="num"><span data-fig="calc-ai_spend-change">+786%</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Cycle time, brief to live (days)</th>
                 <td class="num"><span data-fig="calc-cycle_time-base">11.8 days</span></td>
                 <td class="num"><span data-fig="calc-cycle_time-scaled">7.5 days</span></td>
                 <td class="num"><span data-fig="calc-cycle_time-change">−36%</span></td>
-                <td><a class="chip c-m" href="#asm-review-service-days">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Review utilisation</th>
                 <td class="num"><span data-fig="calc-utilisation-base">55.1%</span></td>
                 <td class="num"><span data-fig="calc-utilisation-scaled">61.9%</span></td>
                 <td class="num"><span data-fig="calc-utilisation-change">+6.7 points</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Break-even auto-approval at flat reviewer headcount</th>
                 <td class="na">Not applicable</td>
                 <td class="num"><span data-fig="calc-break_even-scaled">41%</span></td>
                 <td class="na">Not applicable</td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Capacity floor (auto-approval below which review capacity is exceeded)</th>
                 <td class="na">Not applicable</td>
                 <td class="num"><span data-fig="calc-capacity_floor-scaled">29%</span></td>
                 <td class="na">Not applicable</td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
             </tbody>
           </table>
         </div>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-campaigns">Modelled</a>. Register rows: <a href="#asm-campaigns">asm-campaigns</a>, <a href="#asm-locales">asm-locales</a>, <a href="#asm-review-service-days">asm-review-service-days</a>.</p>
         <p class="table-note">Each output carries the weakest grade of the inputs it uses.</p>
         <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
         <div class="table-scroll" role="region" aria-label="Headcount scenario" tabindex="0">
           <table>
             <caption>Headcount scenario: Redeploy</caption>
-            <thead><tr><th scope="col">Measure</th><th scope="col">Value</th><th scope="col">Grade</th></tr></thead>
+            <thead><tr><th scope="col">Measure</th><th scope="col">Value</th></tr></thead>
             <tbody>
               <tr>
                 <th scope="row">Reviewer FTE required at target utilisation</th>
                 <td class="num"><span data-fig="calc-scen-reviewer_fte_required">8.7</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Reviewer FTE freed (or needed)</th>
                 <td class="num"><span data-fig="calc-scen-reviewer_fte_delta">3.3 freed</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Annual people cost change</th>
                 <td class="num"><span data-fig="calc-scen-people_cost_change">$0</span></td>
-                <td><a class="chip c-m" href="#asm-loaded-fte-cost">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Annual production cost change</th>
                 <td class="num"><span data-fig="calc-scen-production_cost_change">$705,782</span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">One-off change cost (year one)</th>
                 <td class="num"><span data-fig="calc-scen-change_mgmt_one_off">$396,000</span></td>
-                <td><a class="chip c-m" href="#asm-change-mgmt">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">First-year net cost change</th>
                 <td class="num"><span data-fig="calc-scen-first_year_net">$1,101,782</span></td>
-                <td><a class="chip c-m" href="#asm-change-mgmt">Modelled</a></td>
               </tr>
             </tbody>
           </table>
         </div>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-locales">Modelled</a>. Register rows: <a href="#asm-locales">asm-locales</a>, <a href="#asm-loaded-fte-cost">asm-loaded-fte-cost</a>, <a href="#asm-change-mgmt">asm-change-mgmt</a>.</p>
         <p class="table-note">At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">−$53,579</span> <a class="chip c-m" href="#asm-locales">Modelled</a> (a saving), because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
         <figure>
           <div class="fig-grid">
@@ -1065,7 +1056,7 @@
           <table>
             <caption>Sensitivity: each input moved 20% down and up, others unchanged</caption>
             <thead>
-              <tr><th scope="col" rowspan="2">Input</th><th scope="colgroup" colspan="2">Cost per approved-live asset</th><th scope="colgroup" colspan="2">Reviewer utilisation</th><th scope="col" rowspan="2">Grade</th></tr>
+              <tr><th scope="col" rowspan="2">Input</th><th scope="colgroup" colspan="2">Cost per approved-live asset</th><th scope="colgroup" colspan="2">Reviewer utilisation</th></tr>
               <tr><th scope="col">at −20%</th><th scope="col">at +20%</th><th scope="col">at −20%</th><th scope="col">at +20%</th></tr>
             </thead>
             <tbody>
@@ -1075,7 +1066,6 @@
                 <td class="num"><span data-fig="calc-sens-locales-costUp">−11.8%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-locales-utilDown">−20.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-locales-utilUp">+20.0%</span> <span class="capped"></span></td>
-                <td><a class="chip c-m" href="#asm-locales">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Cost per master concept</th>
@@ -1083,7 +1073,6 @@
                 <td class="num"><span data-fig="calc-sens-mconcept-costUp">+8.7%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-mconcept-utilDown">0.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-mconcept-utilUp">0.0%</span> <span class="capped"></span></td>
-                <td><a class="chip c-m" href="#asm-master-concept-cost">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Auto-approval share at 2x</th>
@@ -1091,7 +1080,6 @@
                 <td class="num"><span data-fig="calc-sens-auto2-costUp">−6.3%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-auto2-utilDown">+23.5%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-auto2-utilUp">−23.5%</span> <span class="capped"></span></td>
-                <td><a class="chip c-m" href="#asm-auto-approval">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Minutes per review</th>
@@ -1099,7 +1087,6 @@
                 <td class="num"><span data-fig="calc-sens-minutes-costUp">+5.4%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-minutes-utilDown">−20.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-minutes-utilUp">+20.0%</span> <span class="capped"></span></td>
-                <td><a class="chip c-m" href="#asm-review-minutes">Modelled</a></td>
               </tr>
               <tr>
                 <th scope="row">Approval yield</th>
@@ -1107,11 +1094,11 @@
                 <td class="num"><span data-fig="calc-sens-yield-costUp">−1.5%</span> <span class="capped">capped</span></td>
                 <td class="num"><span data-fig="calc-sens-yield-utilDown">+25.0%</span> <span class="capped"></span></td>
                 <td class="num"><span data-fig="calc-sens-yield-utilUp">−5.0%</span> <span class="capped">capped</span></td>
-                <td><a class="chip c-m" href="#asm-approval-yield">Modelled</a></td>
               </tr>
             </tbody>
           </table>
         </div>
+        <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-locales">Modelled</a>. Register rows: <a href="#asm-locales">asm-locales</a>, <a href="#asm-master-concept-cost">asm-master-concept-cost</a>, <a href="#asm-auto-approval">asm-auto-approval</a>, <a href="#asm-review-minutes">asm-review-minutes</a>, <a href="#asm-approval-yield">asm-approval-yield</a>.</p>
         <p class="table-note">Capped: the input cannot move further without leaving its valid range.</p>
         <div class="calc-live" id="calc-share-wrap">
           <div class="share">
@@ -1134,70 +1121,70 @@
       </div>
       <div class="table-scroll" role="region" aria-label="Comparison matrix" tabindex="0">
         <table class="matrix">
-          <caption>How Gradial, AirOps, Profound and the CMO 2x spine compare. Every cell is sourced; access dates are in the source register.</caption>
+          <caption>How Gradial, AirOps, Profound and the CMO 2x spine compare. Every cell is sourced; access dates are in the source register. Absences were checked on <time datetime="2026-10-24">2026-10-24</time>.</caption>
           <thead><tr><th scope="col">Dimension</th><th scope="col">Gradial</th><th scope="col">AirOps</th><th scope="col">Profound</th><th scope="col" class="spine">CMO 2x spine (design)</th></tr></thead>
           <tbody>
             <tr>
               <th scope="row">The six levers</th>
-              <td>Home page lists continuous experiments and journey simulation as use cases; translation runs inside the CMS. <a class="cite" href="#src-gradial-home">src-gradial-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> <a class="cite" href="#src-gradial-docs-translation">src-gradial-docs-translation</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Positions itself on content workflows, refresh and AI discovery; Grids and Playbooks are listed on all plans. <a class="cite" href="#src-airops-home">src-airops-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Says agents generate posts and images; a separate analytics product is listed. <a class="cite" href="#src-profound-home">src-profound-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Localisation workflow: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Home page lists continuous experiments and journey simulation as use cases; translation runs inside the CMS. <a class="cite" href="#src-gradial-home">src-gradial-home</a> <a class="cite" href="#src-gradial-docs-translation">src-gradial-docs-translation</a></td>
+              <td>Positions itself on content workflows, refresh and AI discovery; Grids and Playbooks are listed on all plans. <a class="cite" href="#src-airops-home">src-airops-home</a> <a class="cite" href="#src-airops-pricing">src-airops-pricing</a></td>
+              <td>Says agents generate posts and images; a separate analytics product is listed. <a class="cite" href="#src-profound-home">src-profound-home</a> Localisation workflow: <span class="nd">Not publicly documented</span></td>
               <td class="spine">One factory, one review path and one eval set serve all six levers. Design. <a href="#s03">Section three</a></td>
             </tr>
             <tr>
               <th scope="row">More than ten thousand variants</th>
-              <td>Documents bulk ingestion jobs that read a batch of incoming assets. <a class="cite" href="#src-gradial-docs-dam">src-gradial-docs-dam</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Creative variant production at this volume: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Grids and Workflows are listed on all plans, with a task allowance that varies by plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Says Sheets process hundreds of inputs in parallel. <a class="cite" href="#src-profound-agents">src-profound-agents</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Documents bulk ingestion jobs that read a batch of incoming assets. <a class="cite" href="#src-gradial-docs-dam">src-gradial-docs-dam</a> Creative variant production at this volume: <span class="nd">Not publicly documented</span></td>
+              <td>Grids and Workflows are listed on all plans, with a task allowance that varies by plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a></td>
+              <td>Says Sheets process hundreds of inputs in parallel. <a class="cite" href="#src-profound-agents">src-profound-agents</a></td>
               <td class="spine">Variants are mostly mechanical derivations of approved concepts, generated in batch and reviewed under the gate. Design. <a href="#s05">Section five</a></td>
             </tr>
             <tr>
               <th scope="row">Imagery and rights</th>
-              <td>Documents capturing rights and expiry metadata at ingestion, with QA that flags expired or rights-restricted assets before go-live. <a class="cite" href="#src-gradial-docs-dam">src-gradial-docs-dam</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Image generation and licensing: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Imagery, rights handling: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Home page says agents generate posts and images, sized per platform. <a class="cite" href="#src-profound-home">src-profound-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Rights handling: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Documents capturing rights and expiry metadata at ingestion, with QA that flags expired or rights-restricted assets before go-live. <a class="cite" href="#src-gradial-docs-dam">src-gradial-docs-dam</a> Image generation and licensing: <span class="nd">Not publicly documented</span></td>
+              <td>Imagery, rights handling: <span class="nd">Not publicly documented</span></td>
+              <td>Home page says agents generate posts and images, sized per platform. <a class="cite" href="#src-profound-home">src-profound-home</a> Rights handling: <span class="nd">Not publicly documented</span></td>
               <td class="spine">Rights follow each asset’s origin, and rights traps are seeded to test reviewers. Design. <a href="#s05">Section five</a> <a href="#s08">Section eight</a></td>
             </tr>
             <tr>
               <th scope="row">Review, gate and eval</th>
-              <td>Documents oversight levels per task type: full review, spot-check or auto-approve. Also says production publishes stay gated on human approval. <a class="cite" href="#src-gradial-docs-faq">src-gradial-docs-faq</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> <a class="cite" href="#src-gradial-docs-what">src-gradial-docs-what</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> A gate tiered by asset risk class, and an eval harness calibrated against human reviewer decisions: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Human Review and Approvals are listed on all three plans (plan marks read from the page markup, so not certain). <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> The enterprise page says every piece routes through human review before going live. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Tiered auto-approval: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Documents an approval step before any agent run publishes; generated content can be reviewed, edited or held. <a class="cite" href="#src-profound-agents">src-profound-agents</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Tiered auto-approval: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Documents oversight levels per task type: full review, spot-check or auto-approve. Also says production publishes stay gated on human approval. <a class="cite" href="#src-gradial-docs-faq">src-gradial-docs-faq</a> <a class="cite" href="#src-gradial-docs-what">src-gradial-docs-what</a> A gate tiered by asset risk class, and an eval harness calibrated against human reviewer decisions: <span class="nd">Not publicly documented</span></td>
+              <td>Human Review and Approvals are listed on all three plans (plan marks read from the page markup, so not certain). <a class="cite" href="#src-airops-pricing">src-airops-pricing</a> The enterprise page says every piece routes through human review before going live. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a> Tiered auto-approval: <span class="nd">Not publicly documented</span></td>
+              <td>Documents an approval step before any agent run publishes; generated content can be reviewed, edited or held. <a class="cite" href="#src-profound-agents">src-profound-agents</a> Tiered auto-approval: <span class="nd">Not publicly documented</span></td>
               <td class="spine">A review agent, a risk-class tier gate and an eval harness calibrated against human reviewer decisions. Design. <a href="#s06">Section six</a> <a href="#s07">Section seven</a> <a href="#s08">Section eight</a></td>
             </tr>
             <tr>
               <th scope="row">Brand governance</th>
-              <td>Says brand and compliance checks run before the output reaches a human reviewer. <a class="cite" href="#src-gradial-docs-how">src-gradial-docs-how</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Brand Kits and Knowledge Bases are plan features, with larger limits on the top plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Says a brand kit and knowledge base feed the agents. <a class="cite" href="#src-profound-agents">src-profound-agents</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Says brand and compliance checks run before the output reaches a human reviewer. <a class="cite" href="#src-gradial-docs-how">src-gradial-docs-how</a></td>
+              <td>Brand Kits and Knowledge Bases are plan features, with larger limits on the top plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a></td>
+              <td>Says a brand kit and knowledge base feed the agents. <a class="cite" href="#src-profound-agents">src-profound-agents</a></td>
               <td class="spine">Brand rules are packaged as skills, each with its own tests. Design. <a href="#s04">Section four</a></td>
             </tr>
             <tr>
               <th scope="row">Measurement</th>
-              <td>Lists continuous experiments as a use case. <a class="cite" href="#src-gradial-home">src-gradial-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Experiment statistics method: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Conversion tracking through Google Analytics and Amplitude is listed on all plans. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Lists an Agent Analytics product. <a class="cite" href="#src-profound-home">src-profound-home</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> How mentions and citations are collected and validated: <span class="nd">Not publicly documented</span><span class="cite-date"> checked <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Lists continuous experiments as a use case. <a class="cite" href="#src-gradial-home">src-gradial-home</a> Experiment statistics method: <span class="nd">Not publicly documented</span></td>
+              <td>Conversion tracking through Google Analytics and Amplitude is listed on all plans. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a></td>
+              <td>Lists an Agent Analytics product. <a class="cite" href="#src-profound-home">src-profound-home</a> How mentions and citations are collected and validated: <span class="nd">Not publicly documented</span></td>
               <td class="spine">Outcome holdouts show whether more output helped; telemetry and seeded defects show whether reviewers stay alert. Design. <a href="#s08">Section eight</a></td>
             </tr>
             <tr>
               <th scope="row">AEO and GEO</th>
-              <td>Describes a generative-engine workflow with monitoring and review gates. <a class="cite" href="#src-gradial-geo">src-gradial-geo</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Tracks several answer engines; the list differs by plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>The enterprise plan tracks up to nine answer engines. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Describes a generative-engine workflow with monitoring and review gates. <a class="cite" href="#src-gradial-geo">src-gradial-geo</a></td>
+              <td>Tracks several answer engines; the list differs by plan. <a class="cite" href="#src-airops-pricing">src-airops-pricing</a></td>
+              <td>The enterprise plan tracks up to nine answer engines. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a></td>
               <td class="spine">Answer assets are one lever among six, graded Speculative in this design. Design. <a href="#s03">Section three</a></td>
             </tr>
             <tr>
               <th scope="row">Build vs buy</th>
-              <td>Integrates with Adobe Experience Manager, Sitecore, Contentful and other CMS and DAM tools. <a class="cite" href="#src-gradial-integrations">src-gradial-integrations</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span> Says it operates across clouds, models and agents. <a class="cite" href="#src-gradial-platform">src-gradial-platform</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>The enterprise page offers bring-your-own model keys. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>The pricing page lists API access on the enterprise plan. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Integrates with Adobe Experience Manager, Sitecore, Contentful and other CMS and DAM tools. <a class="cite" href="#src-gradial-integrations">src-gradial-integrations</a> Says it operates across clouds, models and agents. <a class="cite" href="#src-gradial-platform">src-gradial-platform</a></td>
+              <td>The enterprise page offers bring-your-own model keys. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a></td>
+              <td>The pricing page lists API access on the enterprise plan. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a></td>
               <td class="spine">Any layer can be filled by several kinds of tool; the eval set and brand rules are owned. Design. <a href="#s04">Section four</a></td>
             </tr>
             <tr>
               <th scope="row">Lock-in</th>
-              <td>Claims to operate without lock-in; this page has not tested the claim. <a class="cite" href="#src-gradial-platform">src-gradial-platform</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>Says data is never used to train models and lists an unconditional opt-out clause. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
-              <td>The enterprise plan lists full history, data export and API access; the trial lists none. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a><span class="cite-date"> accessed <time datetime="2026-10-24">2026-10-24</time></span></td>
+              <td>Claims to operate without lock-in; this page has not tested the claim. <a class="cite" href="#src-gradial-platform">src-gradial-platform</a></td>
+              <td>Says data is never used to train models and lists an unconditional opt-out clause. <a class="cite" href="#src-airops-enterprise">src-airops-enterprise</a></td>
+              <td>The enterprise plan lists full history, data export and API access; the trial lists none. <a class="cite" href="#src-profound-pricing">src-profound-pricing</a></td>
               <td class="spine">Layers are swappable; the architecture holds if one tool is replaced. Design. <a href="#s04">Section four</a></td>
             </tr>
           </tbody>
