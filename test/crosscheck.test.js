@@ -84,3 +84,10 @@ test('JUSTIFIED_UNREFERENCED reasons are sentences', () => {
   }
   assert.equal(typeof GAP_TRACE, 'object');
 });
+
+test('mutation: a gap removed from the page leaves a stale GAP_TRACE key that is named (IN-04)', () => {
+  const mutated = html.replace(/<li><b>First-pass compliance rate\.?<\/b>[\s\S]*?<\/li>/, '');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('stale GAP_TRACE key First-pass compliance rate')), failures.join('\n'));
+});

@@ -128,13 +128,17 @@ export function run({ html, data } = {}) {
 
   // 8. evidence gaps
   const gaps = html.match(/<ul class="gaps">([\s\S]*?)<\/ul>/);
+  const seenGaps = new Set();
   for (const m of gaps ? gaps[1].matchAll(/<li><b>([^<]*)<\/b>/g) : []) {
     const lead = strip(m[1]).replace(/\.$/, '');
+    seenGaps.add(lead);
     const trace = GAP_TRACE[lead];
     if (!trace) { failures.push(`untraced gap ${lead}`); continue; }
     if (trace !== NO_ASM) for (const a of trace) if (!d.assumptions[a]) failures.push(`untraced gap ${lead}: assumption ${a} does not exist`);
   }
   if (!gaps) failures.push('untraced gap: no .gaps list');
+  // IN-04: a gap removed from the page must not leave a dead mapping behind.
+  else for (const lead of Object.keys(GAP_TRACE)) if (!seenGaps.has(lead)) failures.push(`stale GAP_TRACE key ${lead}: no such gap on the page`);
 
   return {
     failures,
