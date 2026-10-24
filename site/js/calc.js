@@ -133,7 +133,7 @@ function side(inputs, a, which, m) {
   };
   cost.total = cost.generation + cost.review + cost.rework + cost.tooling + cost.rights + cost.storage;
   const cost_per_asset_by_component = {};
-  for (const k of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) cost_per_asset_by_component[k] = cost[k] / V;
+  for (const comp of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) cost_per_asset_by_component[comp] = cost[comp] / V;
   const ai_spend = G * variantCost * S('ai_share_of_variant_cost') + tooling * S('ai_share_of_tooling');
   const exceeded = utilisation >= 1;
   const service = S('review_service_days');
@@ -148,7 +148,7 @@ function side(inputs, a, which, m) {
   };
 }
 
-function breakEven(inputs, a, scenario) {
+function breakEven(a, scenario) {
   const S = (name) => pick(a[name], 'scaled');
   const q = S('sampling_rate') + S('escalation_rate');
   const denom = scenario.generated_variants_per_year * (1 + S('rework_rate')) * (S('review_minutes_per_variant') / 60);
@@ -201,7 +201,7 @@ export function compute(inputs, assumptions) {
     total_cost: ratio('total_cost', scenario.cost.total, baseline.cost.total),
   };
   ratios.cost_per_asset_change = ratios.cost_per_asset === null ? null : ratios.cost_per_asset - 1;
-  const break_even_auto_approval = breakEven(inputs, assumptions, scenario);
+  const break_even_auto_approval = breakEven(assumptions, scenario);
   const out = { ok: true, baseline, scenario, ratios, undefined_ratios, break_even_auto_approval };
   // Last resort only: validation should stop every bad input first. Reaching
   // this means overflow from extreme but individually valid inputs, so no single
