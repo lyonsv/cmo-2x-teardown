@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  GRADES, FLAGS, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions, variantMatrixDefaults,
+  GRADES, FLAGS, PUBLISHER_TYPES, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions, variantMatrixDefaults,
 } from '../site/js/data.js';
 import { compute, variantMatrix } from '../site/js/calc.js';
 
@@ -197,19 +197,83 @@ test('NYU/Emory grade matches the 2026-10-24 browser confirmation (02-CONTEXT po
   assert.ok(sources['nyu-emory-ai-ads-2025'].read_via.includes('confirmed in a browser by the author'));
 });
 
-test('new sources are complete', () => {
-  for (const k of ['nyu-emory-ai-ads-2025', 'usco-copyright-ai-part2', 'getty-v-stability-uk']) {
-    const s = sources[k];
-    assert.ok(s, k);
+test('every source is complete', () => {
+  assert.deepEqual(PUBLISHER_TYPES, ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government']);
+  for (const [k, s] of Object.entries(sources)) {
     for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) {
       assert.equal(typeof s[f], 'string', `${k}.${f}`);
       assert.ok(s[f].length > 0, `${k}.${f} empty`);
     }
-    assert.match(s.url, /^https:\/\//);
-    assert.equal(s.accessed, '2026-10-24');
+    assert.match(s.url, /^https:\/\//, `${k}: url`);
+    assert.ok(PUBLISHER_TYPES.includes(s.publisherType), `${k}: publisherType "${s.publisherType}"`);
+    assert.ok(s.event === undefined || /^\d{4}-\d{2}(-\d{2})?$/.test(s.event), `${k}: event`);
+  }
+  for (const k of ['nyu-emory-ai-ads-2025', 'usco-copyright-ai-part2', 'getty-v-stability-uk']) {
+    assert.equal(sources[k].accessed, '2026-10-24');
   }
   const g = sources['getty-v-stability-uk'];
   assert.ok(g.title.includes('2025-11-04') || g.bias.includes('2025-11-04'));
+});
+
+test('publisherType of the 36 earlier sources is pinned', () => {
+  const want = {
+    'gartner-2025-cmo-spend': 'company', 'gartner-2026-cmo-spend': 'company',
+    'nyu-emory-ai-ads-2025': 'academic', 'laubli-2019': 'academic', 'aggarwal-geo-2024': 'academic', 'kohavi-2013': 'academic',
+    'usco-copyright-ai-part2': 'government', 'cornell-17usc504': 'government', 'cornell-17usc412': 'government',
+    'getty-v-stability-uk': 'law-firm commentary', 'ailawsuittracker-getty-uk': 'tracker', 'intercom-2x-teardown': 'company',
+    'translation-vendor-case': 'vendor', 'experimentation-vendor-playbook': 'vendor', 'mmm-geox': 'vendor',
+    'haynes-2026': 'vendor', 'seoworks-2026': 'vendor', 'indig-2026': 'press',
+  };
+  for (const [k, t] of Object.entries(want)) {
+    assert.ok(sources[k], `missing ${k}`);
+    assert.equal(sources[k].publisherType, t, k);
+  }
+  const vendorRows = Object.keys(sources).filter((k) => /^(gradial|airops|profound)-/.test(k));
+  assert.equal(vendorRows.length, 18);
+  for (const k of vendorRows) assert.equal(sources[k].publisherType, 'vendor', k);
+  assert.equal(Object.keys(want).length + vendorRows.length, 36);
+});
+
+test('Phase 4 sources carry the researched grade, publisherType and event date', () => {
+  const want = {
+    'parasuraman-manzey-2010': ['academic', 'Benchmark', undefined],
+    'moffatt-air-canada-2024': ['government', 'Benchmark', '2024-02-14'],
+    'eu-ai-act-art50': ['government', 'Benchmark', undefined],
+    'eu-ai-omnibus-2026-1744': ['government', 'Benchmark', undefined],
+    'eu-code-of-practice-transparency': ['government', 'Benchmark', undefined],
+    'asa-ai-disclosure-2025': ['government', 'Benchmark', undefined],
+    'ftc-fake-reviews-rule-2024': ['government', 'Benchmark', undefined],
+    'getty-v-stability-us': ['tracker', 'Modelled', undefined],
+    'getty-v-stability-uk-cms': ['law-firm commentary', 'Modelled', undefined],
+    'incident-mcdonalds-nl-2025': ['press', 'Modelled', '2025-12-10'],
+    'incident-cocacola-2025': ['press', 'Modelled', '2025-11-03'],
+    'incident-guess-vogue-2025': ['press', 'Modelled', '2025-08'],
+    'incident-levis-2023': ['company', 'Modelled', '2023-03-22'],
+  };
+  for (const [k, [type, grade, event]] of Object.entries(want)) {
+    assert.ok(sources[k], `missing ${k}`);
+    assert.equal(sources[k].publisherType, type, `${k} type`);
+    assert.equal(sources[k].grade, grade, `${k} grade`);
+    assert.equal(sources[k].event, event, `${k} event`);
+    assert.equal(sources[k].accessed, '2026-10-24', `${k} accessed`);
+  }
+  assert.equal(sources['incident-levis-2023'].flag, 'company-reported');
+  assert.equal(Object.keys(sources).length, 49);
+});
+
+test('Phase 4 context assumptions: backlog 0 N, adoption design, risk likelihood', () => {
+  const b = assumptions['asm-backlog0-days'];
+  assert.equal(b.kind, 'context');
+  assert.equal(b.value, 5);
+  assert.equal(b.unit, 'working days');
+  assert.equal(b.display, '5 working days');
+  assert.equal(b.grade, 'Modelled');
+  assert.ok(b.basis.includes('not a measurement') && b.basis.includes('No published benchmark'));
+  for (const [id, display] of [['asm-adoption-design', "Author's design"], ['asm-risk-likelihood', "Author's judgement"]]) {
+    assert.equal(assumptions[id].kind, 'context', id);
+    assert.equal(assumptions[id].grade, 'Speculative', id);
+    assert.equal(assumptions[id].display, display, id);
+  }
 });
 
 test('imagery assumptions', () => {

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { claims, assumptions, sources } from '../site/js/data.js';
+import { claims, assumptions, sources, PUBLISHER_TYPES } from '../site/js/data.js';
 import { SENSITIVITY_STEP } from '../site/js/model.js';
 import { formatValue } from '../site/js/format.js';
 
@@ -185,6 +185,15 @@ test('registers cover every source and assumption', () => {
 
 // Code review WR-06: register text is duplicated by hand from data.js, so every
 // field a reader relies on (who, when, where, why) is compared with data.js.
+test('source register header is the eight pinned columns', () => {
+  const i = html.indexOf('<th scope="col">Publisher</th>');
+  assert.ok(i > 0);
+  const thead = html.slice(html.lastIndexOf('<thead>', i), html.indexOf('</thead>', i));
+  const cols = [...thead.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
+  assert.deepEqual(cols, ['ID', 'Claim', 'Publisher', 'Publisher type', 'Date accessed', 'Grade', 'Flag', 'URL']);
+  assert.ok(html.includes('Publisher type says who published the source. It never changes a grade.'));
+});
+
 test('source register rows match data.js field by field', () => {
   for (const [k, src] of Object.entries(sources)) {
     const row = registerRow(`src-${k}`);
@@ -192,15 +201,20 @@ test('source register rows match data.js field by field', () => {
     for (const f of ['title', 'publisher', 'published', 'accessed', 'bias', 'read_via']) {
       assert.ok(text.includes(src[f]), `src-${k}: ${f} drifted`);
     }
-    assert.ok(row.includes(`<td>${src.accessed}</td>`), `src-${k}: accessed cell`);
     assert.ok(row.includes(`<td>${src.publisher}</td>`), `src-${k}: publisher cell`);
     assert.ok(row.includes(`href="${src.url}"`), `src-${k}: url drifted`);
     assert.ok(row.includes(`<th scope="row" class="id">src-${k}</th>`), `src-${k}: row header`);
     assert.ok(!row.includes('<a class="chip'), `src-${k}: register chip must not link`);
     // WR-07: Grade and Flag cells come from data.js, not from a test-local table.
     const tds = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
-    assert.equal(tds[3], `<span class="chip ${CHIP_CLASS[src.grade]}">${src.grade}</span>`, `src-${k}: grade cell`);
-    assert.equal(tds[4], src.flag ?? 'none', `src-${k}: flag cell`);
+    // Columns: td0 Claim, td1 Publisher, td2 Publisher type, td3 Date accessed, td4 Grade, td5 Flag, td6 URL.
+    assert.equal(tds[1], src.publisher, `src-${k}: publisher cell`);
+    assert.ok(PUBLISHER_TYPES.includes(src.publisherType), `src-${k}: publisherType not in the fixed list`);
+    assert.equal(tds[2], src.publisherType, `src-${k}: publisher type cell`);
+    assert.equal(tds[3], `<time datetime="${src.accessed}">${src.accessed}</time>`, `src-${k}: accessed cell`);
+    assert.equal(tds[4], `<span class="chip ${CHIP_CLASS[src.grade]}">${src.grade}</span>`, `src-${k}: grade cell`);
+    assert.equal(tds[5], src.flag ?? 'none', `src-${k}: flag cell`);
+    if (src.event) assert.ok(tds[0].includes(`Event dated ${src.event}.`), `src-${k}: event date missing from the claim cell`);
   }
 });
 
@@ -449,20 +463,45 @@ function regionHtml(open, close) {
 // contain numerals ("15.3%", "2,080", "asm-lever-01"). Those rows are compared
 // field by field with data.js by the register tests above, and their value cells
 // are data-fig spans checked by the data-fig test, so they are removed here.
+// IN-06, relaxed deliberately and narrowly in Phase 4 Plan 2: the UI-SPEC .asat block
+// shows "24 October 2026" and the Guess incident is known only to the month. The numeric
+// gate strips <time> with its text, so the text is validated here: it must be the datetime
+// itself, or "D Month YYYY" (full dates, no leading zero) or "Month YYYY" (YYYY-MM) for the
+// same date. Anything else fails, so a numeral cannot hide inside a <time> element.
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+function timeIssue(datetime, text) {
+  const m = datetime.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
+  if (!m) return `datetime "${datetime}" is not YYYY-MM or YYYY-MM-DD`;
+  const [, y, mo, d] = m;
+  const month = Number(mo);
+  if (month < 1 || month > 12) return `bad month in ${datetime}`;
+  if (d) {
+    const dt = new Date(Date.UTC(Number(y), month - 1, Number(d)));
+    if (dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== Number(d)) return `${datetime} is not a real date`;
+  }
+  const human = d ? `${Number(d)} ${MONTHS[month - 1]} ${y}` : `${MONTHS[month - 1]} ${y}`;
+  return text === datetime || text === human ? null : `<time> text "${text}" is neither "${datetime}" nor "${human}"`;
+}
+
+test('time text rule: pinned incident pairs pass and a mismatched pairing fails', () => {
+  const pairs = [['2025-12-10', '10 December 2025'], ['2025-11-03', '3 November 2025'], ['2025-08', 'August 2025'],
+    ['2024-02-14', '14 February 2024'], ['2023-03-22', '22 March 2023'], ['2026-10-24', '24 October 2026'], ['2026-10-24', '2026-10-24']];
+  for (const [d, t] of pairs) assert.equal(timeIssue(d, t), null, `${d} / ${t}`);
+  for (const [d, t] of [['2025-12-10', 'December 2025'], ['2025-08', '1 August 2025'], ['2025-12-10', '09 December 2025'],
+    ['2025-02-30', '30 February 2025'], ['2025-13', 'Month 2025'], ['2025-12-10', '10 Dec 2025']]) {
+    assert.notEqual(timeIssue(d, t), null, `${d} / ${t} should fail`);
+  }
+});
+
 test('time elements carry ISO dates that appear in a source register row', () => {
   const rows = html.match(/<tr id="src-[^"]+">[\s\S]*?<\/tr>/g) || [];
-  for (const [, d] of html.matchAll(/<time datetime="([^"]*)">/g)) {
-    assert.match(d, /^\d{4}-\d{2}-\d{2}$/);
-    assert.ok(Number.isFinite(Date.parse(d)), `bad date ${d}`);
-    assert.ok(rows.some((r) => r.includes(d)), `${d} is not in a source register row`);
-  }
-  // IN-06: the numeric gate strips <time> with its text, so the text must be the date itself.
   const times = [...html.matchAll(/<time\b([^>]*)>([^<]*)<\/time>/g)];
   assert.equal(times.length, (html.match(/<time\b/g) || []).length, 'a <time> element the check cannot parse');
   for (const [, attrs, text] of times) {
     const d = attrs.match(/^ datetime="([^"]*)"$/);
     assert.ok(d, `<time> must carry only a datetime attribute: ${attrs}`);
-    assert.equal(text, d[1], `<time> text "${text}" differs from its datetime`);
+    assert.equal(timeIssue(d[1], text), null);
+    assert.ok(rows.some((r) => r.includes(d[1])), `${d[1]} is not in a source register row`);
   }
 });
 
@@ -476,6 +515,16 @@ test('register-id links name a real row', () => {
     assert.ok(isRegisterId(href), `#${href} is not a data.js key`);
   }
   assert.equal(links.length, [...html.matchAll(/<a\b[^>]*>(?:src|asm)-[^<]*<\/a>/g)].length, 'a register-id link the check cannot parse');
+});
+
+// Legal references (EU Article 50 and the omnibus regulation) carry numerals that are
+// names, not measurements. They pass the gate only as exactly one of these strings.
+const LEGAL_REFS = ['Article 50', 'Article 50(2)', 'Article 50(4)', 'Regulation (EU) 2026/1744'];
+
+test('every legal-ref span carries one pinned reference', () => {
+  const spans = [...html.matchAll(/<span class="legal-ref">([^<]*)<\/span>/g)];
+  for (const m of spans) assert.ok(LEGAL_REFS.includes(m[1]), `legal-ref span "${m[1]}"`);
+  assert.equal((html.match(/class="legal-ref"/g) || []).length, spans.length, 'a legal-ref span the check cannot parse');
 });
 
 test('numeric gate: no ungraded numerals anywhere on the page', () => {
@@ -497,9 +546,10 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
     const cleaned = strip(
       part
         .replace(/<span class="statute">17 U\.S\.C\. (?:504\(c\)|412)<\/span>/g, ' ') // statute citations, span text pinned below
+        .replace(/<span class="legal-ref">([^<]*)<\/span>/g, (all, t) => (LEGAL_REFS.includes(t) ? ' ' : all)) // pinned legal references, see test below
         .replace(/<a href="#s\d\d">[^<]*<\/a>/g, ' ') // in-page section cross-links
         .replace(/<a(?: class="cite")? href="#((?:src|asm)-[^"]+)">([^<]*)<\/a>/g, (all, id, text) => (text === `#${id}`.slice(1) && isRegisterId(id) ? ' ' : all)) // register-id links, see test below
-        .replace(/<time datetime="\d{4}-\d{2}-\d{2}">[^<]*<\/time>/g, ' ') // ISO dates, checked below
+        .replace(/<time datetime="\d{4}-\d{2}(?:-\d{2})?">[^<]*<\/time>/g, ' ') // dates, text validated by timeIssue above
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
         .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
