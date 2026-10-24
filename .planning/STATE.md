@@ -89,9 +89,10 @@ Progress: [█████████░] 94%
 - [Phase 01]: 01-06: Figure bar widths use claim values (rounded output 83/167), tested within 0.5
 - [Phase 1]: 01-07: legend heading is h2.legend-title for W3C heading-level rule; Phase 1 live at lyonsv.github.io/cmo-2x-teardown
 - [Phase ?]: 02-01: chip adjacency replaced by governing-chip rule; register chips unlinked; numeric gate pre-strips T0-T3, section links, time
+- [Quick 261024-s14]: COI note and Getty v Stability content removed at author's request; CRED-04 Out of Scope
 - [Phase 2]: Diagram nodes 240 wide (x=30), height lines*16+8; step lists and captions carry no digits
 - [Phase 2]: Matrix assumptions use kind 'matrix' and claims use a matrix field so compute-based tests and defaults ignore them
-- [Phase 2]: NYU/Emory CTR lift and disclosure change graded Benchmark (user confirmed on SSRN 2026-10-24); Getty commentary source row Modelled, publication date from URL pending author confirmation
+- [Phase 2]: NYU/Emory CTR lift and disclosure change graded Benchmark (user confirmed on SSRN 2026-10-24)
 - [Phase 2]: Reference datum 19.2%/28.4% graded Modelled + company-reported; 60% auto-approval framed as a Modelled target (71% of 85% eligible)
 - [Phase 2]: Capacity claims are literal values with override markers, recomputed in test from a test-local scenario table
 - [Phase 3]: Post-editing range 9.26-59.74% graded Modelled with scope caveats; vendor case anonymised and flagged vendor-claimed
@@ -103,18 +104,23 @@ Progress: [█████████░] 94%
 - Phase 3 UI review (17/24, advisory): 'Show the maths' disclosure marker; scenario radios 24px; table number/label size mismatch (12px mono vs 17px serif, 'Not applicable' cells); Hold sentence 'only −$53,579' wording; 49 identical Modelled chips in s11 (density rule); 'over capacity at 186% of capacity'; matrix cell cite density; s10/s12 word budgets; hint units/separators; Change column sign convention; re-check invalid-field→hashchange path. See 03-UI-REVIEW.md. Fold into Phase 4 Plan 1.
 - Phase 3 HUMAN-UAT deferred (user away): vendor fairness/tone, legal wording, s09/s10 tone, hands-on calculator. See 03-HUMAN-UAT.md.
 
-- Phase 2 HUMAN-UAT deferred (user away): visual/print check, author COI check of stock-licence indemnity wording, Getty tracker facts/date. See 02-HUMAN-UAT.md.
+- Phase 2 HUMAN-UAT deferred (user away): visual/print check, author check of stock-licence indemnity wording. See 02-HUMAN-UAT.md.
 
 ### Blockers/Concerns
 
 - No independent benchmarks for cost per asset, approval times, incident rates, auto-approval share; these must be Modelled, reader-overridable defaults
 - Phase 2: review live Intercom reference sections 05-14 before locking tiers/harness/Backlog 0
 - Phase 3: vendor claims need primary-page re-verification
-- Phase 4: EU AI Act Art. 50, Getty v Stability appeal status and legal review needed before publish
-- Author works at iStock/Getty: COI note required in front matter and beside imagery sourcing
+- Phase 4: EU AI Act Art. 50 and legal review needed before publish
 
 ## Session Continuity
 
 Last session: 2026-10-24T19:06:21.720Z
 Stopped at: Completed 04-07-PLAN.md
 Resume file: None
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 261024-s14 | Remove COI disclosure and Getty-specific content (author request) | 2026-10-24 | af3922e | [261024-s14](./quick/261024-s14-remove-conflict-of-interest-disclosure-a/) |
