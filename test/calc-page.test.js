@@ -249,7 +249,11 @@ test('scenario table: six rows equal present(defaults).scenario with one chip pe
     assert.equal(claims[`calc-scen-${row.id}`].display, row.text);
     assert.ok(tr.includes(`<a class="chip ${CHIP_CLASS[row.grade]}" href="#${row.ref}">${row.grade}</a>`), `${row.id} chip`);
   });
-  assert.ok(/Hold saves little, because higher tooling cost offsets cheaper variants\./.test(s11));
+  // WR-03: the Hold sentence is scoped to the page defaults and its figure is the presenter's Hold row.
+  const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change');
+  assert.ok(s11.includes(`At the page defaults, Hold changes annual production cost by only <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a>, because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs.`));
+  assert.ok(Math.abs(hold.value) < 60000, 'Hold change stays small at the defaults');
+  assert.ok(!/Hold saves little/.test(s11), 'no unscoped Hold claim');
   assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-([a-z_]+)/)[1]), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
 });
 

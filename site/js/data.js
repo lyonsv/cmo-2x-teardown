@@ -896,6 +896,17 @@ export function modelContext() {
     const id = `calc-scen-${row.id}`;
     claims[id] = { id, value: row.value, unit: `Headcount scenario ${p.scenario.name}: ${row.label}`, display: row.text, grade: row.grade, flag: null, ref: row.ref, calc: `scenario.rows.${row.id}` };
   }
+  // The s11 note quotes Hold's production cost change at the page defaults, so the
+  // sentence is scoped to the defaults and its number comes from the presenter.
+  {
+    const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario;
+    const row = hold.rows.find((r) => r.id === 'production_cost_change');
+    const id = 'calc-scen-hold-production_cost_change';
+    claims[id] = {
+      id, value: row.value, unit: `Headcount scenario ${hold.name} at the page defaults: ${row.label}`, display: row.text, grade: row.grade, flag: null,
+      ref: row.ref, calc: 'scenarioHold.rows.production_cost_change',
+    };
+  }
   for (const row of p.sensitivity) {
     for (const [cellName, node] of Object.entries(row.cells)) {
       if (node.value === undefined) continue;

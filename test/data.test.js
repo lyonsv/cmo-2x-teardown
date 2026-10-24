@@ -516,7 +516,7 @@ test('calc claims equal present(defaults)', () => {
   for (const c of calcClaims) {
     const parts = c.calc.split('.');
     const head = parts[0];
-    const [rowId, cellName] = head === 'scenario' ? [parts[2]] : parts.slice(1);
+    const [rowId, cellName] = head === 'scenario' || head === 'scenarioHold' ? [parts[2]] : parts.slice(1);
     let row;
     let node;
     if (head === 'maths') {
@@ -531,6 +531,10 @@ test('calc claims equal present(defaults)', () => {
       row = p.scenario.rows.find((r) => r.id === rowId);
       node = row;
       assert.equal(c.id, `calc-scen-${rowId}`);
+    } else if (head === 'scenarioHold') {
+      row = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === rowId);
+      node = row;
+      assert.equal(c.id, `calc-scen-hold-${rowId}`);
     } else if (head === 'sensitivity') {
       row = p.sensitivity.find((r) => r.key === rowId);
       node = row?.cells[cellName];
