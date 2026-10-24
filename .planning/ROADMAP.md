@@ -106,7 +106,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
-- [ ] 02-07-PLAN.md — Local preview checkpoint (widths and print) and fixes
+- [x] 02-07-PLAN.md — Local preview checkpoint (widths and print) and fixes
 
 **Wave 8** *(blocked on Wave 7 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 6/8 | In Progress|  |
+| 2. Factory & Spine Slice | 7/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
