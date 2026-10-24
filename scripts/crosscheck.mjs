@@ -73,9 +73,15 @@ export function run({ html, data } = {}) {
   for (const t of new Set([...chips, ...cites])) if (!rows.has(t)) failures.push(`chip/cite to #${t} has no register row`);
 
   // 4. calculator input defaults and hints
-  const dv = defaultValues(d.ctx);
+  // defaultValues() throws when the registered growth share matches no route radio (WR-05).
+  let dv = null;
+  try {
+    dv = defaultValues(d.ctx);
+  } catch (err) {
+    failures.push(`default drift: route: ${err.message}`);
+  }
   let defaultsChecked = 0;
-  for (const f of d.FIELDS) {
+  for (const f of dv ? d.FIELDS : []) {
     defaultsChecked += 1;
     const want = toText(f, dv[f.key]);
     const inp = html.match(new RegExp(`<input id="in-${f.key}"[^>]*?\\svalue="([^"]*)"`));
@@ -86,9 +92,9 @@ export function run({ html, data } = {}) {
   }
 
   // 4b. the checked route radio is the model default and its grade note links the route row
-  const routeWant = dv.route;
+  const routeWant = dv?.route;
   const routeChecked = [...html.matchAll(/<input type="radio" name="route" value="([^"]+)"([^>]*)>/g)].filter((m) => /\schecked\b/.test(m[2])).map((m) => m[1]);
-  if (routeChecked.length !== 1 || routeChecked[0] !== routeWant) failures.push(`default drift: route is ${routeChecked.join(',') || 'none checked'}, data.js has ${routeWant}`);
+  if (dv && (routeChecked.length !== 1 || routeChecked[0] !== routeWant)) failures.push(`default drift: route is ${routeChecked.join(',') || 'none checked'}, data.js has ${routeWant}`);
   const routeGroup = (html.match(/<legend>How you get to 2x<\/legend>[\s\S]*?<\/fieldset>/) || [''])[0];
   if (!/<p class="grade-note">[^]*?href="#asm-growth-route"/.test(routeGroup)) failures.push('default drift: route grade note does not link asm-growth-route');
 

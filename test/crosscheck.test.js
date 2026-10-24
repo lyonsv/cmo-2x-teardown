@@ -41,6 +41,14 @@ test('mutation: moving the checked route radio is named as route drift', () => {
   assert.ok(failures.some((f) => f.includes('default drift: route')), failures.join('\n'));
 });
 
+test('mutation: a registered growth share that matches no route radio is named, not defaulted (WR-05)', async () => {
+  const { modelContext } = await import('../site/js/data.js');
+  const ctx = modelContext();
+  const drifted = { ...ctx, assumptions: { ...ctx.assumptions, campaign_growth_share: 0.25 } };
+  const { failures } = run({ data: { ctx: drifted } });
+  assert.ok(failures.some((f) => f.includes('default drift: route') && f.includes('asm-growth-route')), failures.join('\n'));
+});
+
 test('mutation: a source with every reference removed is reported as unreferenced', () => {
   const id = 'src-gartner-2025-cmo-spend';
   const mutated = html.replaceAll(`href="#${id}"`, 'href="#s15"');

@@ -48,6 +48,17 @@ test('defaultValues route maps to asm-growth-route through ROUTE_SHARE', () => {
   assert.equal(defaultValues(ctx).route, 'both');
 });
 
+test('defaultValues fails loudly when the registered growth share matches no route (WR-05)', () => {
+  for (const share of [0.25, 0.75, 2, NaN, undefined]) {
+    const drifted = { ...ctx, assumptions: { ...ctx.assumptions, campaign_growth_share: share } };
+    assert.throws(() => defaultValues(drifted), /asm-growth-route/, String(share));
+  }
+  for (const r of ROUTES) {
+    const exact = { ...ctx, assumptions: { ...ctx.assumptions, campaign_growth_share: ROUTE_SHARE[r] } };
+    assert.equal(defaultValues(exact).route, r);
+  }
+});
+
 test('defaultValues reads the data.js defaults', () => {
   assert.deepEqual(defaultValues(ctx), {
     campaigns: 40, concepts: 25, markets: 5, marketers: 120, reviewers: 12, minutes: 12, vcost: 0.8, mconcept: 1200,

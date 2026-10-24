@@ -12,9 +12,16 @@ import { formatValue } from './format.js';
 // (the rest from more markets), in log terms. See calc.js campaign_growth_share.
 export const ROUTE_SHARE = { both: 0.5, campaigns: 1, markets: 0 };
 
+// The registered share must be one of the radio values. Falling back to a route
+// would let the static page (computed at the registered share) and the live
+// calculator (computed at the fallback route's share) disagree silently (WR-05).
 function defaultRoute(ctx) {
   const share = ctx.assumptions.campaign_growth_share;
-  return ROUTES.find((r) => ROUTE_SHARE[r] === share) ?? 'both';
+  const route = ROUTES.find((r) => ROUTE_SHARE[r] === share);
+  if (route === undefined) {
+    throw new Error(`asm-growth-route: campaign_growth_share ${share} matches no route radio (${ROUTES.map((r) => `${r}=${ROUTE_SHARE[r]}`).join(', ')})`);
+  }
+  return route;
 }
 
 export function defaultValues(ctx) {
