@@ -488,3 +488,16 @@ test('variantMatrix: every numeric leaf is finite', () => {
   const leaves = [r.concepts, r.total, r.per_concept, ...r.rows.flatMap((x) => [x.count, x.applies, x.multiplier, x.variants])];
   for (const v of leaves) assert.ok(Number.isFinite(v));
 });
+
+// ---- Code review CR-01: human-touch share ----
+
+test('human_touch_share = 1 - auto x (1 - (sampling + escalation)) on each side', () => {
+  const r = compute(inputs(), assumptions);
+  for (const [side, which] of [['baseline', 'baseline'], ['scenario', 'scaled']]) {
+    const pickA = (v) => (v && typeof v === 'object' ? v[which] : v);
+    const want = 1 - pickA(assumptions.auto_approval_share) * (1 - (pickA(assumptions.sampling_rate) + pickA(assumptions.escalation_rate)));
+    close(r[side].human_touch_share, want, 1e-12);
+  }
+  close(r.scenario.human_touch_share, 0.46, 1e-12);
+  close(r.scenario.review_hours, r.scenario.generated_variants_per_year * r.scenario.human_touch_share * assumptions.review_minutes_per_variant / 60, 1e-6);
+});

@@ -130,7 +130,7 @@ function m(id, label, key, value, unit, display, basis) {
   assumptions[id] = a(id, label, 'model', key, value, unit, display, basis);
 }
 m('asm-auto-approval', 'Auto-approval share', 'auto_approval_share', { baseline: 0.20, scaled: 0.60 }, 'share of variants', '20% today, 60% at 2x',
-  'Share of variants cleared with no human touch. The assumption the whole cost claim leans on; no published benchmark.');
+  'Share of variants cleared by the gate without a full human review; a sampled or escalated share of them is still seen by a person. The assumption the whole cost claim leans on; no published benchmark.');
 m('asm-sampling-rate', 'Sampling audit rate', 'sampling_rate', 0.05, 'share of auto-approved', '5%',
   'Share of auto-approved variants audited by a human sample; no published benchmark.');
 m('asm-escalation-rate', 'Escalation rate', 'escalation_rate', 0.05, 'share of auto-approved', '5%',
@@ -274,6 +274,7 @@ export const claims = {
     ['ai-spend-scaled', 340421, 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
     ['ai-spend-ratio', 8.9, 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
     ['break-even-auto-approval', 0.41, 'break_even_auto_approval.value', 'asm-auto-approval', 'minimum auto-approval share at flat reviewers', 2, 'pct0'],
+    ['human-touch-share-scaled', 0.46, 'scenario.human_touch_share', 'asm-auto-approval', 'share of derived variants seen by a person at 2x (full review, sampling or escalation)', 2, 'pct0'],
     ['capacity-auto-approval', 0.29, 'capacity_auto_approval.value', 'asm-auto-approval', 'auto-approval share below which review capacity is exceeded', 2, 'pct0'],
   ].map(([id, value, derived, ref, unit, decimals, format]) => [id, {
     id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
@@ -356,7 +357,7 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
   const autoOfEligible = Number((auto / eligible).toFixed(2));
   claims['tier-eligible-share-scaled'] = { id: 'tier-eligible-share-scaled', value: eligible, unit: 'share of variants in tiers T0 and T1 at 2x',
     display: formatValue(eligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
-  claims['auto-share-of-eligible'] = { id: 'auto-share-of-eligible', value: autoOfEligible, unit: 'share of tier-eligible variants the agent must clear with no human',
+  claims['auto-share-of-eligible'] = { id: 'auto-share-of-eligible', value: autoOfEligible, unit: 'share of tier-eligible variants the agent must clear without a full human review',
     display: formatValue(autoOfEligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
   claims['ref-auto-approved-share'] = { id: 'ref-auto-approved-share', value: 0.192, unit: 'share of merged code changes approved with no human, reference organisation',
     display: '19.2%', grade: 'Modelled', flag: 'company-reported', ref: 'src-intercom-2x-teardown' };

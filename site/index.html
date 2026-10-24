@@ -217,7 +217,7 @@
         </table>
       </div>
       <h3>Review is the binding constraint</h3>
-      <p>The model holds at flat review headcount only if at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants clear with no human touch, which keeps reviewers at or below the <span data-fig="asm-target-utilisation">85%</span> <a class="chip c-m" href="#asm-target-utilisation">Modelled</a> utilisation target. The page assumes <span data-fig="asm-auto-approval">20% today, 60% at 2x</span>. Below the break-even share, queues and cycle time grow quickly. Below about <span data-fig="capacity-auto-approval">29%</span>, review capacity is exceeded outright and the 2x programme stalls in the queue, whatever the cost per asset says.</p>
+      <p>The model holds at flat review headcount only if at least <span data-fig="break-even-auto-approval">41%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of variants are auto-approved by the gate, which keeps reviewers at or below the <span data-fig="asm-target-utilisation">85%</span> <a class="chip c-m" href="#asm-target-utilisation">Modelled</a> utilisation target. The page assumes <span data-fig="asm-auto-approval">20% today, 60% at 2x</span>. Below the break-even share, queues and cycle time grow quickly. Below about <span data-fig="capacity-auto-approval">29%</span>, review capacity is exceeded outright and the 2x programme stalls in the queue, whatever the cost per asset says.</p>
       <h3>AI spend</h3>
       <p>AI spend rises from <span data-fig="ai-spend-base">$38,421</span> <a class="chip c-m" href="#asm-ai-share-tooling">Modelled</a> to <span data-fig="ai-spend-scaled">$340,421</span> a year, a multiple of <span data-fig="ai-spend-ratio">8.9x</span>. That is the price of the substitution, not a target to hit.</p>
       <div class="callout">
@@ -392,7 +392,7 @@
         </table>
       </div>
       <p>The factors are independent. Each one expands only the stated share of the set that exists after the previous factor, so no variant is double counted, and the shares stand in for the exclusions a real campaign has. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
-      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers and reach <a href="#s07">the auto-approval gate</a> with a small chance of sending anything to a person.</p>
+      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers. Even so, at 2x about <span data-fig="human-touch-share-scaled">46%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> of derived variants still reach a person, through full review, sampling or escalation, which is why <a href="#s07">the auto-approval gate</a> matters.</p>
       <h3>Where the imagery comes from</h3>
       <p>Every campaign needs images, and there are three routes to them: retrieve approved assets, license new ones, or generate them. The comparison is shown without a ranking.</p>
       <div class="callout coi">
@@ -471,7 +471,7 @@
     </section>
     <section id="s07" aria-labelledby="s07-h">
       <div class="sec-head"><span class="sec-num">07</span><h2 id="s07-h">The auto-approval gate</h2></div>
-      <p>The gate assigns every variant a tier by asset class and content, and only the lowest-risk tiers can be approved with no human.</p>
+      <p>The gate assigns every variant a tier by asset class and content, and only the lowest-risk tiers can be approved without a full human review.</p>
       <figure>
       <svg class="fig-d" role="img" aria-labelledby="fd6-t fd6-d" viewBox="0 0 300 288">
         <title id="fd6-t">The tier ladder</title>
@@ -505,7 +505,7 @@
       </div>
       <div class="callout"><span class="lbl">Not legal advice</span><p>Illustrative, not legal advice; depends on jurisdiction.</p></div>
       <p>The baseline and 2x tier mix is <span data-fig="asm-tier-mix">T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x</span> <a class="chip c-m" href="#asm-tier-mix">Modelled</a>, so reviewer effort shifts toward the lowest tiers as volume grows.</p>
-      <p>The page assumes an auto-approval share of <span data-fig="asm-auto-approval">20% today, 60% at 2x</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a>. At 2x, <span data-fig="tier-eligible-share-scaled">85%</span> of variants are tier-eligible, so the agent must clear about <span data-fig="auto-share-of-eligible">71%</span> of those with no human. That is a Modelled target that depends on most variants being template-derived, not a measured rate; <a href="#s06">the review agent</a> section shows how far a real system was from it.</p>
+      <p>The page assumes an auto-approval share of <span data-fig="asm-auto-approval">20% today, 60% at 2x</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a>. At 2x, <span data-fig="tier-eligible-share-scaled">85%</span> of variants are tier-eligible, so the agent must clear about <span data-fig="auto-share-of-eligible">71%</span> of those without a full human review. A sampled or escalated share of what it clears still goes to a person, so about <span data-fig="human-touch-share-scaled">46%</span> of all derived variants are still seen by someone. That is a Modelled target that depends on most variants being template-derived, not a measured rate; <a href="#s06">the review agent</a> section shows how far a real system was from it.</p>
       <h3>Always human</h3>
       <p>These classes never auto-approve, whatever the agent's verdict; the list is illustrative.</p>
       <ul>
@@ -804,7 +804,7 @@
               <td>Auto-approval share</td>
               <td><span data-fig="asm-auto-approval">20% today, 60% at 2x</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>Share of variants cleared with no human touch. The assumption the whole cost claim leans on; no published benchmark.</td>
+              <td>Share of variants cleared by the gate without a full human review; a sampled or escalated share of them is still seen by a person. The assumption the whole cost claim leans on; no published benchmark.</td>
             </tr>
             <tr id="asm-sampling-rate">
               <th scope="row" class="id">asm-sampling-rate</th>

@@ -810,3 +810,17 @@ test('s08 eval harness', () => {
   for (const w of ['asset id', 'manifest', 'first-pass compliance', 'queue age', 'rework rate', 'cost per approved-live asset', 'cycle time', 'policy', 'not surveillance']) assert.ok(lower.includes(w), w);
   assert.equal((s.match(/href="#asm-telemetry-metrics"/g) || []).length, 1);
 });
+
+// ---- Code review CR-01: page copy matches the model's human-touch share ----
+
+test('s05 and s07 state the human-touch share from the model, not a "small chance" (CR-01)', () => {
+  assert.ok(!/small chance/i.test(html), '"small chance" wording is back');
+  assert.ok(!/cleared with no human touch|clear with no human touch/.test(html), '"no human touch" overstates the gate');
+  for (const id of ['s05', 's07']) {
+    assert.ok(sectionHtml(id).includes('data-fig="human-touch-share-scaled"'), `${id} shows the human-touch share`);
+  }
+  const p = (sectionHtml('s05').match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).find((x) => x.includes('data-fig="human-touch-share-scaled"'));
+  assert.match(p, /<span data-fig="human-touch-share-scaled">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-auto-approval">Modelled<\/a>/);
+  assert.ok(/still reach a person/.test(strip(p)));
+  assert.ok(/sampled or escalated share/.test(assumptions['asm-auto-approval'].basis));
+});

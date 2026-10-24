@@ -142,7 +142,7 @@ function side(inputs, a, which, m) {
   return {
     concepts, variants_per_concept, variants_per_year, generated_variants_per_year,
     output_per_head_per_quarter, weighted_output_per_head_per_quarter,
-    review_hours, review_capacity_hours, utilisation, review_capacity_exceeded: exceeded,
+    human_touch_share: h, review_hours, review_capacity_hours, utilisation, review_capacity_exceeded: exceeded,
     cost, cost_per_asset: cost.total / V, cost_per_asset_by_component, ai_spend, cycle_days,
     production_share_of_budget: cost.total / inputs.marketing_budget,
   };
