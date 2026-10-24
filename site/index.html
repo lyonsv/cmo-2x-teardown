@@ -224,6 +224,7 @@
         <span class="lbl">AI spend framing</span>
         <p>AI spend is a floor, not a target. Teams that are rewarded for spending on AI will spend on AI (Goodhart's law); the measure that matters is the cost of an approved, live asset.</p>
       </div>
+      <p><a class="btn btn-primary" href="#s11">Run your own numbers</a></p>
     </section>
     <section id="s03" aria-labelledby="s03-h">
       <div class="sec-head"><span class="sec-num">03</span><h2 id="s03-h">The factory model</h2></div>
@@ -733,8 +734,62 @@
     </section>
     <section id="s10" aria-labelledby="s10-h">
       <div class="sec-head"><span class="sec-num">10</span><h2 id="s10-h">The outcome case</h2></div>
-      <p>This section will argue, with evidence graded honestly, why more approved output should improve outcomes and not only volume.</p>
-      <p class="later">Coming in a later update.</p>
+      <p>More output only counts if outcomes hold, and that has to be shown with holdouts, not assumed.</p>
+      <p>The scorecard pairs each lever's output metric with the four families of outcome a CMO is judged on: revenue and pipeline, speed to market, quality and brand, and learning velocity. Each cell names the metric to watch, not a result. We have put no lift figure in any cell, because we do not have an independent source for one, and a number without a source would be the weakest claim on the page.</p>
+      <div class="table-scroll" role="region" aria-label="Outcome scorecard" tabindex="0">
+        <table>
+          <caption>Outcome scorecard: each lever's output paired with outcome families</caption>
+          <thead><tr><th scope="col">Lever</th><th scope="col">Output metric</th><th scope="col">Revenue and pipeline</th><th scope="col">Speed to market</th><th scope="col">Quality and brand</th><th scope="col">Learning velocity</th><th scope="col">Weakest grade</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">Content generation at scale (the deep dive)</th>
+              <td>Approved-live variants per head; unique concepts; cost per approved live asset</td><td>Holdout conversion and customer acquisition cost</td><td>Brief-to-live time</td><td>First-pass compliance and rejection rate</td><td>Tests that a larger variant pool enables</td>
+              <td><a class="chip c-m" href="#asm-lever-01-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Localisation and transcreation</th>
+              <td>Approved localised assets per locale per quarter</td><td>Locale revenue in holdout markets</td><td>Lag from master to last locale</td><td>Quality sampled by linguists</td><td>Locale learnings reused across markets</td>
+              <td><a class="chip c-m" href="#asm-lever-02-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Experimentation</th>
+              <td>Experiments per quarter; rate of conclusive tests</td><td>Incremental revenue from rolled-out winners</td><td>Time from fatigue to replacement</td><td>Guardrail metrics on brand and complaints</td><td>Conclusive tests per quarter</td>
+              <td><a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Insight and reporting</th>
+              <td>Time to insight; share of reports automated</td><td>Reallocation gains measured by holdout</td><td>Time to insight</td><td>Report error rate</td><td>Model refresh cadence</td>
+              <td><a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Ops: briefs, approvals, asset metadata and rights</th>
+              <td>Brief-to-draft time; review rounds; rights-check coverage</td><td>Fewer takedowns protect revenue. We did not find evidence of lift</td><td>Brief-to-draft time</td><td>Rights incidents per thousand assets</td><td>Review rounds per asset</td>
+              <td><a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Answer-engine visibility (closes the loop into refresh briefs)</th>
+              <td>Answer assets published or refreshed per head</td><td>Pipeline from AI-referred sessions. We did not find evidence of lift</td><td>Refresh lag after a citation is lost</td><td>Citation accuracy</td><td>Prompts tracked</td>
+              <td><a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The grade in the last column is the weakest in the row, and it matches the grade in the six-lever table in section one. Output is counted inside the organisation, so it can be modelled. Outcomes are measured in the market, and the evidence that extra approved output moves them is thinner. Four levers are Modelled at best and two are Speculative, and a reader should weight them accordingly.</p>
+      <h3>How lift would be proven</h3>
+      <p>Output is easy to count and easy to inflate. An outcome claim therefore needs a design that could show it to be wrong. These four steps, in this order, are the minimum.</p>
+      <ol class="proof-steps">
+        <li><b>Holdouts</b>. Keep a comparable audience, market or channel on the old way of working, and treat the difference against it as the only evidence of lift. Before and after comparisons confuse the programme with the season.</li>
+        <li><b>Pre-registered metrics</b>. Write down the outcome metric, the guardrails and the stopping rule before launch. Choosing the measure after seeing the data lets any programme look like a success.</li>
+        <li><b>Multiple-comparison correction</b>. A large variant pool multiplies tests, and every extra test multiplies the chance of a false winner. Correct for the number of comparisons, or the extra volume will produce extra noise that looks like lift.</li>
+        <li><b>MMM calibrated by incrementality tests</b>. A marketing-mix model can estimate the effect across channels, but only if geographic or holdout experiments anchor it. The method comes from <a href="#s09">the other five levers</a>, where the insight lever treats model refresh as an output. <a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a></li>
+      </ol>
+      <div class="callout">
+        <span class="lbl">We did not find</span>
+        <p>We did not find an independent study showing that doubling approved output raises revenue. We did not find outcome evidence for the operations or answer-engine levers at all. Most published lift figures are reported by the vendors who sell the tools, so we have not used them here.</p>
+      </div>
+      <p>Most ideas that are tested do not win, and that is the reason to hold the outcome case to a design that can fail. The page is built so that you can fail it.</p>
+      <p>The falsifier in <a href="#s01">section 01</a> still applies: if holdout-measured outcomes do not improve, the 2x claim is false for that organisation.</p>
+      <p><a class="btn btn-primary" href="#s11">Run your own numbers</a></p>
     </section>
     <section id="s11" aria-labelledby="s11-h">
       <div class="sec-head"><span class="sec-num">11</span><h2 id="s11-h">Your numbers</h2></div>

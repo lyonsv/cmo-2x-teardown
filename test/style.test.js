@@ -197,3 +197,17 @@ test('tier row headers use the specific selector', () => {
   assert.match(css, /tbody th\[scope=row\]\.tier \{/);
   assert.ok(!/^th\.tier/m.test(css));
 });
+
+// Phase 3 Plan 4: buttons and proof list.
+test('.btn and .btn-primary follow the UI-SPEC', () => {
+  const rule = (sel) => (css.match(new RegExp(`(?:^|\\n)${sel.replace(/[.:]/g, '\\$&')} \\{([^}]*)\\}`)) || [])[1] || '';
+  const b = rule('.btn');
+  for (const d of ['min-height: 48px', 'border: 2px solid var(--ink)', 'border-radius: 2px', 'background: var(--paper)', 'color: var(--ink)']) assert.ok(b.includes(d), d);
+  assert.ok(rule('.btn-primary').includes('background: var(--ink)') && rule('.btn-primary').includes('color: var(--paper)'));
+  assert.ok(rule('.btn:hover').includes('var(--paper-2)'));
+  assert.ok(rule('.btn-primary:hover').includes('var(--ink-2)'));
+  assert.match(css, /@media print \{[\s\S]*\.btn-primary \{ display: none; \}/);
+  assert.match(css, /@media \(max-width: 720px\) \{[\s\S]*?\.btn \{ width: 100%;/);
+  assert.match(css, /ol\.proof-steps li \+ li \{ margin-top: var\(--s-md\); \}/);
+  assert.ok(!/outline:\s*none/.test(css));
+});

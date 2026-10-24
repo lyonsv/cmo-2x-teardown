@@ -308,10 +308,10 @@ test('fifteen anchored sections with the fixed snippet', () => {
 });
 
 // Plans 02-02 to 02-06 remove the sections they fill; the final list is s09..s14.
-const SKELETON_IDS = ['s10', 's11', 's12', 's13', 's14'];
+const SKELETON_IDS = ['s11', 's12', 's13', 's14'];
 
 test('skeleton ids are s10 to s14', () => {
-  assert.deepEqual(SKELETON_IDS, ['s10', 's11', 's12', 's13', 's14']);
+  assert.deepEqual(SKELETON_IDS, ['s11', 's12', 's13', 's14']);
 });
 
 test('skeleton sections carry a scope sentence and the later note', () => {
@@ -458,7 +458,7 @@ test('s01 holds both callouts verbatim and the front matter does not duplicate t
   assert.ok(s.includes(NOT_MEAN));
   assert.ok(s.includes('Falsifier'));
   assert.ok(s.includes(FALSIFIER));
-  assert.equal(html.split('the 2x claim is false for that org').length - 1, 1);
+  assert.equal(html.split('the 2x claim is false for that org.').length - 1, 1);
   assert.equal(html.split('What 2x does not mean').length - 1, 1);
 });
 
@@ -550,7 +550,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -1155,4 +1155,61 @@ test('s09 has five blocks in order, no vendor or panel names, anonymised', () =>
   for (const n of ['SparkToro', 'Gumshoe', 'ChatGPT']) assert.ok(!t.includes(n), n);
   assert.ok(!VENDOR_RE.test(t));
   assert.ok(!/gradial|airops|profound/i.test(t));
+});
+
+// ---- Plan 03-04: s10 outcome case and CTA ----
+
+test('s10 outcome scorecard (OUTC-01)', () => {
+  const s = sectionHtml('s10');
+  assert.ok(!s.includes('<p class="later">'));
+  const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
+  assert.equal(strip(first[1]), 'More output only counts if outcomes hold, and that has to be shown with holdouts, not assumed.');
+  assert.match(s, /<div class="table-scroll" role="region" aria-label="Outcome scorecard" tabindex="0">/);
+  const t = tableByCaption(s, "Outcome scorecard: each lever's output paired with outcome families");
+  assert.deepEqual(t.head, ['Lever', 'Output metric', 'Revenue and pipeline', 'Speed to market', 'Quality and brand', 'Learning velocity', 'Weakest grade']);
+  assert.equal(t.rows.length, 6);
+  const s01 = sectionHtml('s01');
+  const s01rows = s01.match(/<caption>The six levers<\/caption>[\s\S]*?<\/table>/)[0].match(/<tr>\s*<th scope="row">[\s\S]*?<\/tr>/g);
+  assert.equal(s01rows.length, 6);
+  t.rows.forEach((r, i) => {
+    const name = (x) => strip(x.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]);
+    assert.equal(name(r), name(s01rows[i]));
+    const cells = [...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
+    assert.equal(cells.length, 6);
+    cells.slice(0, 5).forEach((c) => {
+      assert.ok(!/\d/.test(strip(c)), `digit in scorecard cell: ${strip(c)}`);
+      assert.ok(strip(c).split(' ').length <= 20, strip(c));
+    });
+    const chips = r.match(/<a class="chip c-[ms]"/g) || [];
+    assert.equal(chips.length, 1);
+    const want = s01rows[i].match(/<a class="chip (c-[ms])" href="#(asm-lever-0\d-evidence)">(\w+)<\/a>/);
+    assert.ok(cells[5].includes(`<a class="chip ${want[1]}" href="#${want[2]}">${want[3]}</a>`));
+  });
+  assert.ok(strip(t.html).includes('We did not find evidence of lift'));
+});
+
+test('s10 proof block (OUTC-02)', () => {
+  const s = sectionHtml('s10');
+  const h = s.indexOf('<h3>How lift would be proven</h3>');
+  assert.ok(h > 0);
+  const ol = s.slice(h).match(/<ol class="proof-steps">([\s\S]*?)<\/ol>/);
+  assert.ok(ol);
+  const lis = ol[1].match(/<li>[\s\S]*?<\/li>/g);
+  assert.equal(lis.length, 4);
+  assert.deepEqual(lis.map((l) => strip(l.match(/<b>([\s\S]*?)<\/b>/)[1])), ['Holdouts', 'Pre-registered metrics', 'Multiple-comparison correction', 'MMM calibrated by incrementality tests']);
+  assert.ok(lis[3].includes('<a class="chip c-m" href="#asm-lever-04-evidence">Modelled</a>'));
+  const after = s.slice(s.indexOf('</ol>'));
+  assert.match(after, /<div class="callout">\s*<span class="lbl">We did not find<\/span>/);
+  assert.ok(s.includes('The falsifier in <a href="#s01">section 01</a> still applies: if holdout-measured outcomes do not improve, the 2x claim is false for that organisation.'));
+  assert.ok(!VENDOR_RE.test(strip(s)));
+});
+
+test('Run your own numbers CTA is identical in s02 and s10', () => {
+  const cta = '<a class="btn btn-primary" href="#s11">Run your own numbers</a>';
+  assert.equal((html.match(/class="btn btn-primary"/g) || []).length, 2);
+  for (const id of ['s02', 's10']) {
+    const s = sectionHtml(id);
+    assert.ok(s.includes(cta), id);
+    assert.ok(s.replace(/\s*<\/section>$/, '').endsWith(`<p>${cta}</p>`), `${id} CTA is last`);
+  }
 });
