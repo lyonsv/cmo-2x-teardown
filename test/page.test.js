@@ -1335,6 +1335,8 @@ test('s13 adoption and Backlog 0', () => {
     assert.match(r, /<th scope="row">/);
     for (const c of r.match(/<td>[\s\S]*?<\/td>/g).slice(0, 3)) assert.ok(strip(c).split(' ').length <= 20, strip(c));
     assert.equal((r.match(/class="chip /g) || []).length, 1);
+    // WR-06: every stage, including Steady state, is the author's design.
+    assert.ok(r.includes('<a class="chip c-s" href="#asm-adoption-design">Speculative</a>'), r);
   }
   assert.ok(s.includes('<a href="#s11">section 11</a>'));
   assert.ok(/<h3>What stays human<\/h3>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
