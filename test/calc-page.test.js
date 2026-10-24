@@ -5,6 +5,7 @@ import { modelContext, claims, assumptions } from '../site/js/data.js';
 import { present, defaultValues, RESULT_ROWS } from '../site/js/model.js';
 import { FIELDS } from '../site/js/fields.js';
 import { toText } from '../site/js/state.js';
+import { formatValue } from '../site/js/format.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const start = html.indexOf('<section id="s11"');
@@ -224,7 +225,12 @@ test('Headcount scenario group: three radios, redeploy checked, change-cost line
     ['hold', false, 'Hold', "Keep the team and today's volume; take any saving as lower cost."],
     ['reduce', false, 'Reduce', 'Cut reviewer headcount to the capacity the 2x output needs.'],
   ]);
-  assert.match(group[1], /Change-management cost: [^<]*, included in every scenario\. <a class="chip c-m" href="#asm-change-mgmt">Modelled<\/a>/);
+  const chg = assumptions['asm-change-mgmt'];
+  // WR-06: the form sits in a .calc-live wrapper, which carries no data-fig, so the
+  // figure is pinned here to the asm-change-mgmt display and the numeric gate
+  // exempts exactly this sentence, built from data.js.
+  assert.ok(group[1].includes(`<p class="hint radio-note">Change-management cost: ${chg.display}, included in every scenario. <a class="chip ${CHIP_CLASS[chg.grade]}" href="#asm-change-mgmt">${chg.grade}</a></p>`), 'change cost is the asm-change-mgmt display');
+  assert.equal(chg.display, `${formatValue(chg.value, 'usd0')} per affected FTE`);
   assert.equal((html.match(/name="scenario"/g) || []).length, 3);
 });
 

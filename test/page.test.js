@@ -429,7 +429,15 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
   const parts = [
     regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
     regionHtml('<div class="legend">', '</dl>'),
-    ...SECTION_IDS.map((id) => sectionHtml(id).replace(/<form class="calc-form"[\s\S]*?<\/form>/, ' ').replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
+    // The calculator form is not stripped wholesale (WR-06). It sits in a .calc-live
+    // wrapper, which carries no data-fig, so two exact strings are exempted instead:
+    // the leading "Default N" of each field hint (calc-page.test pins N to data.js
+    // via toText) and the change-management sentence, built here from data.js so a
+    // changed assumption fails the gate. Any other numeral in the form fails.
+    ...SECTION_IDS.map((id) => sectionHtml(id)
+      .replace(/<p class="hint" id="hint-[a-z0-9]+">Default [\d.,]+%?/g, ' ')
+      .replace(`Change-management cost: ${assumptions['asm-change-mgmt'].display}, included`, ' ')
+      .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
     regionHtml('<footer>', '</footer>'),
   ];
   for (const part of parts) {
