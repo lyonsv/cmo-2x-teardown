@@ -1484,3 +1484,55 @@ test('no COI callout or Getty, Stability or iStock mention remains (CRED-04 remo
   assert.ok(!html.includes('id="s14-getty"') && !html.includes('id="legal-s05-getty"'));
   assert.ok(!Object.keys(sources).some((k) => /getty|stability/i.test(k)));
 });
+
+// ---- 03.1 reframe guards (D-03, D-04, D-07, D-09) ----
+const guardText = (h) => strip(h.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, ' '));
+const guardSentences = (h) => guardText(h).split(/(?<=[.!?])\s+/);
+const guardFigIds = (h) => [...h.matchAll(/data-fig="([^"]+)"/g)].map((m) => m[1]);
+const guardVariantFig = /^(matrix-|cap-.*-variants$|avg-campaign-variants$)/;
+
+test('03.1 reframe guards: no variants per head, no cycle time', (t) => {
+  for (const sent of guardSentences(html)) {
+    assert.ok(!(/variant/i.test(sent) && /per (marketing )?head/i.test(sent)), `variants per head: ${sent}`);
+  }
+  assert.ok(!/cycle time/i.test(guardText(html)), 'cycle time must read brief-to-live time');
+});
+
+test('03.1 reframe guards: definition appears once, in s01', () => {
+  const phrase = 'one campaign live in one market';
+  const all = guardText(html).toLowerCase().split(phrase).length - 1;
+  assert.equal(all, 1);
+  assert.ok(guardText(sectionHtml('s01')).toLowerCase().includes(phrase));
+});
+
+test('03.1 reframe guards: variant-count figures stay in s05, s07, s15', () => {
+  const body = html.replace(/<script\b[\s\S]*?<\/script>/g, '');
+  const hits = {};
+  for (const m of body.matchAll(/<section id="([^"]+)"[\s\S]*?<\/section>/g)) {
+    for (const id of guardFigIds(m[0])) if (guardVariantFig.test(id)) (hits[m[1]] ||= []).push(id);
+  }
+  assert.ok(hits.s05 && hits.s07, 'figures present in s05 and s07');
+  for (const sec of Object.keys(hits)) assert.ok(['s05', 's07', 's15'].includes(sec), `${hits[sec][0]} appears in ${sec}`);
+});
+
+test('03.1 reframe guards: s11 variant maths is labelled internal throughput', () => {
+  const s = sectionHtml('s11');
+  const steps = s.match(/<li><b>[\s\S]*?<\/li>/g) || [];
+  const carrying = steps.filter((li) => /data-fig="calc-maths-(generated|hours)-/.test(li));
+  assert.ok(carrying.length >= 2, 'both derived-variant steps present');
+  for (const li of carrying) assert.ok(strip(li.match(/<b>([\s\S]*?)<\/b>/)[1]).includes('internal throughput, not the claim'), strip(li).slice(0, 60));
+  const orphan = [...s.matchAll(/data-fig="calc-maths-(generated|hours)-[^"]*"/g)].length;
+  const inSteps = carrying.join('').match(/data-fig="calc-maths-(generated|hours)-[^"]*"/g).length;
+  assert.equal(orphan, inSteps, 'no variant maths figure outside a labelled step');
+});
+
+test('03.1 reframe guards: pipeline is not a headline', () => {
+  const ans = html.slice(html.indexOf('<section id="answer"'), html.indexOf('</section>', html.indexOf('<section id="answer"')));
+  const ansP = ans.match(/<p\b[\s\S]*?<\/p>/)[0];
+  assert.ok(!/pipeline/i.test(strip(ansP)), 'answer paragraph');
+  const s01 = sectionHtml('s01');
+  const paras = s01.match(/<p\b[\s\S]*?<\/p>/g).slice(0, 2).join(' ');
+  const trio = s01.match(/<div class="metric-trio">[\s\S]*?<\/div>\s*<\/div>|<div class="metric-trio">[\s\S]*?<\/div>/)[0];
+  assert.ok(!/pipeline/i.test(strip(paras)), 's01 definition paragraphs');
+  assert.ok(!/pipeline/i.test(strip(trio)), 's01 metric trio');
+});
