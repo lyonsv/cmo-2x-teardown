@@ -467,3 +467,28 @@ test('formatValue num1 gives one decimal', () => {
   assert.equal(formatValue(1.189, 'num1'), '1.2');
   assert.equal(formatValue(12, 'num1'), '12.0');
 });
+
+test('Plan 03-03 answer-engine sources and claims', () => {
+  const want = {
+    'haynes-2026': 'https://www.mariehaynes.com/geo-is-a-distraction/',
+    'seoworks-2026': 'https://www.seoworks.co.uk/downloads/ai-referral-traffic-benchmark/',
+    'indig-2026': 'https://www.growth-memo.com/p/does-ai-drive-more-direct-traffic',
+    'aggarwal-geo-2024': 'https://arxiv.org/abs/2311.09735',
+  };
+  for (const [k, url] of Object.entries(want)) {
+    const s = sources[k];
+    assert.ok(s, k);
+    for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) assert.ok(typeof s[f] === 'string' && s[f].length > 0, `${k}.${f}`);
+    assert.equal(s.url, url); assert.equal(s.grade, 'Modelled'); assert.equal(s.flag, null);
+  }
+  const cw = [['aeo-chatgpt-share', 0.0062, '0.62%', 'src-haynes-2026'], ['aeo-llm-share', 0.0073, '0.73%', 'src-haynes-2026'],
+    ['aeo-organic-multiple', 39, '39 times', 'src-seoworks-2026'], ['aeo-ai-share-organic', 0.026, '2.6%', 'src-seoworks-2026'],
+    ['aeo-hidden-direct', 0.00003, '0.003%', 'src-indig-2026'], ['aeo-geo-bench', 0.40, '40%', 'src-aggarwal-geo-2024']];
+  for (const [id, value, display, ref] of cw) {
+    const c = claims[id];
+    assert.ok(c, id);
+    assert.equal(c.value, value); assert.equal(c.display, display); assert.equal(c.ref, ref); assert.equal(c.grade, 'Modelled');
+  }
+  assert.ok(assumptions['asm-lever-06-evidence'].basis.includes('visibility has not been shown to move pipeline'));
+  assert.equal(assumptions['asm-lever-06-evidence'].grade, 'Speculative');
+});

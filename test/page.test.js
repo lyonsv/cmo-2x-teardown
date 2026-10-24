@@ -550,7 +550,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -1122,4 +1122,37 @@ test('ops block: statutory table, callout, reader-owned incident rate, per-work 
   assert.ok(!/data-fig="(?:matrix-[^"]*|cap-[^"]*-variants|vpc-[^"]*|avg-campaign-variants)"/.test(block), 'ops block uses a variant count');
   const words = blockWords(block);
   assert.ok(words >= 250 && words <= 450, `ops prose ${words} words`);
+});
+
+// ---- Plan 03-03: answer-engine visibility block and s09 completion (LEVER-05) ----
+
+test('aeo block: Speculative, we-did-not-find, independent studies, refresh link to s03', () => {
+  const s = sectionHtml('s09');
+  assert.ok(s.includes('<h3 id="s09-aeo">Answer-engine visibility (AEO/GEO)</h3>'));
+  assert.ok(s.indexOf('id="s09-aeo"') > s.indexOf('id="s09-ops"'));
+  assert.equal(s.lastIndexOf('<h3 '), s.indexOf('<h3 id="s09-aeo"'), 'aeo is the last block');
+  const block = leverBlock('s09-aeo');
+  const mini = tableByCaption(block, 'Answer-engine visibility: output, outcome and evidence');
+  assert.equal(mini.rows.length, 2);
+  for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-s" href="#asm-lever-06-evidence">Speculative</a></td>'));
+  const text = strip(block);
+  assert.ok(text.includes('We did not find evidence that visibility gains translate into pipeline.'));
+  const sentence = strip(block).split(/(?<=\.)\s/).find((x) => /refresh briefs/.test(x));
+  assert.ok(sentence && /factory/.test(sentence), 'refresh sentence');
+  assert.ok(/refresh briefs[^.]*<a href="#s03">/.test(block), 'refresh sentence links s03');
+  assert.ok(block.includes('<a href="#s03">the factory model</a>') && block.includes('<a href="#s12">how this compares</a>'));
+  for (const id of ['aeo-llm-share', 'aeo-organic-multiple', 'aeo-ai-share-organic', 'aeo-hidden-direct', 'aeo-geo-bench']) assert.ok(block.includes(`data-fig="${id}"`), id);
+  for (const k of ['haynes-2026', 'seoworks-2026', 'indig-2026', 'aggarwal-geo-2024']) assert.ok(block.includes(`href="#src-${k}"`), k);
+  const words = blockWords(block);
+  assert.ok(words >= 250 && words <= 450, `aeo prose ${words} words`);
+});
+
+test('s09 has five blocks in order, no vendor or panel names, anonymised', () => {
+  const s = sectionHtml('s09');
+  const ids = [...s.matchAll(/<h3 id="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, ['s09-localisation', 's09-experimentation', 's09-insight', 's09-ops', 's09-aeo']);
+  const t = strip(s);
+  for (const n of ['SparkToro', 'Gumshoe', 'ChatGPT']) assert.ok(!t.includes(n), n);
+  assert.ok(!VENDOR_RE.test(t));
+  assert.ok(!/gradial|airops|profound/i.test(t));
 });

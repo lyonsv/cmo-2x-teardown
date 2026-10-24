@@ -143,6 +143,50 @@ export const sources = {
     grade: 'Modelled',
     flag: null,
   },
+  'haynes-2026': {
+    title: 'GEO is a distraction',
+    publisher: 'Marie Haynes Consulting (SEO consultancy)',
+    published: '2026-10-21',
+    accessed: '2026-10-24',
+    url: 'https://www.mariehaynes.com/geo-is-a-distraction/',
+    bias: 'Non-random sample of 100 sites; author sells SEO services',
+    read_via: 'Page read 2026-10-24; only figures, dates and authorship recorded',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'seoworks-2026': {
+    title: 'AI referral traffic benchmark',
+    publisher: 'The SEO Works (UK agency selling GEO services)',
+    published: 'undated on the page',
+    accessed: '2026-10-24',
+    url: 'https://www.seoworks.co.uk/downloads/ai-referral-traffic-benchmark/',
+    bias: 'Agency sample of 95 sites; sell-side author reporting a low number',
+    read_via: 'Page read 2026-10-24; the data run to August 2026; only figures, dates and authorship recorded',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'indig-2026': {
+    title: 'Does AI drive more direct traffic?',
+    publisher: 'Growth Memo (Kevin Indig)',
+    published: '2026-10-19',
+    accessed: '2026-10-24',
+    url: 'https://www.growth-memo.com/p/does-ai-drive-more-direct-traffic',
+    bias: 'Small B2B-skewed sample of 12 sites',
+    read_via: 'Page read 2026-10-24; only figures, dates and authorship recorded',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'aggarwal-geo-2024': {
+    title: 'GEO: Generative Engine Optimization',
+    publisher: 'KDD 2024 (Aggarwal et al.)',
+    published: '2024-08-25',
+    accessed: '2026-10-24',
+    url: 'https://arxiv.org/abs/2311.09735',
+    bias: 'Author-built benchmark measuring citation visibility in model answers, not sessions or pipeline',
+    read_via: 'arXiv abstract page read 2026-10-24; the publication date is the KDD 2024 conference start, not re-confirmed',
+    grade: 'Modelled',
+    flag: null,
+  },
   'cornell-17usc504': {
     title: '17 U.S. Code section 504: Remedies for infringement: Damages and profits',
     publisher: 'Legal Information Institute, Cornell Law School (US Code text)',
@@ -284,7 +328,7 @@ lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies', 'V
 lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Vendor-biased anchors', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
 lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap', 'Almost entirely an evidence gap; kept brief and modelled.');
 lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
-lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative.');
+lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative. Independent traffic studies from October 2026 find AI-assistant referrals a small share of search traffic; visibility has not been shown to move pipeline.');
 
 assumptions['asm-tests-per-quarter'] = a('asm-tests-per-quarter', 'Experiments run per team per quarter', 'context', null, 20, 'experiments', '20',
   'An illustrative test cadence for one team; replace with your own. No published benchmark.');
@@ -592,4 +636,17 @@ assumptions['asm-incident-rate'] = { id: 'asm-incident-rate', label: 'Rights inc
   ops('ops-exposure-lo', incidents * claims['stat-ordinary-min'].value, 'USD illustrative statutory exposure a year, ordinary minimum', 'usd0');
   ops('ops-exposure-hi', incidents * claims['stat-ordinary-max'].value, 'USD illustrative statutory exposure a year, ordinary maximum', 'usd0');
   ops('ops-exposure-wilful', incidents * claims['stat-wilful-max'].value, 'USD illustrative statutory exposure a year, wilful ceiling', 'usd0');
+}
+
+// ---- Plan 03-03: answer-engine visibility claims (independent traffic studies, one benchmark) ----
+
+for (const [id, value, unit, display, ref] of [
+  ['aeo-chatgpt-share', 0.0062, 'share of search-engine organic volume from one assistant, 12 months of analytics across 100 sites', '0.62%', 'src-haynes-2026'],
+  ['aeo-llm-share', 0.0073, 'share of search-engine organic volume from all assistants, 12 months of analytics across 100 sites', '0.73%', 'src-haynes-2026'],
+  ['aeo-organic-multiple', 39, 'times more traffic from organic search than from AI assistants, 95 sites', '39 times', 'src-seoworks-2026'],
+  ['aeo-ai-share-organic', 0.026, 'AI-assistant traffic as a share of organic search traffic, 95 sites', '2.6%', 'src-seoworks-2026'],
+  ['aeo-hidden-direct', 0.00003, 'share of direct sessions with identifiable AI traces, 12 sites', '0.003%', 'src-indig-2026'],
+  ['aeo-geo-bench', 0.40, 'up to this rise in citation visibility in model answers, author-built benchmark', '40%', 'src-aggarwal-geo-2024'],
+]) {
+  claims[id] = { id, value, unit, display, grade: 'Modelled', flag: null, ref };
 }
