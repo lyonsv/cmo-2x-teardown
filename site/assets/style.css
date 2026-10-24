@@ -250,7 +250,16 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .fig-d .edge-review, .fig-d .node-review rect { stroke: #000; stroke-width: 3; }
   .fig-d .arrow-head-review { fill: #000; }
   .fig-d .node-review rect { fill: #fff; }
-  .default-mark, .status { border-color: #000; }
+  .default-mark { border-color: #000; }
+  .status { border-color: #000; color: #000; }
+  .status-disputed { border-style: double; }
+  .asat, .backlog0, .legal-flag, .risk { break-inside: avoid; }
+  /* Tables are clipped at the page edge if their screen min-widths survive into print. */
+  .matrix, table.incidents, .register [aria-label="Source register table"] table { min-width: 0; }
+  .matrix td, .matrix th, .matrix tbody th[scope=row] { min-width: 0; }
+  svg.fig { min-width: 0; max-width: 100%; height: auto; }
+  th, td { overflow-wrap: anywhere; }
+  thead { display: table-header-group; }
   .believe, details.maths { break-inside: avoid; }
   .ref-line { stroke: #555; }
 }

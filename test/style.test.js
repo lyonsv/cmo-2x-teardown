@@ -299,3 +299,16 @@ test('legal flag and gaps list rules', () => {
   assert.match(print, /\.callout\.legal-flag \{[^}]*background: none[^}]*border: 1px solid #555[^}]*border-left: 3px solid #000/);
   assert.match(print, /break-inside: avoid/);
 });
+
+test('print block resets screen min-widths, shows status borders and avoids breaks (plan 04-07)', () => {
+  const print = css.match(/@media print \{[\s\S]*?\n\}\n/)[0];
+  assert.match(print, /\.status \{ border-color: #000; color: #000; \}/);
+  assert.match(print, /\.status-disputed \{ border-style: double; \}/);
+  assert.match(print, /\.asat, \.backlog0, \.legal-flag, \.risk \{ break-inside: avoid; \}/);
+  assert.match(print, /\.register \[aria-label="Source register table"\] table \{ min-width: 0; \}/);
+  assert.match(print, /\.matrix, table\.incidents/);
+  assert.match(print, /svg\.fig \{ min-width: 0; max-width: 100%; height: auto; \}/);
+  assert.match(print, /th, td \{ overflow-wrap: anywhere; \}/);
+  assert.match(print, /thead \{ display: table-header-group; \}/);
+  assert.match(print, /\.callout\.legal-flag \{[^}]*border/);
+});
