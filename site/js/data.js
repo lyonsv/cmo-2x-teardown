@@ -182,10 +182,10 @@ lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, ven
 
 assumptions['asm-imagery-routes'] = { id: 'asm-imagery-routes', label: 'Imagery routes: rights, cost and speed', kind: 'evidence', key: null, value: null, unit: null,
   display: 'Generic route comparison', grade: 'Modelled', flag: null,
-  basis: 'Generic comparison of retrieving approved, licensing and generating imagery; actual terms depend on each licence, model provider and jurisdiction. Not legal advice.' };
+  basis: 'Generic comparison of retrieving approved, licensing and generating imagery; actual terms depend on each licence, model provider and jurisdiction. The copyrightability entry for generated imagery follows the US Copyright Office report listed in the source register, which is the Office\'s view of US law, not a ruling; the entries for the other two routes are generic. Not legal advice.' };
 assumptions['asm-imagery-indemnity'] = { id: 'asm-imagery-indemnity', label: 'Imagery routes: indemnity', kind: 'evidence', key: null, value: null, unit: null,
   display: 'Typical contract terms', grade: 'Modelled', flag: null,
-  basis: 'Summary of typical indemnity terms described in law-firm commentary: often limited to paid tiers, conditional on using the provider safeguards, excluding output the customer knew or should have known infringed and often excluding modified output; caps can apply. Provider contracts vary. Not legal advice.' };
+  basis: 'Generic summary of typical indemnity terms on every route. Licensed stock: indemnity is commonly capped, with higher caps on paid or extended licence tiers, and excludes modified, misused or out-of-scope use. Generated: law-firm commentary describes AI-provider indemnity as often limited to paid tiers, conditional on using the provider safeguards, excluding output the customer knew or should have known infringed and often excluding modified output; caps can apply. Retrieved: an approved asset inherits whatever indemnity its original licence gave. Licences and provider contracts vary. Not legal advice.' };
 
 export const variantMatrixDefaults = {
   concepts: 4,

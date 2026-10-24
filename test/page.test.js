@@ -871,3 +871,26 @@ test('legend states the grade rule for company-reported figures and every such f
     assert.equal((html.match(re) || []).length, all, `${id}: flag missing on an appearance`);
   }
 });
+
+// ---- Code review WR-04: the imagery routes are qualified symmetrically (author COI) ----
+
+test('imagery table qualifies every route symmetrically and scopes the Copyright Office source (WR-04)', () => {
+  const { table } = imageryTable();
+  const rows = table.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  const cells = (r) => [...r.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
+  const byName = Object.fromEntries(rows.map((r) => [strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]), r]));
+  const [ret, lic, gen] = cells(byName.Indemnity).map(strip);
+  for (const [name, c] of [['License', lic], ['Generate', gen]]) {
+    assert.ok(/^Conditional; caps and exclusions vary/.test(c), `${name} indemnity must be qualified the same way`);
+  }
+  assert.ok(/inherits/i.test(ret), 'retrieved assets inherit the original licence');
+  const basis = assumptions['asm-imagery-indemnity'].basis;
+  for (const w of ['Licensed stock', 'Generated', 'Retrieved', 'capped']) assert.ok(basis.includes(w), `indemnity basis covers ${w}`);
+  // the Benchmark source supports only the generated-imagery cell, so the row is Modelled
+  const copy = cells(byName.Copyrightability);
+  assert.ok(copy[3].includes('<a class="chip c-m" href="#asm-imagery-routes">Modelled</a>'));
+  assert.ok(copy[2].includes('href="#src-usco-copyright-ai-part2"'), 'generate cell links the Copyright Office source');
+  assert.ok(!copy[0].includes('src-usco') && !copy[1].includes('src-usco'));
+  assert.ok(!table.includes('class="chip c-b"'), 'no route cell is graded Benchmark on a source that does not cover it');
+  assert.ok(assumptions['asm-imagery-routes'].basis.includes('US Copyright Office'));
+});
