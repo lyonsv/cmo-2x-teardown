@@ -1,13 +1,16 @@
 // Pure calculator maths. No DOM, no imports. compute() never throws and never
 // returns NaN or Infinity: bad input comes back as { ok: false, errors }.
-// Undefined values are null, never an error: cycle_days when review capacity is
+// The 2x is counted in campaign-markets (campaigns x markets a year). Variants,
+// review load, cost and AI spend are derived from it, so extra crops, sizes or
+// locales never raise the headline.
+// Undefined values are null, never an error: brief_to_live_days when review capacity is
 // exceeded, and any ratio whose baseline is 0 (named in undefined_ratios).
 
 const POSITIVE_INPUTS = [
   'campaigns_per_year',
+  'markets_per_campaign',
   'concepts_per_campaign',
-  'variants_per_concept',
-  'marketing_fte',
+  'formats_per_market',
   'reviewer_fte',
   'marketing_budget',
   'multiplier',
@@ -25,9 +28,9 @@ function validate(inputs, assumptions) {
       errors.push({ field, message: `${field} must be a finite number greater than 0` });
     }
   }
-  const k = assumptions && typeof assumptions === 'object' ? assumptions.concept_growth_exponent : undefined;
+  const k = assumptions && typeof assumptions === 'object' ? assumptions.campaign_growth_share : undefined;
   if (typeof k !== 'number' || !Number.isFinite(k) || k < 0 || k > 1) {
-    errors.push({ field: 'concept_growth_exponent', message: 'concept_growth_exponent must be a finite number between 0 and 1' });
+    errors.push({ field: 'campaign_growth_share', message: 'campaign_growth_share must be a finite number between 0 and 1' });
   }
   validateTiers(assumptions, errors);
   validateCost(assumptions, errors);
@@ -53,10 +56,6 @@ function validateTiers(assumptions, errors) {
   }
   if (!isMix(pick(a.tier_mix, 'baseline')) || !isMix(pick(a.tier_mix, 'scaled'))) {
     errors.push({ field: 'tier_mix', message: 'tier_mix must be four shares between 0 and 1 summing to 1, for baseline and scaled' });
-  }
-  const w = a.tier_weights;
-  if (!Array.isArray(w) || w.length !== 4 || !w.every(isPositive)) {
-    errors.push({ field: 'tier_weights', message: 'tier_weights must be four finite numbers greater than 0' });
   }
 }
 
@@ -103,15 +102,18 @@ function validateCost(assumptions, errors) {
 // one is read through pick(); validation checks both sides of the same fields.
 function side(inputs, a, which, m) {
   const S = (name) => pick(a[name], which);
-  const k = a.concept_growth_exponent;
-  const concepts = inputs.campaigns_per_year * inputs.concepts_per_campaign * Math.pow(m, k);
-  const variants_per_concept = inputs.variants_per_concept * Math.pow(m, 1 - k);
+  // The doubling is split in log terms: campaigns grow by m^share, markets by
+  // m^(1 - share), so campaign-markets grow by exactly m on every route.
+  const share = a.campaign_growth_share;
+  const campaigns = inputs.campaigns_per_year * Math.pow(m, share);
+  const markets = inputs.markets_per_campaign * Math.pow(m, 1 - share);
+  const campaign_markets_per_year = campaigns * markets;
+  const campaign_markets_per_quarter = campaign_markets_per_year / 4;
+  const concepts = campaigns * inputs.concepts_per_campaign;
+  const variants_per_concept = inputs.formats_per_market * markets;
+  const variants_per_campaign_market = inputs.concepts_per_campaign * inputs.formats_per_market;
   const variants_per_year = concepts * variants_per_concept;
-  const output_per_head_per_quarter = variants_per_year / 4 / inputs.marketing_fte;
   const generated_variants_per_year = variants_per_year / a.approval_yield;
-  const mix = pick(a.tier_mix, which);
-  const tier_factor = mix.reduce((acc, share, i) => acc + share * a.tier_weights[i], 0);
-  const weighted_output_per_head_per_quarter = output_per_head_per_quarter * tier_factor;
   const G = generated_variants_per_year;
   const V = variants_per_year;
   const auto = S('auto_approval_share');
@@ -139,13 +141,14 @@ function side(inputs, a, which, m) {
   const ai_spend = G * variantCost * S('ai_share_of_variant_cost') + tooling * S('ai_share_of_tooling');
   const exceeded = utilisation >= 1;
   const service = S('review_service_days');
-  const cycle_days = exceeded ? null
+  const brief_to_live_days = exceeded ? null
     : S('build_days') + (1 + r) * (service + (service * utilisation) / (1 - utilisation));
   return {
-    concepts, variants_per_concept, variants_per_year, generated_variants_per_year,
-    output_per_head_per_quarter, weighted_output_per_head_per_quarter,
+    campaigns, markets, campaign_markets_per_year, campaign_markets_per_quarter,
+    concepts, variants_per_concept, variants_per_campaign_market, variants_per_year, generated_variants_per_year,
     human_touch_share: h, review_hours, review_capacity_hours, utilisation, review_capacity_exceeded: exceeded,
-    cost, cost_per_asset: cost.total / V, cost_per_asset_by_component, ai_spend, cycle_days,
+    cost, cost_per_asset: cost.total / V, cost_per_asset_by_component,
+    cost_per_campaign_market: cost.total / campaign_markets_per_year, ai_spend, brief_to_live_days,
     production_share_of_budget: cost.total / inputs.marketing_budget,
   };
 }
@@ -173,7 +176,7 @@ function breakEven(a, scenario, utilisation) {
   return { value: aStar, status: 'ok', cap };
 }
 
-// Every numeric leaf must be finite; null (cycle_days at capacity, undefined ratios) is allowed.
+// Every numeric leaf must be finite; null (brief_to_live_days at capacity, undefined ratios) is allowed.
 function allFinite(x) {
   if (typeof x === 'number') return Number.isFinite(x);
   if (Array.isArray(x)) return x.every(allFinite);
@@ -199,14 +202,14 @@ export function compute(inputs, assumptions) {
     return num / den;
   };
   const ratios = {
-    output_per_head: ratio('output_per_head', scenario.output_per_head_per_quarter, baseline.output_per_head_per_quarter),
-    weighted_output_per_head: ratio('weighted_output_per_head',
-      scenario.weighted_output_per_head_per_quarter, baseline.weighted_output_per_head_per_quarter),
+    campaign_markets: ratio('campaign_markets', scenario.campaign_markets_per_year, baseline.campaign_markets_per_year),
     cost_per_asset: ratio('cost_per_asset', scenario.cost_per_asset, baseline.cost_per_asset),
+    cost_per_campaign_market: ratio('cost_per_campaign_market', scenario.cost_per_campaign_market, baseline.cost_per_campaign_market),
     ai_spend: ratio('ai_spend', scenario.ai_spend, baseline.ai_spend),
     total_cost: ratio('total_cost', scenario.cost.total, baseline.cost.total),
   };
   ratios.cost_per_asset_change = ratios.cost_per_asset === null ? null : ratios.cost_per_asset - 1;
+  ratios.cost_per_campaign_market_change = ratios.cost_per_campaign_market === null ? null : ratios.cost_per_campaign_market - 1;
   ratios.total_cost_change = ratios.total_cost === null ? null : ratios.total_cost - 1;
   // Absolute changes, scenario minus baseline: the production cost rise that a
   // flat total marketing budget has to fund by reallocation (CR-02).
