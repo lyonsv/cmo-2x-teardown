@@ -162,8 +162,11 @@ test('form: five groups, twelve fields in order with label, input, unit, chip an
     assert.ok(html_.includes(`<a class="chip ${CHIP_CLASS[grade]}" href="#${f.asm}">${grade}</a>`), `${f.key} chip`);
     const hint = html_.match(new RegExp(`<p class="hint" id="hint-${f.key}">([^<]*)</p>`));
     assert.ok(hint && hint[1].startsWith(`Default ${toText(f, d)}`), `${f.key} hint`);
-    if (f.key === 'reviewers') assert.match(hint[1], /utilisation, cycle time and break-even only/);
-    if (f.key === 'marketers') assert.match(hint[1], /output per head only/);
+    // WR-02: hints must not claim an input changes "only" some outputs; both FTE
+    // inputs also feed the scenario table (change cost, required and freed FTE).
+    assert.ok(!/\bonly\b/.test(hint[1]), `${f.key} hint makes an "only" claim`);
+    if (f.key === 'reviewers') assert.match(hint[1], /utilisation, cycle time, break-even, the capacity floor and the headcount scenario, but not production cost\./);
+    if (f.key === 'marketers') assert.match(hint[1], /output per head and the one-off change cost\./);
     assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
   });
   assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 3, 4, 2, 0]);
