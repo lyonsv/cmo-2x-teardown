@@ -38,7 +38,7 @@
         <dt><span class="chip c-b">Benchmark</span></dt>
         <dd>Published by a primary or otherwise checkable source, and the figure matches it.</dd>
         <dt><span class="chip c-m">Modelled</span></dt>
-        <dd>Derived by this page from stated assumptions; change the assumption and the number changes.</dd>
+        <dd>Derived by this page from stated assumptions; change the assumption and the number changes. A figure that only the company concerned reports is also graded Modelled, never Benchmark, and is flagged company-reported: the page uses it as an input it cannot check.</dd>
         <dt><span class="chip c-s">Speculative</span></dt>
         <dd>A judgement with no checkable source; shown so you can discount it.</dd>
         <dt><span class="flag">vendor-claimed</span> <span class="flag">company-reported</span></dt>
@@ -468,7 +468,7 @@
       </ul>
       <p>In practice a verdict is a short record: pass, fix or escalate, each with the rule IDs behind it. A pass with nothing unchecked can proceed to the tier gate. A fix returns to the generator with the cited rules as instructions. An escalation goes to a person with the findings attached, so the person starts from the evidence and not from the asset alone. How often the agent itself is right is measured by <a href="#s08">the eval harness</a>.</p>
       <p>The review loop is a pattern, not an invention. This is the equivalent of <a href="#src-intercom-2x-teardown">Intercom's review agent</a>, which inspired the design described here. <a class="chip c-m" href="#asm-review-agent-design">Modelled</a></p>
-      <p>The reference gives one honest datum. In that reference, which reviews code changes rather than marketing assets, about <span data-fig="ref-auto-approved-share">19.2%</span> <a class="chip c-m" href="#src-intercom-2x-teardown">Modelled</a> <span class="flag">company-reported</span> of merged changes were approved with no human, against a stated goal of more than half, and the rolling bot approval rate was <span data-fig="ref-bot-approval-rate">28.4%</span>. Marketing assets are not code, so treat this as a sense of scale and not a forecast. <a href="#s07">The auto-approval gate</a> shows what those rates would mean for reviewer capacity.</p>
+      <p>The reference gives one honest datum. In that reference, which reviews code changes rather than marketing assets, about <span data-fig="ref-auto-approved-share">19.2%</span> <a class="chip c-m" href="#src-intercom-2x-teardown">Modelled</a> <span class="flag">company-reported</span> of merged changes were approved with no human, against a stated goal of more than half, and the rolling bot approval rate was <span data-fig="ref-bot-approval-rate">28.4%</span> <span class="flag">company-reported</span>. Marketing assets are not code, so treat this as a sense of scale and not a forecast. <a href="#s07">The auto-approval gate</a> shows what those rates would mean for reviewer capacity.</p>
     </section>
     <section id="s07" aria-labelledby="s07-h">
       <div class="sec-head"><span class="sec-num">07</span><h2 id="s07-h">The auto-approval gate</h2></div>

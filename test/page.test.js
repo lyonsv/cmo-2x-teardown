@@ -854,3 +854,20 @@ test('tier rules agree: T1 reuses approved claims, any new claim is T2 or above 
   assert.ok(/new or comparative claims/i.test(strip(ah[2])));
   assert.ok(/any new claim starts at T2/.test(strip(ah[1])));
 });
+
+// ---- Code review WR-03: company-reported figures have a written grade rule and a flag on every appearance ----
+
+test('legend states the grade rule for company-reported figures and every such figure follows it (WR-03)', () => {
+  const start = html.indexOf('class="legend"');
+  const legend = strip(html.slice(start, html.indexOf('</div>', start)));
+  assert.ok(legend.includes('A figure that only the company concerned reports is also graded Modelled, never Benchmark, and is flagged company-reported'));
+  const reported = Object.values(claims).filter((c) => c.flag === 'company-reported');
+  assert.ok(reported.length >= 2);
+  for (const c of reported) assert.equal(c.grade, 'Modelled', `${c.id}: company-reported figures are Modelled`);
+  // each appearance of the reference datum carries the flag right after it (or after its chip)
+  for (const id of ['ref-auto-approved-share', 'ref-bot-approval-rate']) {
+    const re = new RegExp(`<span data-fig="${id}">[^<]*</span>\\s*(?:<a class="chip[^>]*>[^<]*</a>\\s*)?<span class="flag">company-reported</span>`, 'g');
+    const all = (html.match(new RegExp(`data-fig="${id}"`, 'g')) || []).length;
+    assert.equal((html.match(re) || []).length, all, `${id}: flag missing on an appearance`);
+  }
+});
