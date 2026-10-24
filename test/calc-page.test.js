@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { modelContext, claims, assumptions } from '../site/js/data.js';
 import { present, defaultValues, RESULT_ROWS } from '../site/js/model.js';
 import { FIELDS } from '../site/js/fields.js';
@@ -180,4 +180,29 @@ test('error summary and share panel markup', () => {
   assert.ok(share.inner.includes('<button type="button" class="btn" id="reset-calc">Reset to defaults</button>'));
   assert.ok(share.inner.includes('The link stores your inputs in the address only. Nothing is sent or saved.'));
   assert.ok(share.inner.includes('<p role="status" class="share-status"></p>'));
+});
+
+// ---- Plan 03-06: browser-side source hygiene ----
+
+test('site/js sources avoid HTML injection, storage, network and dynamic code', () => {
+  const dir = new URL('../site/js/', import.meta.url);
+  const FORBIDDEN = ['innerHTML', 'insertAdjacentHTML', 'outerHTML', 'document.write', '.style.', "setAttribute('style'",
+    'localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'XMLHttpRequest', 'eval(', 'new Function'];
+  for (const file of ['ui.js', 'model.js', 'state.js', 'fields.js', 'format.js']) {
+    const src = readFileSync(new URL(file, dir), 'utf8');
+    for (const bad of FORBIDDEN) assert.ok(!src.includes(bad), `${file} contains ${bad}`);
+  }
+});
+
+test('every import specifier in site/js is a same-folder relative path', () => {
+  const dir = new URL('../site/js/', import.meta.url);
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.js'))) {
+    const src = readFileSync(new URL(file, dir), 'utf8');
+    for (const [, spec] of src.matchAll(/(?:from|import)\s*\(?\s*'([^']+)'/g)) assert.ok(spec.startsWith('./'), `${file}: ${spec}`);
+  }
+});
+
+test('ui.js stays thin', () => {
+  const lines = readFileSync(new URL('../site/js/ui.js', import.meta.url), 'utf8').split('\n').length;
+  assert.ok(lines < 300, `ui.js is ${lines} lines`);
 });

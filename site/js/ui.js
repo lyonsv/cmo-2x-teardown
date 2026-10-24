@@ -1,2 +1,214 @@
-// Stub: the live binding arrives in the next task. Only marks the page as scripted.
+// Thin DOM binding for the s11 calculator. All maths and parsing live in
+// model.js and state.js; this file only moves text between them and the page.
+// Text is written with textContent only; nothing is stored or sent.
+import { modelContext } from './data.js';
+import { present, defaultValues } from './model.js';
+import { FIELDS } from './fields.js';
+import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
+
 document.documentElement.classList.add('js');
+
+const ctx = modelContext();
+const defaults = defaultValues(ctx);
+const $ = (id) => document.getElementById(id);
+const status = document.querySelector('.calc-status');
+const summary = $('calc-summary');
+const errBox = document.querySelector('.calc-errors');
+const shareLink = $('share-link');
+const shareStatus = document.querySelector('.share-status');
+const rows = [...document.querySelectorAll('[aria-label="Calculator results"] tbody tr')];
+const inputs = Object.fromEntries(FIELDS.map((f) => [f.key, $(`in-${f.key}`)]));
+
+let scenario = defaults.scenario;
+const touched = new Set();
+let tableTimer = 0;
+let summaryTimer = 0;
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function read() {
+  const values = { ...defaults, scenario };
+  const errors = [];
+  for (const f of FIELDS) {
+    const r = coerce(f, inputs[f.key].value);
+    if (r.ok) values[f.key] = r.value;
+    else errors.push({ key: f.key, message: r.message });
+  }
+  return { values, errors };
+}
+
+function fillInputs(values) {
+  for (const f of FIELDS) inputs[f.key].value = toText(f, values[f.key]);
+}
+
+function setCell(td, node, withValue) {
+  td.textContent = '';
+  if (withValue === 'dash') {
+    td.removeAttribute('class');
+    td.append('—', el('span', 'visually-hidden', 'not available'));
+    return;
+  }
+  if (node.value !== undefined) {
+    td.className = 'num';
+    const span = el('span', '', node.text);
+    span.setAttribute('data-fig', withValue);
+    td.append(span);
+  } else {
+    td.removeAttribute('class');
+    td.append(node.text);
+  }
+}
+
+function writeResults(p) {
+  p.rows.forEach((row, i) => {
+    const tds = rows[i].querySelectorAll('td');
+    ['base', 'scaled', 'change'].forEach((name, c) => setCell(tds[c], row[name], `calc-${row.id}-${name}`));
+  });
+}
+
+function dashResults() {
+  for (const tr of rows) [...tr.querySelectorAll('td')].slice(0, 3).forEach((td) => setCell(td, null, 'dash'));
+}
+
+function showFieldErrors(errors) {
+  const byKey = new Map(errors.filter((e) => e.key).map((e) => [e.key, e.message]));
+  for (const f of FIELDS) {
+    const input = inputs[f.key];
+    const field = input.closest('.field');
+    const old = $(`err-${f.key}`);
+    if (old) old.remove();
+    const msg = byKey.get(f.key);
+    if (!msg) {
+      input.removeAttribute('aria-invalid');
+      field.classList.remove('is-invalid');
+      input.setAttribute('aria-describedby', `hint-${f.key}`);
+      continue;
+    }
+    input.setAttribute('aria-invalid', 'true');
+    field.classList.add('is-invalid');
+    const p = el('p', 'field-error');
+    p.id = `err-${f.key}`;
+    const rest = msg.startsWith(`${f.label}: `) ? msg : `${f.label}: ${msg}`;
+    p.append(el('b', '', 'Error:'), ` ${rest}`);
+    field.append(p);
+    input.setAttribute('aria-describedby', `hint-${f.key} err-${f.key}`);
+  }
+}
+
+function showSummary(errors) {
+  const list = errBox.querySelector('ul');
+  list.textContent = '';
+  if (errors.length === 0) {
+    errBox.setAttribute('hidden', '');
+    return;
+  }
+  const overflow = errors.find((e) => !e.key);
+  errBox.querySelector('b').textContent = overflow ? overflow.message : `Fix ${errors.length} ${errors.length === 1 ? 'input' : 'inputs'} to see results`;
+  for (const e of errors) {
+    const li = el('li');
+    if (e.key) {
+      const a = el('a', '', e.message);
+      a.setAttribute('href', `#in-${e.key}`);
+      li.append(a);
+    } else li.textContent = 'Reduce the largest input and try again.';
+    list.append(li);
+  }
+  errBox.removeAttribute('hidden');
+}
+
+let pendingNotice = '';
+
+function statusText(values) {
+  const n = changedCount(values, ctx);
+  const line = n === 0 ? 'Showing: page defaults' : `Showing: your numbers (${n} changed)`;
+  return pendingNotice ? `${pendingNotice} ${line}` : line;
+}
+
+// Re-reads every input and repaints. `commit` is true for change/blur/reset/restore.
+function update(commit, immediateSummary) {
+  const { values, errors: fieldErrors } = read();
+  const errors = fieldErrors.length > 0 ? fieldErrors : validate(values, ctx);
+  const visible = fieldErrors.length > 0 ? errors.filter((e) => touched.has(e.key)) : errors;
+  showFieldErrors(visible);
+  showSummary(visible);
+  clearTimeout(summaryTimer);
+  if (errors.length > 0) {
+    dashResults();
+    summary.textContent = 'Results are not available until the inputs are fixed.';
+    status.textContent = pendingNotice || 'Showing: results not available';
+    return;
+  }
+  const p = present(values, ctx);
+  writeResults(p);
+  const writeSummary = () => { summary.textContent = p.summary; };
+  if (immediateSummary) writeSummary();
+  else summaryTimer = setTimeout(writeSummary, 400);
+  status.textContent = statusText(values);
+  const hash = serialiseHash(values, ctx);
+  shareLink.value = location.href.split('#')[0] + hash;
+  if (commit) history.replaceState(null, '', hash || location.pathname + location.search);
+}
+
+function restore() {
+  const parsed = parseHash(location.hash, ctx);
+  fillInputs(parsed.values);
+  scenario = parsed.values.scenario;
+  touched.clear();
+  pendingNotice = parsed.notices.length > 0
+    ? `Some values in the link were not valid, so defaults were used for: ${parsed.notices.join(', ')}.` : '';
+  update(false, true);
+  pendingNotice = '';
+  if (!parsed.restored) return;
+  const h = $('s11-h');
+  h.setAttribute('tabindex', '-1');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('s11').scrollIntoView({ behavior: calm ? 'auto' : 'smooth' });
+  h.focus({ preventScroll: true });
+}
+
+const form = document.querySelector('.calc-form');
+form.addEventListener('submit', (e) => e.preventDefault());
+form.addEventListener('input', (e) => {
+  const key = e.target.name;
+  clearTimeout(tableTimer);
+  pendingNotice = '';
+  tableTimer = setTimeout(() => update(false, false), 250);
+  if (touched.has(key)) update(false, false);
+});
+form.addEventListener('change', (e) => {
+  clearTimeout(tableTimer);
+  pendingNotice = '';
+  if (e.target.name) touched.add(e.target.name);
+  update(true, true);
+});
+
+$('copy-link').addEventListener('click', () => {
+  const done = (msg) => { shareStatus.textContent = msg; };
+  const fail = () => {
+    shareLink.select();
+    done('Could not copy. Select the link and copy it manually.');
+  };
+  if (!navigator.clipboard) return fail();
+  navigator.clipboard.writeText(shareLink.value).then(() => done('Link copied.'), fail);
+});
+
+$('reset-calc').addEventListener('click', () => {
+  fillInputs(defaults);
+  scenario = defaults.scenario;
+  touched.clear();
+  pendingNotice = '';
+  update(true, true);
+  shareStatus.textContent = '';
+  inputs.campaigns.focus();
+});
+
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#s11?')) restore();
+});
+
+restore();
