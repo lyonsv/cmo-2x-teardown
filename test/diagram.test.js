@@ -123,13 +123,44 @@ test('accent discipline', () => {
   }
 });
 
+// Code review WR-08: Figure 6's text equivalent is the tier table directly after
+// it, so the table must carry every node's tier, example and approver, and the
+// "auto above, human below" divider must agree with the Who approves column.
+function figure6MatchesTierTable(f) {
+  const after = html.slice(f.index + f.html.length);
+  const m = after.match(/^\s*<div class="table-scroll"[^>]*>\s*<table>\s*<caption>Approval tiers \(illustrative\)<\/caption>[\s\S]*?<\/table>/);
+  assert.ok(m, 'the tier table must be the next element after Figure 6');
+  const rows = m[0].match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr\b[^>]*>[\s\S]*?<\/tr>/g);
+  const divider = Number(attr(f.svg.match(/<line class="edge edge-soft"[^>]*>/)[0], 'y1'));
+  const stems = (t) => (t.toLowerCase().match(/[a-z]+/g) || []).filter((w) => w.length >= 4 && w !== 'gate').map((w) => w.slice(0, 5));
+  const ns = nodes(f.svg);
+  assert.equal(ns.length, rows.length);
+  ns.forEach((n, i) => {
+    const [title, sub] = [...n.html.matchAll(/<tspan\b[^>]*>([\s\S]*?)<\/tspan>/g)].map((x) => decode(x[1]));
+    const tier = title.match(/^(T[0-3]) · (.+)$/);
+    assert.ok(tier, `node ${i} title ${title}`);
+    const row = rows.find((r) => r.includes(`<th scope="row" class="tier">${tier[1]}</th>`));
+    assert.ok(row, `${tier[1]} row`);
+    const [examples, who] = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((x) => strip(x[1]).toLowerCase());
+    for (const w of stems(tier[2])) assert.ok(examples.includes(w), `${tier[1]}: node says "${tier[2]}" but the table examples lack "${w}"`);
+    for (const w of stems(sub)) assert.ok(who.includes(w), `${tier[1]}: node says "${sub}" but Who approves lacks "${w}"`);
+    const y = Number(attr(n.html.match(/<rect\b[^>]*>/)[0], 'y'));
+    if (i < 2) {
+      assert.ok(y < divider, `${tier[1]} sits above the auto/human divider`);
+      assert.ok(/sample/.test(who), `${tier[1]} clears on a sampled auto path`);
+    } else {
+      assert.ok(y > divider, `${tier[1]} sits below the auto/human divider`);
+      assert.ok(/human/.test(who) && !/sample/.test(who), `${tier[1]} always reaches a person`);
+    }
+  });
+}
+
 test('visible text equivalent', () => {
   for (const f of figures()) {
     const ol = f.html.match(/<ol class="fig-steps">([\s\S]*?)<\/ol>/);
     if (f.n === 6) {
       assert.ok(/see the table/i.test(strip(f.html.match(/<figcaption>[\s\S]*?<\/figcaption>/)[0])));
-      const sec = html.slice(f.index, html.indexOf('</section>', f.index));
-      assert.ok(sec.includes('<table>'), 'Figure 6 section has a table');
+      figure6MatchesTierTable(f);
       continue;
     }
     assert.ok(f.html.includes('<h3 class="steps-h">Steps in this figure</h3>'), `Figure ${f.n} steps heading`);
