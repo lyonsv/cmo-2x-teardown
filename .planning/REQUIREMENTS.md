@@ -65,13 +65,13 @@
 
 ### Calculator
 
-- [ ] **CALC-01**: Reader can enter their own inputs (assets per campaign, campaigns per year, team size, cost per asset, locales, tier mix, etc.) and see baseline vs 2x output, fully loaded cost per approved-live asset, and cycle time update live
+- [x] **CALC-01**: Reader can enter their own inputs (assets per campaign, campaigns per year, team size, cost per asset, locales, tier mix, etc.) and see baseline vs 2x output, fully loaded cost per approved-live asset, and cycle time update live
 - [ ] **CALC-02**: Reader sees every assumption with its grade, the "show the maths" breakdown, and a "what you must believe" panel; each output inherits the grade of its weakest input
 - [x] **CALC-03**: Reader sees the break-even auto-approval rate required for 2x at flat review headcount
 - [ ] **CALC-04**: Reader can switch between headcount scenarios (redeploy / hold / reduce), with change-management cost included
 - [ ] **CALC-05**: Reader sees a sensitivity table for the most influential inputs
 - [ ] **CALC-06**: Reader can share a scenario via a URL hash that restores all inputs
-- [ ] **CALC-07**: Invalid or zero inputs show a validation message, never NaN or Infinity
+- [x] **CALC-07**: Invalid or zero inputs show a validation message, never NaN or Infinity
 - [x] **CALC-08**: The calculator maths is a pure `calc.js` module covered by `node:test` tests: 1x identity, monotonicity, a hand-calculated golden case, edge inputs, and cost per approved asset falling with volume
 
 ### Comparison
@@ -163,13 +163,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEVER-05 | Phase 3 | Complete |
 | OUTC-01 | Phase 3 | Complete |
 | OUTC-02 | Phase 3 | Complete |
-| CALC-01 | Phase 3 | Pending |
+| CALC-01 | Phase 3 | Complete |
 | CALC-02 | Phase 3 | Pending |
 | CALC-03 | Phase 3 | Complete |
 | CALC-04 | Phase 3 | Pending |
 | CALC-05 | Phase 3 | Pending |
 | CALC-06 | Phase 3 | Pending |
-| CALC-07 | Phase 3 | Pending |
+| CALC-07 | Phase 3 | Complete |
 | COMP-01 | Phase 3 | Pending |
 | COMP-02 | Phase 3 | Pending |
 | COMP-03 | Phase 3 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-10-24T16:41:54.291Z"
+stopped_at: Completed 03-06-PLAN.md
+last_updated: "2026-10-24T16:47:42.252Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 27
-  completed_plans: 20
+  completed_plans: 21
   percent: 50
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-10-24)
 ## Current Position
 
 Phase: 3 (Levers, Outcomes, Calculator & Comparison Slice) — EXECUTING
-Plan: 6 of 12
+Plan: 7 of 12
 Status: Ready to execute
 Last activity: 2026-10-24
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [███████░░░] 70%
 | Phase 3 P01 | 25min | 2 tasks | 6 files |
 | Phase 3 P03 | 25min | 2 tasks | 4 files |
 | Phase 3 P05 | 40min | 2 tasks | 10 files |
+| Phase 3 P06 | 55min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,7 @@ Progress: [███████░░░] 70%
 - [Phase 2]: Reference datum 19.2%/28.4% graded Modelled + company-reported; 60% auto-approval framed as a Modelled target (71% of 85% eligible)
 - [Phase 2]: Capacity claims are literal values with override markers, recomputed in test from a test-local scenario table
 - [Phase 3]: Post-editing range 9.26-59.74% graded Modelled with scope caveats; vendor case anonymised and flagged vendor-claimed
+- [Phase 3]: 03-06: #s11? hash counts as restored even if all values invalid; summary debounced 400ms, table 250ms
 
 ### Pending Todos
 
@@ -97,6 +99,6 @@ Progress: [███████░░░] 70%
 
 ## Session Continuity
 
-Last session: 2026-10-24T16:41:54.287Z
-Stopped at: Completed 03-05-PLAN.md
+Last session: 2026-10-24T16:47:42.246Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None

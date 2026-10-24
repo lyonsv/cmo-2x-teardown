@@ -129,7 +129,7 @@ Plans:
   4. Reader sees the break-even auto-approval rate at flat review headcount, redeploy/hold/reduce scenarios with change-management cost, and a sensitivity table. Invalid or zero inputs show a message, never NaN or Infinity, and a URL hash restores a shared scenario.
   5. Reader sees the comparison matrix and per-vendor slot-in/alternative/falls-short text ("not publicly documented" wording), each vendor outcome flagged vendor-claimed with source URL and access date, category-level build-vs-buy and lock-in guidance, and the admission that the spine is a design not a shipped product. Vendor names appear only here and in the source register.
 
-**Plans:** 5/12 plans executed
+**Plans:** 6/12 plans executed
 
 Plans:
 **Wave 1**
@@ -154,7 +154,7 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
-- [ ] 03-06-PLAN.md — Live calculator: state.js hash/validation, form, ui.js, CSP script-src 'self', headless smoke
+- [x] 03-06-PLAN.md — Live calculator: state.js hash/validation, form, ui.js, CSP script-src 'self', headless smoke
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
@@ -207,5 +207,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
-| 3. Levers, Outcomes, Calculator & Comparison Slice | 5/12 | In Progress|  |
+| 3. Levers, Outcomes, Calculator & Comparison Slice | 6/12 | In Progress|  |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
