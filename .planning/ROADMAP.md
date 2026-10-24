@@ -197,12 +197,12 @@ Plans:
   4. Reader can use the page with a keyboard and screen reader (labelled inputs, aria-live outputs, data-table equivalents, grades not by colour alone), at 320 CSS px with tables scrolling in their own regions, and can print it cleanly.
   5. Primary sources, vendor facts, EU AI Act Art. 50 and Getty v Stability status are re-verified and date-stamped, the legal wording is flagged for review, and the production deploy is live.
 
-**Plans:** 9 plans
+**Plans:** 1/9 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — Phase 3 UI-review fixes and the s11 group grade rule (chip density), s12 matrix de-densified, hashchange smoke case
+- [x] 04-01-PLAN.md — Phase 3 UI-review fixes and the s11 group grade rule (chip density), s12 matrix de-densified, hashchange smoke case
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -245,4 +245,4 @@ Plans:
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
 | 2. Factory & Spine Slice | 8/8 | Complete    | 2026-10-24 |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 12/12 | Complete    | 2026-10-24 |
-| 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
+| 4. Adoption, Risk, Evidence & Publish Slice | 1/9 | In Progress|  |
