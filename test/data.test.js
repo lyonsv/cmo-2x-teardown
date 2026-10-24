@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  GRADES, FLAGS, PUBLISHER_TYPES, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions, variantMatrixDefaults,
+  GRADES, FLAGS, SCENARIO, PUBLISHER_TYPES, formatValue, claims, assumptions, sources, defaultInputs, defaultAssumptions, variantMatrixDefaults,
 } from '../site/js/data.js';
 import { compute, variantMatrix } from '../site/js/calc.js';
 
@@ -90,13 +90,54 @@ test('gartner-share-2026 grade matches the 01-02 browser check', () => {
 
 test('s02 derived claims carry the expected displays', () => {
   const want = {
-    'cpa-base': '$64.71', 'cpa-scaled': '$41.18', 'cpa-change': '\u221236%',
-    'total-cost-base': '$2.59M', 'total-cost-scaled': '$3.29M',
-    'budget-share-base': '3.3%', 'budget-share-scaled': '4.2%',
+    // Hand arithmetic: 3,620,631 / 80,000 = 45.26; 45.26 / 64.71 - 1 = -30%; 3.62M / 2.59M - 1 = +40%; 3.62M / 78M = 4.6%.
+    'cpa-base': '$64.71', 'cpa-scaled': '$45.26', 'cpa-change': '\u221230%',
+    'total-cost-base': '$2.59M', 'total-cost-scaled': '$3.62M', 'total-cost-delta': '$1.03M', 'total-cost-change': '+40%',
+    'budget-share-base': '3.3%', 'budget-share-scaled': '4.6%',
+    // Campaign-markets: 40 x 5 / 4 = 50 a quarter, doubled to 100; cost per campaign-market 2.59M / 200 = $12,943, 3.62M / 400 = $9,052.
+    'cm-base': '50', 'cm-scaled': '100', 'btl-base': '11.8 days', 'btl-scaled': '7.5 days',
+    'cpcm-base': '$12,943', 'cpcm-scaled': '$9,052', 'cpcm-change': '\u221230%',
+    'concepts-scaled': '1,414',
+    'cpa-generation-scaled': '$22.06', 'cpa-review-scaled': '$9.68', 'cpa-rework-scaled': '$1.58',
+    'cpa-tooling-scaled': '$7.50', 'cpa-rights-scaled': '$4.42', 'cpa-storage-scaled': '$0.02',
     'ai-spend-base': '$38,421', 'ai-spend-scaled': '$340,421', 'ai-spend-ratio': '8.9x',
     'break-even-auto-approval': '41%',
   };
   for (const [id, d] of Object.entries(want)) assert.equal(claims[id].display, d, id);
+});
+
+test('removed per-head, weighted and variants-per-concept claims and assumptions are gone', () => {
+  for (const id of ['output-per-head-base', 'output-per-head-scaled', 'weighted-ratio', 'vpc-base', 'vpc-scaled']) {
+    assert.equal(id in claims, false, id);
+  }
+  for (const id of ['asm-variants-per-concept', 'asm-locales', 'asm-formats-per-locale', 'asm-concept-growth', 'asm-tier-weights']) {
+    assert.equal(id in assumptions, false, id);
+  }
+});
+
+test('campaign-markets double exactly, and cost per campaign-market is total cost over campaign-markets', () => {
+  assert.equal(claims['cm-scaled'].value / claims['cm-base'].value, SCENARIO.multiplier);
+  const expected = claims['total-cost-base'].value / (claims['cm-base'].value * 4);
+  assert.ok(Math.abs(claims['cpcm-base'].value - expected) <= 0.5 + 1e-9, 'cpcm-base within rounding');
+  const scaled = claims['total-cost-scaled'].value / (claims['cm-scaled'].value * 4);
+  assert.ok(Math.abs(claims['cpcm-scaled'].value - scaled) <= 0.5 + 1e-9, 'cpcm-scaled within rounding');
+});
+
+test('campaign-market assumptions: markets and formats are inputs, the route is a Modelled model row', () => {
+  for (const id of ['asm-markets', 'asm-formats-per-market']) {
+    assert.equal(assumptions[id].kind, 'input', id);
+    assert.equal(assumptions[id].grade, 'Modelled', id);
+    assert.match(assumptions[id].basis, /no published benchmark/i, id);
+  }
+  assert.equal(assumptions['asm-markets'].key, 'markets_per_campaign');
+  assert.equal(assumptions['asm-markets'].value, 5);
+  assert.equal(assumptions['asm-formats-per-market'].value, 8);
+  const route = assumptions['asm-growth-route'];
+  assert.equal(route.kind, 'model');
+  assert.equal(route.value, 0.5);
+  assert.equal(route.key, 'campaign_growth_share');
+  assert.equal(route.grade, 'Modelled');
+  assert.equal(defaultAssumptions().campaign_growth_share, 0.5);
 });
 
 test('new format kinds', () => {
@@ -170,6 +211,7 @@ test('avg-campaign-variants equals the model average campaign', () => {
   const r = compute(defaultInputs(), defaultAssumptions());
   const c = claims['avg-campaign-variants'];
   assert.equal(c.value, r.baseline.variants_per_year / defaultInputs().campaigns_per_year);
+  assert.equal(c.value, assumptions['asm-concepts-per-campaign'].value * assumptions['asm-formats-per-market'].value * assumptions['asm-markets'].value);
   assert.equal(c.display, '1,000');
   assert.equal(c.ref, 'asm-campaigns');
 });
@@ -341,7 +383,7 @@ test('capacity claims recompute under their own scenario', () => {
   const SCENARIOS = {
     'cap-1x-nogate': [1, 0, 'asm-auto-approval', null], 'cap-1x-gate': [1, 0.2, 'asm-auto-approval', null],
     'cap-2x-nogate': [2, 0, 'asm-auto-approval', null], 'cap-2x-gate': [2, 0.6, 'asm-auto-approval', null],
-    'cap-1x-variants': [1, 0.2, 'asm-variants-per-concept', null], 'cap-2x-variants': [2, 0.6, 'asm-variants-per-concept', null],
+    'cap-1x-variants': [1, 0.2, 'asm-formats-per-market', null], 'cap-2x-variants': [2, 0.6, 'asm-formats-per-market', null],
     'cap-2x-ref-low': [2, 0.192, 'src-intercom-2x-teardown', 'company-reported'],
     'cap-2x-ref-high': [2, 0.284, 'src-intercom-2x-teardown', 'company-reported'],
     'cap-capacity-hours': [1, 0.2, 'asm-reviewer-hours', null],
@@ -532,7 +574,7 @@ test('Plan 03-03 statute sources, claims, incident assumption and ops claims', (
   assert.equal(a.grade, 'Speculative'); assert.equal(a.value, 0.001); assert.equal(a.display, '1 in 1,000 master concepts');
   assert.ok(a.basis.includes('Treat this rate as yours to replace'));
   const inc = claims['concepts-scaled'].value * 0.001;
-  const want = { 'ops-incidents': [inc, '1.2'], 'ops-exposure-lo': [inc * 750, formatValue(inc * 750, 'usd0')], 'ops-exposure-hi': [inc * 30000, formatValue(inc * 30000, 'usd0')], 'ops-exposure-wilful': [inc * 150000, formatValue(inc * 150000, 'usd0')] };
+  const want = { 'ops-incidents': [inc, '1.4'], 'ops-exposure-lo': [inc * 750, formatValue(inc * 750, 'usd0')], 'ops-exposure-hi': [inc * 30000, formatValue(inc * 30000, 'usd0')], 'ops-exposure-wilful': [inc * 150000, formatValue(inc * 150000, 'usd0')] };
   for (const [id, [value, display]] of Object.entries(want)) {
     const c = claims[id];
     assert.ok(Math.abs(c.value - value) < 1e-9, id);
@@ -628,12 +670,13 @@ test('calc claims equal present(defaults)', () => {
 });
 
 test('calculator assumptions are Modelled calc rows that the model ignores as inputs', () => {
-  for (const id of ['asm-locales', 'asm-formats-per-locale']) {
+  for (const id of ['asm-loaded-fte-cost', 'asm-change-mgmt']) {
     assert.equal(assumptions[id].grade, 'Modelled');
     assert.equal(assumptions[id].kind, 'calc');
   }
   assert.equal('locales' in defaultInputs(), false);
-  assert.equal(defaultInputs().variants_per_concept, 40);
+  assert.equal('variants_per_concept' in defaultInputs(), false);
+  assert.equal(defaultInputs().markets_per_campaign * defaultInputs().formats_per_market, 40);
 });
 
 test('scenario assumptions: Modelled calc rows with no-benchmark basis, carried in modelContext', () => {

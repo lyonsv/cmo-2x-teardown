@@ -3,17 +3,26 @@
 // import of data.js: everything it needs arrives in `ctx`, built by data.js
 // modelContext(). Imports are limited to calc.js, fields.js and format.js.
 import { compute } from './calc.js';
-import { COMPUTE_FIELD_TO_KEY, FIELDS, SCENARIOS } from './fields.js';
+import { COMPUTE_FIELD_TO_KEY, FIELDS, ROUTES, SCENARIOS } from './fields.js';
 import { formatValue } from './format.js';
 
-// ctx = { inputs, assumptions, grades: { 'asm-...': grade }, fixed: { formats_per_locale, default_locales } }
+// ctx = { inputs, assumptions, grades: { 'asm-...': grade }, fixed: { loaded_fte_cost, change_cost_per_fte } }
+
+// How you get to 2x: the share of the doubling that comes from more campaigns
+// (the rest from more markets), in log terms. See calc.js campaign_growth_share.
+export const ROUTE_SHARE = { both: 0.5, campaigns: 1, markets: 0 };
+
+function defaultRoute(ctx) {
+  const share = ctx.assumptions.campaign_growth_share;
+  return ROUTES.find((r) => ROUTE_SHARE[r] === share) ?? 'both';
+}
 
 export function defaultValues(ctx) {
   const a = ctx.assumptions;
   return {
     campaigns: ctx.inputs.campaigns_per_year,
     concepts: ctx.inputs.concepts_per_campaign,
-    locales: ctx.fixed.default_locales,
+    markets: ctx.inputs.markets_per_campaign,
     marketers: ctx.inputs.marketing_fte,
     reviewers: ctx.inputs.reviewer_fte,
     minutes: a.review_minutes_per_variant,
@@ -23,6 +32,7 @@ export function defaultValues(ctx) {
     rework: a.rework_rate,
     auto1: a.auto_approval_share.baseline,
     auto2: a.auto_approval_share.scaled,
+    route: defaultRoute(ctx),
     scenario: 'redeploy',
   };
 }
@@ -32,7 +42,7 @@ export function toCompute(values, ctx) {
     ...ctx.inputs,
     campaigns_per_year: values.campaigns,
     concepts_per_campaign: values.concepts,
-    variants_per_concept: ctx.fixed.formats_per_locale * values.locales,
+    markets_per_campaign: values.markets,
     marketing_fte: values.marketers,
     reviewer_fte: values.reviewers,
   };
@@ -44,12 +54,14 @@ export function toCompute(values, ctx) {
     approval_yield: values.yield,
     rework_rate: values.rework,
     auto_approval_share: { baseline: values.auto1, scaled: values.auto2 },
+    campaign_growth_share: ROUTES.includes(values.route) ? ROUTE_SHARE[values.route] : ROUTE_SHARE[defaultRoute(ctx)],
   };
   return { inputs, assumptions };
 }
 
 function keyFor(error) {
   const field = error.field;
+  if (field === 'campaign_growth_share') return 'route';
   if (field === 'auto_approval_share') return error.which === 'baseline' ? 'auto1' : 'auto2';
   if (typeof field === 'string' && Object.hasOwn(COMPUTE_FIELD_TO_KEY, field)) return COMPUTE_FIELD_TO_KEY[field];
   return null;

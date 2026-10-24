@@ -576,25 +576,26 @@ export const assumptions = {
   'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 0.078, 'share of revenue', '7.8%',
     'Set equal to the Gartner 2026 average; the subject org is an average respondent, not a benchmark.'),
   'asm-marketing-fte': a('asm-marketing-fte', 'Marketing headcount', 'input', 'marketing_fte', 120, 'FTE', '~120',
-    'A modelled team size for the subject organisation; there is no published source.'),
+    'A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE is used for the flat-headcount statement and the headcount scenarios.'),
   'asm-campaigns': a('asm-campaigns', 'Campaigns per year', 'input', 'campaigns_per_year', 40, 'campaigns', '~40',
     'A modelled campaign cadence; there is no published source.'),
   'asm-concepts-per-campaign': a('asm-concepts-per-campaign', 'Unique concepts per campaign', 'input', 'concepts_per_campaign', 25, 'concepts', '25',
     'A modelled creative breadth per campaign; there is no published source.'),
-  'asm-variants-per-concept': a('asm-variants-per-concept', 'Variants per concept', 'input', 'variants_per_concept', 40, 'variants', '40',
-    'A modelled count of sizes, locales and channel cuts per concept; there is no published source.'),
+  'asm-markets': a('asm-markets', 'Markets per campaign', 'input', 'markets_per_campaign', 5, 'markets', '5',
+    'One market is one country or language market with its own launch. A modelled count with no published benchmark; with eight formats per market it reproduces the forty variants per concept used for review load.'),
+  'asm-formats-per-market': a('asm-formats-per-market', 'Formats per market', 'input', 'formats_per_market', 8, 'formats', '8',
+    'Sizes and channel cuts per market: derived variants that are internal throughput and not the claim. Fixed in the calculator; no published benchmark.'),
   'asm-reviewer-fte': a('asm-reviewer-fte', 'Reviewer headcount', 'input', 'reviewer_fte', 12, 'FTE', '12',
     'A modelled review capacity; there is no published source.'),
-  'asm-concept-growth': a('asm-concept-growth', 'Concept growth exponent', 'model', 'concept_growth_exponent', 0.25, 'exponent', '0.25',
-    'Share of growth from new concepts in log terms; 0 means pure derivation.'),
+  'asm-growth-route': a('asm-growth-route', 'How you get to 2x', 'model', 'campaign_growth_share', 0.5, 'share of growth in log terms',
+    'Both: campaigns and markets each about 1.41x',
+    'Splits the doubling of campaign-markets between more campaigns and more markets in log terms: 1 means more campaigns only, 0 means more markets only, 0.5 means both, each grown by the square root of the multiplier. The page chose the default; there is no published benchmark.'),
 };
 
 assumptions['asm-tier-mix'] = {
   ...a('asm-tier-mix', 'Review tier mix', 'model', 'tier_mix', { baseline: [0.40, 0.35, 0.20, 0.05], scaled: [0.55, 0.30, 0.12, 0.03] }, 'share of variants',
     'T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x', 'Illustrative tier shares; no published benchmark exists'),
 };
-assumptions['asm-tier-weights'] = a('asm-tier-weights', 'Relative review effort per tier', 'model', 'tier_weights', [1, 2, 4, 8], 'relative effort', '1 / 2 / 4 / 8',
-  'Relative review effort per tier; used only for the weighted sensitivity because weights are arbitrary and gameable');
 assumptions['asm-approval-yield'] = a('asm-approval-yield', 'Approval yield', 'model', 'approval_yield', 0.95, 'share of derived variants', '95%',
   'Share of derived variants that clear the gate after the bounded fix loop; rejected variants still cost generation and review. No published benchmark.');
 
@@ -739,35 +740,30 @@ export const claims = {
     id: 'nyu-disclosure-drop', value: -0.315, unit: 'change in click-through as a fraction when AI involvement is disclosed', display: '\u221231.5%', format: 'pct1',
     grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
   },
-  'output-per-head-base': {
-    id: 'output-per-head-base', value: 83, unit: 'approved-live asset-variants per head per quarter', display: '83',
-    grade: 'Modelled', flag: null, ref: 'asm-variants-per-concept',
-    derived: 'baseline.output_per_head_per_quarter', decimals: 0, format: 'int',
-  },
-  'output-per-head-scaled': {
-    id: 'output-per-head-scaled', value: 167, unit: 'approved-live asset-variants per head per quarter', display: '167',
-    grade: 'Modelled', flag: null, ref: 'asm-variants-per-concept',
-    derived: 'scenario.output_per_head_per_quarter', decimals: 0, format: 'int',
-  },
   ...Object.fromEntries([
     ['concepts-base', 1000, 'baseline.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
-    ['concepts-scaled', 1189, 'scenario.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
-    ['vpc-base', 40, 'baseline.variants_per_concept', 'asm-variants-per-concept', 'variants per concept'],
-    ['vpc-scaled', 67, 'scenario.variants_per_concept', 'asm-variants-per-concept', 'variants per concept'],
+    ['concepts-scaled', 1414, 'scenario.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
   ].map(([id, value, derived, ref, unit]) => [id, {
     id, value, unit, display: formatValue(value, 'int'), grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
   }])),
   ...Object.fromEntries([
-    ['cpa-base', 64.71, 'baseline.cost_per_asset', 'asm-variant-cost', 'USD per approved-live asset', 2, 'usd2'],
-    ['cpa-scaled', 41.18, 'scenario.cost_per_asset', 'asm-variant-cost', 'USD per approved-live asset', 2, 'usd2'],
-    ['cpa-change', -0.36, 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved-live asset', 2, 'pctchg0'],
+    ['cm-base', 50, 'baseline.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets in market per quarter: one campaign live in one market counts once', 0, 'int'],
+    ['cm-scaled', 100, 'scenario.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets in market per quarter: one campaign live in one market counts once', 0, 'int'],
+    ['btl-base', 11.8, 'baseline.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
+    ['btl-scaled', 7.5, 'scenario.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
+    ['cpcm-base', 12943, 'baseline.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
+    ['cpcm-scaled', 9052, 'scenario.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
+    ['cpcm-change', -0.3, 'ratios.cost_per_campaign_market_change', 'asm-master-concept-cost', 'change in production cost per campaign-market', 2, 'pctchg0'],
+    ['cpa-base', 64.71, 'baseline.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
+    ['cpa-scaled', 45.26, 'scenario.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
+    ['cpa-change', -0.3, 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved asset', 2, 'pctchg0'],
     ['total-cost-base', 2588589, 'baseline.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
-    ['total-cost-scaled', 3294371, 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
-    ['total-cost-delta', 705782, 'deltas.total_cost', 'asm-variant-cost', 'USD per year, 2x minus baseline', 0, 'usdm2'],
-    ['total-cost-change', 0.27, 'ratios.total_cost_change', 'asm-variant-cost', 'change in production-attributable cost', 2, 'pctchg0'],
-    ['budget-share-delta', 0.009, 'deltas.production_share_of_budget', 'asm-marketing-budget', 'percentage points of marketing budget', 3, 'pts1'],
+    ['total-cost-scaled', 3620631, 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['total-cost-delta', 1032041, 'deltas.total_cost', 'asm-variant-cost', 'USD per year, 2x minus baseline', 0, 'usdm2'],
+    ['total-cost-change', 0.4, 'ratios.total_cost_change', 'asm-variant-cost', 'change in production-attributable cost', 2, 'pctchg0'],
+    ['budget-share-delta', 0.013, 'deltas.production_share_of_budget', 'asm-marketing-budget', 'percentage points of marketing budget', 3, 'pts1'],
     ['budget-share-base', 0.033, 'baseline.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
-    ['budget-share-scaled', 0.042, 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
+    ['budget-share-scaled', 0.046, 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
     ['ai-spend-base', 38421, 'baseline.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
     ['ai-spend-scaled', 340421, 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
     ['ai-spend-ratio', 8.9, 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
@@ -778,16 +774,16 @@ export const claims = {
     id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
   }])),
   ...Object.fromEntries(['base', 'scaled'].flatMap((side) => [
-    ['generation', 'asm-variant-cost', { base: 34.21, scaled: 18.68 }],
+    ['generation', 'asm-variant-cost', { base: 34.21, scaled: 22.06 }],
     ['review', 'asm-review-minutes', { base: 17.26, scaled: 9.68 }],
     ['rework', 'asm-rework-rate', { base: 3.22, scaled: 1.58 }],
     ['tooling', 'asm-tooling', { base: 3.75, scaled: 7.5 }],
-    ['rights', 'asm-rights-per-concept', { base: 6.25, scaled: 3.72 }],
+    ['rights', 'asm-rights-per-concept', { base: 6.25, scaled: 4.42 }],
     ['storage', 'asm-storage-per-variant', { base: 0.02, scaled: 0.02 }],
   ].map(([comp, ref, vals]) => {
     const id = `cpa-${comp}-${side}`;
     return [id, {
-      id, value: vals[side], unit: `USD per approved-live asset, ${comp}`, display: formatValue(vals[side], 'usd2'),
+      id, value: vals[side], unit: `USD per approved asset, ${comp}`, display: formatValue(vals[side], 'usd2'),
       grade: 'Modelled', flag: null, ref,
       derived: `${side === 'base' ? 'baseline' : 'scenario'}.cost_per_asset_by_component.${comp}`, decimals: 2, format: 'usd2',
     }];
@@ -823,10 +819,6 @@ export const claims = {
   'winrate-second-hand': {
     id: 'winrate-second-hand', value: 0.10, unit: 'share of experiments that led to a business change, second company quoted second-hand', display: '10%', format: 'pct0',
     grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
-  },
-  'weighted-ratio': {
-    id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,
-    ref: 'asm-tier-weights', derived: 'ratios.weighted_output_per_head', decimals: 1, format: 'x1',
   },
 };
 
@@ -875,7 +867,7 @@ export function defaultAssumptions() {
   claims['matrix-approved'] = { id: 'matrix-approved', value: approved, unit: 'approved-live variants in the worked campaign, at the approval yield',
     display: formatValue(approved, 'int'), grade: 'Modelled', flag: null, ref: 'asm-approval-yield', format: 'int' };
   claims['avg-campaign-variants'] = {
-    id: 'avg-campaign-variants', value: 1000, unit: 'approved-live variants per campaign in the model', display: '1,000',
+    id: 'avg-campaign-variants', value: 1000, unit: 'derived variants per campaign in the model: internal throughput, not the claim', display: '1,000',
     grade: 'Modelled', flag: null, ref: 'asm-campaigns',
   };
 }
@@ -936,8 +928,8 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
     put(`cap-${row}-hours`, hours, 'human review hours per year, before rework', `${side}.review_hours`, 0, 'int', override, 'asm-auto-approval');
     put(`cap-${row}-util`, util, 'reviewer utilisation, including rework', `${side}.utilisation`, 3, 'pct1', override, 'asm-auto-approval');
   }
-  put('cap-1x-variants', 40000, 'approved-live variants per year at 1x', 'baseline.variants_per_year', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-variants-per-concept');
-  put('cap-2x-variants', 80000, 'approved-live variants per year at 2x', 'scenario.variants_per_year', 0, 'int', { multiplier: 2, auto_approval_share: 0.6 }, 'asm-variants-per-concept');
+  put('cap-1x-variants', 40000, 'derived variants a year at 1x: internal throughput, not the claim', 'baseline.variants_per_year', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-formats-per-market');
+  put('cap-2x-variants', 80000, 'derived variants a year at 2x: internal throughput, not the claim', 'scenario.variants_per_year', 0, 'int', { multiplier: 2, auto_approval_share: 0.6 }, 'asm-formats-per-market');
   put('cap-capacity-hours', 14400, 'reviewer capacity, hours per year', 'baseline.review_capacity_hours', 0, 'int', { multiplier: 1, auto_approval_share: 0.2 }, 'asm-reviewer-hours');
   // IN-05: read the reference rates from their claims, so a corrected reference
   // figure flows through (data.test then flags the stale utilisation literal).
@@ -1009,14 +1001,10 @@ for (const [id, value, unit, display, ref] of [
 }
 
 // ---- Plan 03-05: calculator assumptions and generated result claims ----
-// Locales are folded into variants per concept as formats per locale x locales
-// (8 x 5 = 40). Both are Modelled and kind 'calc', so defaultInputs() and
-// defaultAssumptions() ignore them.
+// Markets and formats per market are registered above as kind 'input' (asm-markets,
+// asm-formats-per-market), so defaultInputs() carries them into compute(). The two
+// rows below are kind 'calc' and used only by the headcount scenarios.
 
-assumptions['asm-locales'] = a('asm-locales', 'Locales per concept', 'calc', null, 5, 'locales', '5',
-  'A modelled locale count; with eight formats per locale it reproduces the forty variants per concept used across the page. No published benchmark.');
-assumptions['asm-formats-per-locale'] = a('asm-formats-per-locale', 'Formats per locale', 'calc', null, 8, 'formats', '8',
-  'Sizes and channel cuts per locale; fixed in the calculator. No published benchmark.');
 assumptions['asm-loaded-fte-cost'] = a('asm-loaded-fte-cost', 'Loaded annual cost per FTE', 'calc', null, 150000, 'USD per FTE per year', '$150,000',
   'A round figure for salary plus on-costs, used only by the headcount scenarios; replace it with your own. No published benchmark.');
 assumptions['asm-change-mgmt'] = a('asm-change-mgmt', 'One-off change cost per affected FTE', 'calc', null, 3000, 'USD per affected FTE', '$3,000 per affected FTE',
@@ -1029,8 +1017,6 @@ export function modelContext() {
     assumptions: defaultAssumptions(),
     grades: Object.fromEntries(Object.values(assumptions).map((e) => [e.id, e.grade])),
     fixed: {
-      formats_per_locale: assumptions['asm-formats-per-locale'].value,
-      default_locales: assumptions['asm-locales'].value,
       loaded_fte_cost: assumptions['asm-loaded-fte-cost'].value,
       change_cost_per_fte: assumptions['asm-change-mgmt'].value,
     },
