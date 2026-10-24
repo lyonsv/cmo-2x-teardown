@@ -148,11 +148,15 @@ function side(inputs, a, which, m) {
   };
 }
 
-function breakEven(a, scenario) {
+// Minimum auto-approval share at 2x that keeps reviewer utilisation at or below
+// `utilisation`, at flat reviewer headcount. Called at target_utilisation (the
+// break-even the page headlines) and at 1 (the share below which review
+// capacity is exceeded outright).
+function breakEven(a, scenario, utilisation) {
   const S = (name) => pick(a[name], 'scaled');
   const q = S('sampling_rate') + S('escalation_rate');
   const denom = scenario.generated_variants_per_year * (1 + S('rework_rate')) * (S('review_minutes_per_variant') / 60);
-  const hStar = (a.target_utilisation * scenario.review_capacity_hours) / denom;
+  const hStar = (utilisation * scenario.review_capacity_hours) / denom;
   // Auto-approval can only clear T0 and T1 work (validation enforces the same cap),
   // so a break-even share above that cap is infeasible even when it is below 1.
   const mix = pick(a.tier_mix, 'scaled');
@@ -208,8 +212,11 @@ export function compute(inputs, assumptions) {
     total_cost: scenario.cost.total - baseline.cost.total,
     production_share_of_budget: scenario.production_share_of_budget - baseline.production_share_of_budget,
   };
-  const break_even_auto_approval = breakEven(assumptions, scenario);
-  const out = { ok: true, baseline, scenario, ratios, undefined_ratios, deltas, break_even_auto_approval };
+  const break_even_auto_approval = breakEven(assumptions, scenario, assumptions.target_utilisation);
+  const capacity_auto_approval = breakEven(assumptions, scenario, 1);
+  const out = {
+    ok: true, baseline, scenario, ratios, undefined_ratios, deltas, break_even_auto_approval, capacity_auto_approval,
+  };
   // Last resort only: validation should stop every bad input first. Reaching
   // this means overflow from extreme but individually valid inputs, so no single
   // field can honestly be blamed.

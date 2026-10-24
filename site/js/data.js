@@ -189,6 +189,7 @@ export const claims = {
     ['ai-spend-scaled', 340421, 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
     ['ai-spend-ratio', 8.9, 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
     ['break-even-auto-approval', 0.41, 'break_even_auto_approval.value', 'asm-auto-approval', 'minimum auto-approval share at flat reviewers', 2, 'pct0'],
+    ['capacity-auto-approval', 0.29, 'capacity_auto_approval.value', 'asm-auto-approval', 'auto-approval share below which review capacity is exceeded', 2, 'pct0'],
   ].map(([id, value, derived, ref, unit, decimals, format]) => [id, {
     id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
   }])),

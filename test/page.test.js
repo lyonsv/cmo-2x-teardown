@@ -291,3 +291,12 @@ test('answer cites the same Gartner year the model uses for the budget share (IN
   assert.ok(!a.includes('data-fig="gartner-share-2025"'));
   assert.equal(assumptions['asm-budget-share'].display, claims['gartner-share-2026'].display);
 });
+
+test('review-constraint copy separates the utilisation target from capacity (WR-03)', () => {
+  const s = sectionHtml('s02');
+  for (const id of ['break-even-auto-approval', 'asm-target-utilisation', 'capacity-auto-approval']) {
+    assert.ok(s.includes(`data-fig="${id}"`), id);
+  }
+  assert.ok(claims['capacity-auto-approval'].value < claims['break-even-auto-approval'].value);
+  assert.ok(!/falls short of the break-even share, review capacity is exceeded/.test(s));
+});

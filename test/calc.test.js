@@ -387,3 +387,15 @@ test('deltas: production cost rise and budget-share points equal scenario minus 
   close(r.ratios.total_cost_change, r.ratios.total_cost - 1);
   assert.ok(r.deltas.total_cost > 0, 'at the defaults production cost rises, so the flat-budget claim needs a funded offset');
 });
+
+test('capacity auto-approval: utilisation is exactly 1 there and below the target break-even', () => {
+  const r = compute(inputs(), assumptions);
+  const capShare = r.capacity_auto_approval.value;
+  assert.equal(r.capacity_auto_approval.status, 'ok');
+  assert.ok(capShare < r.break_even_auto_approval.value);
+  const at = (share) => compute(inputs(), { ...assumptions, auto_approval_share: { baseline: 0.2, scaled: share } });
+  close(at(capShare).scenario.utilisation, 1, 1e-9);
+  close(at(r.break_even_auto_approval.value).scenario.utilisation, assumptions.target_utilisation, 1e-9);
+  assert.equal(at(capShare - 0.01).scenario.review_capacity_exceeded, true);
+  assert.equal(at(capShare + 0.01).scenario.review_capacity_exceeded, false);
+});
