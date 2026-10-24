@@ -655,7 +655,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700] };
+const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [1200, 1600] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -1416,6 +1416,8 @@ const RISK_BLOCKS = [
   ['slop', 'Slop and sameness'],
   ['fatigue', 'Reviewer fatigue'],
   ['goodhart', 'Goodhart on counts and spend'],
+  ['ip', 'IP, copyrightability and Getty v Stability'],
+  ['regulation', 'Regulation'],
 ];
 
 function riskBlock(slug) {
@@ -1471,4 +1473,57 @@ test('s14 risk register table', () => {
     for (const c of r.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) assert.ok(strip(c).split(' ').length <= 20, strip(c));
   }
   assert.ok(!/--low|--verified|\b(green|amber|red)\b/i.test(t[0]));
+});
+
+const COI_TEXT = 'The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.';
+
+test('s14 Getty v Stability: COI repeated directly above, neutral treatment, mini-table', () => {
+  const s = sectionHtml('s14');
+  assert.equal((html.match(/class="callout coi"/g) || []).length, 3);
+  const m = s.match(/(<div class="callout coi">[\s\S]*?<\/div>)\s*(<h4 id="s14-getty">Getty v Stability<\/h4>)/);
+  assert.ok(m, 'COI callout must sit directly above h4#s14-getty');
+  assert.equal(strip(m[1].match(/<p>([\s\S]*?)<\/p>/)[1]), COI_TEXT);
+  assert.equal(strip(html.match(/<div class="callout coi">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]), COI_TEXT);
+  const b = riskBlock('ip');
+  const t = strip(b);
+  assert.ok(!t.includes('Stable Diffusion'));
+  for (const p of s.match(/<p\b[^>]*>[\s\S]*?<\/p>/g)) assert.ok(!strip(p).startsWith('Getty v Stability'), 'no s14 p starts with Getty v Stability');
+  const prose = b.match(/<p id="legal-s14-getty">([\s\S]*?)<\/p>/);
+  assert.ok(prose, 'legal-s14-getty on the Getty prose p');
+  for (const w of ['4 November 2025', 'secondary', 'trade mark', 'December 2025', 'No Court of Appeal', 'California']) assert.ok(t.includes(w), w);
+  assert.ok(!/December 1[67]/.test(t), 'no day for the permission to appeal');
+  const afterH4 = b.slice(b.indexOf('<h4'));
+  const words = strip(afterH4.replace(/<table>[\s\S]*?<\/table>/g, ' ')).split(' ').filter(Boolean).length;
+  assert.ok(words <= 250 + 40, `Getty sub-section prose is ${words} words`);
+  assert.ok(strip(b.match(/<p class="asat">[\s\S]*?<\/p>/)[0]).endsWith('Check again before relying on it.'));
+  assert.match(b, /href="#src-ailawsuittracker-getty-uk"/);
+  assert.match(b, /href="#src-getty-v-stability-uk-cms"/);
+  assert.match(b, /href="#src-usco-copyright-ai-part2"/);
+  const tbl = b.match(/<table>[\s\S]*?<\/table>/)[0];
+  assert.ok(/<caption>[^<]*Getty v Stability[^<]*<\/caption>/.test(tbl));
+  assert.deepEqual([...tbl.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((x) => x[1]), ['Claim', 'Status', 'Source']);
+  const rows = tbl.match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr>[\s\S]*?<\/tr>/g);
+  assert.equal(rows.length, 4);
+  for (const r of rows) assert.match(r, /class="cite" href="#src-/);
+});
+
+test('s14 regulation block states Article 50 dates exactly and does not overstate', () => {
+  const b = riskBlock('regulation');
+  const t = strip(b);
+  assert.ok(b.includes('<time datetime="2026-08-02">2 August 2026</time>'));
+  assert.ok(b.includes('<time datetime="2026-12-02">2 December 2026</time>'));
+  assert.ok(b.includes('<span class="legal-ref">Article 50(2)</span>') && b.includes('<span class="legal-ref">Article 50(4)</span>'));
+  assert.ok(t.includes('not delayed'));
+  assert.ok(!/delays Article 50|Article 50 is delayed/.test(t));
+  assert.ok(!/influencer/i.test(t));
+  for (const id of ['src-eu-ai-act-art50', 'src-eu-ai-omnibus-2026-1744', 'src-eu-code-of-practice-transparency', 'src-asa-ai-disclosure-2025', 'src-ftc-fake-reviews-rule-2024']) assert.ok(b.includes(`href="#${id}"`), id);
+  assert.ok(b.includes('data-fig="nyu-disclosure-drop"'));
+  assert.ok(t.includes('voluntary'));
+  assert.ok(b.includes('<time datetime="2025-05-29">') && b.includes('<time datetime="2024-08-14">'));
+});
+
+test('s14 carries four legal ids', () => {
+  for (const id of ['legal-s14-copyright', 'legal-s14-getty', 'legal-s14-regulation', 'legal-s14-agent-liability']) {
+    assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, id);
+  }
 });
