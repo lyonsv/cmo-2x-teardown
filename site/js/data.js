@@ -131,17 +131,17 @@ assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the product
   'reallocated from other marketing lines, chiefly agency and production fees',
   'The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.');
 
-function lever(n, label, grade, display) {
+function lever(n, label, grade, display, basis) {
   const id = `asm-lever-0${n}-evidence`;
   assumptions[id] = { id, label, kind: 'evidence', key: null, value: null, unit: null, display, grade, flag: null,
-    basis: display };
+    basis };
 }
-lever(1, 'Lever 1 evidence: content generation', 'Modelled', 'Company-reported anchors only, plus one controlled click-through study; the rest is modelled.');
-lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies and a wide academic range; per-word rates are a gap.');
-lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
-lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'Almost entirely an evidence gap; kept brief and modelled.');
-lever(5, 'Lever 5 evidence: ops', 'Speculative', 'No data beyond the statute; a judgement.');
-lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only and panel-based; outcomes are speculative.');
+lever(1, 'Lever 1 evidence: content generation', 'Modelled', 'Company-reported anchors', 'Company-reported anchors only, plus one controlled click-through study; the rest is modelled.');
+lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies', 'Vendor case studies and a wide academic range; per-word rates are a gap.');
+lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Vendor-biased anchors', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
+lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'An evidence gap', 'Almost entirely an evidence gap; kept brief and modelled.');
+lever(5, 'Lever 5 evidence: ops', 'Speculative', 'A judgement', 'No data beyond the statute; a judgement.');
+lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only data', 'Thin, vendor-only and panel-based; outcomes are speculative.');
 
 export const claims = {
   'gartner-share-2025': {
