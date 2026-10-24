@@ -266,6 +266,8 @@ test('.backlog0 is a paper-2 panel with tokens only', () => {
   const r = rule('.backlog0');
   for (const d of ['background: var(--paper-2)', 'border: 1px solid var(--rule)', 'padding: var(--s-lg)', 'max-width: 44em']) assert.ok(r.includes(d), d);
   assert.ok(!/--verified|--low/.test(r));
+  // IN-07: the narrow-screen padding uses a spacing token, not a raw pixel value.
+  assert.ok(!/\.backlog0 \{ padding: \d+px/.test(css), 'raw px padding on .backlog0');
 });
 
 test('.status is a bordered mono tag with a non-colour cue per variant', () => {

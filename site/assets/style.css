@@ -203,7 +203,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   svg.fig.fig-live { min-width: 0; }
 }
 @media (max-width: 720px) {
-  .backlog0 { padding: 16px; }
+  .backlog0 { padding: var(--s-md); }
   .backlog0 dl { grid-template-columns: 1fr; }
   body { font-size: 16px; }
   tbody th[scope=row] { font-size: 16px; }

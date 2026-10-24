@@ -1345,6 +1345,9 @@ test('s13 adoption and Backlog 0', () => {
   assert.ok(!VENDOR_RE.test(t));
   assert.ok(!/does not have|does not exist/.test(t));
   assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 11 .'));
+  // IN-07: no ungraded illustrative quantity in the role-shift paragraph.
+  assert.ok(t.includes('A designer who once produced every resize by hand now sets the rules'));
+  assert.ok(!/\bforty resizes\b/.test(t));
 });
 
 test('s13 Backlog 0 definition block', () => {

@@ -3,6 +3,8 @@
 // Env: CHROME overrides the Chrome binary path.
 import { modelContext } from '../site/js/data.js';
 import { present, defaultValues } from '../site/js/model.js';
+import { FIELDS } from '../site/js/fields.js';
+import { toText } from '../site/js/state.js';
 import { withPage, startServer, dump, sleep, runCleanups } from './cdp.mjs';
 
 const ctx = modelContext();
@@ -277,7 +279,8 @@ async function cases(base) {
     const rev = await evalJs("document.getElementById('in-reviewers').value");
     check('reviewers', rev === '4', `reviewers "${rev}"`);
     const camp = await evalJs("document.getElementById('in-campaigns').value");
-    check('campaigns reset', camp === '40', `campaigns "${camp}"`);
+    const wantCamp = toText(FIELDS.find((f) => f.key === 'campaigns'), d.campaigns);
+    check('campaigns reset', camp === wantCamp, `campaigns "${camp}", expected default "${wantCamp}"`);
     const stale = await evalJs("document.querySelectorAll('[aria-invalid=\"true\"]').length");
     check('no invalid fields', stale === 0, `${stale} fields still aria-invalid`);
     return `${fig}, reviewers=${rev}, campaigns=${camp}`;
