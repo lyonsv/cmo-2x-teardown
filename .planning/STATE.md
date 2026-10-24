@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-10-24T15:07:02.338Z"
+stopped_at: Completed 02-06-PLAN.md
+last_updated: "2026-10-24T15:09:52.362Z"
 last_activity: 2026-10-24
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 15
-  completed_plans: 12
+  completed_plans: 13
   percent: 25
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-10-24)
 ## Current Position
 
 Phase: 2 (Factory & Spine Slice) — EXECUTING
-Plan: 6 of 8
+Plan: 7 of 8
 Status: Ready to execute
 Last activity: 2026-10-24
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 87%
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Progress: [████████░░] 80%
 | Phase 2 P03 | 15 min | 3 tasks | 7 files |
 | Phase 2 P04 | 25min | 2 tasks | 4 files |
 | Phase 2 P05 | 30min | 3 tasks | 7 files |
+| Phase 2 P06 | 25min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,7 @@ Progress: [████████░░] 80%
 - [Phase 2]: Matrix assumptions use kind 'matrix' and claims use a matrix field so compute-based tests and defaults ignore them
 - [Phase 2]: NYU/Emory CTR lift and disclosure change graded Benchmark (user confirmed on SSRN 2026-10-24); Getty commentary source row Modelled, publication date from URL pending author confirmation
 - [Phase 2]: Reference datum 19.2%/28.4% graded Modelled + company-reported; 60% auto-approval framed as a Modelled target (71% of 85% eligible)
+- [Phase 2]: Capacity claims are literal values with override markers, recomputed in test from a test-local scenario table
 
 ### Pending Todos
 
@@ -89,6 +91,6 @@ Progress: [████████░░] 80%
 
 ## Session Continuity
 
-Last session: 2026-10-24T15:07:02.333Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-10-24T15:09:52.357Z
+Stopped at: Completed 02-06-PLAN.md
 Resume file: None

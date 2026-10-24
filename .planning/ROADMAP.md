@@ -102,7 +102,7 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
-- [ ] 02-06-PLAN.md — s07 reviewer capacity and fatigue controls; s08 eval harness (Figure 7), metrics table and telemetry
+- [x] 02-06-PLAN.md — s07 reviewer capacity and fatigue controls; s08 eval harness (Figure 7), metrics table and telemetry
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
@@ -156,6 +156,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Thesis Slice | 7/7 | Complete    | 2026-10-24 |
-| 2. Factory & Spine Slice | 5/8 | In Progress|  |
+| 2. Factory & Spine Slice | 6/8 | In Progress|  |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
