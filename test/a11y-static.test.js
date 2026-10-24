@@ -174,9 +174,9 @@ test('scroll-behavior: smooth only appears inside prefers-reduced-motion: no-pre
   }
 });
 
-test('status, asat, gaps, legal-flag and grade-note use only ink, muted, rule, paper tokens (grey in print)', () => {
+test('status, asat, gaps and grade-note use only ink, muted, rule, paper tokens (grey in print)', () => {
   const allowed = new Set(['--ink', '--muted', '--rule', '--paper', '--paper-2']);
-  const re = /(^|[\s,>+~])\.(status(?:-[a-z]+)?|asat|gaps|legal-flag|grade-note)\b/;
+  const re = /(^|[\s,>+~])\.(status(?:-[a-z]+)?|asat|gaps|grade-note)\b/;
   let checked = 0;
   for (const r of rules()) {
     if (!r.sel.split(',').some((s) => re.test(s.trim()))) continue;
@@ -209,12 +209,8 @@ const lum = (hex) => {
 };
 const contrast = (a, b) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
 
-test('.status border is at least 3:1 and .legal-flag text at least 4.5:1', () => {
+test('.status border is at least 3:1', () => {
   const status = rules().find((r) => r.sel === '.status' && !r.print);
   assert.match(status.decl, /border:\s*1px solid var\(--ink\)/);
   for (const bg of ['paper', 'paper-2']) assert.ok(contrast(token('ink'), token(bg)) >= 3, `status border on ${bg}`);
-  const flag = rules().find((r) => r.sel === '.callout.legal-flag' && !r.print);
-  assert.match(flag.decl, /background:\s*var\(--paper-2\)/);
-  assert.doesNotMatch(flag.decl, /(^|[;\s])color\s*:/, 'legal-flag text inherits ink');
-  assert.ok(contrast(token('ink'), token('paper-2')) >= 4.5);
 });

@@ -5,20 +5,10 @@ import { readFileSync } from 'node:fs';
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const inv = readFileSync(new URL('../.planning/LEGAL-REVIEW.md', import.meta.url), 'utf8');
 
-const FLAG_TEXT = 'Legal wording on this page has been flagged for review and has not yet been reviewed by counsel. Nothing here is legal advice.';
-
-test('legal-review flag is present once, verbatim, directly before the summary', () => {
-  // Removal is an author edit after counsel's review; update this test only then.
-  const flag = '<div class="callout legal-flag" role="note" aria-label="Legal review status">';
-  assert.equal(html.split(flag).length - 1, 1);
-  const iFlag = html.indexOf(flag);
-  const iAnswer = html.indexOf('<section id="answer"');
-  assert.ok(iFlag > -1 && iFlag < iAnswer, 'order: flag, answer');
-  const afterFlag = html.slice(html.indexOf('</div>', iFlag) + '</div>'.length, iAnswer);
-  assert.equal(afterFlag.trim(), '', 'only whitespace between the flag and the summary');
-  const block = html.slice(iFlag, html.indexOf('</div>', iFlag));
-  assert.ok(block.includes('<span class="lbl">Legal review</span>'));
-  assert.ok(block.includes(`<p>${FLAG_TEXT}</p>`));
+test('legal-review flag is absent (dropped by author decision 2026-10-24)', () => {
+  assert.doesNotMatch(html, /legal-flag/);
+  assert.doesNotMatch(html, /has not yet been reviewed by counsel/);
+  assert.doesNotMatch(html, /aria-label="Legal review status"/);
 });
 
 test('legal ids on the page equal the ids in LEGAL-REVIEW.md', () => {

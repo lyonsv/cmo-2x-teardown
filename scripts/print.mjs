@@ -48,7 +48,7 @@ async function main(base) {
           hidden: ['.calc-live .btn', '.share', '.calc-errors', '.calc-nojs'].map((s) => [s, disp(s)]),
           sw: document.documentElement.scrollWidth, iw: innerWidth, over, cells: rows.length };
       })()`);
-      test('legal flag shown in print', st.legal.length > 0 && st.legal.every((d) => d !== 'none'), `${st.legal.length} element(s)`);
+      test('legal flag absent (dropped by author)', st.legal.length === 0, 'no .legal-flag element');
       test('details.maths open (via beforeprint, as ui.js does)', st.maths.length > 0 && st.maths.every(Boolean), `${st.maths.length} element(s)`);
       for (const [sel, ds] of st.hidden) test(`${sel} hidden in print`, ds.every((d) => d === 'none'), `${ds.length} element(s)`, `display ${ds.join(',')}`);
       test('no horizontal overflow at 700px', st.sw <= st.iw, `scrollWidth ${st.sw}, width ${st.iw}`);
@@ -66,7 +66,7 @@ async function main(base) {
       const blank = pages.map((p, i) => [i + 1, p.replace(/\s/g, '').length]).filter(([, n]) => n <= 20);
       test('no blank pages', blank.length === 0, `${pages.length} pages read, all over 20 characters`, `blank/near-blank pages: ${blank.map(([i]) => i).join(', ')}`);
       const p1 = pages[0].replace(/\s+/g, ' ');
-      test('page 1 has legal flag', p1.includes('has not yet been reviewed by counsel'), 'found');
+      test('page 1 has no legal-review flag', !p1.includes('has not yet been reviewed by counsel'), 'absent');
     });
   } finally {
     rmSync(dir, { recursive: true, force: true });
