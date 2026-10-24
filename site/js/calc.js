@@ -1,5 +1,7 @@
 // Pure calculator maths. No DOM, no imports. compute() never throws and never
 // returns NaN or Infinity: bad input comes back as { ok: false, errors }.
+// Undefined values are null, never an error: cycle_days when review capacity is
+// exceeded, and any ratio whose baseline is 0 (named in undefined_ratios).
 
 const POSITIVE_INPUTS = [
   'campaigns_per_year',
@@ -150,7 +152,7 @@ function breakEven(inputs, a, scenario) {
   return { value: aStar, status: 'ok' };
 }
 
-// Every numeric leaf must be finite; null (cycle_days at capacity) is allowed.
+// Every numeric leaf must be finite; null (cycle_days at capacity, undefined ratios) is allowed.
 function allFinite(x) {
   if (typeof x === 'number') return Number.isFinite(x);
   if (Array.isArray(x)) return x.every(allFinite);
@@ -163,18 +165,34 @@ export function compute(inputs, assumptions) {
   if (errors.length > 0) return { ok: false, errors };
   const baseline = side(inputs, assumptions, 'baseline', 1);
   const scenario = side(inputs, assumptions, 'scaled', inputs.multiplier);
-  const ratios = {
-    output_per_head: scenario.output_per_head_per_quarter / baseline.output_per_head_per_quarter,
-    weighted_output_per_head: scenario.weighted_output_per_head_per_quarter / baseline.weighted_output_per_head_per_quarter,
-    cost_per_asset: scenario.cost_per_asset / baseline.cost_per_asset,
-    ai_spend: scenario.ai_spend / baseline.ai_spend,
-    total_cost: scenario.cost.total / baseline.cost.total,
+  // A ratio whose baseline is 0 (for example no AI spend today, or a zero-cost
+  // baseline) has no meaning. It comes back as null and is listed in
+  // undefined_ratios, rather than failing the whole result: every other output,
+  // such as cost per asset, is still valid and is what the reader asked for.
+  const undefined_ratios = [];
+  const ratio = (name, num, den) => {
+    if (den === 0) {
+      undefined_ratios.push(name);
+      return null;
+    }
+    return num / den;
   };
-  ratios.cost_per_asset_change = ratios.cost_per_asset - 1;
+  const ratios = {
+    output_per_head: ratio('output_per_head', scenario.output_per_head_per_quarter, baseline.output_per_head_per_quarter),
+    weighted_output_per_head: ratio('weighted_output_per_head',
+      scenario.weighted_output_per_head_per_quarter, baseline.weighted_output_per_head_per_quarter),
+    cost_per_asset: ratio('cost_per_asset', scenario.cost_per_asset, baseline.cost_per_asset),
+    ai_spend: ratio('ai_spend', scenario.ai_spend, baseline.ai_spend),
+    total_cost: ratio('total_cost', scenario.cost.total, baseline.cost.total),
+  };
+  ratios.cost_per_asset_change = ratios.cost_per_asset === null ? null : ratios.cost_per_asset - 1;
   const break_even_auto_approval = breakEven(inputs, assumptions, scenario);
-  const out = { ok: true, baseline, scenario, ratios, break_even_auto_approval };
+  const out = { ok: true, baseline, scenario, ratios, undefined_ratios, break_even_auto_approval };
+  // Last resort only: validation should stop every bad input first. Reaching
+  // this means overflow from extreme but individually valid inputs, so no single
+  // field can honestly be blamed.
   if (!allFinite(out)) {
-    return { ok: false, errors: [{ field: 'multiplier', message: 'inputs produce a value outside the representable range' }] };
+    return { ok: false, errors: [{ field: null, message: 'inputs produce a value outside the representable range' }] };
   }
   return out;
 }

@@ -274,3 +274,45 @@ test('break-even auto-approval at flat reviewers (golden, yield 0.8)', () => {
   assert.equal(tight.break_even_auto_approval.status, 'infeasible');
   assert.equal(tight.break_even_auto_approval.value, 1);
 });
+
+// ---- Code review CR-01: zero-denominator ratios are null, not an error ----
+
+test('no AI spend today: ok, ai_spend ratio is null and flagged, other outputs intact', () => {
+  const r = compute(inputs(), {
+    ...assumptions,
+    ai_share_of_variant_cost: { baseline: 0, scaled: 0.6 },
+    ai_share_of_tooling: { baseline: 0, scaled: 0.5 },
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.baseline.ai_spend, 0);
+  assert.equal(r.ratios.ai_spend, null);
+  assert.deepEqual(r.undefined_ratios, ['ai_spend']);
+  assert.ok(Number.isFinite(r.ratios.cost_per_asset));
+  assert.ok(Number.isFinite(r.scenario.cost_per_asset));
+  walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
+});
+
+test('zero-cost baseline: cost ratios and their change are null, not NaN', () => {
+  const zero = {
+    ...GOLDEN_ASSUMPTIONS,
+    review_minutes_per_variant: 0, master_concept_cost: 0, rights_cost_per_concept: 0, storage_cost_per_variant: 0,
+    variant_cost: { baseline: 0, scaled: 1 }, tooling_cost_annual: { baseline: 0, scaled: 30000 },
+  };
+  const r = compute(goldenInputs(), zero);
+  assert.equal(r.ok, true);
+  assert.equal(r.baseline.cost.total, 0);
+  for (const k of ['cost_per_asset', 'cost_per_asset_change', 'total_cost', 'ai_spend']) assert.equal(r.ratios[k], null, k);
+  assert.deepEqual([...r.undefined_ratios].sort(), ['ai_spend', 'cost_per_asset', 'total_cost']);
+  walkNumbers(r, (v, path) => assert.ok(Number.isFinite(v), path));
+});
+
+test('defaults have no undefined ratios', () => {
+  assert.deepEqual(compute(inputs(), assumptions).undefined_ratios, []);
+});
+
+test('overflow fallback blames no single field', () => {
+  const r = compute(inputs({ campaigns_per_year: 1e200, concepts_per_campaign: 1e200 }), assumptions);
+  assert.equal(r.ok, false);
+  assert.equal(r.errors.length, 1);
+  assert.equal(r.errors[0].field, null);
+});
