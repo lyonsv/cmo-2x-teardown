@@ -8,6 +8,14 @@ A single, self-contained static HTML page, hosted on GitHub Pages, that shows wh
 
 A CMO and their CFO finish the page convinced, through transparent and graded reasoning plus their own numbers, that a 2x marketing programme is credible, governable, and improves business outcomes rather than just adding volume.
 
+## Current State
+
+v1.0 shipped 2026-10-24 and is live at https://lyonsv.github.io/cmo-2x-teardown/. All five phases (1, 2, 3, 3.1, 4) are complete, verified and code-reviewed; 54 active v1 requirements satisfied (QA-01/QA-02 on automated evidence only; QA-03 amended by author decision). Archive: `.planning/milestones/v1.0-ROADMAP.md`, `v1.0-REQUIREMENTS.md`, `v1.0-MILESTONE-AUDIT.md`.
+
+## Next Milestone Goals
+
+Not yet defined. Candidates from the v1.0 audit debt: run the browser checks (smoke, a11y, print) in CI; dated, labelled cite links; real-device and assistive-technology checks if the author re-opens them; trim the s14 Regulation block. Start with `/gsd-new-milestone`.
+
 ## Requirements
 
 ### Validated
@@ -101,4 +109,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-24 after Phase 3 (live at https://lyonsv.github.io/cmo-2x-teardown/)*
+*Last updated: 2026-10-24 after v1.0 milestone (live at https://lyonsv.github.io/cmo-2x-teardown/)*
