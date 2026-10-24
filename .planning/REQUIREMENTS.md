@@ -76,11 +76,11 @@
 
 ### Comparison
 
-- [ ] **COMP-01**: Reader sees a comparison matrix of Gradial, AirOps and Profound against the CMO 2x approach (six levers, >10k variants, imagery/rights, review/gate/eval, brand governance, measurement, AEO/GEO, build vs buy, lock-in)
+- [x] **COMP-01**: Reader sees a comparison matrix of Gradial, AirOps and Profound against the CMO 2x approach (six levers, >10k variants, imagery/rights, review/gate/eval, brand governance, measurement, AEO/GEO, build vs buy, lock-in)
 - [ ] **COMP-02**: Reader sees for each vendor where it slots into the operating model, where it is an alternative, and where it falls short, phrased as "not publicly documented" rather than "does not exist"
 - [ ] **COMP-03**: Reader sees category-level build-vs-buy and lock-in guidance (own the eval set and brand rules)
 - [ ] **COMP-04**: Reader sees vendor-published outcomes flagged as vendor-claimed, each with its source URL and access date, never averaged or graded Benchmark
-- [ ] **COMP-05**: The section acknowledges that the CMO 2x spine is a design, not a shipped product; vendor names appear only in this section and the source register
+- [x] **COMP-05**: The section acknowledges that the CMO 2x spine is a design, not a shipped product; vendor names appear only in this section and the source register
 
 ### Closing Sections
 
@@ -170,11 +170,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CALC-05 | Phase 3 | Complete |
 | CALC-06 | Phase 3 | Complete |
 | CALC-07 | Phase 3 | Complete |
-| COMP-01 | Phase 3 | Pending |
+| COMP-01 | Phase 3 | Complete |
 | COMP-02 | Phase 3 | Pending |
 | COMP-03 | Phase 3 | Pending |
 | COMP-04 | Phase 3 | Pending |
-| COMP-05 | Phase 3 | Pending |
+| COMP-05 | Phase 3 | Complete |
 | CLOSE-01 | Phase 4 | Pending |
 | CLOSE-02 | Phase 4 | Pending |
 | CLOSE-03 | Phase 4 | Pending |
