@@ -576,7 +576,7 @@ export const assumptions = {
   'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 0.078, 'share of revenue', '7.8%',
     'Set equal to the Gartner 2026 average; the subject org is an average respondent, not a benchmark.'),
   'asm-marketing-fte': a('asm-marketing-fte', 'Marketing headcount', 'input', 'marketing_fte', 120, 'FTE', '~120',
-    'A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE is used for the flat-headcount statement and the headcount scenarios.'),
+    'A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE feeds only the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).'),
   'asm-campaigns': a('asm-campaigns', 'Campaigns per year', 'input', 'campaigns_per_year', 40, 'campaigns', '~40',
     'A modelled campaign cadence; there is no published source.'),
   'asm-concepts-per-campaign': a('asm-concepts-per-campaign', 'Unique concepts per campaign', 'input', 'concepts_per_campaign', 25, 'concepts', '25',
@@ -640,6 +640,12 @@ m('asm-target-utilisation', 'Target reviewer utilisation', 'target_utilisation',
 assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the production cost rise', 'context', null, null, null,
   'reallocated from other marketing lines, chiefly agency and production fees',
   'The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.');
+
+// Code review WR-02: "flat headcount" is asserted, not modelled. Only reviewer
+// capacity is checked, so the marketer side is a visible Speculative assumption.
+assumptions['asm-flat-marketing-headcount'] = { ...a('asm-flat-marketing-headcount', 'Flat marketing headcount', 'context', null, null, null,
+  'held flat by assumption, not modelled',
+  'Marketing headcount is held flat by assumption; the model checks reviewer capacity only and does not test whether marketers can carry 1.41x to 2x the master concepts (1.41x on the default route, 2x if all the growth comes from more campaigns) or the extra market launches. No published benchmark; if your marketers cannot absorb the extra work, headcount is not flat and the claim must be restated.'), grade: 'Speculative' };
 
 function lever(n, label, grade, display, basis) {
   const id = `asm-lever-0${n}-evidence`;

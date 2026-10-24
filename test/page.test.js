@@ -557,6 +557,19 @@ test('s01 holds both callouts verbatim and the front matter does not duplicate t
   assert.equal(html.split('What 2x does not mean').length - 1, 1);
 });
 
+test('s01 flat headcount is a linked Speculative assumption, not a modelled result (WR-02)', () => {
+  const e = assumptions['asm-flat-marketing-headcount'];
+  assert.ok(e, 'asm-flat-marketing-headcount is registered');
+  assert.equal(e.grade, 'Speculative');
+  assert.match(e.basis, /checks reviewer capacity only/);
+  const chip = '<a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>';
+  const s = sectionHtml('s01');
+  assert.ok(s.includes(`flat headcount ${chip}`), 'the s01 definition links the assumption where it says flat headcount');
+  const notMean = s.slice(s.indexOf('What 2x does not mean'), s.indexOf('Falsifier'));
+  assert.ok(notMean.includes(chip) && /assumed, not tested/.test(strip(notMean)), '"What 2x does not mean" says flat headcount is assumed');
+  assert.ok(!/flat-headcount statement/.test(assumptions['asm-marketing-fte'].basis), 'asm-marketing-fte must not claim to back the flat-headcount statement');
+});
+
 test('s01 metric trio carries the campaign-market claim and its companions', () => {
   const s = sectionHtml('s01');
   const m = s.match(/<div class="metric-trio">[\s\S]*?<\/div>\s*(?=<p|<div class="table-scroll)/);

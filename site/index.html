@@ -65,7 +65,7 @@
     </nav>
     <section id="s01" aria-labelledby="s01-h">
       <div class="sec-head"><span class="sec-num">01</span><h2 id="s01-h">Claim &amp; measurement</h2></div>
-      <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. It is an organisation total within a flat total marketing budget and flat headcount, with no per-head denominator. Briefs that never go live never count.</p>
+      <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. It is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
       <p>The factory behind it derives many variants for each campaign-market. Those variants are internal throughput, counted in the <a href="#s05">factory</a> and <a href="#s07">review-capacity</a> sections, not the claim. The number is always shown beside brief-to-live time and cost per approved asset.</p>
       <div class="metric-trio">
         <div><span class="lbl">Campaign-markets launched per quarter</span><span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span></div>
@@ -119,6 +119,7 @@
     <div class="callout">
       <span class="lbl">What 2x does not mean</span>
       <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets launched per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.</p>
+      <p>Flat marketing headcount is assumed, not tested <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>. The model checks reviewer capacity only, not whether marketers can make the extra master concepts and run the extra launches.</p>
     </div>
     <div class="callout">
       <span class="lbl">Falsifier</span>
@@ -1917,7 +1918,7 @@
               <td>Marketing headcount</td>
               <td><span data-fig="asm-marketing-fte">~120</span></td>
               <td><span class="chip c-m">Modelled</span></td>
-              <td>A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE is used for the flat-headcount statement and the headcount scenarios.</td>
+              <td>A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE feeds only the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).</td>
             </tr>
             <tr id="asm-campaigns">
               <th scope="row" class="id">asm-campaigns</th>
@@ -2114,6 +2115,13 @@
               <td><span data-fig="asm-reallocation">reallocated from other marketing lines, chiefly agency and production fees</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td>The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.</td>
+            </tr>
+            <tr id="asm-flat-marketing-headcount">
+              <th scope="row" class="id">asm-flat-marketing-headcount</th>
+              <td>Flat marketing headcount</td>
+              <td><span data-fig="asm-flat-marketing-headcount">held flat by assumption, not modelled</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td>Marketing headcount is held flat by assumption; the model checks reviewer capacity only and does not test whether marketers can carry 1.41x to 2x the master concepts (1.41x on the default route, 2x if all the growth comes from more campaigns) or the extra market launches. No published benchmark; if your marketers cannot absorb the extra work, headcount is not flat and the claim must be restated.</td>
             </tr>
             <tr id="asm-matrix-concepts">
               <th scope="row" class="id">asm-matrix-concepts</th>
