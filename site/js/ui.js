@@ -4,6 +4,8 @@
 import { modelContext } from './data.js';
 import { present, defaultValues } from './model.js';
 import { FIELDS } from './fields.js';
+import { chartSpec, renderChart } from './svg.js';
+import { CHIP, writeMaths, writeBelieve } from './panels.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
 
 document.documentElement.classList.add('js');
@@ -23,7 +25,11 @@ const radios = [...document.querySelectorAll('input[name="scenario"]')];
 const scenTable = document.querySelector('[aria-label="Headcount scenario"]');
 const scenRows = [...scenTable.querySelectorAll('tbody tr')];
 const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody tr')];
-const CHIP = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
+const chart = document.querySelector('svg.fig-live');
+const chartEmpty = document.querySelector('.chart-empty');
+const mathsBox = document.querySelector('details.maths');
+const mathsItems = [...document.querySelectorAll('.maths-steps > li')];
+const believeList = document.querySelector('.believe ul');
 const SENS_CELLS = ['costDown', 'costUp', 'utilDown', 'utilUp'];
 const touched = new Set();
 let tableTimer = 0;
@@ -105,6 +111,9 @@ function dashResults() {
   for (const tr of rows) [...tr.querySelectorAll('td')].slice(0, 3).forEach((td) => setCell(td, null, 'dash'));
   for (const el_ of [...scenRows, ...sensRows].flatMap((tr) => [...tr.querySelectorAll('[data-fig]')])) el_.textContent = '—';
   for (const el_ of document.querySelectorAll('.capped')) el_.textContent = '';
+  for (const fig of document.querySelectorAll('.maths-steps [data-fig], .believe [data-fig]')) fig.textContent = '\u2014';
+  chart.setAttribute('hidden', '');
+  chartEmpty.removeAttribute('hidden');
 }
 
 function showFieldErrors(errors) {
@@ -179,6 +188,11 @@ function update(commit, immediateSummary) {
   writeResults(p);
   writeScenario(p.scenario);
   writeSensitivity(p.sensitivity);
+  writeMaths(mathsItems, p.maths);
+  writeBelieve(believeList, p.believe);
+  chart.removeAttribute('hidden');
+  chartEmpty.setAttribute('hidden', '');
+  renderChart(chart, chartSpec(p));
   const writeSummary = () => { summary.textContent = p.summary; };
   if (immediateSummary) writeSummary();
   else summaryTimer = setTimeout(writeSummary, 400);
@@ -238,6 +252,11 @@ $('reset-calc').addEventListener('click', () => {
   shareStatus.textContent = '';
   inputs.campaigns.focus();
 });
+
+// The maths opens for printing and goes back afterwards.
+let mathsWasOpen = false;
+window.addEventListener('beforeprint', () => { mathsWasOpen = mathsBox.open; mathsBox.open = true; });
+window.addEventListener('afterprint', () => { mathsBox.open = mathsWasOpen; });
 
 window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#s11?')) restore();

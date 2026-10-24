@@ -153,6 +153,27 @@ async function cases(base) {
     check('hash untouched', hash === '', `hash "${hash}"`);
   }));
 
+  await run('i over capacity in the chart', () => {
+    const dom = dump(`${base}#s11?reviewers=4`);
+    const label = decode((dom.match(/<text class="over-lbl"[^>]*>([^<]*)</) || [])[1] || '');
+    check('label', label === 'over capacity', `over label "${label}"`);
+    const sum = decode((dom.match(/<output id="calc-summary"[^>]*>([^<]*)</) || [])[1] || '');
+    check('summary', sum.includes('over capacity at'), `summary "${sum}"`);
+    check('nan', !/NaN|Infinity/.test(s11Of(dom)), 'NaN or Infinity in s11');
+    return label;
+  });
+
+  await run('k chart desc and believe panel at defaults', () => {
+    const dom = dump(base);
+    const desc = decode((dom.match(/<desc id="f8-d">([^<]*)</) || [])[1] || '');
+    const cost = expected(d, 'cost_per_asset', 'scaled');
+    check('desc', desc.includes(cost), `desc "${desc}" lacks ${cost}`);
+    const marks = (s11Of(dom).match(/carries the result/g) || []).length;
+    check('marks', marks === 3, `${marks} carries marks`);
+    check('maths', span(dom, 'calc-maths-cost-r') === cost, `maths result ${span(dom, 'calc-maths-cost-r')}`);
+    return cost;
+  });
+
   await run('j hashchange on an open page', () => hashchange(base));
 }
 

@@ -228,3 +228,13 @@ test('calculator form CSS follows the UI-SPEC', () => {
   const added = css.slice(css.indexOf('.calc-form {'), css.indexOf('ol.proof-steps {'));
   for (const [, v] of added.matchAll(/(?:^|[^-])color:\s*([^;}]+)/g)) assert.match(v.trim(), /^var\(--(ink|muted|verified|paper|paper-2)\)$/, v);
 });
+
+test('Figure 8 opts out of the Figure 1 phone minimum width', () => {
+  const m = css.match(/@media \(max-width: 960px\) {([\s\S]*?)\n}/);
+  assert.ok(m[1].includes('svg.fig { min-width: 800px; }'), 'Figure 1 rule untouched');
+  assert.ok(m[1].includes('svg.fig.fig-live { min-width: 0; }'));
+  assert.ok(m[1].indexOf('svg.fig.fig-live') > m[1].indexOf('svg.fig { min-width: 800px; }'));
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  assert.equal((page.match(/<svg\b[^>]*\bclass="fig fig-live"/g) || []).length, 1);
+  assert.ok(/svg\.fig-live\s*{[^}]*max-width: 360px/.test(css));
+});

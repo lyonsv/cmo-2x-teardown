@@ -281,3 +281,81 @@ test('scenario and sensitivity tables sit before the share panel and outside .ca
   assert.ok(s11.indexOf('Sensitivity: each input moved') > s11.indexOf('Headcount scenario: Redeploy</caption>'));
   assert.ok(s11.indexOf('Capped: the input cannot move further') < share);
 });
+
+// ---- Plan 03-08: Figure 8, show the maths, what you must believe ----
+
+test('s11 order: results, fixed note, scenario, Figure 8, maths, believe, sensitivity, share', () => {
+  const at = (needle) => {
+    const i = s11.indexOf(needle);
+    assert.ok(i >= 0, needle);
+    return i;
+  };
+  const order = [
+    at('<caption>Results for your numbers'), at('<p class="table-note">Each output carries'), at('<p class="fixed-note">'),
+    at('Headcount scenario: Redeploy</caption>'), at('<b>Figure 8</b>'), at('<details class="maths">'), at('<div class="believe">'),
+    at('Sensitivity: each input moved'), at('<div class="calc-live" id="calc-share-wrap">'),
+  ];
+  assert.deepEqual([...order].sort((a, b) => a - b), order);
+  assert.match(s11, /<p class="fixed-note">[^<]*<a href="#assumptions-register">assumptions register<\/a>/);
+  assert.ok(s11.indexOf('<p class="fixed-note">') - s11.indexOf('Each output carries') < 120, 'fixed note sits under the results table');
+  assert.match(s11, /<div class="fig-grid">[\s\S]*<svg class="fig fig-live"[\s\S]*How to read this[\s\S]*<\/figure>/);
+});
+
+test('details.maths: closed, eight steps with name, formula, "With your numbers:" and one chip', () => {
+  const m = s11.match(/<details class="maths">\s*<summary>Show the maths<\/summary>\s*<ol class="maths-steps">([\s\S]*?)<\/ol>\s*<\/details>/);
+  assert.ok(m, 'details.maths');
+  assert.ok(!/<details class="maths" open/.test(s11));
+  const lis = m[1].match(/<li>[\s\S]*?<\/li>/g);
+  assert.equal(lis.length, 8);
+  lis.forEach((li, i) => {
+    const step = p.maths[i];
+    assert.match(li, /^<li><b>[^<]+<\/b> <code>[^<]+<\/code><span class="maths-with">With your numbers: <code>/);
+    assert.equal(strip(li.match(/<b>([^<]*)<\/b>/)[1]), step.name);
+    assert.equal(strip(li.match(/<\/b> <code>([^<]*)<\/code>/)[1]), step.formula);
+    const figs = [...li.matchAll(/<span data-fig="(calc-maths-[a-z]+-[0-9r]+)">([^<]*)<\/span>/g)];
+    assert.deepEqual(figs.map((f) => f[1]), [...step.parts, step.result].filter((x) => x.fig).map((x) => x.fig));
+    figs.forEach((f, k) => assert.equal(decode(f[2]), [...step.parts, step.result].filter((x) => x.fig)[k].text));
+    assert.equal((li.match(/class="chip /g) || []).length, 1);
+    assert.ok(li.includes(`<a class="chip ${CHIP_CLASS[step.grade]}" href="#${step.ref}">${step.grade}</a>`));
+  });
+});
+
+test('.believe: lead, 5-7 items with figure and chip, three carry the result', () => {
+  const m = s11.match(/<div class="believe">\s*<h3>What you must believe<\/h3>\s*<p>The result holds only if these hold\.<\/p>\s*<ul>([\s\S]*?)<\/ul>\s*<\/div>/);
+  assert.ok(m, '.believe');
+  const lis = m[1].match(/<li>[\s\S]*?<\/li>/g);
+  assert.equal(lis.length, p.believe.length);
+  assert.ok(lis.length >= 5 && lis.length <= 7);
+  lis.forEach((li, i) => {
+    const b = p.believe[i];
+    assert.ok(li.includes(`data-fig="calc-believe-${b.key}">`), b.key);
+    assert.equal((li.match(/class="chip /g) || []).length, 1);
+    assert.ok(li.includes(`<a class="chip ${CHIP_CLASS[b.grade]}" href="#${b.ref}">${b.grade}</a>`));
+    assert.equal(li.includes('<b class="default-mark">carries the result</b>'), b.carries);
+    const plain = strip(li.replace('<b class="default-mark">carries the result</b>', '').replace(/<a class="chip[^>]*>[^<]*<\/a>/, '')).replace(/\s+([.,])/g, '$1');
+    assert.equal(plain, b.statement);
+  });
+  assert.equal((s11.match(/carries the result/g) || []).length, 3);
+  assert.match(m[1], /only slightly/);
+});
+
+test('Figure 8, maths and believe sit outside every .calc-live wrapper', () => {
+  for (const w of calcLiveWrappers()) {
+    for (const bad of ['<figure', '<details', 'class="believe"', '<svg', 'class="maths-steps"']) assert.ok(!w.inner.includes(bad), `${w.id} contains ${bad}`);
+  }
+});
+
+test('ui.js has an invalid state for the chart and prints with the maths open', () => {
+  const ui = readFileSync(new URL('../site/js/ui.js', import.meta.url), 'utf8');
+  assert.ok(ui.includes('renderChart('));
+  assert.ok(ui.includes('beforeprint') && ui.includes('afterprint'));
+  assert.match(s11, /<p class="later chart-empty" hidden>Fix the highlighted inputs to see the chart\.<\/p>/);
+});
+
+test('site/js sources scanned for hygiene include svg.js and panels.js', () => {
+  const FORBIDDEN = ['innerHTML', 'insertAdjacentHTML', 'outerHTML', 'document.write', '.style.', "setAttribute('style'", 'localStorage', 'fetch(', 'eval(', 'new Function'];
+  for (const file of ['svg.js', 'panels.js']) {
+    const src = readFileSync(new URL(`../site/js/${file}`, import.meta.url), 'utf8');
+    for (const bad of FORBIDDEN) assert.ok(!src.includes(bad), `${file} contains ${bad}`);
+  }
+});

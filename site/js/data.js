@@ -687,4 +687,18 @@ export function modelContext() {
       };
     }
   }
+  // Show the maths and What you must believe: every figure shares its item's grade and register row.
+  const figClaim = (fig, node, unit, grade, ref, calc) => {
+    if (node.value !== undefined) claims[fig] = { id: fig, value: node.value, unit, display: node.text, grade, flag: null, ref, calc };
+  };
+  for (const m of p.maths) {
+    for (const part of [...m.parts, m.result]) {
+      if (part.fig) figClaim(part.fig, part, `Show the maths, ${m.name}`, m.grade, m.ref, `maths.${m.id}.${part.fig.split('-').pop()}`);
+    }
+  }
+  for (const b of p.believe) {
+    for (const part of b.parts) {
+      if (part.fig) figClaim(part.fig, part, `What you must believe: ${b.statement}`, b.grade, b.ref, `believe.${b.key}.${part.fig.endsWith('-swing') ? 'swing' : 'value'}`);
+    }
+  }
 }

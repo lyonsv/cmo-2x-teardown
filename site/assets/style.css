@@ -153,10 +153,27 @@ input[type=radio] { accent-color: var(--ink); }
 .radio-desc { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); }
 .radio-note { grid-column: 1 / -1; }
 .capped { font: 400 12px/1.6 var(--mono); color: var(--muted); }
+svg.fig-live { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; }
+svg.fig-live[hidden], .chart-empty[hidden] { display: none; }
+.fig-live .series-lbl, .fig-live .ref-lbl { fill: var(--muted); }
+.fig-live .over-lbl { font-weight: 600; }
+.ref-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.believe { background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-lg); margin: var(--s-lg) 0; max-width: 44em; }
+.believe h3 { margin-top: 0; }
+.believe ul { margin: 0; padding-left: var(--s-lg); }
+.believe li + li { margin-top: var(--s-sm); }
+details.maths { margin: var(--s-lg) 0; max-width: 44em; }
+details.maths summary { font: 600 12px/1.6 var(--mono); min-height: 48px; display: flex; align-items: center; cursor: pointer; }
+details.maths summary:hover { text-decoration: underline; }
+ol.maths-steps { padding-left: var(--s-lg); }
+ol.maths-steps li + li { margin-top: var(--s-md); }
+.maths-steps code { font: 400 12px/1.6 var(--mono); background: var(--paper-2); padding: 0 var(--s-xs); white-space: normal; overflow-wrap: anywhere; }
+.maths-with { display: block; }
 ol.proof-steps { padding-left: var(--s-lg); max-width: 44em; }
 ol.proof-steps li + li { margin-top: var(--s-md); }
 @media (max-width: 960px) {
   svg.fig { min-width: 800px; }
+  svg.fig.fig-live { min-width: 0; }
 }
 @media (max-width: 720px) {
   body { font-size: 16px; }
@@ -200,4 +217,6 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .fig-d .arrow-head-review { fill: #000; }
   .fig-d .node-review rect { fill: #fff; }
   .default-mark { border-color: #000; }
+  .believe, details.maths { break-inside: avoid; }
+  .ref-line { stroke: #555; }
 }

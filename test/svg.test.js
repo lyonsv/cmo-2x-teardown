@@ -84,3 +84,46 @@ test('svg.js builds with createElementNS and attributes only', () => {
   assert.ok(!/innerHTML|style/.test(src));
   assert.ok(src.split('\n').length < 90, `svg.js is ${src.split('\n').length} lines`);
 });
+
+// ---- static Figure 8 in the page ----
+
+const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+const decodeEnt = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+const figure = page.match(/<figure>(?:(?!<\/figure>)[\s\S])*<svg class="fig fig-live"[\s\S]*?<\/figure>/)[0];
+const svgHtml = figure.match(/<svg class="fig fig-live"[\s\S]*?<\/svg>/)[0];
+
+test('Figure 8 static markup: one figure, title, desc, viewBox, caption, no style, script or href', () => {
+  const spec = specFor({});
+  assert.ok(svgHtml.startsWith(`<svg class="fig fig-live" viewBox="0 0 300 ${spec.height}" role="img" aria-labelledby="f8-t f8-d">`));
+  assert.equal((svgHtml.match(/<title id="f8-t">/g) || []).length, 1);
+  assert.equal(decodeEnt(svgHtml.match(/<desc id="f8-d">([^<]*)<\/desc>/)[1]), spec.desc);
+  assert.ok(!/\bstyle=|<script|href=/.test(svgHtml));
+  assert.match(figure, /<figcaption><b>Figure 8<\/b>/);
+  assert.match(figure, /Each panel has its own scale/);
+  assert.match(figure, /see the results table for the exact values/);
+  assert.match(figure, /How to read this/);
+  assert.equal((page.match(/<b>Figure 8<\/b>/g) || []).length, 1);
+});
+
+test('Figure 8 static bars, labels and series names equal chartSpec(defaults)', () => {
+  const spec = specFor({});
+  const rects = [...svgHtml.matchAll(/<rect class="(bar-base|bar-scaled)" x="(\d+)" y="(\d+)" width="(\d+)" height="(\d+)"\/>/g)];
+  const bars = spec.panels.flatMap((p) => p.bars);
+  assert.equal(rects.length, bars.length);
+  rects.forEach((m, i) => assert.deepEqual(m.slice(1).map((x, k) => (k ? Number(x) : x)), [bars[i].cls, bars[i].x, bars[i].y, bars[i].width, bars[i].height]));
+  const values = [...svgHtml.matchAll(/<text data-fig="([^"]+)" x="(\d+)" y="(\d+)">([^<]*)<\/text>/g)];
+  assert.equal(values.length, bars.length);
+  values.forEach((m, i) => {
+    assert.equal(m[1], bars[i].value.fig);
+    assert.equal(Number(m[3]), bars[i].textY);
+    assert.equal(decodeEnt(m[4]), bars[i].value.text);
+    assert.equal(claims[m[1]].display, decodeEnt(m[4]));
+    assert.ok(m[4].length * 7.4 <= 300 - Number(m[2]), `${m[4]} fits`);
+  });
+  for (const m of svgHtml.matchAll(/<text class="over-lbl" x="(\d+)"[^>]*>([^<]*)</g)) assert.ok(m[2].length * 7.4 <= 300 - Number(m[1]));
+  assert.equal((svgHtml.match(/>Baseline</g) || []).length, 3);
+  assert.equal((svgHtml.match(/>2x</g) || []).length, 3);
+  const line = svgHtml.match(/<line class="ref-line" x1="(\d+)"/);
+  assert.equal(Number(line[1]), spec.panels[2].refLine.x);
+  assert.match(svgHtml, />100% capacity</);
+});

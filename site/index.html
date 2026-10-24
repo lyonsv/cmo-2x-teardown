@@ -996,6 +996,71 @@
           </table>
         </div>
         <p class="table-note">Hold saves little, because higher tooling cost offsets cheaper variants. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
+        <figure>
+          <div class="fig-grid">
+            <div>
+              <svg class="fig fig-live" viewBox="0 0 300 392" role="img" aria-labelledby="f8-t f8-d">
+                <title id="f8-t">Baseline against 2x for your numbers</title>
+                <desc id="f8-d">Baseline against 2x for your numbers. Approved-live variants per head: baseline 83, 2x 167. Cost per approved-live asset: baseline $64.71, 2x $41.18. Review utilisation: baseline 55.1%, 2x 61.9%. A dashed line marks 100% capacity.</desc>
+                <text class="panel-lbl" x="0" y="12">Approved-live variants per head</text>
+                <text class="series-lbl" x="0" y="32">Baseline</text>
+                <rect class="bar-base" x="0" y="36" width="96" height="24"/>
+                <text data-fig="calc-output_per_head-base" x="200" y="52">83</text>
+                <text class="series-lbl" x="0" y="80">2x</text>
+                <rect class="bar-scaled" x="0" y="84" width="192" height="24"/>
+                <text data-fig="calc-output_per_head-scaled" x="200" y="100">167</text>
+                <text class="panel-lbl" x="0" y="152">Cost per approved-live asset</text>
+                <text class="series-lbl" x="0" y="172">Baseline</text>
+                <rect class="bar-base" x="0" y="176" width="192" height="24"/>
+                <text data-fig="calc-cost_per_asset-base" x="200" y="192">$64.71</text>
+                <text class="series-lbl" x="0" y="220">2x</text>
+                <rect class="bar-scaled" x="0" y="224" width="124" height="24"/>
+                <text data-fig="calc-cost_per_asset-scaled" x="200" y="240">$41.18</text>
+                <text class="panel-lbl" x="0" y="292">Review utilisation</text>
+                <text class="series-lbl" x="0" y="312">Baseline</text>
+                <rect class="bar-base" x="0" y="316" width="88" height="24"/>
+                <text data-fig="calc-utilisation-base" x="200" y="332">55.1%</text>
+                <text class="series-lbl" x="0" y="360">2x</text>
+                <rect class="bar-scaled" x="0" y="364" width="100" height="24"/>
+                <text data-fig="calc-utilisation-scaled" x="200" y="380">61.9%</text>
+                <line class="ref-line" x1="160" y1="296" x2="160" y2="388"/>
+                <text class="ref-lbl" x="164" y="292">100% capacity</text>
+              </svg>
+              <p class="later chart-empty" hidden>Fix the highlighted inputs to see the chart.</p>
+            </div>
+            <div>
+              <h3 class="steps-h">How to read this</h3>
+              <p>Each panel pairs a Baseline bar with a 2x bar, named in text, with its value to the right. Each panel has its own scale, so compare bars within a panel, not across panels. In the utilisation panel the dashed line marks full review capacity; a bar that passes it is labelled over capacity.</p>
+            </div>
+          </div>
+          <figcaption><b>Figure 8</b> Baseline against 2x for your numbers. Each panel has its own scale; see the results table for the exact values.</figcaption>
+        </figure>
+        <details class="maths">
+          <summary>Show the maths</summary>
+          <ol class="maths-steps">
+            <li><b>Approved-live variants a year at 2x</b> <code>campaigns times concepts per campaign times variants per concept, each grown by the scale factor</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-volume-1">40</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> × <span data-fig="calc-maths-volume-2">25</span> × <span data-fig="calc-maths-volume-3">40</span> × <span data-fig="calc-maths-volume-4">2</span> = <span data-fig="calc-maths-volume-r">80,000</span></code></span></li>
+            <li><b>Output per head per quarter</b> <code>approved-live variants a year, divided by four quarters, divided by marketing FTE</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-output-1">80,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> ÷ four quarters ÷ <span data-fig="calc-maths-output-2">120</span> = <span data-fig="calc-maths-output-r">167</span></code></span></li>
+            <li><b>Variants generated a year</b> <code>approved-live variants divided by approval yield, because rejected variants are regenerated</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-generated-1">80,000</span> <a class="chip c-m" href="#asm-locales">Modelled</a> ÷ <span data-fig="calc-maths-generated-2">95%</span> = <span data-fig="calc-maths-generated-r">84,211</span></code></span></li>
+            <li><b>Share of variants a person touches</b> <code>one minus auto-approval share times (one minus the sampled and escalated share)</code><span class="maths-with">With your numbers: <code>one minus <span data-fig="calc-maths-touch-1">60%</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × (one minus <span data-fig="calc-maths-touch-2">10%</span>) = <span data-fig="calc-maths-touch-r">46.0%</span></code></span></li>
+            <li><b>Review hours a year</b> <code>generated variants times human-touch share times minutes per review, divided by sixty</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-hours-1">84,211</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × <span data-fig="calc-maths-hours-2">46.0%</span> × <span data-fig="calc-maths-hours-3">12</span> ÷ sixty = <span data-fig="calc-maths-hours-r">7,747</span></code></span></li>
+            <li><b>Review utilisation</b> <code>review hours times (one plus rework rate), divided by reviewer capacity hours</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-utilisation-1">7,747</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × (one plus <span data-fig="calc-maths-utilisation-2">15%</span>) ÷ <span data-fig="calc-maths-utilisation-3">14,400</span> = <span data-fig="calc-maths-utilisation-r">61.9%</span></code></span></li>
+            <li><b>Cost per approved-live asset</b> <code>generation, review, rework, tooling, rights and storage cost added up, divided by approved-live variants</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-cost-1">$1,494,417</span> <a class="chip c-m" href="#asm-locales">Modelled</a> + <span data-fig="calc-maths-cost-2">$774,737</span> + <span data-fig="calc-maths-cost-3">$126,316</span> + <span data-fig="calc-maths-cost-4">$600,000</span> + <span data-fig="calc-maths-cost-5">$297,302</span> + <span data-fig="calc-maths-cost-6">$1,600</span> = <span data-fig="calc-maths-cost-7">$3,294,371</span> ÷ <span data-fig="calc-maths-cost-8">80,000</span> = <span data-fig="calc-maths-cost-r">$41.18</span></code></span></li>
+            <li><b>Break-even auto-approval</b> <code>the auto-approval share at which utilisation equals the target, at flat reviewer headcount</code><span class="maths-with">With your numbers: <code><span data-fig="calc-maths-breakeven-1">85%</span> <a class="chip c-m" href="#asm-locales">Modelled</a> × <span data-fig="calc-maths-breakeven-2">14,400</span> ÷ <span data-fig="calc-maths-breakeven-3">19,368</span> = the most variants people can touch, <span data-fig="calc-maths-breakeven-4">63.2%</span>; (one minus that) ÷ (one minus the sampled and escalated share <span data-fig="calc-maths-breakeven-5">10%</span>) = <span data-fig="calc-maths-breakeven-r">41%</span></code></span></li>
+          </ol>
+        </details>
+        <div class="believe">
+          <h3>What you must believe</h3>
+          <p>The result holds only if these hold.</p>
+          <ul>
+            <li>Each concept is localised into this many locales: <span data-fig="calc-believe-locales">5</span> <a class="chip c-m" href="#asm-locales">Modelled</a> <b class="default-mark">carries the result</b></li>
+            <li>A master concept costs this much to make: <span data-fig="calc-believe-mconcept">$1,200</span> <a class="chip c-m" href="#asm-master-concept-cost">Modelled</a> <b class="default-mark">carries the result</b></li>
+            <li>This share of variants can be auto-approved at 2x: <span data-fig="calc-believe-auto2">60%</span> <a class="chip c-m" href="#asm-auto-approval">Modelled</a> <b class="default-mark">carries the result</b></li>
+            <li>A reviewer needs this many minutes per variant: <span data-fig="calc-believe-minutes">12</span> <a class="chip c-m" href="#asm-review-minutes">Modelled</a></li>
+            <li>This share of generated variants is approved: <span data-fig="calc-believe-yield">95%</span> <a class="chip c-m" href="#asm-approval-yield">Modelled</a></li>
+            <li>Tooling costs this much a year at 2x: <span data-fig="calc-believe-tooling">$600,000</span> <a class="chip c-m" href="#asm-tooling">Modelled</a></li>
+            <li>Variant generation at 2x costs this much per variant: <span data-fig="calc-believe-vcost">$0.80</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a>. A 20% rise moves cost per approved-live asset only slightly, by <span data-fig="calc-believe-vcost-swing">+0.5%</span>.</li>
+          </ul>
+        </div>
         <div class="table-scroll" role="region" aria-label="Sensitivity" tabindex="0">
           <table>
             <caption>Sensitivity: each input moved 20% down and up, others unchanged</caption>

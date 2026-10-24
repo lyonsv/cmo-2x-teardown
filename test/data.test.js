@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -518,7 +519,15 @@ test('calc claims equal present(defaults)', () => {
     const [rowId, cellName] = head === 'scenario' ? [parts[2]] : parts.slice(1);
     let row;
     let node;
-    if (head === 'scenario') {
+    if (head === 'maths') {
+      row = p.maths.find((m) => m.id === parts[1]);
+      node = parts[2] === 'r' ? row?.result : row?.parts.find((x) => x.fig === `calc-maths-${parts[1]}-${parts[2]}`);
+      assert.equal(c.id, `calc-maths-${parts[1]}-${parts[2]}`);
+    } else if (head === 'believe') {
+      row = p.believe.find((b) => b.key === parts[1]);
+      node = row?.parts.find((x) => x.fig === c.id);
+      assert.ok(c.id === `calc-believe-${parts[1]}` || c.id === `calc-believe-${parts[1]}-swing`);
+    } else if (head === 'scenario') {
       row = p.scenario.rows.find((r) => r.id === rowId);
       node = row;
       assert.equal(c.id, `calc-scen-${rowId}`);
@@ -568,4 +577,21 @@ test('scenario assumptions: Modelled calc rows with no-benchmark basis, carried 
   assert.equal(ctx.fixed.loaded_fte_cost, 150000);
   assert.equal(ctx.fixed.change_cost_per_fte, 3000);
   assert.equal(defaultInputs().loaded_fte_cost, undefined);
+});
+
+test('maths items: every figure in a step shares its chip ref and grade', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const ol = page.match(/<ol class="maths-steps">([\s\S]*?)<\/ol>/)[1];
+  const lis = ol.match(/<li>[\s\S]*?<\/li>/g);
+  assert.equal(lis.length, 8);
+  for (const li of lis) {
+    const figs = [...li.matchAll(/<span data-fig="(calc-maths-[^"]+)">/g)].map((m) => claims[m[1]]);
+    assert.ok(figs.length >= 3 && figs.every(Boolean));
+    assert.equal(new Set(figs.map((c) => c.ref)).size, 1);
+    assert.equal(new Set(figs.map((c) => c.grade)).size, 1);
+    const chips = [...li.matchAll(/<a class="chip c-[bms]" href="#([^"]+)">([^<]+)<\/a>/g)];
+    assert.equal(chips.length, 1);
+    assert.equal(chips[0][1], figs[0].ref);
+    assert.equal(chips[0][2], figs[0].grade);
+  }
 });
