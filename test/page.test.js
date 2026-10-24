@@ -235,3 +235,35 @@ test('s01 six-lever table', () => {
     assert.match(r[1], new RegExp(`<a class="chip c-[ms]" href="#asm-lever-0${i + 1}-evidence">(Modelled|Speculative)</a>\\s*</td>\\s*$`));
   });
 });
+
+// ---- Plan 01-05: section 02 ----
+
+const AI_FLOOR = "AI spend is a floor, not a target. Teams that are rewarded for spending on AI will spend on AI (Goodhart's law); the measure that matters is the cost of an approved, live asset.";
+const GARTNER_CAVEAT = 'Secondary source: the Gartner 7.8% figure is reported by trade press; we could not confirm the primary release.';
+
+test('s02 states flat budget, scope, six components, AI-spend floor and review constraint', () => {
+  const s = sectionHtml('s02');
+  const text = strip(s);
+  assert.ok(text.includes(AI_FLOOR), 'AI spend copy');
+  assert.ok(text.includes('excludes media'));
+  for (const c of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) assert.ok(text.includes(c), c);
+  for (const id of ['gartner-share-2025', 'gartner-share-2026', 'gartner-sample-2025', 'cpa-base', 'cpa-scaled', 'cpa-change',
+    'total-cost-base', 'total-cost-scaled', 'budget-share-base', 'budget-share-scaled', 'ai-spend-base', 'ai-spend-scaled',
+    'ai-spend-ratio', 'break-even-auto-approval', 'asm-approval-yield', 'asm-auto-approval']) {
+    assert.ok(s.includes(`data-fig="${id}"`), id);
+  }
+  assert.match(s, /class="callout/);
+  if (claims['gartner-share-2026'].grade === 'Modelled') assert.ok(text.includes(GARTNER_CAVEAT));
+  else assert.ok(!text.includes(GARTNER_CAVEAT));
+});
+
+test('answer carries the cost per asset and stays short', () => {
+  const a = sectionHtml('answer');
+  assert.ok(a.includes('data-fig="cpa-base"'));
+  assert.ok(a.includes('data-fig="cpa-scaled"'));
+  assert.ok(strip(a).split(' ').length <= 120);
+});
+
+test('gartner 2026 source row is registered', () => {
+  assert.equal((html.match(/id="src-gartner-2026-cmo-spend"/g) || []).length, 1);
+});

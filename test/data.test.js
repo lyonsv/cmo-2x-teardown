@@ -69,3 +69,36 @@ test('six lever evidence entries exist, ungraded Benchmark never, no company nam
     assert.ok(!/gradial|airops|profound|optimizely|klarna|unilever/i.test(e.display + e.basis));
   }
 });
+
+// gartner-share-2026 grade is Benchmark: 01-02-SUMMARY.md records gartner_2026_grade: Benchmark
+// (user confirmed the primary Gartner newsroom page on 2026-10-24).
+test('gartner-share-2026 grade matches the 01-02 browser check', () => {
+  assert.equal(claims['gartner-share-2026'].grade, 'Benchmark');
+  assert.equal(claims['gartner-share-2026'].flag, null);
+  assert.ok(sources['gartner-2026-cmo-spend']);
+});
+
+test('s02 derived claims carry the expected displays', () => {
+  const want = {
+    'cpa-base': '$64.71', 'cpa-scaled': '$41.18', 'cpa-change': '\u221236%',
+    'total-cost-base': '$2.59M', 'total-cost-scaled': '$3.29M',
+    'budget-share-base': '3.3%', 'budget-share-scaled': '4.2%',
+    'ai-spend-base': '$38,421', 'ai-spend-scaled': '$340,421', 'ai-spend-ratio': '8.9x',
+    'break-even-auto-approval': '41%',
+  };
+  for (const [id, d] of Object.entries(want)) assert.equal(claims[id].display, d, id);
+});
+
+test('new format kinds', () => {
+  assert.equal(formatValue(38421.4, 'usd0'), '$38,421');
+  assert.equal(formatValue(64.714, 'usd2'), '$64.71');
+  assert.equal(formatValue(2590000, 'usdm2'), '$2.59M');
+  assert.equal(formatValue(0.41, 'pct0'), '41%');
+  assert.equal(formatValue(0.033, 'pct1'), '3.3%');
+  assert.equal(formatValue(-0.36, 'pctchg0'), '\u221236%');
+  assert.equal(formatValue(0.2, 'pctchg0'), '+20%');
+});
+
+test('every model assumption is Modelled', () => {
+  for (const e of Object.values(assumptions)) if (e.kind === 'model') assert.equal(e.grade, 'Modelled', e.id);
+});
