@@ -90,7 +90,9 @@ Progress: [██████████] 100%
 
 ### Pending Todos
 
-- Phase 2 UI review (18/24, advisory): table number alignment + total row style, tier default-mark layout, `th.tier` specificity, s05/s07/s08 length, capacity 'over capacity' wording + chips for 28.4%/111.3%, Figure 4/5 arrows, s02 'not rising'. See 02-UI-REVIEW.md. Fold into Phase 3 first plan.
+- Phase 3 UI review (17/24, advisory): 'Show the maths' disclosure marker; scenario radios 24px; table number/label size mismatch (12px mono vs 17px serif, 'Not applicable' cells); Hold sentence 'only −$53,579' wording; 49 identical Modelled chips in s11 (density rule); 'over capacity at 186% of capacity'; matrix cell cite density; s10/s12 word budgets; hint units/separators; Change column sign convention; re-check invalid-field→hashchange path. See 03-UI-REVIEW.md. Fold into Phase 4 Plan 1.
+- Phase 3 HUMAN-UAT deferred (user away): vendor fairness/tone, legal wording, s09/s10 tone, hands-on calculator. See 03-HUMAN-UAT.md.
+
 - Phase 2 HUMAN-UAT deferred (user away): visual/print check, author COI check of stock-licence indemnity wording, Getty tracker facts/date. See 02-HUMAN-UAT.md.
 
 ### Blockers/Concerns
