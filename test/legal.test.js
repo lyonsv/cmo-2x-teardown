@@ -55,3 +55,11 @@ test('s15 lists evidence gaps with closers and the not-used notes', () => {
   assert.equal((html.match(/mckinsey/gi) || []).length, 1);
   assert.doesNotMatch(html, /\b49%[\s\S]{0,200}\b40%[\s\S]{0,200}\b27%/);
 });
+
+test('rows that could not be re-fetched say so and keep their last verified date (QA-03)', async () => {
+  const { sources } = await import('../site/js/data.js');
+  for (const k of ['gartner-2025-cmo-spend', 'gartner-2026-cmo-spend', 'nyu-emory-ai-ads-2025']) {
+    assert.match(sources[k].read_via, /Re-check failed \d{4}-\d{2}-\d{2}; last verified \d{4}-\d{2}-\d{2}\./, k);
+    assert.ok(html.includes(sources[k].read_via), `${k} register matches data.js`);
+  }
+});
