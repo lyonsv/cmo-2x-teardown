@@ -332,8 +332,67 @@
     </section>
     <section id="s05" aria-labelledby="s05-h">
       <div class="sec-head"><span class="sec-num">05</span><h2 id="s05-h">The 10,000-asset campaign</h2></div>
-      <p>This section will walk through a campaign of more than ten thousand assets, including imagery sourcing, and the conflict-of-interest note will be repeated there.</p>
-      <p class="later">Coming in a later update.</p>
+      <p>Derive, do not generate: four master concepts become about <span data-fig="matrix-total">12,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants through templating, localisation and feed rendering, and most land in low-risk tiers.</p>
+      <figure>
+        <div class="fig-grid">
+      <svg class="fig-d" role="img" aria-labelledby="fd4-t fd4-d" viewBox="0 0 300 480">
+        <title id="fd4-t">From brief to approved asset</title>
+        <desc id="fd4-d">A brief becomes a master concept, which the variant matrix expands into many variants. Each is logged in the asset manifest, checked by the review agent and assigned a tier, then either auto-approved with sampling or sent to a human review queue.</desc>
+        <defs>
+        <marker id="fd4-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
+        <marker id="fd4-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
+        </defs>
+        <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd4-arrow)"/>
+        <line class="edge" x1="150" y1="112" x2="150" y2="136" marker-end="url(#fd4-arrow)"/>
+        <line class="edge" x1="150" y1="192" x2="150" y2="216" marker-end="url(#fd4-arrow)"/>
+        <line class="edge edge-review" x1="150" y1="256" x2="150" y2="280" marker-end="url(#fd4-arrow-review)"/>
+        <line class="edge edge-review" x1="150" y1="320" x2="150" y2="344" marker-end="url(#fd4-arrow-review)"/>
+        <line class="edge edge-review" x1="150" y1="384" x2="86" y2="408" marker-end="url(#fd4-arrow-review)"/>
+        <line class="edge" x1="150" y1="384" x2="214" y2="408" marker-end="url(#fd4-arrow)"/>
+        <text class="note" x="150" y="472" text-anchor="middle">Illustrative</text>
+        <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Brief</tspan><tspan x="150" dy="16">audience, offer, goal</tspan></text></g>
+        <g class="node"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Master concept</tspan><tspan x="150" dy="16">human-directed idea</tspan></text></g>
+        <g class="node"><rect x="30" y="136" width="240" height="56" rx="2"/><text x="150" y="152" text-anchor="middle"><tspan class="node-t" x="150" y="152">Matrix expansion</tspan><tspan x="150" dy="16">sizes, channels, locales,</tspan><tspan x="150" dy="16">audiences, tests, feeds</tspan></text></g>
+        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Asset manifest</tspan><tspan x="150" dy="16">every variant gets an ID</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="280" width="240" height="40" rx="2"/><text x="150" y="296" text-anchor="middle"><tspan class="node-t" x="150" y="296">Review agent</tspan><tspan x="150" dy="16">checks against policy</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="344" width="240" height="40" rx="2"/><text x="150" y="360" text-anchor="middle"><tspan class="node-t" x="150" y="360">Tier gate</tspan><tspan x="150" dy="16">risk tier decides route</tspan></text></g>
+        <g class="node"><rect x="30" y="408" width="112" height="40" rx="2"/><text x="86" y="424" text-anchor="middle"><tspan class="node-t" x="86" y="424">Auto-approve</tspan><tspan x="86" dy="16">sampled</tspan></text></g>
+        <g class="node"><rect x="158" y="408" width="112" height="40" rx="2"/><text x="214" y="424" text-anchor="middle"><tspan class="node-t" x="214" y="424">Human queue</tspan><tspan x="214" dy="16">reviewer</tspan></text></g>
+      </svg>
+          <div>
+          <h3 class="steps-h">Steps in this figure</h3>
+          <ol class="fig-steps">
+          <li>Brief: audience, offer and goal.</li>
+          <li>Then Master concept: a human-directed idea.</li>
+          <li>Then Matrix expansion: sizes, channels, locales, audiences, tests and feeds multiply it into variants.</li>
+          <li>Then Asset manifest: every variant gets an identity and a record.</li>
+          <li>Then Review agent: it checks each variant against policy.</li>
+          <li>Then Tier gate: the risk tier decides the route.</li>
+          <li>Then either Auto-approve, with sampling, or Human queue, for a reviewer.</li>
+          </ol>
+          </div>
+        </div>
+        <figcaption><b>Figure 4</b> From brief to approved asset: one master concept expands through the matrix, every variant is logged in the manifest, reviewed, tiered, then auto-approved or queued for a person. Illustrative.</figcaption>
+      </figure>
+      <p>A campaign of this size is not written one asset at a time. People brief it and approve a handful of master concepts. Everything after that is a derivation, and each derivation lands in the asset manifest before anyone judges it.</p>
+      <div class="table-scroll" role="region" aria-label="Variant matrix table" tabindex="0">
+        <table>
+          <caption>Worked example: one campaign, about <span data-fig="matrix-total">12,000</span> variants</caption>
+          <thead><tr><th scope="col">Factor</th><th scope="col">Count</th><th scope="col">Applies to</th><th scope="col">Variants after factor</th><th scope="col">Grade</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Master concepts</th><td class="num"><span data-fig="matrix-concepts">4</span></td><td class="num">&mdash;</td><td class="num"><span data-fig="matrix-concepts">4</span></td><td><a class="chip c-m" href="#asm-matrix-concepts">Modelled</a></td></tr>
+            <tr><th scope="row">Sizes</th><td class="num"><span data-fig="matrix-sizes-count">10</span></td><td class="num"><span data-fig="matrix-sizes-applies">all</span></td><td class="num"><span data-fig="matrix-sizes-variants">40</span></td><td><a class="chip c-m" href="#asm-matrix-sizes">Modelled</a></td></tr>
+            <tr><th scope="row">Channels</th><td class="num"><span data-fig="matrix-channels-count">5</span></td><td class="num"><span data-fig="matrix-channels-applies">75%</span></td><td class="num"><span data-fig="matrix-channels-variants">160</span></td><td><a class="chip c-m" href="#asm-matrix-channels">Modelled</a></td></tr>
+            <tr><th scope="row">Locales</th><td class="num"><span data-fig="matrix-locales-count">6</span></td><td class="num"><span data-fig="matrix-locales-applies">40%</span></td><td class="num"><span data-fig="matrix-locales-variants">480</span></td><td><a class="chip c-m" href="#asm-matrix-locales">Modelled</a></td></tr>
+            <tr><th scope="row">Audiences</th><td class="num"><span data-fig="matrix-audiences-count">5</span></td><td class="num"><span data-fig="matrix-audiences-applies">75%</span></td><td class="num"><span data-fig="matrix-audiences-variants">1,920</span></td><td><a class="chip c-m" href="#asm-matrix-audiences">Modelled</a></td></tr>
+            <tr><th scope="row">Tests</th><td class="num"><span data-fig="matrix-tests-count">4</span></td><td class="num"><span data-fig="matrix-tests-applies">50%</span></td><td class="num"><span data-fig="matrix-tests-variants">4,800</span></td><td><a class="chip c-m" href="#asm-matrix-tests">Modelled</a></td></tr>
+            <tr><th scope="row">Feed items</th><td class="num"><span data-fig="matrix-feeds-count">4</span></td><td class="num"><span data-fig="matrix-feeds-applies">50%</span></td><td class="num"><span data-fig="matrix-feeds-variants">12,000</span></td><td><a class="chip c-m" href="#asm-matrix-feeds">Modelled</a></td></tr>
+            <tr class="total"><th scope="row">Total approved-live variants</th><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num"><span data-fig="matrix-total">12,000</span></td><td><a class="chip c-m" href="#asm-matrix-independence">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The factors are independent. Each one expands only the stated share of the set that exists after the previous factor, so no variant is double counted, and the shares stand in for the exclusions a real campaign has. That works out at about <span data-fig="matrix-per-concept">3,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants for each master concept.</p>
+      <p>This is one flagship campaign, not the model default. The model's average campaign has about <span data-fig="avg-campaign-variants">1,000</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a> approved-live variants. Most variants are mechanical derivations of approved masters, which is why most land in low-risk tiers and reach <a href="#s07">the auto-approval gate</a> with a small chance of sending anything to a person.</p>
     </section>
     <section id="s06" aria-labelledby="s06-h">
       <div class="sec-head"><span class="sec-num">06</span><h2 id="s06-h">The review agent</h2></div>
@@ -624,6 +683,62 @@
               <td><span data-fig="asm-reallocation">reallocated from other marketing lines, chiefly agency and production fees</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td>The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.</td>
+            </tr>
+            <tr id="asm-matrix-concepts">
+              <th scope="row" class="id">asm-matrix-concepts</th>
+              <td>Master concepts in the worked campaign</td>
+              <td><span data-fig="asm-matrix-concepts">4</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Four human-directed master concepts for one flagship campaign; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-sizes">
+              <th scope="row" class="id">asm-matrix-sizes</th>
+              <td>Worked campaign: Sizes</td>
+              <td><span data-fig="asm-matrix-sizes">10 sizes, all items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Ten sizes, each applied to every item, so the count and the fraction both multiply the whole set; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-channels">
+              <th scope="row" class="id">asm-matrix-channels</th>
+              <td>Worked campaign: Channels</td>
+              <td><span data-fig="asm-matrix-channels">5 channels, 75% of items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Five channels, with 75% of the items going to more than one channel; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-locales">
+              <th scope="row" class="id">asm-matrix-locales</th>
+              <td>Worked campaign: Locales</td>
+              <td><span data-fig="asm-matrix-locales">6 locales, 40% of items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Six locales, with 40% of the items localised into all of them; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-audiences">
+              <th scope="row" class="id">asm-matrix-audiences</th>
+              <td>Worked campaign: Audiences</td>
+              <td><span data-fig="asm-matrix-audiences">5 audiences, 75% of items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Five audience segments, with 75% of the items tailored to each; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-tests">
+              <th scope="row" class="id">asm-matrix-tests</th>
+              <td>Worked campaign: Tests</td>
+              <td><span data-fig="asm-matrix-tests">4 tests, 50% of items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Four test treatments, with 50% of the items carrying them; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-feeds">
+              <th scope="row" class="id">asm-matrix-feeds</th>
+              <td>Worked campaign: Feed items</td>
+              <td><span data-fig="asm-matrix-feeds">4 feed items, 50% of items</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Four feed-rendered forms, with 50% of the items rendered into a feed; illustrative, no published benchmark.</td>
+            </tr>
+            <tr id="asm-matrix-independence">
+              <th scope="row" class="id">asm-matrix-independence</th>
+              <td>Independence of matrix factors</td>
+              <td><span data-fig="asm-matrix-independence">Each factor applies to a stated share of the running set</span></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td>Each factor expands only the stated share of the variants that exist after the previous factor, and factors are treated as independent, so no variant is counted twice. Real campaigns have exclusions (a size that a channel does not take); the applies fractions stand in for them.</td>
             </tr>
             <tr id="asm-lever-01-evidence">
               <th scope="row" class="id">asm-lever-01-evidence</th>
