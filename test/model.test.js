@@ -5,7 +5,7 @@ import { compute } from '../site/js/calc.js';
 import { formatValue } from '../site/js/format.js';
 import { FIELDS, SCENARIOS, COMPUTE_FIELD_TO_KEY } from '../site/js/fields.js';
 import {
-  defaultValues, toCompute, run, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity,
+  defaultValues, toCompute, run, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity, SENSITIVITY_STEP,
 } from '../site/js/model.js';
 import { modelContext, assumptions, defaultInputs, defaultAssumptions } from '../site/js/data.js';
 
@@ -281,6 +281,31 @@ test('sensitivity ranking, clamping and reviewer-only utilisation effect at defa
   for (const r of rows) for (const g of [r.cost, r.util]) assert.ok(finiteOrNull(g.down) && finiteOrNull(g.up));
   const full = sensitivity({ ...defaultValues(ctx), auto2: 0.9 }, ctx);
   assert.deepEqual(full, []);
+});
+
+test('sensitivity: small integer volumes move exactly the stated step (CR-01)', () => {
+  const d = defaultValues(ctx);
+  const two = sensitivity({ ...d, locales: 2 }, ctx);
+  assert.equal(two[0].key, 'locales', 'locales stays the most influential input at 2 locales');
+  for (const loc of [2, 3]) {
+    const v = { ...d, locales: loc };
+    const row = sensitivity(v, ctx).find((r) => r.key === 'locales');
+    assert.ok(row, `locales ranked at ${loc}`);
+    assert.deepEqual(row.capped, { down: false, up: false });
+    const util = (x) => run(x, ctx).result.scenario.utilisation;
+    // Utilisation is linear in locales, so a 20% move gives exactly -20% and +20%.
+    assert.ok(Math.abs(row.util.down - (util({ ...v, locales: loc * 0.8 }) / util(v) - 1)) < 1e-12);
+    assert.ok(Math.abs(row.util.down + SENSITIVITY_STEP) < 1e-9, `util.down at ${loc} locales`);
+    assert.ok(Math.abs(row.util.up - SENSITIVITY_STEP) < 1e-9, `util.up at ${loc} locales`);
+  }
+  const small = sensitivity({ ...d, campaigns: 2, concepts: 2 }, ctx);
+  for (const key of ['campaigns', 'concepts']) {
+    const row = small.find((r) => r.key === key);
+    assert.ok(row, `${key} stays ranked at 2`);
+    assert.ok(row.cost.down > 0 && row.cost.up < 0, `${key} moves at 2`);
+  }
+  const one = sensitivity({ ...d, campaigns: 1 }, ctx);
+  for (const r of one) if (r.key === 'campaigns') assert.equal(r.capped.down, false, 'a volume of 1 moves to 0.8, not capped');
 });
 
 test('sensitivity: auto-approval cap clamps and is marked capped', () => {

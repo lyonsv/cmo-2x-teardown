@@ -207,14 +207,13 @@ export function scenarioOutcomes(values, ctx, mode) {
 export const SENSITIVITY_STEP = 0.2;
 const SENSITIVITY_ROWS = 5;
 
+// Volume inputs are not rounded: compute() accepts fractional volumes, so every
+// move is exactly the stated step (rounding 2 or 3 locales made the move ±33% or
+// zero). Only bounded inputs (shares, auto-approval caps) are clamped, and those
+// cells are marked capped.
 function perturb(field, base, step, ctx) {
-  const target = base * (1 + step);
-  let v = target;
+  let v = base * (1 + step);
   let capped = false;
-  if (field.kind === 'int') {
-    v = Math.round(target);
-    if (v < 1) { v = 1; capped = target < 1 - 1e-9; }
-  }
   let limit = Infinity;
   if (field.kind === 'pct') limit = 1;
   const mix = ctx.assumptions.tier_mix;
