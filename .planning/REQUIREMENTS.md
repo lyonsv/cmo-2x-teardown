@@ -26,7 +26,7 @@
 
 ### CFO Answer
 
-- [ ] **CFO-01**: Reader sees the flat-budget framing anchored on graded Gartner figures (marketing budget ≈7.7–7.8% of revenue)
+- [x] **CFO-01**: Reader sees the flat-budget framing anchored on graded Gartner figures (marketing budget ≈7.7–7.8% of revenue)
 - [ ] **CFO-02**: Reader sees cost per approved-live asset fully loaded (generation, review, rework, tooling, rights, storage) for the baseline and 2x scenarios
 - [ ] **CFO-03**: Reader sees AI spend framed as a floor, not a KPI, with the Goodhart rationale
 - [ ] **CFO-04**: Reader sees a static baseline-vs-2x figure (inline SVG with a data-table equivalent) in section 02
@@ -138,7 +138,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CRED-04 | Phase 1 | Pending |
 | CRED-05 | Phase 1 | Pending |
 | CRED-06 | Phase 1 | Complete |
-| CFO-01 | Phase 1 | Pending |
+| CFO-01 | Phase 1 | Complete |
 | CFO-02 | Phase 1 | Pending |
 | CFO-03 | Phase 1 | Pending |
 | CFO-04 | Phase 1 | Pending |
