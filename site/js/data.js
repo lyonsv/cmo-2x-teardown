@@ -17,6 +17,12 @@ export const sources = {
   },
 };
 
+export function formatValue(value, format) {
+  if (format === 'int') return Math.round(value).toLocaleString('en-GB', { maximumFractionDigits: 0 });
+  if (format === 'x1') return `${value.toLocaleString('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`;
+  throw new Error(`unknown format ${format}`);
+}
+
 function a(id, label, kind, key, value, unit, display, basis) {
   return { id, label, kind, key, value, unit, display, grade: 'Modelled', flag: null, basis };
 }
@@ -42,6 +48,27 @@ export const assumptions = {
     'Share of growth from new concepts in log terms; 0 means pure derivation.'),
 };
 
+assumptions['asm-tier-mix'] = {
+  ...a('asm-tier-mix', 'Review tier mix', 'model', 'tier_mix', { baseline: [0.40, 0.35, 0.20, 0.05], scaled: [0.55, 0.30, 0.12, 0.03] }, 'share of variants',
+    'T0–T3: 40/35/20/5% today; 55/30/12/3% at 2x', 'Illustrative tier shares; no published benchmark exists'),
+};
+assumptions['asm-tier-weights'] = a('asm-tier-weights', 'Relative review effort per tier', 'model', 'tier_weights', [1, 2, 4, 8], 'relative effort', '1 / 2 / 4 / 8',
+  'Relative review effort per tier; used only for the weighted sensitivity because weights are arbitrary and gameable');
+assumptions['asm-approval-yield'] = a('asm-approval-yield', 'Approval yield', 'model', 'approval_yield', 0.95, 'share of derived variants', '95%',
+  'Share of derived variants that clear the gate after the bounded fix loop; rejected variants still cost generation and review. No published benchmark.');
+
+function lever(n, label, grade, display) {
+  const id = `asm-lever-0${n}-evidence`;
+  assumptions[id] = { id, label, kind: 'evidence', key: null, value: null, unit: null, display, grade, flag: null,
+    basis: display };
+}
+lever(1, 'Lever 1 evidence: content generation', 'Modelled', 'Company-reported anchors only, plus one controlled click-through study; the rest is modelled.');
+lever(2, 'Lever 2 evidence: localisation', 'Modelled', 'Vendor case studies and a wide academic range; per-word rates are a gap.');
+lever(3, 'Lever 3 evidence: experimentation', 'Modelled', 'Published win-rate anchors exist but are vendor-biased; verified in a later section.');
+lever(4, 'Lever 4 evidence: insight and reporting', 'Modelled', 'Almost entirely an evidence gap; kept brief and modelled.');
+lever(5, 'Lever 5 evidence: ops', 'Speculative', 'No data beyond the statute; a judgement.');
+lever(6, 'Lever 6 evidence: answer-engine visibility', 'Speculative', 'Thin, vendor-only and panel-based; outcomes are speculative.');
+
 export const claims = {
   'gartner-share-2025': {
     id: 'gartner-share-2025', value: 7.7, unit: '% of revenue', display: '7.7%',
@@ -50,12 +77,24 @@ export const claims = {
   'output-per-head-base': {
     id: 'output-per-head-base', value: 83, unit: 'approved-live asset-variants per head per quarter', display: '83',
     grade: 'Modelled', flag: null, ref: 'asm-variants-per-concept',
-    derived: 'baseline.output_per_head_per_quarter', decimals: 0,
+    derived: 'baseline.output_per_head_per_quarter', decimals: 0, format: 'int',
   },
   'output-per-head-scaled': {
     id: 'output-per-head-scaled', value: 167, unit: 'approved-live asset-variants per head per quarter', display: '167',
     grade: 'Modelled', flag: null, ref: 'asm-variants-per-concept',
-    derived: 'scenario.output_per_head_per_quarter', decimals: 0,
+    derived: 'scenario.output_per_head_per_quarter', decimals: 0, format: 'int',
+  },
+  ...Object.fromEntries([
+    ['concepts-base', 1000, 'baseline.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
+    ['concepts-scaled', 1189, 'scenario.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
+    ['vpc-base', 40, 'baseline.variants_per_concept', 'asm-variants-per-concept', 'variants per concept'],
+    ['vpc-scaled', 67, 'scenario.variants_per_concept', 'asm-variants-per-concept', 'variants per concept'],
+  ].map(([id, value, derived, ref, unit]) => [id, {
+    id, value, unit, display: formatValue(value, 'int'), grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
+  }])),
+  'weighted-ratio': {
+    id: 'weighted-ratio', value: 1.6, unit: 'x, tier-weighted sensitivity', display: '1.6x', grade: 'Modelled', flag: null,
+    ref: 'asm-tier-weights', derived: 'ratios.weighted_output_per_head', decimals: 1, format: 'x1',
   },
 };
 

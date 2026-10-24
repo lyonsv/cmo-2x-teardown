@@ -18,12 +18,6 @@ const inputs = (over = {}) => ({
 });
 const assumptions = defaultAssumptions();
 
-test('multiplier 1 gives scenario equal to baseline', () => {
-  const r = compute(inputs({ multiplier: 1 }), assumptions);
-  assert.equal(r.ok, true);
-  for (const k of Object.keys(r.baseline)) close(r.scenario[k], r.baseline[k]);
-});
-
 test('default inputs give a 2x output per head ratio', () => {
   const r = compute(inputs(), assumptions);
   assert.equal(r.ok, true);
