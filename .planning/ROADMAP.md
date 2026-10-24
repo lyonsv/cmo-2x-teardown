@@ -195,7 +195,36 @@ Plans:
   3. s02 Figure 1 and its data table, and the calculator's results, summary sentence, chart and "what you must believe" panel, report the new headline metric(s); variant counts remain only in s05/s07 (factory and review capacity) and the s15 registers, labelled as internal throughput.
   4. data.js, calc/model code and all drift, crosscheck and smoke tests are updated so every new number is graded, registered and traced; no test is loosened to make the change pass.
   5. The reason for the change (no CMO benchmark for assets per head; Goodhart risk from mechanical variants) is recorded in PROJECT.md Key Decisions.
-**Plans**: TBD
+**Plans:** 7 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 03.1-01-PLAN.md — TDD campaign-market engine in calc.js (campaigns x markets, growth route, cost per campaign-market, brief-to-live)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03.1-02-PLAN.md — data.js campaign-market assumptions and claims, markets field, route allow-list in the hash
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03.1-03-PLAN.md — Calculator presenter (ten rows, summary, maths, believe, deps) and Figure 8 chart spec
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 03.1-04-PLAN.md — s11 markup (markets, How you get to 2x), ui.js route wiring, s15 register rows, smoke cases
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 03.1-05-PLAN.md — Answer, s01, s02 four-panel Figure 1, page-wide sync, crosscheck route check, PROJECT/REQUIREMENTS records
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 03.1-06-PLAN.md — Gates and user local-preview checkpoint (answer, s01, s02, s11)
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
+- [ ] 03.1-07-PLAN.md — Checkpoint fixes, s05/s07 internal-throughput labels, s08/s10 wording, page-wide reframe guards, final gates
 **UI hint**: yes
 
 ### Phase 4: Adoption, Risk, Evidence & Publish Slice
