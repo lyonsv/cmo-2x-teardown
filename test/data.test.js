@@ -240,7 +240,7 @@ test('NYU/Emory grade matches the 2026-10-24 browser confirmation (02-CONTEXT po
 });
 
 test('every source is complete', () => {
-  assert.deepEqual(PUBLISHER_TYPES, ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government']);
+  assert.deepEqual(PUBLISHER_TYPES, ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government', 'author', 'secondary']);
   for (const [k, s] of Object.entries(sources)) {
     for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) {
       assert.equal(typeof s[f], 'string', `${k}.${f}`);
@@ -255,12 +255,24 @@ test('every source is complete', () => {
   }
 });
 
+// WR-07: the type fits the source. The author's own page is typed author; a source read
+// only as an unofficial republication is typed secondary and is not a Benchmark.
+test('publisher types fit the source (WR-07)', () => {
+  for (const [k, s] of Object.entries(sources)) {
+    if (/author of this page/.test(s.publisher)) assert.equal(s.publisherType, 'author', k);
+    if (/^Unofficial/.test(s.bias)) {
+      assert.equal(s.publisherType, 'secondary', k);
+      assert.notEqual(s.grade, 'Benchmark', k);
+    }
+  }
+});
+
 test('publisherType of the 34 earlier sources is pinned', () => {
   const want = {
     'gartner-2025-cmo-spend': 'company', 'gartner-2026-cmo-spend': 'company',
     'nyu-emory-ai-ads-2025': 'academic', 'laubli-2019': 'academic', 'aggarwal-geo-2024': 'academic', 'kohavi-2013': 'academic',
     'usco-copyright-ai-part2': 'government', 'cornell-17usc504': 'government', 'cornell-17usc412': 'government',
-    'intercom-2x-teardown': 'company',
+    'intercom-2x-teardown': 'author',
     'translation-vendor-case': 'vendor', 'experimentation-vendor-playbook': 'vendor', 'mmm-geox': 'vendor',
     'haynes-2026': 'vendor', 'seoworks-2026': 'vendor', 'indig-2026': 'press',
   };
@@ -278,7 +290,7 @@ test('Phase 4 sources carry the researched grade, publisherType and event date',
   const want = {
     'parasuraman-manzey-2010': ['academic', 'Benchmark', undefined],
     'moffatt-air-canada-2024': ['government', 'Benchmark', '2024-02-14'],
-    'eu-ai-act-art50': ['government', 'Benchmark', undefined],
+    'eu-ai-act-art50': ['secondary', 'Modelled', undefined],
     'eu-ai-omnibus-2026-1744': ['government', 'Benchmark', undefined],
     'eu-code-of-practice-transparency': ['government', 'Benchmark', undefined],
     'asa-ai-disclosure-2025': ['government', 'Benchmark', undefined],

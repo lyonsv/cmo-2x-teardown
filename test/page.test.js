@@ -191,7 +191,7 @@ test('source register header is the eight pinned columns', () => {
   const thead = html.slice(html.lastIndexOf('<thead>', i), html.indexOf('</thead>', i));
   const cols = [...thead.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
   assert.deepEqual(cols, ['ID', 'Claim', 'Publisher', 'Publisher type', 'Date accessed', 'Grade', 'Flag', 'URL']);
-  assert.ok(html.includes('Publisher type says who published the source. It never changes a grade.'));
+  assert.ok(html.includes("Publisher type says who published the source. It never changes a grade. Author marks this page author's own earlier work; secondary marks an unofficial republication of a primary text."));
 });
 
 test('source register rows match data.js field by field', () => {

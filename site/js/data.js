@@ -6,7 +6,7 @@ import { present, defaultValues, RESULT_ROWS } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
-export const PUBLISHER_TYPES = ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government'];
+export const PUBLISHER_TYPES = ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government', 'author', 'secondary'];
 export const SCENARIO = { multiplier: 2 };
 
 // Each source carries its own grade and flag (code review WR-07): the register's
@@ -65,7 +65,7 @@ export const sources = {
   'intercom-2x-teardown': {
     title: 'Intercom / Fin 2x — Teardown',
     publisher: 'Vincent Lyons (author of this page)',
-    publisherType: 'company',
+    publisherType: 'author',
     published: '2026-08-25',
     accessed: '2026-10-24',
     url: 'https://lyonsv.github.io/intercom-2x-teardown/',
@@ -450,14 +450,14 @@ export const sources = {
   },
   'eu-ai-act-art50': {
     title: 'EU AI Act, Article 50: transparency obligations for providers and deployers of certain AI systems (applies from 2026-08-02 under Article 113)',
-    publisher: 'European Union (consolidated text republished by artificialintelligenceact.eu)',
-    publisherType: 'government',
+    publisher: 'artificialintelligenceact.eu (unofficial republication of the EU text)',
+    publisherType: 'secondary',
     published: '2024-06-13',
     accessed: '2026-10-24',
     url: 'https://artificialintelligenceact.eu/article/50/',
-    bias: 'Unofficial consolidated text of Regulation (EU) 2024/1689; the official text is on EUR-Lex. The page paraphrases and does not quote it',
+    bias: 'Unofficial consolidated text of Regulation (EU) 2024/1689; the official text is on EUR-Lex. The page paraphrases and does not quote it. Graded Modelled, not Benchmark, because only this unofficial text was read',
     read_via: 'artificialintelligenceact.eu Article 50 page read; EUR-Lex returned a bot challenge to automation, so the official text was not read directly',
-    grade: 'Benchmark',
+    grade: 'Modelled',
     flag: null,
   },
   'eu-ai-omnibus-2026-1744': {
