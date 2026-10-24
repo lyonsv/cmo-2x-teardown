@@ -44,3 +44,155 @@ test('static page guards', () => {
   assert.match(html, /<html lang="en-GB">/);
   assert.ok(existsSync(new URL('../site/.nojekyll', import.meta.url)));
 });
+
+// ---- Plan 01-03: front matter, grade key, TOC, sections, numeric gate ----
+
+const TITLES = {
+  s01: 'Claim & measurement',
+  s02: 'The CFO answer',
+  s03: 'The factory and the content supply chain',
+  s04: 'Platform and skills',
+  s05: 'The 10,000-asset campaign',
+  s06: 'The review agent',
+  s07: 'The auto-approval gate',
+  s08: 'Eval harness and telemetry',
+  s09: 'The other five levers',
+  s10: 'The outcome case',
+  s11: 'Your numbers',
+  s12: 'How this compares',
+  s13: 'Adoption and Backlog 0',
+  s14: 'What goes wrong',
+  s15: 'Source register',
+};
+const SECTION_IDS = Object.keys(TITLES);
+
+// Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
+const ALLOWED_NUMERIC_TOKENS = [
+  '2x', // the programme name
+  '1x', // identity reference
+  '2–3', // falsifier time window, locked copy
+  '2026-10-24', // page date
+  '10,000', // the s05 title phrase if echoed
+  '1', // Figure 1 label
+];
+
+const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+
+function sectionHtml(id) {
+  const start = html.indexOf(`<section id="${id}"`);
+  assert.ok(start >= 0, `missing section ${id}`);
+  const end = html.indexOf('</section>', start);
+  return html.slice(start, end + '</section>'.length);
+}
+
+function metaHtml() {
+  const start = html.indexOf('<div class="meta">');
+  assert.ok(start >= 0, 'missing .meta');
+  return html.slice(start, html.indexOf('</div>', start) + 6);
+}
+
+test('title, h1, kicker and byline', () => {
+  assert.equal((html.match(/<h1/g) || []).length, 1);
+  const h1 = strip(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1]);
+  const title = decode(html.match(/<title>([\s\S]*?)<\/title>/)[1]).trim();
+  assert.equal(title, h1);
+  assert.ok(html.includes('A forward-looking teardown · projection, not retrospective'));
+  assert.ok(html.includes('Vincent Lyons'));
+});
+
+test('meta grid carries the subject-org assumptions and the date', () => {
+  const meta = metaHtml();
+  for (const id of ['asm-revenue', 'asm-marketing-budget', 'asm-budget-share', 'asm-marketing-fte', 'asm-campaigns']) {
+    assert.ok(meta.includes(`data-fig="${id}"`), `meta missing ${id}`);
+  }
+  assert.ok(meta.includes('2026-10-24'));
+});
+
+test('conflict-of-interest box uses the CONTEXT wording', () => {
+  assert.match(html, /class="callout coi"/);
+  assert.ok(html.includes('The author works at iStock/Getty Images. The page is vendor-neutral by design; where imagery sourcing or Getty v Stability is discussed, this note is repeated.'));
+});
+
+test('grade key defines three grades and a neutral flag', () => {
+  const start = html.indexOf('class="legend"');
+  assert.ok(start >= 0, 'missing .legend');
+  const legend = html.slice(start, html.indexOf('</div>', start));
+  for (const d of [
+    'Published by a primary or otherwise checkable source, and the figure matches it.',
+    'Derived by this page from stated assumptions; change the assumption and the number changes.',
+    'A judgement with no checkable source; shown so you can discount it.',
+  ]) assert.ok(legend.includes(d), `legend missing: ${d}`);
+  for (const c of ['c-b', 'c-m', 'c-s']) assert.equal((legend.match(new RegExp(`class="chip ${c}"`, 'g')) || []).length, 1, c);
+  assert.match(legend, /<span class="flag">/);
+  assert.ok(legend.includes('It never raises a grade.'));
+});
+
+test('table of contents lists s01 to s15 in order', () => {
+  const nav = html.match(/<nav[^>]*aria-label="Sections"[^>]*>([\s\S]*?)<\/nav>/);
+  assert.ok(nav, 'missing nav[aria-label="Sections"]');
+  const rows = [...nav[1].matchAll(/<a href="#(s\d\d)"><span class="n">(\d\d)<\/span><span>([^<]+)<\/span><\/a>/g)];
+  assert.equal(rows.length, 15);
+  rows.forEach(([, id, n, title], i) => {
+    assert.equal(id, SECTION_IDS[i]);
+    assert.equal(n, id.slice(1));
+    assert.equal(decode(title), TITLES[id]);
+  });
+});
+
+test('fifteen anchored sections with the fixed snippet', () => {
+  for (const id of SECTION_IDS) {
+    assert.equal((html.match(new RegExp(`<section id="${id}"`, 'g')) || []).length, 1, id);
+    const s = sectionHtml(id);
+    assert.ok(s.includes(`aria-labelledby="${id}-h"`), id);
+    assert.ok(s.includes(`<span class="sec-num">${id.slice(1)}</span>`), id);
+    const h2 = s.match(new RegExp(`<h2 id="${id}-h">([^<]*)</h2>`));
+    assert.ok(h2, `${id} h2`);
+    assert.equal(decode(h2[1]), TITLES[id]);
+  }
+});
+
+test('skeleton sections 03 to 14 carry a scope sentence and the later note', () => {
+  for (let n = 3; n <= 14; n++) {
+    const id = `s${String(n).padStart(2, '0')}`;
+    const s = sectionHtml(id);
+    assert.ok(s.includes('<p class="later">Coming in a later update.</p>'), id);
+    const others = [...s.matchAll(/<p(?![^>]*class="later")[^>]*>/g)];
+    assert.ok(others.length >= 1, `${id} has no scope sentence`);
+  }
+});
+
+test('answer-first paragraph is short and states the falsifier', () => {
+  const text = strip(sectionHtml('answer'));
+  assert.ok(text.split(' ').length <= 120, `answer is ${text.split(' ').length} words`);
+  assert.match(text, /falsifier|false/);
+});
+
+test('landmarks and CSP hygiene', () => {
+  for (const t of ['<header', '<nav', '<main id="main"', '<footer']) assert.ok(html.includes(t), t);
+  assert.ok(!html.includes(' style="'), 'inline style attribute');
+});
+
+test('vendor names stay inside s12 and s15', () => {
+  let rest = html;
+  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  assert.ok(!/gradial|airops|profound/i.test(rest));
+});
+
+test('numeric gate: no ungraded numerals in the frame', () => {
+  const parts = [metaHtml(), sectionHtml('answer'), sectionHtml('s01'), sectionHtml('s02')];
+  for (const part of parts) {
+    const cleaned = strip(
+      part
+        .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
+        .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
+        .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
+        .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
+        .replace(/Figure \d+/g, ' '),
+    );
+    for (const tok of cleaned.match(/\d[\d,.–-]*%?x?/g) || []) {
+      const t = tok.replace(/[.,–-]+$/, '');
+      assert.ok(ALLOWED_NUMERIC_TOKENS.includes(t), `ungraded numeral "${tok}" in: ${cleaned.slice(0, 80)}`);
+    }
+  }
+});
