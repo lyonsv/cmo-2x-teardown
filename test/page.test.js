@@ -1386,9 +1386,9 @@ test('s14 lead, status legend and incident table', () => {
   assert.equal(strip(first[1]), 'Most failures here are governance failures, and several have already happened to someone.');
   const legend = s.match(/<div class="legend">[\s\S]*?<\/div>/)[0];
   assert.deepEqual([...legend.matchAll(/<dd>([\s\S]*?)<\/dd>/g)].map((m) => m[1]), [
-    'Established: confirmed by a court, a regulator or the party concerned.',
-    'Alleged: reported but not confirmed.',
-    'Disputed: the parties disagree on the facts.',
+    'Confirmed by a court, a regulator or the party concerned.',
+    'Reported but not confirmed.',
+    'The parties disagree on the facts.',
   ]);
   assert.ok(s.indexOf('class="legend"') < s.indexOf('<table'));
   assert.ok(s.includes('<caption>Public incidents of AI-generated marketing content and agent liability, with status</caption>'));
@@ -1453,6 +1453,8 @@ test('s14 risk blocks appear in order with answer-first, mitigation and as-at', 
     assert.ok(asat, `${slug}: as-at callout`);
     assert.match(asat[0], /class="cite" href="#src-/);
     if (['ip', 'regulation'].includes(slug)) assert.ok(strip(asat[0]).endsWith('Check again before relying on it.'), slug);
+    // IN-08: every block orders its parts the same way, mitigation then as-at.
+    assert.ok(b.indexOf('<p class="mitigation">') < b.indexOf('<p class="asat">'), `${slug}: mitigation before as-at`);
   }
 });
 
