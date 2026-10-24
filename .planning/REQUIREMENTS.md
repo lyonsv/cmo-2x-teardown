@@ -9,20 +9,20 @@
 
 ### Page Shell & Delivery
 
-- [ ] **SHELL-01**: Reader can open the page at a public GitHub Pages URL, served from a static `site/` folder with relative paths and `.nojekyll`
+- [x] **SHELL-01**: Reader can open the page at a public GitHub Pages URL, served from a static `site/` folder with relative paths and `.nojekyll`
 - [ ] **SHELL-02**: Reader sees a title block, metadata (date, evidence base, subject-org assumptions), and an answer-first summary paragraph before section 01
 - [ ] **SHELL-03**: Reader can jump to any of the 15 numbered sections from a table of contents with anchor links
-- [ ] **SHELL-04**: The page uses the reference's editorial design language (system serif/mono fonts, CSS custom-property tokens, `.sec-head` numbering, `.chip` grade badges) with no base64 images
-- [ ] **SHELL-05**: Deploys run through a GitHub Actions workflow that executes `node --test` and publishes only if the tests pass
+- [x] **SHELL-04**: The page uses the reference's editorial design language (system serif/mono fonts, CSS custom-property tokens, `.sec-head` numbering, `.chip` grade badges) with no base64 images
+- [x] **SHELL-05**: Deploys run through a GitHub Actions workflow that executes `node --test` and publishes only if the tests pass
 
 ### Credibility Foundation
 
 - [ ] **CRED-01**: Reader sees a grade key (Benchmark / Modelled / Speculative) plus a separate source flag (vendor-claimed / company-reported) that never upgrades a claim to Benchmark
-- [ ] **CRED-02**: Every quantitative claim on the page shows a text grade chip (not colour-only) linked to a source-register or assumptions-register entry
+- [x] **CRED-02**: Every quantitative claim on the page shows a text grade chip (not colour-only) linked to a source-register or assumptions-register entry
 - [ ] **CRED-03**: Reader sees the headline output metric defined as approved-and-live asset-variants per marketing head per quarter (all marketing FTE in the denominator), always shown beside the unique-concept count and variants per concept, with tier weighting offered only as a sensitivity
 - [ ] **CRED-04**: Reader sees a conflict-of-interest note (author works at iStock/Getty Images) in the front matter and repeated next to imagery sourcing and Getty v Stability
 - [ ] **CRED-05**: Reader can see a "what 2x does not mean" statement and a stated falsifier for the 2x claim
-- [ ] **CRED-06**: All numbers, defaults, grades and source IDs come from one `data.js` used by both prose and calculator, so they cannot diverge
+- [x] **CRED-06**: All numbers, defaults, grades and source IDs come from one `data.js` used by both prose and calculator, so they cannot diverge
 
 ### CFO Answer
 
@@ -72,7 +72,7 @@
 - [ ] **CALC-05**: Reader sees a sensitivity table for the most influential inputs
 - [ ] **CALC-06**: Reader can share a scenario via a URL hash that restores all inputs
 - [ ] **CALC-07**: Invalid or zero inputs show a validation message, never NaN or Infinity
-- [ ] **CALC-08**: The calculator maths is a pure `calc.js` module covered by `node:test` tests: 1x identity, monotonicity, a hand-calculated golden case, edge inputs, and cost per approved asset falling with volume
+- [x] **CALC-08**: The calculator maths is a pure `calc.js` module covered by `node:test` tests: 1x identity, monotonicity, a hand-calculated golden case, edge inputs, and cost per approved asset falling with volume
 
 ### Comparison
 
@@ -127,23 +127,23 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 1 | Pending |
+| SHELL-01 | Phase 1 | Complete |
 | SHELL-02 | Phase 1 | Pending |
 | SHELL-03 | Phase 1 | Pending |
-| SHELL-04 | Phase 1 | Pending |
-| SHELL-05 | Phase 1 | Pending |
+| SHELL-04 | Phase 1 | Complete |
+| SHELL-05 | Phase 1 | Complete |
 | CRED-01 | Phase 1 | Pending |
-| CRED-02 | Phase 1 | Pending |
+| CRED-02 | Phase 1 | Complete |
 | CRED-03 | Phase 1 | Pending |
 | CRED-04 | Phase 1 | Pending |
 | CRED-05 | Phase 1 | Pending |
-| CRED-06 | Phase 1 | Pending |
+| CRED-06 | Phase 1 | Complete |
 | CFO-01 | Phase 1 | Pending |
 | CFO-02 | Phase 1 | Pending |
 | CFO-03 | Phase 1 | Pending |
 | CFO-04 | Phase 1 | Pending |
 | LEVER-06 | Phase 1 | Pending |
-| CALC-08 | Phase 1 | Pending |
+| CALC-08 | Phase 1 | Complete |
 | GEN-01 | Phase 2 | Pending |
 | GEN-02 | Phase 2 | Pending |
 | GEN-03 | Phase 2 | Pending |

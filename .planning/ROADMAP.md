@@ -29,12 +29,12 @@ Granularity: coarse. Mode: MVP (every phase is a vertical slice that ends in a d
   4. Reader sees in section 02 the Gartner-anchored flat-budget framing, fully loaded cost per approved-live asset for baseline vs 2x, AI spend framed as a floor, and a baseline-vs-2x SVG figure with a data-table equivalent.
   5. Every quantitative claim shows a text grade chip linked to a register entry, and the figures come from `data.js`. A push deploys only if `node --test` passes.
 
-**Plans:** 7 plans
+**Plans:** 1/7 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Walking Skeleton locally: data.js -> calc.js -> page with chips and register, drift tests, test-gated Pages workflow
+- [x] 01-01-PLAN.md — Walking Skeleton locally: data.js -> calc.js -> page with chips and register, drift tests, test-gated Pages workflow
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -121,7 +121,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Thesis Slice | 0/7 | Planned | - |
+| 1. Foundation & Thesis Slice | 1/7 | In Progress|  |
 | 2. Factory & Spine Slice | 0/TBD | Not started | - |
 | 3. Levers, Outcomes, Calculator & Comparison Slice | 0/TBD | Not started | - |
 | 4. Adoption, Risk, Evidence & Publish Slice | 0/TBD | Not started | - |
