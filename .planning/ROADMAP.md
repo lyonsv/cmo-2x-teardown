@@ -24,7 +24,7 @@
 
 **Order:** guards before edits; engine before prose about numbers; thesis and architecture text alongside the engine; presentation last. Every phase ends with `node --test`, crosscheck, smoke, a11y and print gates green (QA-05 is owned by Phase 10 but enforced in every phase).
 
-- [ ] **Phase 5: Restructure Scaffold, Evidence Schema & Guards** - Executive-question section order with semantic ids and legacy anchors, evidence classes on every figure, and tests that stop links, figures and depth being lost
+- [x] **Phase 5: Restructure Scaffold, Evidence Schema & Guards** - Executive-question section order with semantic ids and legacy anchors, evidence classes on every figure, and tests that stop links, figures and depth being lost (completed 2026-10-25)
 - [ ] **Phase 6: Economics Engine** - `calc.js` models W1–W10, the capacity bridge, scenarios A/B/C, investment and sensitivity, with no double counting enforced by invariant tests
 - [ ] **Phase 7: Thesis, Intercom Evidence & What Needs to Be Built** - First screen, 2x definition, autonomy ladder, rewritten Intercom section and the "What needs to be built" architecture (can run alongside Phase 6)
 - [ ] **Phase 8: Content Supply Chain & Diagram** - Full supply chain as the first workflow, responsive two-variant SVG diagram, hours-bound worked example, v1 depth moved to appendices
@@ -49,7 +49,7 @@ Plans:
 - [x] 05-02-PLAN.md — Evidence schema in data.js (EVIDENCE, ALLOWED_PAIRS, evidence on every source, assumption and claim) with pair tests
 - [x] 05-03-PLAN.md — Mechanical move to executive-question order with semantic ids and new TOC, then ordinal-label text fix
 - [x] 05-04-PLAN.md — Framing stubs, appendix divider and Supports pointers
-- [ ] 05-05-PLAN.md — Evidence column in both registers, evidence key in the grade legend, phase-close gates
+- [x] 05-05-PLAN.md — Evidence column in both registers, evidence key in the grade legend, phase-close gates
 **UI hint**: yes
 
 ### Phase 6: Economics Engine
@@ -126,7 +126,7 @@ Plans:
 | 3. Levers, Outcomes, Calculator & Comparison Slice | v1.0 | 12/12 | Complete | 2026-10-24 |
 | 3.1 Headline Metric Reframe | v1.0 | 7/7 | Complete | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
-| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 4/5 | In Progress|  |
+| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete   | 2026-10-25 |
 | 6. Economics Engine | v2.0 | 0/TBD | Not started | - |
 | 7. Thesis, Intercom Evidence & What Needs to Be Built | v2.0 | 0/TBD | Not started | - |
 | 8. Content Supply Chain & Diagram | v2.0 | 0/TBD | Not started | - |
