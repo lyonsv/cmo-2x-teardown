@@ -16,7 +16,7 @@
 - [x] **STRUCT-04**: A test fails if any v1 `data-fig` id or `<figure>` disappears without being listed as deliberately retired.
 - [x] **STRUCT-05**: A test fails if any in-page `href="#…"` does not resolve.
 - [x] **STRUCT-06**: A test fails if banned jargon (e.g. "agentic marketing operating system", "AI transformation", "unlock", "supercharge") appears in the page body.
-- [ ] **STRUCT-07**: v1 depth (10,000-asset campaign, review agent, gate, eval harness, telemetry, comparison, register) is preserved in body summaries or appendices, not deleted.
+- [x] **STRUCT-07**: v1 depth (10,000-asset campaign, review agent, gate, eval harness, telemetry, comparison, register) is preserved in body summaries or appendices, not deleted.
 
 ### Evidence classes (EVID)
 
@@ -82,25 +82,25 @@
 
 ### Outcomes (OUT)
 
-- [ ] **OUT-01**: The reader sees the causal chain from autonomy to outcomes with a visible marker where evidence stops and hypothesis begins.
-- [ ] **OUT-02**: The reader sees a three-tier scorecard (business outcomes, operating economics, autonomy and quality) that separates real productivity from activity.
-- [ ] **OUT-03**: The page explains diminishing returns and the defensible outcome mechanisms (speed, learning velocity, reallocation, market coverage) with sources.
+- [x] **OUT-01**: The reader sees the causal chain from autonomy to outcomes with a visible marker where evidence stops and hypothesis begins.
+- [x] **OUT-02**: The reader sees a three-tier scorecard (business outcomes, operating economics, autonomy and quality) that separates real productivity from activity.
+- [x] **OUT-03**: The page explains diminishing returns and the defensible outcome mechanisms (speed, learning velocity, reallocation, market coverage) with sources.
 
 ### Expansion (EXP)
 
-- [ ] **EXP-01**: The reader sees how the same infrastructure supports adjacent workflows (campaign execution, underperformance response, market expansion, conversion, experimentation, discoverability, insight to action).
-- [ ] **EXP-02**: The reader sees which capabilities are reusable and which need domain-specific implementation.
+- [x] **EXP-01**: The reader sees how the same infrastructure supports adjacent workflows (campaign execution, underperformance response, market expansion, conversion, experimentation, discoverability, insight to action).
+- [x] **EXP-02**: The reader sees which capabilities are reusable and which need domain-specific implementation.
 
 ### Roadmap (ROAD)
 
-- [ ] **ROAD-01**: The reader sees a 12-week pilot: target workflow and why, software, integrations, baseline measurement, feasible autonomy, target improvement and acceptance criteria.
-- [ ] **ROAD-02**: The reader sees the next two quarters: bottlenecks removed, interventions reduced, adjacent operations added, expected measurable improvements.
-- [ ] **ROAD-03**: The reader sees a 12-month portfolio whose contributions combine without double counting, clearly separated from proven pilot results.
-- [ ] **ROAD-04**: The reader sees organisational enablement: training, trust, permissions, accountability and role redesign.
+- [x] **ROAD-01**: The reader sees a 12-week pilot: target workflow and why, software, integrations, baseline measurement, feasible autonomy, target improvement and acceptance criteria.
+- [x] **ROAD-02**: The reader sees the next two quarters: bottlenecks removed, interventions reduced, adjacent operations added, expected measurable improvements.
+- [x] **ROAD-03**: The reader sees a 12-month portfolio whose contributions combine without double counting, clearly separated from proven pilot results.
+- [x] **ROAD-04**: The reader sees organisational enablement: training, trust, permissions, accountability and role redesign.
 
 ### Risks (RISK)
 
-- [ ] **RISK-01**: The reader sees the risks and assumptions that could prevent the target (irreversible publication, contested ground truth, compounding error, judge drift, inference cost, Goodhart, labour relations, model regressions), each with a mitigation or test.
+- [x] **RISK-01**: The reader sees the risks and assumptions that could prevent the target (irreversible publication, contested ground truth, compounding error, judge drift, inference cost, Goodhart, labour relations, model regressions), each with a mitigation or test.
 
 ### Comparison (COMP)
 
@@ -174,23 +174,23 @@
 | FLOW-03 | Phase 7 | Complete |
 | FLOW-04 | Phase 7 | Complete |
 | FLOW-05 | Phase 7 | Complete |
-| STRUCT-07 | Phase 7 | Pending |
+| STRUCT-07 | Phase 7 | Complete |
 | ECONP-01 | Phase 7 | Complete |
 | ECONP-02 | Phase 7 | Complete |
 | ECONP-03 | Phase 7 | Complete |
 | ECONP-04 | Phase 7 | Complete |
 | ECONP-05 | Phase 7 | Complete |
 | ECONP-06 | Phase 7 | Complete |
-| OUT-01 | Phase 7 | Pending |
-| OUT-02 | Phase 7 | Pending |
-| OUT-03 | Phase 7 | Pending |
-| EXP-01 | Phase 7 | Pending |
-| EXP-02 | Phase 7 | Pending |
-| ROAD-01 | Phase 7 | Pending |
-| ROAD-02 | Phase 7 | Pending |
-| ROAD-03 | Phase 7 | Pending |
-| ROAD-04 | Phase 7 | Pending |
-| RISK-01 | Phase 7 | Pending |
+| OUT-01 | Phase 7 | Complete |
+| OUT-02 | Phase 7 | Complete |
+| OUT-03 | Phase 7 | Complete |
+| EXP-01 | Phase 7 | Complete |
+| EXP-02 | Phase 7 | Complete |
+| ROAD-01 | Phase 7 | Complete |
+| ROAD-02 | Phase 7 | Complete |
+| ROAD-03 | Phase 7 | Complete |
+| ROAD-04 | Phase 7 | Complete |
+| RISK-01 | Phase 7 | Complete |
 | COMP-01 | Phase 7 | Pending |
 | QA-05 | Phase 7 | Pending |
 | QA-06 | Phase 7 | Pending |
