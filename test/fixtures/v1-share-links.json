@@ -1,0 +1,15 @@
+[
+  { "hash": "#s11?scenario=redeploy", "expect": { "scenario": "redeploy" }, "notices": [], "acceptOnly": true },
+  { "hash": "#s11?scenario=hold", "expect": { "scenario": "hold" }, "notices": [] },
+  { "hash": "#s11?scenario=reduce&route=campaigns", "expect": { "scenario": "reduce", "route": "campaigns" }, "notices": [], "acceptOnly": true },
+  { "hash": "#s11?markets=6&auto2=70", "expect": { "markets": 6, "auto2": 0.7 }, "notices": [] },
+  { "hash": "#s11?reviewers=4", "expect": { "reviewers": 4 }, "notices": [] },
+  { "hash": "#s11?vcost=20&mconcept=10", "expect": { "vcost": 20, "mconcept": 10 }, "notices": [] },
+  {
+    "hash": "#s11?campaigns=50&concepts=30&markets=8&marketers=150&reviewers=14&minutes=10&vcost=0.6&mconcept=1500&yield=90&rework=10&auto1=25&auto2=65&route=markets&scenario=hold",
+    "expect": { "campaigns": 50, "concepts": 30, "markets": 8, "marketers": 150, "reviewers": 14, "minutes": 10, "vcost": 0.6, "mconcept": 1500, "yield": 0.9, "rework": 0.1, "auto1": 0.25, "auto2": 0.65, "route": "markets", "scenario": "hold" },
+    "notices": []
+  },
+  { "hash": "#s11?markets=abc", "expect": {}, "notices": ["Markets per campaign"], "acceptOnly": true },
+  { "hash": "#s11?route=__proto__", "expect": {}, "notices": ["How you get to 2x"], "acceptOnly": true }
+]
