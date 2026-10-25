@@ -81,8 +81,11 @@ test('assumption counts and the hypothesis list', () => {
     'asm-pilot-target-hours', 'asm-pilot-target-cycle', 'asm-pilot-escape-ceiling', 'asm-pilot-first-pass-floor',
     ...['w1', 'w2', 'w3', 'w4', 'w6', 'w7', 'w8', 'w9', 'w10'].map((w) => `asm-wf-${w}-agent`)];
   for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) || ENGINE_HYP.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
-  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24 + 18);
-  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2 + 4);
+  // Code review CR-03: the 18 unsourced engine programme hypotheses (nine globals and the
+  // nine workflow-effect rows) are Speculative, like the escape rate; none stays Modelled.
+  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24);
+  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2 + 4 + 18);
+  for (const a of rows) if (a.kind === 'engine' && a.evidence === 'hypothesis') assert.equal(a.grade, 'Speculative', `${a.id}: an unsourced programme hypothesis`);
   assert.equal(count(rows, 'illustrative', 'Modelled'), 34 + 20);
   assert.equal(count(rows, 'illustrative', 'Speculative'), 2);
 });
@@ -270,7 +273,9 @@ test('econ claims: none is graded stronger than the weakest grade among its inpu
     }
   }
   for (const id of ['econ-scen-B-one_off', 'econ-scen-B-payback_simple', 'econ-scen-B-payback_ramped', 'econ-inv-severance_B', 'econ-inv-escape']) assert.equal(claims[id].grade, 'Speculative', id);
-  assert.equal(claims['econ-metric-org_after_platform'].grade, 'Modelled');
+  // CR-03: the headline rests on unsourced programme hypotheses, so it is Speculative.
+  assert.equal(claims['econ-metric-org_after_platform'].grade, 'Speculative');
+  assert.equal(claims['econ-metric-org_after_platform'].ref, 'asm-adoption-rate');
 });
 
 test('econ claims: no claim is stronger than its own ref', () => {

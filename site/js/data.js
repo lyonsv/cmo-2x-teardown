@@ -1027,8 +1027,14 @@ assumptions['asm-productive-hours'] = { ...a('asm-productive-hours', 'Productive
 // hypothesis is a programme effect a pilot must validate) and an optional `cites` list
 // of source keys that the generated register row links. The W5 review pool is not a
 // row: its states come from compute() at the v1 slice.
-function eng(id, label, key, value, unit, display, basis, evidence, grade = 'Modelled', cites = []) {
-  return { ...a(id, label, 'engine', key, value, unit, display, basis), grade, evidence, cites };
+// Code review CR-03: a programme-effect hypothesis that no source supports is a judgement
+// with no checkable source, which the legend grades Speculative (as the escape rate always
+// was). So every 'hypothesis' row defaults to Speculative; the cites on the workflow-effect
+// rows support only their token profiles and the platform-team cite only its wage, not the
+// hour reductions, agency reductions or team size, so they do not lift the grade.
+function eng(id, label, key, value, unit, display, basis, evidence, grade, cites = []) {
+  const g = grade ?? (evidence === 'hypothesis' ? 'Speculative' : 'Modelled');
+  return { ...a(id, label, 'engine', key, value, unit, display, basis), grade: g, evidence, cites };
 }
 const pct0 = (x) => `${Math.round(x * 1000) / 10}%`;
 const num0 = (x) => x.toLocaleString('en-US');
@@ -1066,7 +1072,7 @@ const engineRows = [
   eng('asm-build-cost', 'One-off build and integration', 'build_one_off', 1500000, 'USD one-off', '$1.5M',
     'About six platform FTE-years ($1.2M) plus $0.3M for integration, evaluation-set labelling and security review (range $0.75M to $3M); no published benchmark.', 'hypothesis'),
   eng('asm-platform-team', 'Platform team', 'platform_team', { fte: 6, cost_per_fte: 200000 }, 'FTE and USD per FTE per year', '6 FTE at $200,000',
-    'Two platform engineers, two workflow owners, one evaluation curator and one security and governance lead (range 4 to 10 FTE); a government median wage for software developers of $135,980 divided by 0.70 gives about $194,000 loaded.', 'hypothesis', 'Modelled', ['bls-software-developers-2025']),
+    'Two platform engineers, two workflow owners, one evaluation curator and one security and governance lead (range 4 to 10 FTE); a government median wage for software developers of $135,980 divided by 0.70 gives about $194,000 loaded.', 'hypothesis', undefined, ['bls-software-developers-2025']),
   eng('asm-autonomy-overhead', 'Autonomy review overhead', 'autonomy_overhead_hours', { per_workflow_month: 24, calibration_month: 16 }, 'hours per month', '24 h per workflow, 16 h calibration',
     'Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions.', 'hypothesis'),
   eng('asm-severance-months', 'Severance and exit cost', 'severance_months', 6, 'months of loaded cost per removed FTE', '6 months',
@@ -1114,7 +1120,7 @@ for (const [id, name, fte, units, h, agency, r, lo, hi, level, s, cycleNow, cycl
     'share of hours, level, days',
     `${pct0(r)} net hours saved (${pct0(lo)} to ${pct0(hi)}), L${level}, ${cycleAgent} days`,
     `Net hour reduction of ${pct0(r)} (range ${pct0(lo)} to ${pct0(hi)}) at autonomy level ${level}, agency spend reduced by ${pct0(s)} and ${cycleAgent} days elapsed from request to delivery; the agent run is ${p[0]} steps of ${num0(p[1])} tokens in and ${num0(p[2])} out on the ${p[3]} tier, with ${pct0(p[4])} retries and ${p[5]} judge checks. Programme effects that a pilot must validate; no published benchmark.`,
-    'hypothesis', 'Modelled', ['multi-agent-token-note-2025']);
+    'hypothesis', undefined, ['multi-agent-token-note-2025']);
 }
 
 // Engine values by key, as plain data: nested keys are written 'token_price.frontier'.
@@ -1733,12 +1739,17 @@ function engineClaims(ec) {
     ['agency_cost', 'usd0', 'agency cost a year'], ['ai_cost', 'usd0', 'AI inference cost a year'], ['cost_per_unit', 'usd0', 'cost per unit'],
     ['cycle_days', 'days1', 'days elapsed from request to delivery'], ['autonomous_share', 'pct0', 'share of units completed with no human edit'],
   ];
+  // Code review CR-03, WR-01: every figure of the agent-enabled state describes the
+  // programme hypothesis, so it is Speculative and links the row that governs it: the
+  // workflow's programme-effects row, or for W5 (whose agent state comes from the
+  // auto-approval gate scaled by adoption) the adoption row.
   for (const id of WORKFLOW_IDS) {
     for (const state of ['current', 'agent']) {
-      const ref = state === 'agent' && id !== 'W5' ? `${asmFor(id)}-agent` : asmFor(id);
+      const agentRef = id === 'W5' ? 'asm-adoption-rate' : `${asmFor(id)}-agent`;
+      const ref = state === 'agent' ? agentRef : asmFor(id);
       for (const [field, format, what] of FIELDS) {
         econ(`wf-${id}-${state}-${field}`, `workflows.${id}.${state}.${field}`, format,
-          `${id} ${names[id]}, ${state === 'agent' ? 'agent-enabled' : 'current state'}, ${what}`, ref, state === 'agent' ? { side: '2x' } : {});
+          `${id} ${names[id]}, ${state === 'agent' ? 'agent-enabled' : 'current state'}, ${what}`, ref, state === 'agent' ? { side: '2x', grade: 'Speculative' } : {});
       }
     }
   }
@@ -1760,41 +1771,47 @@ function engineClaims(ec) {
   }
 
   // Scenarios A (hold the people), B (remove the capacity), C (absorb the demand).
+  // Code review WR-01: each figure links the register row that drives its weakest grade,
+  // measured by moving each Speculative engine row in turn: adoption (which scales every
+  // programme effect) for most figures, the platform team for run cost, first-year
+  // realisation for the year-one net, severance for the one-off cost, and the funded
+  // share for the avoided cost against growing without the programme.
   const SPEC = { grade: 'Speculative' };
+  const ADOPT = 'asm-adoption-rate';
   const scen = (k, key, path, format, what, ref, opts = {}) => econ(`scen-${k}-${key}`, `scenarios.${k}.${path}`, format, `Scenario ${k}: ${what}`, ref, { side: '2x', ...opts });
-  scen('A', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
-  scen('A', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
-  scen('A', 'implied_agency_growth', 'agency.implied_growth', 'usd0', 'agency spend growth the output rise would imply', 'asm-adoption-rate');
-  scen('B', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
-  scen('B', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
-  scen('B', 'removable_fte', 'labour.removable_fte', 'num1', 'people removable at the same output (FTE)', 'asm-adoption-rate');
-  scen('B', 'labour_saving', 'labour.saving', 'usd0', 'labour saving a year', 'asm-adoption-rate');
-  scen('B', 'agency_saving', 'agency.saving', 'usd0', 'agency saving a year', 'asm-adoption-rate');
-  scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-escape-rate', SPEC);
+  scen('A', 'net', 'net', 'usd0', 'net cash effect against today a year', ADOPT, SPEC);
+  scen('A', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-platform-team', SPEC);
+  scen('A', 'implied_agency_growth', 'agency.implied_growth', 'usd0', 'extra agency spend the output rise needs, a year', ADOPT, SPEC);
+  scen('B', 'net', 'net', 'usd0', 'net cash effect against today a year', ADOPT, SPEC);
+  scen('B', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-platform-team', SPEC);
+  scen('B', 'removable_fte', 'labour.removable_fte', 'num1', 'people removable at the same output (FTE)', ADOPT, SPEC);
+  scen('B', 'labour_saving', 'labour.saving', 'usd0', 'labour saving a year', ADOPT, SPEC);
+  scen('B', 'agency_saving', 'agency.saving', 'usd0', 'agency saving a year', ADOPT, SPEC);
+  scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-year1-realisation', SPEC);
   scen('B', 'one_off', 'one_off.total', 'usd0', 'one-off cost including severance', 'asm-severance-months', SPEC);
-  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-escape-rate', SPEC);
-  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-escape-rate', SPEC);
-  scen('C', 'net', 'net', 'usd0', 'net cash effect against today a year (spend rises)', 'asm-escape-rate', SPEC);
-  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
-  scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', 'asm-demand-multiplier');
+  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple cash payback', ADOPT, SPEC);
+  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'cash payback with the year-one ramp', ADOPT, SPEC);
+  scen('C', 'net', 'net', 'usd0', 'net cash effect against today a year (spend rises)', ADOPT, SPEC);
+  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-platform-team', SPEC);
+  scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', ADOPT, SPEC);
   scen('C', 'hires_without', 'labour.hires_without', 'num1', 'hires needed without the programme (FTE)', 'asm-demand-multiplier');
-  scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided (FTE)', 'asm-demand-multiplier');
-  scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided against growing without the programme, a year', 'asm-demand-multiplier');
-  scen('C', 'net_avoided', 'net_avoided', 'usd0', 'cost avoided against growing without the programme, net of run cost, a year (not cash against today)', 'asm-escape-rate', SPEC);
-  scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-escape-rate', SPEC);
-  scen('C', 'payback_avoided', 'payback_avoided', 'years1', 'payback on the cost avoided against growing without the programme (not a cash payback)', 'asm-escape-rate', SPEC);
-  scen('C', 'agency_avoided', 'agency.avoided', 'usd0', 'agency spend avoided against the no-programme plan', 'asm-adoption-rate');
+  scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided against growing without the programme (FTE)', ADOPT, SPEC);
+  scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided against growing without the programme, a year', 'asm-counterfactual-funded', SPEC);
+  scen('C', 'net_avoided', 'net_avoided', 'usd0', 'cost avoided against growing without the programme, net of run cost, a year (not cash against today)', 'asm-counterfactual-funded', SPEC);
+  scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', ADOPT, SPEC);
+  scen('C', 'payback_avoided', 'payback_avoided', 'years1', 'payback on the cost avoided against growing without the programme (not a cash payback)', 'asm-counterfactual-funded', SPEC);
+  scen('C', 'agency_avoided', 'agency.avoided', 'usd0', 'agency spend avoided against growing without the programme', ADOPT, SPEC);
 
   // Released-capacity reconciliation (ECON-02), portfolio scope, in FTE. Slack at baseline
   // and the capacity the programme releases are the same under every scenario, so they are
   // read once; where the capacity goes differs by scenario. The hours figure is the same
   // release in hours a year. All share one register row so a table row can carry one chip.
   econ('recon-slack0', 'reconciliation.B.slack0', 'num1', 'Reconciliation: capacity already unused at baseline, in FTE', 'asm-reviewer-fte', { side: 'baseline' });
-  econ('recon-released', 'reconciliation.B.released', 'num1', 'Reconciliation: capacity the programme releases from existing work, in FTE', 'asm-adoption-rate', { side: '2x' });
-  econ('recon-released_hours', 'pool_totals.total_released_hours', 'int', 'Reconciliation: hours of existing work the programme eliminates a year', 'asm-adoption-rate', { side: '2x' });
+  econ('recon-released', 'reconciliation.B.released', 'num1', 'Reconciliation: capacity the programme releases from existing work, in FTE', ADOPT, { side: '2x', ...SPEC });
+  econ('recon-released_hours', 'pool_totals.total_released_hours', 'int', 'Reconciliation: hours of existing work the programme eliminates a year', ADOPT, { side: '2x', ...SPEC });
   for (const k of ['A', 'B', 'C']) {
     for (const [key, what] of [['redeployed', 'capacity redeployed into additional work'], ['removed', 'capacity removed as headcount'], ['hires', 'hires needed for the extra work'], ['unused', 'capacity left unused'], ['gap', 'unreconciled difference']]) {
-      econ(`recon-${k}-${key}`, `reconciliation.${k}.${key}`, 'num1', `Reconciliation, scenario ${k}: ${what}, in FTE`, 'asm-adoption-rate', { side: '2x' });
+      econ(`recon-${k}-${key}`, `reconciliation.${k}.${key}`, 'num1', `Reconciliation, scenario ${k}: ${what}, in FTE`, ADOPT, { side: '2x', ...SPEC });
     }
   }
 
@@ -1806,36 +1823,44 @@ function engineClaims(ec) {
   inv('platform_team', 'investment.run.B.platform_team', 'platform team, a year', 'asm-platform-team');
   inv('platform_tooling', 'investment.run.B.platform_tooling', 'platform tooling, a year', 'asm-tooling');
   inv('autonomy_overhead', 'investment.run.B.autonomy_overhead', 'review overhead of autonomous workflows, a year', 'asm-autonomy-overhead');
-  inv('inference', 'investment.run.B.inference', 'model inference, a year', 'asm-token-price-frontier');
+  // Inference is priced from the sourced token prices, but the per-workflow run profiles
+  // (steps, tokens, retries) are programme hypotheses; W7's profile drives the most.
+  inv('inference', 'investment.run.B.inference', 'model inference, a year', 'asm-wf-w7-agent', SPEC);
   inv('variant_ai', 'investment.run.B.variant_ai', 'AI cost of derived variants, a year', 'asm-variant-cost');
   inv('escape', 'investment.run.B.escape', 'cost of defects that escape review, a year', 'asm-escape-rate', SPEC);
 
   // Primary metric and maximum multipliers.
-  const met = (key, path, what) => econ(`metric-${key}`, `metric.${path}`, 'x2', `Output multiple: ${what}`, 'asm-agency-fte-cost', { side: '2x' });
+  // Code review WR-02: each multiple links the input that drives its grade, not the agency
+  // cost row: adoption for the programme multiples, traffic for the uniform limit.
+  const met = (key, path, what, ref = ADOPT, opts = SPEC) => econ(`metric-${key}`, `metric.${path}`, 'x2', `Output multiple: ${what}`, ref, { side: '2x', ...opts });
   met('org_before_platform', 'A.org_before_platform', 'organisation-wide, before the platform team');
   met('org_after_platform', 'A.org_after_platform', 'organisation-wide, after the platform team');
   met('portfolio_before_platform', 'A.portfolio_before_platform', 'delegated workflows, before the platform team');
   met('portfolio_after_platform', 'A.portfolio_after_platform', 'delegated workflows, after the platform team');
   met('B_org', 'B.org', 'organisation-wide under scenario B');
   met('C_org', 'C.org', 'organisation-wide under scenario C');
-  met('pooled_hours_multiple', 'pooled_hours_multiple', 'pooled hours across all workflows');
-  met('max_uniform_multiplier', 'max_uniform_multiplier', 'the multiple every workflow can carry at once');
+  met('pooled_hours_multiple', 'pooled_hours_multiple', 'capacity multiple from pooling the released hours');
+  met('max_uniform_multiplier', 'max_uniform_multiplier', 'the multiple every workflow can carry at once', 'asm-traffic-growth', {});
   for (const id of WORKFLOW_IDS) {
-    econ(`max-${id}`, `max_multipliers.per_pool.${id}.multiple`, 'x2', `Largest output multiple for ${id} ${names[id]}`, id === 'W5' ? 'asm-reviewer-fte' : `${asmFor(id)}-agent`, { side: '2x' });
+    // W5 is bound by reviewer capacity under the adoption-scaled gate; W8 by traffic.
+    const ref = id === 'W5' ? ADOPT : id === 'W8' ? 'asm-traffic-growth' : `${asmFor(id)}-agent`;
+    econ(`max-${id}`, `max_multipliers.per_pool.${id}.multiple`, 'x2', `Largest output multiple for ${id} ${names[id]}`, ref, { side: '2x', ...(id === 'W8' ? {} : SPEC) });
   }
   econ('max-uniform', 'max_multipliers.uniform.value', 'x2', 'Largest output multiple every workflow can carry at once', 'asm-traffic-growth', { side: '2x' });
-  econ('max-uniform-excl-traffic', 'max_multipliers.uniform_excluding_traffic.value', 'x2', 'Largest output multiple every workflow can carry at once, excluding traffic-capped work', 'asm-traffic-growth', { side: '2x' });
+  // Setting traffic aside, creative production (W3) binds.
+  econ('max-uniform-excl-traffic', 'max_multipliers.uniform_excluding_traffic.value', 'x2', 'Largest output multiple every workflow can carry at once, excluding traffic-capped work', 'asm-wf-w3-agent', { side: '2x', ...SPEC });
 
   // Sensitivity (each cell is a re-run of economics() with one input moved).
-  const SENS = { adoption: ['asm-adoption-rate', 'adoption', {}], escape: ['asm-escape-rate', 'escape rate', SPEC], inference: ['asm-token-price-frontier', 'inference price', {}], review_overhead: ['asm-sampling-rate', 'review overhead', {}] };
+  // Each cell links the input it moves (WR-02: review overhead moves the multiple through
+  // the overhead share, not the W5 sampling rate). The inference price row is Modelled,
+  // but its cells are Speculative through the programme effects, so they link adoption,
+  // the input that drives their grade.
+  const SENS = { adoption: [ADOPT, 'adoption'], escape: ['asm-escape-rate', 'escape rate'], inference: [ADOPT, 'inference price'], review_overhead: ['asm-overhead-share', 'review overhead'] };
   bundle.sensitivity.rows.forEach((row, i) => {
-    const [ref, label, opts] = SENS[row.id];
+    const [ref, label] = SENS[row.id];
     for (const end of ['low', 'high']) {
       for (const [cellKey, format, what] of [['org_A_after', 'x2', 'organisation-wide output multiple'], ['net_B', 'usd0', 'scenario B net cash effect a year']]) {
-        // A net cash effect is Speculative whichever input moved (it carries the escape rate and
-        // severance), so it links the Speculative escape-rate row; the multiple links its own input.
-        const isNet = cellKey === 'net_B';
-        econ(`sens-${row.id}-${end}-${cellKey}`, `sensitivity.rows.${i}.${end}.${cellKey}`, format, `Sensitivity, ${label} ${end}: ${what}`, isNet ? 'asm-escape-rate' : ref, { side: '2x', ...(isNet ? SPEC : opts) });
+        econ(`sens-${row.id}-${end}-${cellKey}`, `sensitivity.rows.${i}.${end}.${cellKey}`, format, `Sensitivity, ${label} ${end}: ${what}`, ref, { side: '2x', ...SPEC });
       }
     }
   });

@@ -52,7 +52,10 @@ test('per-unit table: four workflows, today and with agents, only engine claims,
     for (const f of ['hours_per_unit', 'cycle_days']) assert.ok(figs.includes(`econ-wf-${w}-${s}-${f}`), `${w} ${s} ${f}`);
   }
   for (const r of rows) {
-    assert.equal((r.match(/class="chip c-m"/g) || []).length, 1, 'one Modelled chip per row');
+    // CR-03: today's rows are Modelled; the agent rows are unsourced programme hypotheses, Speculative.
+    const want = r.includes('>hypothesis<') ? 'c-s' : 'c-m';
+    assert.equal((r.match(/class="chip /g) || []).length, 1, 'one chip per row');
+    assert.equal((r.match(new RegExp(`class="chip ${want}"`, 'g')) || []).length, 1, `one ${want} chip per row`);
     assert.ok(/<span class="ev">(illustrative|hypothesis)<\/span>/.test(r), 'evidence class');
   }
   assert.ok(rows.filter((r) => r.includes('>hypothesis<')).length === 4 && rows.filter((r) => r.includes('>illustrative<')).length === 4);

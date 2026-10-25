@@ -326,8 +326,11 @@ export const SCENARIO_NAMES = { a: 'A: same team, more output', b: 'B: same outp
 function scenarioPresentation(values, ctx) {
   const o = scenarioOutcomes(values, ctx, values.scenario);
   const mode = o.ok ? o.mode : (SCENARIOS.includes(values.scenario) ? values.scenario : 'c');
-  const util = weakestGrade(OUTPUT_DEPS.utilisation, ctx.grades);
-  const prod = weakestGrade(OUTPUT_DEPS.total_cost, ctx.grades);
+  // Code review WR-02: when grades tie, the chip links the input that drives the reviewer
+  // figures (the auto-approval share), not the first volume input. It is a dependency of
+  // both the reviewer and the production figures, so one note still covers every scenario.
+  const util = weakestGrade(uniq(['asm-auto-approval', ...OUTPUT_DEPS.utilisation]), ctx.grades);
+  const prod = weakestGrade(uniq(['asm-auto-approval', ...OUTPUT_DEPS.total_cost]), ctx.grades);
   // Each row carries the weakest grade of everything it is computed from: people
   // cost uses the reviewer FTE (all UTIL inputs); the net adds people,
   // production and the one-off change cost (marketing and reviewer FTE).

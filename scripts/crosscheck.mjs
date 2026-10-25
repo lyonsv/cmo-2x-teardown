@@ -13,6 +13,7 @@ import { formatValue } from '../site/js/format.js';
 const ENGINE_UNREFERENCED = 'An economics-engine input shown only in the register until the economics section presents it.';
 export const JUSTIFIED_UNREFERENCED = {
   'asm-escalation-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
+  'asm-sampling-rate': 'A review-model assumption shown only in the register because the calculator does not expose it; the review-overhead sensitivity now links the overhead share it moves (code review WR-02).',
   'asm-reviewer-rate': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
   'asm-marketer-rate': 'Derived hourly price shown only in the register.',
   'asm-ai-share-variant': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
