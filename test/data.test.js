@@ -778,3 +778,55 @@ test('corrected v1 derived pins (activity cost at the page defaults)', () => {
   };
   for (const [id, d] of Object.entries(want)) assert.equal(claims[id].display, d, id);
 });
+
+// ECON-12: no hand-typed model numbers. A claim computed from the model must get its
+// value from the model, never from a literal in data.js, and every span on the page
+// that shows one must show the same text.
+test('no hand-typed model numbers', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { economics, sensitivity } = await import('../site/js/calc.js');
+  const { engineContext } = await import('../site/js/data.js');
+  const { present, defaultValues } = await import('../site/js/model.js');
+  const { formatValue } = await import('../site/js/format.js');
+  const ctx = modelContext();
+  const r = compute(defaultInputs(), defaultAssumptions());
+  const p = present(defaultValues(ctx), ctx);
+  const ec = engineContext(ctx);
+  const e = { ...economics(ec), sensitivity: sensitivity(ec) };
+  const at = (obj, path) => path.split('.').reduce((x, k) => x?.[k], obj);
+  const modelClaims = Object.values(claims).filter((c) => c.derived !== undefined || c.calc !== undefined || c.econ !== undefined);
+  assert.ok(modelClaims.length > 400, `${modelClaims.length}`);
+
+  // (a) every value equals its recomputed value
+  for (const c of modelClaims) {
+    if (c.econ !== undefined) assert.equal(c.value, at(e, c.econ), `${c.id} drifted`);
+    else if (c.calc !== undefined) {
+      // Result-table cells are re-resolved here; the other calc heads (maths, believe, scenario,
+      // sensitivity) have their own resolver in 'calc claims equal present(defaults)'.
+      const [head, rowId, cell] = c.calc.split('.');
+      if (head === 'rows') assert.equal(c.value, p.rows.find((x) => x.id === rowId)[cell].value, `${c.id} drifted`);
+    }
+    else if (c.id.startsWith('econ-')) assert.equal(c.value, at(r, c.derived), `${c.id} drifted`);
+    else if (!c.override) assert.equal(Number(at(r, c.derived).toFixed(c.decimals ?? 0)), c.value, `${c.id} drifted`);
+    if (c.format) assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
+  }
+
+  // (b) data.js source types no numeric literal for a model claim
+  const src = readFileSync(new URL('../site/js/data.js', import.meta.url), 'utf8');
+  const typed = new Set([...src.matchAll(/\bid: '([^']+)', value: -?\d/g)].map((m) => m[1]));
+  for (const c of modelClaims) assert.ok(!typed.has(c.id), `${c.id} has a typed numeric literal in data.js`);
+  assert.equal(/'econ-[^']*', *-?[0-9]/.test(src), false, 'a typed literal follows an econ id');
+  assert.equal(/\bvalue: -?\d[^,]*, [^}]*\becon:/.test(src), false, 'an econ claim row carries a typed value');
+
+  // (c) every span on the page that names a model claim shows its display
+  const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  let seen = 0;
+  for (const [, id, text] of html.matchAll(/data-fig="([^"]+)"[^>]*>([^<]*)</g)) {
+    const c = claims[id];
+    if (!c || (c.derived === undefined && c.calc === undefined && c.econ === undefined)) continue;
+    seen += 1;
+    assert.equal(decode(text), c.display, `${id} on the page`);
+  }
+  assert.ok(seen > 50, `only ${seen} model spans checked`);
+});

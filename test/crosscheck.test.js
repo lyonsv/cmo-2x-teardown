@@ -98,3 +98,24 @@ test('mutation: a gap removed from the page leaves a stale GAP_TRACE key that is
   const { failures } = run({ html: mutated });
   assert.ok(failures.some((f) => f.includes('stale GAP_TRACE key First-pass compliance rate')), failures.join('\n'));
 });
+
+test('mutation: a model-derived span that shows an old value is named (ECON-12)', () => {
+  const mutated = html.replace('<span data-fig="cpa-base">$152.18</span>', '<span data-fig="cpa-base">$64.71</span>');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('default drift') && f.includes('cpa-base') && f.includes('$64.71')), failures.join('\n'));
+});
+
+test('mutation: a span naming an econ id with no claim is named', () => {
+  const mutated = html.replace('</main>', '<p><span data-fig="econ-does-not-exist">1</span></p></main>');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('econ-does-not-exist') && f.includes('no econ claim')), failures.join('\n'));
+});
+
+test('mutation: an econ span that drifts from its claim display is named', () => {
+  const mutated = html.replace('</main>', '<p><span data-fig="econ-metric-org_after_platform">1.99x</span></p></main>');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('default drift') && f.includes('econ-metric-org_after_platform')), failures.join('\n'));
+});

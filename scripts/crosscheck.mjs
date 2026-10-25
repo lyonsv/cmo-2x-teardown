@@ -63,11 +63,12 @@ export function run({ html, data } = {}) {
   const figs = [...html.matchAll(/data-fig="([^"]+)"[^>]*>([^<]*)</g)];
   for (const [, id, text] of figs) {
     const e = d.claims[id] ?? d.assumptions[id];
-    if (!e) { failures.push(`data-fig ${id}: no data.js entry`); continue; }
+    if (!e) { failures.push(id.startsWith('econ-') ? `data-fig ${id}: no econ claim in data.js` : `data-fig ${id}: no data.js entry`); continue; }
     const ref = d.claims[id] ? d.claims[id].ref : id;
     if (!rows.has(ref)) failures.push(`data-fig ${id}: register row ${ref} missing`);
-    // 4 (static calc figures)
-    if (id.startsWith('calc-') && d.claims[id] && decode(text) !== d.claims[id].display) failures.push(`default drift: ${id} shows "${text}", data.js has "${d.claims[id].display}"`);
+    // 4 (model-derived figures: any claim computed from calc, compute() or the economics engine)
+    const modelDerived = d.claims[id] && (id.startsWith('calc-') || d.claims[id].derived !== undefined || d.claims[id].calc !== undefined || d.claims[id].econ !== undefined);
+    if (modelDerived && decode(text) !== d.claims[id].display) failures.push(`default drift: ${id} shows "${text}", data.js has "${d.claims[id].display}"`);
   }
 
   // 3. chip and cite targets
