@@ -1,521 +1,165 @@
 # Project Research Summary
 
-**Project:** CMO 2x — Marketing Acceleration Teardown
-**Domain:** Long-form, evidence-graded editorial static page for a CMO (primary reader) and CFO (secondary), with a client-side calculator. Modelled on the Intercom 2x teardown.
-**Researched:** 2026-10-24
-**Confidence:** MEDIUM. HIGH on stack and page structure; MEDIUM-LOW on quantitative benchmarks; MEDIUM on vendor facts.
+**Project:** CMO 2x — Marketing Acceleration Teardown, milestone v2.0 "Autonomous Marketing Operations"
+**Domain:** Evidence-graded static executive report (hand-written HTML, vanilla ES modules, `node:test`) with a tested labour and financial model, re-framed from AI content production to progressively delegating whole marketing workflows to agents
+**Researched:** 2026-10-25
+**Confidence:** MEDIUM overall. HIGH on what Intercom said and on the v1 model audit; MEDIUM on cost structure and architecture practice; LOW on workflow-level hours and agent reductions (no public benchmark exists).
 
-> Synthesised from STACK.md, FEATURES.md, ARCHITECTURE.md, PITFALLS.md and COMPETITORS.md. The synthesiser was unable to write the file, so the orchestrator saved its returned text verbatim.
+**Inputs:** `.planning/v2.0-BRIEF.md` (spec), `INTERCOM.md` (brief s1), `FEATURES.md` (brief s3, s4, s7, s8), `ARCHITECTURE.md` (brief s2, s5, s6, s9), `PITFALLS.md` (brief s7, s11, s12 and model audit). No STACK.md this milestone: the stack is unchanged (hand-written HTML/CSS, vanilla ES modules, pure `calc.js`, inline SVG, `node:test`, GitHub Pages).
+
+---
 
 ## Executive Summary
 
-This is a persuasive analytical document, not a software product. The reference page is one hand-written HTML file with inline CSS, system fonts and no JavaScript. Its credibility comes from graded claims, visible assumptions and candid self-critique. This page should be built the same way:
+v2.0 rewrites an existing, tested page; it does not build a new one. The thesis moves from "AI makes 10,000+ assets cheaply" to "give agents progressively more responsibility for whole workflows, under permissions, checks and approvals, and measure what that does to human hours, capacity and outcomes".
 
-- **Stack.** Hand-written HTML/CSS, plus one pure-maths calculator module tested with `node:test`, plus a thin DOM/SVG layer. No framework and no bundler.
-- **Deploy.** A GitHub Actions Pages workflow.
-- **Where the effort goes.** The only real engineering is the calculator and the SVG figures. The bulk of the work is content.
+- Intercom's 2x was a **capacity metric** (merged PRs ÷ everyone in R&D) that Intercom itself calls "required, but not sufficient". Its gains came from an **operating system of mechanisms** (one standard agent platform, a shared skills library with evals, risk-gated review automation, management change), not a tool.
+- The most transferable idea: **the bottleneck moves** (authoring → CI → review). In marketing, faster generation moves the constraint to approvals, trafficking and measurement.
+- Marketing has no merged-PR equivalent, so the page must **construct** a unit of completed work and say why.
 
-**Central finding: marketing has no public equivalent of Intercom's merged-PRs-per-head data.** No independent benchmark exists for:
+**Central honesty finding:** at the page's own defaults, 2x is **not** reached organisation-wide on labour hours: about 1.4–1.5x organisation-wide, about 1.8x on the delegated portfolio, 2x plausible on the best workflows (planning/ops, localisation, publishing, reporting). Saying so is what makes the rest credible.
 
-- assets per marketer
-- cost per asset
-- approval cycle time
-- rights-incident rate
-- auto-approval rate
+**v1 holes a CFO would find:**
+1. "Fully loaded" cost per asset covers only the ~$2.59M production line (~3.3% of budget), not ~$16M marketer labour or ~$16M agency fees.
+2. $1,200 per master concept ≈ 13 loaded hours; not reconciled with in-house labour; undefined whether agency or internal.
+3. The "3.3 reviewer FTE freed" is entirely pre-existing slack: reviewers are 55.1% utilised today (7,941 h of 14,400 h); total review hours **rise** 12% at 2x (6,905 → 7,747 h before rework; 7,941 → 8,909 with it).
 
-Cost figures are mostly company-reported (Klarna, Unilever) or vendor-reported. So the page should carry few Benchmark anchors, many Modelled numbers with visible assumptions, and an explicit evidence-gaps section.
+**Main risks:** presenting baseline slack, scale effects or the 2x input as programme results; double-counting labour and agency dollars; implying capacity becomes revenue; losing v1 depth, anchors and share links during the restructure. All preventable with model invariants as tests, a capacity bridge, an evidence-boundary marker on the causal chain, and a scaffold-first restructure guarded by inventory and anchor tests.
 
-**The argument rests on "derive, do not generate":**
+---
 
-1. A few human-directed master concepts become 10,000+ variants through templating, localisation and feed rendering.
-2. Most of those assets then sit in low-risk tiers.
-3. That makes review capacity the binding constraint.
-4. The build-and-review spine (review agent, tiers T0–T3, eval harness) addresses that constraint.
+## Decisions Taken (author away; orchestrator best judgement — treat as settled)
 
-The output metric is approved-and-live variants per marketing head, always paired with outcome and guardrail metrics. AI spend is a floor, never a KPI.
+| # | Question | Decision |
+|---|----------|----------|
+| 1 | Re-base the illustrative company to remove reviewer slack? | **No.** Keep v1 company (120 FTE, $78M, 12 reviewers). Show baseline reviewer slack explicitly and reconcile it. Scenario attribution excludes baseline slack (INV-4). |
+| 2 | Master concept cost ($1,200) | Explicit **internal-hours line + agency-fee line**, re-estimated as an illustrative assumption. Correct the "fully loaded" label to what it covers, or widen it genuinely. |
+| 3 | Four evidence classes vs three grade chips | **Keep the three chips** (Benchmark / Modelled / Speculative). Add an orthogonal **`evidence` field**: `observed`, `benchmark`, `illustrative`, `hypothesis`, shown on the page (economics and assumptions tables) and in the register. Allowed (evidence, grade) pairs enumerated and tested. |
+| 4 | Primary 2x metric | **Useful work completed per marketing FTE-equivalent** (agency FTE-equivalents in the denominator), weighted at **frozen baseline standard hours**; a unit counts only if objective-linked, approved and live/delivered. **Campaign-markets launched per quarter** stays as the reader-facing operational unit for the wedge. **Objective-to-live time** is the speed measure. Quality guardrails alongside. Outcomes **never claimed as doubled**. Page states honestly what the default model gives organisation-wide vs on the delegated portfolio. |
+| 5 | Default economic narrative | **Scenario C (growing demand, limited hiring)** default; A (same team, more output) and B (same output, lower cost) alongside. Old `scenario=redeploy|hold|reduce` share-link values remain accepted (Redeploy→A, Hold→B, Reduce→B with headcount cut), tested with a recorded v1 URL fixture. |
+| 6 | Vendor rule and Intercom's tooling | **Unchanged.** Intercom's tooling described by category ("a coding agent", "a shared skills repository"). "MCP" may be named as an open protocol. Platform-vendor evidence goes in s12 and the register only. |
+| 7 | Section ids | **Semantic ids** (e.g. `#opportunity`, `#build`, `#supply-chain`, `#economics`) plus **legacy anchors** so v1 links and `#s11?…` share links keep working. |
+| 8 | Pilot autonomy ceiling | **"Stage"**: a person clicks go-live. Action levels **read / draft / stage / publish / spend** alongside asset tiers T0–T3. |
 
-**Main risks are to credibility:**
+**Consequences:**
+- Decision 1 makes the capacity bridge a first-class economics element. At defaults: 4.21 FTE reviewer slack today; +0.95 FTE review load at 2x; 6.84 FTE review work avoided at 2x (3.57 avoided hires + 3.27 unused); 3.42 FTE genuinely removable at the same output. Reviewers do not bind until 2.75x.
+- Decision 4 needs an illustrative, editable **agency-FTE-equivalent conversion** (agency fees ÷ blended rate). The larger denominator lowers the organisation-wide multiple; the page must show it.
 
-- unsourced or vendor-hyped numbers
-- Goodhart on asset counts
-- no counterfactual for outcome claims
-- calculator maths with hidden assumptions
-- one-sided treatment of risk
-
-**Three deliberate sensitivities:**
-
-1. Gradial, AirOps and Profound are named in one comparison section only. Every claim about them is sourced, dated and flagged as vendor-claimed.
-2. A conflict-of-interest note is required, because the author works at iStock/Getty. This bears on imagery sourcing and on Getty v Stability.
-3. EU AI Act Article 50 (applicable since 2026-08-02) and the Getty appeal status must be re-verified against primary sources immediately before publishing.
+---
 
 ## Key Findings
 
-### Recommended Stack
+### Intercom (INTERCOM.md; replaces STACK.md this milestone)
 
-- **Markup and styling.** Hand-written HTML with CSS custom properties.
-  - Copy the reference's `.wrap`, `.sec-head` and `.chip` patterns.
-  - System fonts only.
-  - No base64 images. The reference is about 3 MB because of them.
-- **`calc.js`.** A pure ES module exposing `compute(inputs, assumptions)`.
-- **`ui.js` and `svg.js`.** `ui.js` plus a roughly 60-line `svg.js` bind the calculator to `<output aria-live="polite">` and a live SVG chart. Static figures are authored as inline SVG.
-- **`data.js`.** The single source for defaults, grades and source IDs. Prose and the calculator both read from it, so graded claims cannot drift from the maths.
-- **Tests: `node:test` on Node 22.** Cover these cases:
-  - 1x identity
-  - monotonicity
-  - a hand-calculated golden case
-  - zero and edge inputs, which must produce a validation error and never NaN
-  - cost per approved asset falls as volume rises (the CFO claim)
-- **GitHub Pages via Actions.**
-  - Tests gate the deploy.
-  - `site/` is uploaded unchanged.
-  - All URLs are relative.
-  - Include a `.nojekyll` file.
-  - Verify the action major versions before pinning them (MEDIUM confidence, unverified).
-- **Avoid:** Chart.js, Tailwind, SPA frameworks, unpinned CDNs and `localStorage`.
-- **Shareable scenarios:** use URL-hash state.
-- **Upgrade path, only if triggered:** Eleventy first, then Observable Plot, pinned with SRI.
+- **Metric:** merged PRs ÷ all R&D people (2026 posts); "per engineer per month" in the June 2025 memo — the definition drifted. Chosen as a pragmatic throughput proxy and bottleneck detector. Self-reported, no counterfactual, confounded with a model upgrade (Christmas 2025); "3x over 16 months" window starts ~6 months before the goal was set; ~20%/yr growth pre-existed.
+- **Results (company-reported):** ~2x on the metric; defect backlog −54%; breaking-change downtime −35%; 93.6% of PRs agent-driven; 19.2% of merged PRs AI-approved (86% ≤20 lines; median merge 14.6 vs 75.8 min), later "half" (one sentence). AI spend rising, unoptimised. Business outcomes asserted ("accelerating"), not quantified.
+- **Mechanisms worth translating:** one standard platform after an open phase that didn't compound; a dedicated platform team (~7 senior) plus contribution from all; skills library (267 skills, 153 contributors) with owners, tests, promotion rules; judgment encoded in the environment and measured with/without (7% → 96%); decomposed review agent with a two-axis gate (eligibility policy × quality verdict); reviewer evaluated against a human-curated set (a newer model did worse); every AI approval logged, auditors engaged early; management change (protected time, permission, compulsory hackathon, no-IDE weeks, unlimited tokens as a spend floor).
+- **Bottleneck migration:** writing code → CI (relayed: "melted down", ~10x cost; not re-verified) → human review → production diagnosis (unsolved).
+- **Does not transfer:** a published ad cannot be reverted; brand/legal ground truth is contested; no single system of record or "merge" event; outcomes lag and credit is shared with sales; labour is only ~22% of marketing budget (Gartner 2025 21.9%, agencies 20.7%) vs payroll-dominated R&D; agencies sit outside headcount; most marketing orgs lack the "CI" foundation (pre-flight checks, verified publishing) — that foundation is a build item.
+- No marketing 2x has been published by Intercom. Its marketing reorg is context only.
 
-### Expected Features
+### Workflows and labour economics (FEATURES.md)
 
-**Table stakes:**
+- **v1 company validated:** 7.8% of revenue (Gartner 2026); 120 FTE × $150k = $18.0M = 23.1% of $78M vs Gartner labour share 21.9–24.5%; $150k is a defensible US blend (BLS May 2025 medians $166,790 managers / $78,760 specialists; wages 70.0% of compensation). Implied agency ~$16.1M (20.7%) is **not modelled in v1** and must be. Paid media (~31%) is working spend, never a productivity saving. Addressable pool ≈ labour + agency ≈ 45% (~$35M).
+- **Evidence posture:** task-level gains 14–55% well evidenced (Brynjolfsson +14%; Noy & Zhang −40% time; Dell'Acqua +12–40% inside the frontier, −19 pts outside). Organisation-level gains so far 1.4–5.4% of hours (St. Louis Fed), 2.8% (Danish admin data). The gap is coordination, verification and adoption — what workflow ownership targets — so it is the **central hypothesis**; the pilot tests it. No public evidence for ~50% workflow-hour reductions. Ju & Aral: +50% ads per worker, performance quality-dependent (output ≠ outcome). BCG 2026 "20–30% / 10x" are client anecdotes; quote only as dated aspiration.
+- **Workflow inventory W1–W10** with all eight brief fields; 92 in-scope FTE, 28 out of scope; net hours released ~57k default, range 23–48 FTE-equivalent; capacity multiple ~1.8x on 80 non-review in-scope FTE (1.4–2.47x), ~1.4–1.5x across all 120.
+- **Prioritisation:** W4 Localisation and W6 Publishing score 20; W2 Planning/ops and W5 Review 18 (pilot core); W3 Creative lowest (13), explicitly **not a 2x source**.
+- **Doubled capacity ≠ doubled revenue:** median TV ad elasticity ~0.01 and >80% of brands negative marginal ROI (Shapiro et al., Econometrica 2021); median ROI CI >100 pts wide (Lewis & Rao, QJE 2015); media response saturates (Meridian Hill function). Defensible outcome mechanisms: speed to market, learning velocity, reallocation by marginal ROI, coverage of unserved markets.
+- **14-item do-not-double-count register** (FEATURES s8) is the spec for the reconciliation.
 
-- **One output metric** with an anti-gaming denominator. Show it beside cost per approved live asset and median days from brief to live.
-- **Paired outcome metrics**, measured by holdout rather than platform attribution.
-- **A grade on every number.** Back this with a grade key, a source register with bias flags, and an evidence-gaps section.
-- **Visible variant arithmetic**, using "applicable fraction" inputs.
-- **A CFO answer** anchored on flat budgets. Gartner puts marketing budgets at 7.7% of revenue in 2025 and 7.8% in 2026.
-- **The governance spine.**
-- **A candid "what goes wrong" section.**
+**Must have:** workflow inventory; per-workflow model rows from brief s7 (full detail for pilot slice W2, W4, W5, W6; others at roll-up); net-of-agent-created-work hours (review/sampling/exception 15–25% of baseline at L2, 5–10% at L3, illustrative); v1 hole fixes; scenarios A/B/C plus reconciliation (redeployed, removed, unused, avoided hires, baseline slack); 2x definition with guardrails and falsifiers; three-tier scorecard; sensitivity (adoption, error/escape, inference cost, review overhead); evidence class on every figure; budget-structure anchor; prioritisation table.
 
-**Differentiators:**
+**Should have:** "honest 2x" panel; released-hours waterfall; evidence-boundary marker on the causal chain (after "shorter objective-to-live"); task-vs-organisation productivity gap figure; autonomy level L1–L4 per workflow tied to a deterministic success check.
 
-- **Calculator with a reviewer-capacity model.** It shows the break-even auto-approval rate at flat review headcount.
-- **Variant-explosion worked example**, showing concepts against variants.
-- **Win-rate maths.** Test win rates run from 12% to 36% depending on the definition used.
-- **Disclosure penalty.** NYU/Emory found a −31.5% click-through rate when ads are labelled as AI.
-- **Tier risk matrix.**
-- **Statutory-damages tail-risk illustration.** The incident rate is graded Speculative.
-- **Neutral imagery-sourcing decision table**, with the conflict-of-interest note beside it.
-- **AEO/GEO as the sixth lever.**
-- **Adoption playbook.** It comes late in the page and is graded Speculative.
+**Anti-features:** a single "total savings" number; revenue = output × conversion; RCT task gains applied to workflow hours; BCG figures as defaults; paid-media efficiency counted as productivity; false precision (show ranges).
 
-**Anti-features:**
+### Architecture (ARCHITECTURE.md)
 
-- A headline "assets generated" metric.
-- Unattributed round-number claims.
-- Vendor case studies presented as benchmarks. Show them as "company-reported" or "vendor-reported", and never average them.
-- Fabricated typical variant counts, approval times or incident rates.
-- Platform self-report treated as independent evidence.
-- Vendor names outside section 12 and the source register.
+**A workflow with agent steps inside it, not a free-roaming agent.** A tested plan template per workflow defines the path; agents draft the plan, adapt, judge and diagnose inside steps. Moving up the autonomy ladder means widening **permissions per action** and later letting the planner choose among permitted actions on evidence.
 
-**Defer, or keep brief:**
+Six plain parts covering the ten brief capabilities (own / integrate / platform):
+1. **Objective record and outcome tracking** (own): goal, measures, guardrails, caps, owner, permission level.
+2. **Brand, claims, rights and context library** (own content, integrate storage): versioned, read-only to agents, checks cite rule IDs.
+3. **Workflow engine and plan templates** (integrate a durable engine; own templates and planner): removes coordination work.
+4. **Connectors and permissions gateway** (own policy and action catalogue; integrate connectors/MCP/iPaaS): read/draft/stage/publish/spend levels, caps, rollback, kill switch, read-back; downstream system enforces permissions. Biggest autonomy lever.
+5. **Worker agents and skills** (mostly platform; own rule-encoding skills).
+6. **Checks and evals** (own eval sets and thresholds): deterministic checks → review agent on a different model family → sampling; task-completion and deployment checks; pass^k consistency. Autonomy raised only on eval evidence.
+7. **Approval inbox** (integrate work-management approvals; own routing): evidence attached; timeouts escalate, never approve.
+8. **Run record** (own): append-only ledger objective → run → task → asset → action → platform ID → result; generalises v1's asset manifest.
+9. **Outcome measurement** (own definitions/joins; integrate analytics/MMM): holdout or geo designs for outcome claims.
+10. **Feedback and optimisation** (own catalogue and caps): logged expected vs observed; don't rebuild in-channel bidding.
 
-- Imagery cost comparison.
-- Quantified benefits of insight and reporting.
-- Fatigue day-counts, per-word localisation rates and any single personalisation uplift figure.
+**Rule:** own the rules, permissions, evals, run record and outcome definitions; rent generators, channels and plumbing. Suites (Adobe, Salesforce, Workfront, Smartling, HubSpot) are converging on agents inside their own walls; none documents a cross-vendor run record, buyer-owned permission/eval layer or holdout measurement. Vendor detail goes only in s12 and the register.
 
-**Primary-metric decision for Phase 1.** FEATURES.md proposes unweighted gate-cleared live variants per head. ARCHITECTURE.md proposes complexity-weighted. The recommendation:
+**Patterns:** workflow first; evaluator–optimiser with bounded retries; stage → verify → publish; durable runs with human signals; least privilege enforced downstream; sampling never reaches zero; separate reading agent (untrusted web) from acting agent.
 
-- **Headline metric:** approved-and-live variants per marketing head per quarter. The denominator is all marketing FTE, including brand, ops, regional and agency-equivalent staff.
-- **Always shown beside it:** unique concepts, and variants per concept.
-- **Tier-weighted view:** offered as a sensitivity only, because weights are arbitrary and can be gamed.
+**Wedge and expansion:**
 
-**Grade key.** Use Benchmark / Modelled / Speculative. PROJECT.md governs here, not the reference's Verified / Inferred / Uncertain. Add a separate source flag, vendor-claimed or company-reported, that never upgrades a claim to Benchmark.
+| Step | Adds | Rung |
+|------|------|------|
+| E0 pilot | 2–4 additional markets, 2–3 channels, T0/T1 only, "stage", proposals-only feedback | Agentic execution |
+| E1 widen | More markets and channels | Agentic execution at scale |
+| E2 raise permission | Auto-publish T0/T1 within caps | Higher autonomy |
+| E3 close the loop | Monitoring run: refresh and pause | Higher autonomy (optimise) |
+| E4 adjacent workflows | Reuse the six parts | Varies |
+| E5 outcome-directed | Choices within caps, judged vs holdouts | Outcome-directed |
 
-### The Six Levers
+Machinery reusable; **eval sets, templates and outcome definitions are domain-specific**.
 
-| # | Lever | Output metric | Outcome metric | Evidence |
-|---|---|---|---|---|
-| 1 | Content generation at 10,000+ assets (deep dive) | Approved-live variants per head; unique concepts; cost per approved live asset | Holdout conversion / CAC / ROAS; first-pass compliance; rejection rate; brief-to-live time | Mostly Modelled. Company-reported anchors are flagged. One controlled CTR study and one null retail result. |
-| 2 | Localisation / transcreation | Approved localised assets per locale per quarter; lag from master to last locale | Launch lag; locale rejection rate; quality sampled by linguists | Vendor case studies, plus an academic range of 9–60%. Per-word rates are a GAP. |
-| 3 | Experimentation | Experiments per quarter; rate of conclusive tests | Winners rolled out; time from fatigue to replacement | Decent anchors, but vendor-biased: Optimizely ~12%, DRIP 36.3%, Microsoft ~1/3. Traffic bounds the number of tests. |
-| 4 | Insight and reporting | Time to insight; share of reports automated; MMM refresh cadence | Faster budget reallocation; earlier fatigue detection | Almost all GAP. Keep brief and Modelled. |
-| 5 | Ops: briefs, approvals, DAM metadata, rights | Brief-to-draft time; review rounds; metadata completeness; rights-check coverage | Rights incidents per 1,000 assets; reuse; takedown rate | GAP, apart from the statute. Speculative. |
-| 6 | Answer-engine visibility (AEO/GEO) | Answer assets published or refreshed per head; prompts tracked | Share of voice and citations; AI-referred sessions and conversion; discovery and pipeline | Thin and vendor-only. Panel-based and unaudited. Grade outcomes Speculative or vendor-reported. |
+**Diagram spec (ARCHITECTURE s8):** two inline SVGs — `flow-wide` (viewBox 720×500, ≥760px and print) and `flow-narrow` (300×~900, mobile) — switched by CSS (CSP forbids inline script/style). Lanes: people / agents / shared platform / existing systems; run brackets; approval boundary; feedback loop; legend; digit-free steps list as text equivalent. New `fig-flow` class and `test/flow.test.js` (`diagram.test.js` locks `fig-d` to 300 wide, 240–560 high).
 
-Lever 6 closes a loop: when citations are lost, that signal becomes a refresh brief for the factory.
+**v1 → v2 mapping:** s03 Figure 3 replaced by the new diagram; s03 factory figure retired/appendix; s04 layer table → ten-capability table; s05, s06, s08 → appendices with body summaries; s07 split (tiers, permission levels, always-human list → build; capacity table and break-even → economics; Figure 6 + fatigue controls → appendix); s09 levers → adjacent workflows; s12 kept and extended with a dated platform sub-table; s13 → roadmap and enablement.
 
-### Architecture Approach
+### Pitfalls and model audit (PITFALLS.md)
 
-**The operating model is a closed loop:**
+1. **Baseline slack shipped as "FTE freed"** (see above). `site/index.html:545` "With the gate, human review hours fall" is false against today; rewrite as "per-variant hours fall 44%, total rises 12%". Reduce mode −$490k vs ~$632k from cutting slack with no AI.
+2. **Double counting:** D1 `first_year_net` (`model.js:242`) adds review hours at $100/h in production cost and reviewer FTE at $150k (~$97k overstatement); D2 two prices for one hour ($100/$125); D3 $1.03M "funded from agency fees" cites a $101k saving already netted; D4 concept cost internal vs agency undefined (+$497k agency if agency); D6 portfolio workflows share one reviewer pool. Fix with a cash view, one price per hour, a saving ledger with `counted_in` tags, INV-1–INV-11 as tests.
+3. **The 2x input as a finding; scale as AI:** `SCENARIO.multiplier = 2` is an input (`data.js:10`); 64% of the cost-per-asset fall happens at 2x with no AI (2x baseline assumptions → $52.22); brief-to-live gain comes entirely from build days 8 → 3 (review part slows 3.85 → 4.52 d). Fix: "the model tests 2x"; max sustainable multiplier per role; scale-vs-programme decomposition (INV-9); model marketer hours so "flat headcount" becomes a checked result.
+4. **Capacity framed as effectiveness; Goodhart on autonomy %:** no revenue/pipeline/ROI computed from capacity; evidence-stops marker; autonomy % always paired with escape rate, first-pass acceptance, verified-objective rate; freeze eligibility definitions; Jevons note as hypothesis.
+5. **Depth and link loss:** move, don't delete, under an inventory test of every v1 `data-fig` and `<figure>`; semantic ids with single legacy anchor spans (avoid duplicate-id crosscheck failures); id move as a separate test-only commit first; `#s11?` share-link fixture; crosscheck rule against literal numbers outside `data-fig` spans.
 
-1. A structured brief carries a risk class.
-2. One versioned policy layer feeds both the generator and the reviewer. It covers brand, claims, legal, rights, glossaries and PIM data.
-3. Generation derives volume from a few masters, and every asset emits a manifest.
-4. The review agent returns pass, fix or escalate, citing rule IDs.
-5. A tiered gate makes the approval decision.
-6. Human decisions become ground truth for the eval harness.
-7. Approved assets go to the DAM with provenance and licence scope.
-8. Activation publishes only approved IDs.
-9. Performance data joins back by asset ID.
+Further: P7 compounding multi-step error (0.95⁸ ≈ 0.66; price escalations from per-step success); P8 LLM judge not ground truth (agreement per tier/rule; calibration is a recurring human cost); P9 accountability (owner and approval boundary per workflow); P10 escapes scale with unseen volume (auto-approved unseen variants 7,579 → 45,474/yr; add escape-cost line); P11 labour relations (severance on a separate Speculative line; removal lags adoption); P16 diagram legibility at 320px and print; P17 chip density (one chip per sentence, weakest grade); P18 jargon ban-list test; P19 `VENDOR_RE` includes "claude"/"anthropic" — describe Intercom's tools by category; P20 smoke/a11y/print not in CI — run every phase. Latent bug: `model.js:218, 378, 392` read `rework_rate` without `pick()` → NaN if baseline and 2x differ.
 
-**Components:**
-
-- intent
-- policy and knowledge
-- build
-- review
-- eval harness
-- system of record (DAM, rights and provenance)
-- measurement and telemetry
-
-**Rules:**
-
-- Derive, do not generate.
-- Review can escalate an asset's tier but never lower it.
-- The reviewer never trusts the generator's self-reports.
-- Thresholds come from eval data, not opinion.
-- Policy changes need human approval and must pass the eval harness.
-- Use a different model or prompt family for review than for generation.
-
-### Build-and-Review Spine
-
-**Tiers:**
-
-- **T0:** deterministic derivatives. Auto-publish.
-- **T1:** new executions inside approved claims. Agent review plus a sampled audit.
-- **T2:** new claims, people imagery or new markets. Agent review plus mandatory human review.
-- **T3:** regulated, comparative, health/finance or crisis content. Human and legal review only, with agent assistance.
-- **Human-only list:** hero and cultural-moment work, claim-bearing and testimonial-like content, and anything using a likeness.
-- Tier definitions are illustrative, depend on jurisdiction, and are not legal advice.
-
-**Review agent:**
-
-- Cites rule IDs.
-- Attaches its findings to the asset manifest.
-- Runs a bounded fix loop, then escalates.
-
-**Eval harness:**
-
-- Ground truth comes from reviewer decisions with reason codes.
-- Seeded known-bad assets and rights traps test the reviewer.
-- Auto-approved items are sampled to estimate the escape rate.
-- It tracks precision, recall and drift per tier.
-- Thresholds are published.
-- No model, rule or skill change ships if it makes the harness results worse.
-
-**Reviewer-capacity model:**
-
-- Human reviews = assets × (1 − auto-approval share) × sampling and escalation rates.
-- Output cannot exceed review throughput.
-- The calculator shows the break-even auto-approval rate needed for 2x at flat headcount.
-- "85–95% of assets fall in T0/T1" is a Modelled input, exposed for the reader to change.
-- Fatigue controls:
-  - Blind-first review: the reviewer doesn't see the agent's verdict first.
-  - Catch rate on seeded errors as a leading indicator.
-  - Session caps.
-  - Sampling instead of full inspection.
-
-### Page Section Structure (14 vs 18 reconciliation)
-
-**Recommendation: 15 numbered sections.** Merge the 18-section draft down to near the reference's 14, then add the named comparison section.
-
-- The CFO hook stays early.
-- The calculator sits after the gate and before adoption and risk.
-
-**Unnumbered front matter:**
-
-- title block and metadata
-- conflict-of-interest note
-- grade key
-- contents
-- answer-first paragraph
-
-| # | Section | Merges (draft sections) |
-|---|---|---|
-| 01 | Claim and measurement: output metric, outcome families, six levers at a glance, what 2x does not mean | 01 |
-| 02 | Spend floor and CFO answer | 02 |
-| 03 | Mental model: factory and content supply chain | 03+04 |
-| 04 | Platform and skills | 05+06 |
-| 05 | The 10,000-asset campaign: variant matrix, imagery sourcing, personalisation, feeds | 07 |
-| 06 | Review agent | 08 |
-| 07 | Auto-approval gate: tiers, human-only list, reviewer capacity | 09 |
-| 08 | Eval harness and telemetry | 10+11 |
-| 09 | The other five levers: localisation, experimentation, insight, ops, AEO | 12 (+ lever 6) |
-| 10 | Outcome case | 13 |
-| 11 | Your numbers: calculator | 14 |
-| 12 | **How this compares:** Gradial, AirOps, Profound. The only section that names vendors. | new |
-| 13 | Adoption and where it leads: Backlog 0 as a queue-age SLA | 15+16 |
-| 14 | What goes wrong | 17 |
-| 15 | Source register, evidence gaps and assumptions register | 18 |
-
-**Formatting conventions:**
-
-- Figures are inline SVG with `<title>` and `<desc>`.
-- Tables have a `<caption>` and sit inside `overflow-x:auto` regions.
-- Include an `@media print` stylesheet.
-
-### Competitor Positioning (section 12)
-
-PROJECT.md overrides the "keep names internal" note in COMPETITORS.md. Vendor names appear only in this section and in the source register.
-
-None of the three is an alternative to the full operating model. Each is a component or a partial overlap.
-
-| Vendor | Verdict | Slots in as | Does not replace (based on public material) |
-|---|---|---|---|
-| Gradial | Closest overlap. A partial alternative to the ops and build half, for web and email. | Execution layer: CMS authoring, DAM metadata, QA and accessibility. Its rules engine works as a pre-gate check. | Creative and imagery generation at 10k+ assets, rights review, a documented eval harness, tiered auto-approval, metric design. |
-| AirOps | A component for the text and AEO slice. | Refresh workflows, AEO content engineering, Grids as a batch runner. | Imagery, rights, DAM, multi-channel variants, review calibration. |
-| Profound | A component for measurement and discovery. | AEO tracking across up to 9 engines; Agent Analytics. | Anything beyond AEO. No documented link to experimentation or conversion (source is competitor-authored; LOW-MEDIUM confidence). |
-
-**Writing rules:**
-
-- Source and date every claim (accessed 2026-10-24; re-verify at publish), and flag it as vendor-claimed.
-- All outcome figures are vendor claims or repeated in press. None is independent, and none is comparable to creative production at 10k assets.
-- Use competitor-authored reviews for limitations only, and flag them as such.
-- Say "not publicly documented", never "does not exist".
-  - Profound documents a uniform human approval on every run.
-  - Gradial and AirOps describe approvals only in general terms.
-- Acknowledge that the CMO 2x spine is a design, not a shipped product.
-- Cover build vs buy and lock-in at category level. The advice: own the eval set and the brand rules.
-- Omit these, or treat them as LOW confidence, because sources conflict or are thin:
-  - Gradial's valuation and total funding.
-  - AirOps pricing, and its inconsistent Webflow figures.
-  - Profound's Series D, which comes from a single outlet.
-  - Gradial's CMS/DAM list. Do not claim AEM support.
-
-### Top Pitfalls
-
-1. **Goodhart on counts or spend.**
-   - Count only gate-cleared output, and pair it with outcomes and concept count.
-   - State a falsifier.
-2. **No counterfactual.**
-   - Use holdouts and pre-registered metrics.
-   - Correct for multiple comparisons.
-   - Calibrate MMM against incrementality tests.
-   - Grade outcomes Modelled or Speculative.
-   - Phrase negatives as "we did not find".
-3. **Untraceable statistics.** Keep a claim register. Exclude or flag:
-   - the NIQ claims about AI ads
-   - MIT's "95%" (grade it Uncertain if used)
-   - the 2.3x ROAS vendor figure
-   - "10–15% personalisation lift"
-   - fatigue day-counts
-   - the Nielsen 43% / 37% figures
-4. **Slop, brand dilution and sameness.**
-   - The 2x applies to variants, not flagship creative.
-   - Use a human-only list, the concept metric, variant caps and diversity checks.
-   - Put the incident list (Coca-Cola, McDonald's NL, Guess, Levi's) in the main text, separating what was established from what was alleged.
-5. **Calculator credibility.**
-   - Failure modes: hidden assumptions, unit errors, double-counted variants, NaN, omitted review cost.
-   - Guards: a pure model, a 1x identity test, "show the maths", a "what you must believe" panel, and outputs inheriting the grade of their weakest input.
-   - Cost per approved-live asset must include review, rework, tooling, rights and storage.
-   - Headcount scenarios (redeploy, hold, reduce) must include change-management cost.
-6. **Legal, regulatory and conflict-of-interest issues.**
-   - Indemnity transfers risk; it does not remove it.
-   - Fully generated output may not be protectable by copyright (US Copyright Office, January 2025).
-   - Disclosure and substantiation rules apply: EU AI Act Article 50, the ASA and the FTC.
-   - Describe Getty v Stability neutrally, with the COI note beside it.
-   - Have the page's own wording legally reviewed.
-
-**Technical pitfalls:**
-
-- root-absolute paths
-- filename case sensitivity
-- a missing `.nojekyll` file
-- unpinned CDNs
-- grades shown by colour alone
-
-Target WCAG 2.2 AA.
+---
 
 ## Implications for Roadmap
 
-**Four phases.** Each is a vertical slice that ends with a deployed, viewable increment of the page.
+Six phases, numbered 5–10 (v1 ended at phase 4). Coarse granularity. Order: **guards before edits; engine before prose about numbers; thesis and architecture text in parallel with the engine; presentation last.**
 
-- The calculator model is built early; its UI comes later.
-- The source register grows in every phase and is reconciled in Phase 4.
+### Phase 5: Restructure scaffold, evidence schema and guards
+New section order per brief s11 with semantic ids, legacy anchors, updated TOC; anchor-resolution test; `data-fig`/figure inventory test; share-link fixture test; `evidence` field on every assumption and claim with allowed-pairs test and register/assumptions-table columns; jargon ban-list test; smoke/a11y/print in CI with retry or documented per-phase gate. Avoids P12–P14, P18, P20.
 
-### Phase 1: Foundation and thesis slice
+### Phase 6: Economics engine
+`workflows[]` layer W1–W10 with role pooling, frozen baseline standard hours, primary metric (incl. agency-FTE-equivalent conversion); `capacity_bridge`; scale-vs-programme decomposition; explicit agency line; concept internal hours + agency fee; cash vs activity views; scenarios A/B/C (C default) and max sustainable multiplier per role; investment/build cost, run cost incl. ops FTE, inference cost model, adoption ramp, escape cost, review overhead of autonomy; sensitivities; INV-1–INV-11 tests with PITFALLS goldens; `rework_rate` fix; all page figures as derived claims. Research flag: range-setting for inference cost, agency FTE-e rate, build/run cost, per-step success, queue model (Erlang C vs labelled M/M/1 upper bound).
 
-**Rationale:** the metric definition, the grade scheme and the register must come first. The CFO section needs the calculator model, but not its UI.
+### Phase 7: Thesis, Intercom evidence and "What needs to be built" (can run alongside Phase 6)
+First screen (thesis, system, measurable ambition, "tests 2x"); "what 2x means" (capacity/efficiency/effectiveness, no merged-PR equivalent, primary metric, guardrails, outcomes); rewritten Intercom section (results table with company-reported tags, demonstrated vs uncertain, the bottleneck moved, transferable-principles table, tooling by category); autonomy ladder figure; "What needs to be built" (60-second block, six parts, ten-capability table with `<details>`, permission levels beside T0–T3, always-human list, build/integrate/platform table, minimal slice, E0–E5).
 
-**Delivers:**
+### Phase 8: Content supply chain section and diagram
+Two-variant SVG (`flow-wide`, `flow-narrow`), `test/flow.test.js`, stage-by-stage responsibilities table, ten-step worked example ("launch the approved campaign in three additional markets") with hours bound to `data-fig`; v1 s05–s08 moved to appendices with body summaries; `EXPECTED_FIGURES` renumbered. Finish after Phase 6 for the worked-example hours.
 
-- **Live page on GitHub Pages:** shell, metadata, conflict-of-interest note, grade key, contents, answer-first paragraph, design tokens, and print and mobile table patterns.
-- **Content:** sections 01–02 and a skeleton of section 15.
-- **Code:** `data.js` and a tested `calc.js`.
-- **Figure:** a static baseline-vs-2x figure.
-- **Deploy:** a Pages workflow gated on the tests.
+### Phase 9: Economics, outcomes and calculator presentation
+Honest-2x panel; per-workflow table (pilot slice in full); capacity bridge and reconciled reviewer table; released-hours waterfall and reconciliation; scale-vs-programme bridge; investment, payback, sensitivity; calculator rewired to A/B/C with legacy mapping; "fully loaded" label corrected; outcomes section (causal chain with evidence boundary, three-tier scorecard, four defensible mechanisms, diminishing returns, Jevons note, falsifier retained); prioritisation table.
 
-**Addresses:**
+### Phase 10: Expansion, roadmap, risks, comparison update and final validation
+Expansion (reusable vs domain-specific; adjacent workflows from s09 levers); roadmap (12-week pilot with baseline time study, "stage" ceiling, acceptance metrics as hypotheses; next two quarters E1–E3; 12-month portfolio combined via INV-8 pooling; enablement incl. s13 content, role redesign, platform team, aggregate-only telemetry, Backlog 0; pilot vs projection clearly separated); risks and assumptions; s12 dated platform sub-table with register rows and "announced" wording where GA unconfirmed; glossary; full gate run at desktop and 320px; completion summary. Research flag: vendor GA status re-check, Adobe primary release, works-council constraints.
 
-- the metric decision, including the concept-count rule
-- the grade key with its vendor flag
-- the Gartner anchors
-- the spend floor
-- the six-lever table
+---
 
-**Avoids:**
+## Gaps to Address
 
-- Goodhart
-- unsourced statistics
-- calculator unit errors
-- Pages path and case issues
-- base64 bloat
+- Workflow hours per unit and agent reductions: no benchmark — editable illustrative/hypothesis values with ranges; pilot baseline time study (weeks 1–3) is the only route to observed data.
+- Agency FTE-equivalent conversion: not researched — illustrative assumption, effect on org-wide multiple shown.
+- Gartner 2026 labour share (24.5%) and 2026 agency share secondary; CMO Survey 2026 primary unreachable — Benchmark grade only for primary-confirmed figures.
+- Localisation per-word and LLM post-editing throughput: no authoritative average — low grade/hypothesis.
+- v1's 60% auto-approval vs Intercom's observed 19.2%/28.4% puts 2x at 100–111% reviewer utilisation — keep visible; grade 60% as pilot hypothesis.
+- Intercom gaps: part-two post and full principles unpublished; no baselines or absolute counts; "half" is one sentence.
+- Wide-diagram print legibility (~8pt on A4) unchecked; fallback to narrow variant in print.
 
-### Phase 2: Factory and spine slice
-
-**Rationale:** the spine is the centrepiece, and its tier shares and review rates become the calculator defaults. Expect one iteration with the Phase 1 model.
-
-**Delivers:**
-
-- Sections 03–08, with SVG figures:
-  - factory
-  - supply chain
-  - variant matrix
-  - flow from brief to approved asset
-  - tier ladder
-  - review sequence
-  - eval loop
-- The tier table with the human-only list.
-- A static worked example of reviewer capacity.
-- The neutral imagery-sourcing table, with the COI note.
-
-**Avoids:**
-
-- slop
-- rubber-stamp review
-- permissive tiers for claims and likeness
-- split rulebooks for generator and reviewer
-- over-trusting indemnity
-
-### Phase 3: Levers, outcomes, calculator and comparison slice
-
-**Rationale:** the breadth sections and the comparison need the finished operating model, and the calculator UI needs finished defaults.
-
-**Delivers:**
-
-- **Sections 09–12:**
-  - the five other levers, including AEO
-  - the outcome case, with a holdout design
-  - the interactive calculator
-  - "How this compares"
-- **Calculator features:**
-  - assumptions panel
-  - a grade on each output
-  - sensitivity table
-  - headcount scenarios
-  - reviewer-capacity output
-  - URL-hash state
-
-**Avoids:**
-
-- outcome claims without a counterfactual
-- hidden assumptions
-- vendor claims graded as Benchmark
-- competitor-authored claims used as fact
-
-### Phase 4: Adoption, risk, evidence and publish slice
-
-**Rationale:** these sections have the weakest evidence and the fewest dependencies. Reconciling the register and re-verifying claims must come last.
-
-**Delivers:**
-
-- **Sections 13–15:**
-  - adoption, with Backlog 0
-  - the risk section, with the incident list and a risk register
-  - the finished source register, with publisher bias flags
-  - evidence gaps
-  - an assumptions register that matches `data.js`
-- **Cross-checks:** every number appears in the register, and every calculator default matches the prose.
-- **Accessibility pass:** WCAG 2.2 AA, layout at 320px, and data tables behind every chart.
-- **Reviews:** legal wording review and vendor re-verification.
-- **Production deploy.**
-
-### Research Flags
-
-**Phase 2:** view the live reference page visually before locking the tiers, the harness metrics and Backlog 0. Its sections 05–14 are base64 screenshots.
-
-**Phase 3:**
-
-- Re-verify all vendor claims against primary pages.
-- Confirm Gradial's CMS/DAM list and which AirOps tier includes Human Review.
-- Check whether any independent AEO measurement study exists.
-
-**Phase 4:**
-
-- Verify these against primary text:
-  - EU AI Act Article 50 and its Code of Practice
-  - the Getty appeal status
-  - Moffatt v Air Canada
-  - Parasuraman and Manzey (2010) on reviewer fatigue
-- Check indemnity wording.
-- Flag the page for legal review.
-
-**Standard patterns, so skip research:** Phase 1. Only the Gartner figures and the action versions need a quick check.
-
-## Confidence Assessment
-
-| Area | Confidence | Notes |
-|---|---|---|
-| Stack | HIGH | Reference page fetched, npm versions checked, and the choice follows from the constraints. Action major versions are MEDIUM. |
-| Features | MEDIUM-LOW | Structure and metrics are strong. Many benchmarks were read only through secondary sources: Gartner returned 403, and the McKinsey and Unilever primary pages were unreachable. Most operational benchmarks are gaps. |
-| Architecture | MEDIUM | The category-level component map is well established. The Intercom mapping rests on section titles and PROJECT.md, because the Shrek, gate and harness sections were unreadable. |
-| Pitfalls | MEDIUM | Incidents are well documented. Fatigue and attribution numbers are mostly secondary. Regulatory items come from law-firm commentary. |
-| Competitors | MEDIUM | Vendor pages were read directly. No outcome claim has independent verification. Three of the four third-party reviews are competitor-authored. |
-
-**Overall:** MEDIUM. Enough to plan and build. Content claims need re-verification before publishing.
-
-### Gaps to Address
-
-- **No independent benchmarks** for cost per asset, variant counts, approval times, rights-incident rates, auto-approval share, first-pass compliance rate, analyst hours, or DAM metadata rot. These become Modelled defaults the reader can override, since no internal data is available. List each one in the evidence-gaps section.
-- **Primary sources unread:**
-  - Gartner 2025/2026
-  - McKinsey: economic potential, State of AI, personalisation
-  - the Unilever release
-  - the NYU/Emory paper and the arXiv preprints
-  - the Optimizely PDF
-
-  Open each one before assigning a Benchmark grade, or downgrade the claim.
-- **Gartner 49% / 40% / 27% (G3):** the meaning is unclear. Verify or drop.
-- **Intercom's Shrek, gate and curator specifics:** unreadable so far. Review the live page before Phase 2.
-- **EU AI Act dates:** a 2 Dec 2026 transition date has been reported. Verify against the Commission's text and date-stamp the callout.
-- **Getty v Stability appeal status:** not yet checked.
-- **Vendor facts:** valuation, CMS/DAM list, pricing, the Series D and tracking methodology. Re-verify or omit.
-- **AEO outcome evidence:** vendor testimonials with small bases. Grade it Speculative or vendor-reported.
-- **Primary-metric weighting:** confirm in Phase 1.
-- **GitHub Actions versions and `node --test` behaviour:** verify when writing the workflow.
+---
 
 ## Sources
 
-Primary and secondary sources are collected in STACK.md, FEATURES.md, ARCHITECTURE.md, PITFALLS.md and COMPETITORS.md.
+Full registers in INTERCOM.md (S1–S23), FEATURES.md, ARCHITECTURE.md and PITFALLS.md. Primary: Intercom/Fin posts (ideas.fin.ai, intercom.com blog, 2025-06-13 to 2026-08-28; company-reported); repository code recomputed in Node 2026-10-25; Gartner CMO Spend Survey 2025 (2025-05-12) and 2026 (2026-05-11); BLS OOH and ECEC; Brynjolfsson, Li & Raymond (QJE 2025); Noy & Zhang (Science 2023); Dell'Acqua et al. (2023); METR (2025-07-10, 2026-02-24); Humlum & Vestergaard (2025); Shapiro, Hitsch & Tuchman (Econometrica 2021); Lewis & Rao (QJE 2015); Building effective agents (2024-12-19); MCP spec 2025-11-25; OWASP LLM06:2025. Secondary: reference teardown (lyonsv, 2026-08-25); Chief Marketer reproductions of Gartner; Duke Fuqua CMO Survey; Ju & Aral (arXiv 2503.18238); St. Louis Fed (2025-02); BCG CMO Survey 2026; vendor/trade press for platform capabilities (s12 only).
 
-**Primary:**
-
-- the reference page
-- the npm registry
-- 17 U.S.C. 504
-- WCAG reflow
-- GitHub Pages docs
-- NYU Stern
-- Doshi and Hauser (PMC)
-- NBER w26278
-- MIT Economics
-- vendor pages (read directly, but their claims remain vendor-claimed)
-
-**Secondary:**
-
-- Gartner releases, read through summaries
-- commentary on Getty v Stability (AIPPI, Mishcon)
-- Copyright Alliance
-- law-firm commentary on the EU AI Act
-- press coverage of incidents
-- funding coverage of the vendors (Axios, CMSWire, TNW, Fortune)
-- Adobe surveys (vendor-biased)
-- Optimizely
-- Kohavi
-- Nimdzi
-
-**Tertiary:**
-
-- company-reported figures from Klarna and Unilever
-- competitor-authored reviews, used for limitations only
-- vendor polls (Canto, PerformLine, Circana, Monks, Claritas)
-- DRIP, via Foundry CRO
-- blogs on creative fatigue
-- MIT NANDA's "95%"
-- NIQ's research on how people perceive AI ads
-- filings in rights disputes
-
----
-*Research completed: 2026-10-24*
-*Ready for roadmap: yes*
+*Research completed: 2026-10-25. Ready for roadmap: yes.*
