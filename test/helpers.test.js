@@ -6,11 +6,11 @@ import { elementById, sectionHtml, strip } from './helpers/html.js';
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const count = (s, re) => (s.match(re) || []).length;
 
-test('elementById returns the whole v1 s11 section', () => {
+test('elementById returns the whole s11 block (a div.subsection since Phase 5)', () => {
   const el = elementById(html, 's11');
-  assert.ok(el.startsWith('<section id="s11"'));
-  assert.ok(el.endsWith('</section>'));
-  assert.equal(count(el, /<section\b/g), count(el, /<\/section>/g));
+  assert.ok(el.startsWith('<div id="s11"'));
+  assert.ok(el.endsWith('</div>'));
+  assert.equal(count(el, /<div\b/g), count(el, /<\/div>/g));
 });
 
 test('elementById slices every v1 section and the answer block', () => {

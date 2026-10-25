@@ -321,3 +321,9 @@ test('live chart panel label is serif so the 37-char label fits the 300-unit vie
 test('adoption table and risk register keep a 720px min-width inside their scroll regions (v1.0 polish)', () => {
   assert.match(css, /\[aria-label="Adoption stages by team"\] table, table\.risk-register \{ min-width: 720px; \}/);
 });
+
+test('h3 focus ring exists for the calculator heading after a share-link restore', () => {
+  assert.match(css, /h3:focus,\s*h3:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--verified\)/);
+  assert.match(css, /\.toc-group\s*\{/);
+  assert.match(css, /\.subsection\s*\{\s*scroll-margin-top/);
+});

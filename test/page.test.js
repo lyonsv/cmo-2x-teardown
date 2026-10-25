@@ -254,24 +254,45 @@ test('static page guards', () => {
 
 // ---- Plan 01-03: front matter, grade key, TOC, sections, numeric gate ----
 
-const TITLES = {
-  s01: 'Claim & measurement',
-  s02: 'The CFO answer',
-  s03: 'The factory model',
-  s04: 'Platform and skills',
-  s05: 'The 10,000-asset campaign',
-  s06: 'The review agent',
-  s07: 'The auto-approval gate',
-  s08: 'Eval harness and telemetry',
-  s09: 'The other five levers',
-  s10: 'The outcome case',
-  s11: 'Your numbers',
-  s12: 'How this compares',
-  s13: 'Adoption and Backlog 0',
-  s14: 'What goes wrong',
-  s15: 'Source register',
+// New executive-question order (Phase 5). Each v1 section survives as a div.subsection with its v1 id.
+const SECTIONS = [
+  { id: 'opportunity', num: '01', title: 'What 2x means' },
+  { id: 'autonomy', num: '02', title: 'Why autonomy is the lever' },
+  { id: 'build', num: '03', title: 'What needs to be built' },
+  { id: 'supply-chain', num: '04', title: 'The first workflow' },
+  { id: 'economics', num: '05', title: 'The economics' },
+  { id: 'outcomes', num: '06', title: 'What it means for CMO outcomes' },
+  { id: 'expansion', num: '07', title: 'How it expands beyond content' },
+  { id: 'roadmap', num: '08', title: 'The roadmap' },
+  { id: 'risks', num: '09', title: 'Risks and assumptions' },
+  { id: 'appendix-campaign', num: 'A', title: 'The 10,000-asset campaign' },
+  { id: 'appendix-review', num: 'B', title: 'The review agent' },
+  { id: 'appendix-gate', num: 'C', title: 'The auto-approval gate' },
+  { id: 'appendix-evals', num: 'D', title: 'Eval harness and telemetry' },
+  { id: 'compare', num: 'E', title: 'How this compares' },
+  { id: 'register', num: 'F', title: 'Source register' },
+];
+const HOSTED = {
+  s01: { host: 'opportunity', title: 'Claim & measurement' },
+  s02: { host: 'opportunity', title: 'The CFO answer' },
+  s03: { host: 'supply-chain', title: 'The factory model' },
+  s04: { host: 'build', title: 'Platform and skills' },
+  s05: { host: 'appendix-campaign', title: 'The 10,000-asset campaign' },
+  s06: { host: 'appendix-review', title: 'The review agent' },
+  s07: { host: 'appendix-gate', title: 'The auto-approval gate' },
+  s08: { host: 'appendix-evals', title: 'Eval harness and telemetry' },
+  s09: { host: 'expansion', title: 'The other five levers' },
+  s10: { host: 'outcomes', title: 'The outcome case' },
+  s11: { host: 'economics', title: 'Your numbers' },
+  s12: { host: 'compare', title: 'How this compares' },
+  s13: { host: 'roadmap', title: 'Adoption and Backlog 0' },
+  s14: { host: 'risks', title: 'What goes wrong' },
+  s15: { host: 'register', title: 'Source register' },
 };
-const SECTION_IDS = Object.keys(TITLES);
+const V1_IDS = Object.keys(HOSTED).sort();
+const SECTION_IDS = SECTIONS.map((x) => x.id);
+const SECTION_RE = SECTION_IDS.join('|');
+const MEASURED_H3 = 53; // 15 hosted v1 headings plus 38 in-body h3s, measured after the move
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
 const ALLOWED_NUMERIC_TOKENS = [
@@ -291,8 +312,14 @@ const stripStep = (h) => h
   .replaceAll(`at −${STEP}`, ' ').replaceAll(`at +${STEP}`, ' ')
   .replace(`A ${STEP} rise moves`, ' ');
 
+// Legacy view of a v1 block: a hosted div's h3 heading is shown as the old sec-head, so
+// content tests written against the v1 section shape keep reading the same text.
 function sectionHtml(id) {
-  return sectionHtmlOf(html, id);
+  if (!HOSTED[id]) return sectionHtmlOf(html, id);
+  return elementById(html, id).replace(
+    new RegExp(`<h3 id="${id}-h">([\\s\\S]*?)</h3>`),
+    `<div class="sec-head"><span class="sec-num">${id.slice(1)}</span><h2 id="${id}-h">$1</h2></div>`,
+  );
 }
 
 function metaHtml() {
@@ -332,28 +359,53 @@ test('grade key defines three grades and a neutral flag', () => {
   assert.ok(legend.includes('It never raises a grade.'));
 });
 
-test('table of contents lists s01 to s15 in order', () => {
+test('table of contents lists nine rows, an Appendices label and six appendix rows', () => {
   const nav = html.match(/<nav[^>]*aria-label="Sections"[^>]*>([\s\S]*?)<\/nav>/);
   assert.ok(nav, 'missing nav[aria-label="Sections"]');
-  const rows = [...nav[1].matchAll(/<a href="#(s\d\d)"><span class="n">(\d\d)<\/span><span>([^<]+)<\/span><\/a>/g)];
+  const items = [...nav[1].matchAll(/<a href="#([^"?]+)"><span class="n">([^<]+)<\/span><span>([^<]+)<\/span><\/a>|<p class="toc-group" id="toc-appendices">([^<]+)<\/p>/g)];
+  assert.equal(items.length, 16);
+  assert.equal(items[9][4], 'Appendices');
+  const rows = items.filter((m) => m[1]);
   assert.equal(rows.length, 15);
   rows.forEach(([, id, n, title], i) => {
-    assert.equal(id, SECTION_IDS[i]);
-    assert.equal(n, id.slice(1));
-    assert.equal(decode(title), TITLES[id]);
+    assert.equal(id, SECTIONS[i].id);
+    assert.equal(n, SECTIONS[i].num);
+    assert.equal(decode(title), SECTIONS[i].title);
+    assert.ok(html.includes(`id="${id}"`), `${id} resolves`);
   });
+  assert.ok(!nav[1].includes('?'), 'no query in TOC hrefs');
 });
 
-test('fifteen anchored sections with the fixed snippet', () => {
-  for (const id of SECTION_IDS) {
+test('fifteen new top-level sections with the fixed snippet', () => {
+  const order = [...html.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(order, ['answer', ...SECTION_IDS]);
+  for (const { id, num, title } of SECTIONS) {
     assert.equal((html.match(new RegExp(`<section id="${id}"`, 'g')) || []).length, 1, id);
-    const s = sectionHtml(id);
-    assert.ok(s.includes(`aria-labelledby="${id}-h"`), id);
-    assert.ok(s.includes(`<span class="sec-num">${id.slice(1)}</span>`), id);
-    const h2 = s.match(new RegExp(`<h2 id="${id}-h">([^<]*)</h2>`));
-    assert.ok(h2, `${id} h2`);
-    assert.equal(decode(h2[1]), TITLES[id]);
+    const s = elementById(html, id);
+    assert.ok(s.startsWith(`<section id="${id}" aria-labelledby="${id}-h">`), id);
+    assert.ok(s.includes(`<div class="sec-head"><span class="sec-num">${num}</span><h2 id="${id}-h">${title}</h2></div>`), id);
   }
+});
+
+test('every v1 block is one div.subsection with its v1 title, inside its host', () => {
+  for (const id of V1_IDS) {
+    const { host, title } = HOSTED[id];
+    assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, `${id} id unique`);
+    const hostHtml = elementById(html, host);
+    const open = `<div id="${id}" class="subsection" aria-labelledby="${id}-h">`;
+    assert.ok(hostHtml.includes(open), `${id} inside ${host}`);
+    const el = elementById(html, id);
+    assert.ok(el.startsWith(open), id);
+    const h3 = el.match(new RegExp(`<h3 id="${id}-h">([^<]*)</h3>`));
+    assert.ok(h3, `${id} h3`);
+    assert.equal(decode(h3[1]), title);
+  }
+});
+
+test('heading counts: 16 h2 and 15 h3 hosted headings', () => {
+  assert.equal((html.match(/<h2\b/g) || []).length, 16);
+  assert.equal((html.match(/<h3 id="s\d\d-h"/g) || []).length, 15);
+  assert.equal((html.match(/<h3\b/g) || []).length, MEASURED_H3);
 });
 
 // Every section is now filled; the later note must not appear anywhere.
@@ -398,7 +450,7 @@ test('landmarks and CSP hygiene', () => {
 
 test('vendor names stay inside s12 and s15', () => {
   let rest = html;
-  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  for (const id of ['s12', 's15']) rest = rest.replace(elementById(html, id), '');
   assert.ok(!/gradial|airops|profound/i.test(rest));
 });
 
@@ -409,14 +461,14 @@ const VENDOR_RE = /\b(gradial|airops|profound|adobe|firefly|midjourney|dall-?e|o
 
 test('no vendor names outside s12 and s15 (IN-04)', () => {
   let rest = html.replace(/<head>[\s\S]*?<\/head>/, '');
-  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  for (const id of ['s12', 's15']) rest = rest.replace(elementById(html, id), '');
   const m = strip(rest).match(VENDOR_RE);
   assert.ok(!m, `page names a vendor outside s12/s15: ${m && m[0]}`);
 });
 
 test('Intercom exactly once outside s12 and s15, in s06', () => {
   let rest = html;
-  for (const id of ['s12', 's15']) rest = rest.replace(sectionHtml(id), '');
+  for (const id of ['s12', 's15']) rest = rest.replace(elementById(html, id), '');
   assert.equal((strip(rest).match(/\bintercom\b/gi) || []).length, 1);
   const s6 = sectionHtml('s06');
   assert.ok(strip(s6).replace(/\s+([.,;])/g, '$1').includes("This is the equivalent of Intercom's review agent, which inspired the design described here."));
@@ -509,7 +561,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
     // the leading "Default N" of each field hint (calc-page.test pins N to data.js
     // via toText) and the change-management sentence, built here from data.js so a
     // changed assumption fails the gate. Any other numeral in the form fails.
-    ...SECTION_IDS.map((id) => (id === 's11' ? stripStep(sectionHtml(id)) : sectionHtml(id))
+    ...SECTION_IDS.map((id) => (id === 'economics' ? elementById(html, id).replace(elementById(html, 's11'), stripStep(elementById(html, 's11'))) : elementById(html, id))
       .replace(/<p class="hint" id="hint-[a-z0-9]+">Default \$?[\d.,]+%?/g, ' ')
       .replace(`Change-management cost: ${assumptions['asm-change-mgmt'].display}, included`, ' ')
       .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
@@ -520,13 +572,13 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
       part
         .replace(/<span class="statute">17 U\.S\.C\. (?:504\(c\)|412)<\/span>/g, ' ') // statute citations, span text pinned below
         .replace(/<span class="legal-ref">([^<]*)<\/span>/g, (all, t) => (LEGAL_REFS.includes(t) ? ' ' : all)) // pinned legal references, see test below
-        .replace(/<a href="#s\d\d">[^<]*<\/a>/g, ' ') // in-page section cross-links
+        .replace(new RegExp(`<a href="#(?:s\\d\\d|${SECTION_RE})">[^<]*</a>`, 'g'), ' ') // in-page section cross-links
         .replace(/<a(?: class="cite")? href="#((?:src|asm)-[^"]+)">([^<]*)<\/a>/g, (all, id, text) => (text === `#${id}`.slice(1) && isRegisterId(id) ? ' ' : all)) // register-id links, see test below
         .replace(/<time datetime="\d{4}-\d{2}(?:-\d{2})?">[^<]*<\/time>/g, ' ') // dates, text validated by timeIssue above
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
         .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
-        .replace(/<h2 id="s\d\d-h">[^<]*<\/h2>/g, ' ') // section titles are locked by the TITLES test
+        .replace(/<h[23] id="[a-z0-9-]+-h">[^<]*<\/h[23]>/g, ' ') // section titles are locked by the SECTIONS and HOSTED tests
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
     ).replace(/\bT[0-3]\b/g, ' ').replace(/\bBacklog 0\b/g, ' '); // tier names and the programme end-state name
@@ -818,7 +870,7 @@ test('s06 review agent rules', () => {
   assert.ok(p.includes('data-fig="ref-bot-approval-rate"'));
   assert.match(p, /<span data-fig="ref-auto-approved-share">[^<]*<\/span>\s*<a class="chip c-m" href="#src-intercom-2x-teardown">Modelled<\/a>\s*<span class="flag">company-reported<\/span>/);
   assert.ok(/\bcode\b/.test(strip(p)), 'must say the reference reviews code');
-  const rest = html.replace(sectionHtml('s15'), '').replace(p, '');
+  const rest = html.replace(elementById(html, 's15'), '').replace(p, '');
   assert.ok(!rest.includes('data-fig="ref-auto-approved-share"') && !rest.includes('data-fig="ref-bot-approval-rate"'), 'datum must appear once');
 });
 
@@ -1309,7 +1361,7 @@ test('Run your own numbers CTA is identical in s02 and s10', () => {
   for (const id of ['s02', 's10']) {
     const s = sectionHtml(id);
     assert.ok(s.includes(cta), id);
-    assert.ok(s.replace(/\s*<\/section>$/, '').endsWith(`<p>${cta}</p>`), `${id} CTA is last`);
+    assert.ok(s.replace(/\s*<\/(?:section|div)>$/, '').endsWith(`<p>${cta}</p>`), `${id} CTA is last`);
   }
 });
 
@@ -1555,8 +1607,8 @@ test('03.1 reframe guards: definition appears once, in s01', () => {
 test('03.1 reframe guards: variant-count figures stay in s05, s07, s15', () => {
   const body = html.replace(/<script\b[\s\S]*?<\/script>/g, '');
   const hits = {};
-  for (const m of body.matchAll(/<section id="([^"]+)"[\s\S]*?<\/section>/g)) {
-    for (const id of guardFigIds(m[0])) if (guardVariantFig.test(id)) (hits[m[1]] ||= []).push(id);
+  for (const v1 of V1_IDS) {
+    for (const id of guardFigIds(elementById(body, v1))) if (guardVariantFig.test(id)) (hits[v1] ||= []).push(id);
   }
   assert.ok(hits.s05 && hits.s07, 'figures present in s05 and s07');
   for (const sec of Object.keys(hits)) assert.ok(['s05', 's07', 's15'].includes(sec), `${hits[sec][0]} appears in ${sec}`);
