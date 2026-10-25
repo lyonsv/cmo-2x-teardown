@@ -10,7 +10,7 @@
 
 ### Structure and guards (STRUCT)
 
-- [ ] **STRUCT-01**: The page is reordered around the executive questions (opportunity, why autonomy, what needs to be built, first workflow, economics, outcomes, expansion, roadmap, risks, appendices), with a TOC that matches.
+- [x] **STRUCT-01**: The page is reordered around the executive questions (opportunity, why autonomy, what needs to be built, first workflow, economics, outcomes, expansion, roadmap, risks, appendices), with a TOC that matches.
 - [x] **STRUCT-02**: Sections use semantic ids; every v1 anchor (`#s01`–`#s15`, figure and table ids) still resolves to the matching content.
 - [x] **STRUCT-03**: v1 calculator share links (`#s11?…`, including `scenario=redeploy|hold|reduce`) still restore a scenario, proven by a recorded-URL fixture test.
 - [x] **STRUCT-04**: A test fails if any v1 `data-fig` id or `<figure>` disappears without being listed as deliberately retired.
@@ -133,7 +133,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STRUCT-01 | Phase 5 | Pending |
+| STRUCT-01 | Phase 5 | Complete |
 | STRUCT-02 | Phase 5 | Complete |
 | STRUCT-03 | Phase 5 | Complete |
 | STRUCT-04 | Phase 5 | Complete |
