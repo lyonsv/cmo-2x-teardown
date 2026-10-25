@@ -32,11 +32,11 @@
 - [x] **ECON-04**: Each hour has one price; labour is counted once (cash view: payroll by FTE, external spend by line); savings cannot exceed their source line (tests enforce INV-1–INV-11).
 - [x] **ECON-05**: Master-concept cost is split into internal hours and agency fee, and the agency line is modelled explicitly.
 - [x] **ECON-06**: Cost and speed changes are decomposed into scale effects (doubling volume without the programme) and programme effects.
-- [ ] **ECON-07**: Scenarios A (same team, more output), B (same output, lower cost) and C (growing demand, limited hiring; default) are computed as distinct outputs.
+- [x] **ECON-07**: Scenarios A (same team, more output), B (same output, lower cost) and C (growing demand, limited hiring; default) are computed as distinct outputs.
 - [x] **ECON-08**: The engine computes the primary metric (useful work per marketing FTE-equivalent, agency FTE-equivalents in the denominator, frozen baseline standard hours) organisation-wide and for the delegated portfolio.
 - [x] **ECON-09**: The engine computes required investment (build, run including platform team, inference, review overhead of autonomy, escape cost) and annual net effect per scenario.
 - [x] **ECON-10**: The engine computes sensitivity of results to adoption, error/escape rate, inference cost and review overhead.
-- [ ] **ECON-11**: The engine reports the maximum sustainable multiplier per constrained role, so 2x is tested, not assumed.
+- [x] **ECON-11**: The engine reports the maximum sustainable multiplier per constrained role, so 2x is tested, not assumed.
 - [x] **ECON-12**: All page figures from the model are generated from `data.js`/`calc.js` (no hand-typed model numbers), and the `rework_rate` read path cannot return NaN.
 
 ### Thesis and 2x definition (THESIS)
@@ -148,11 +148,11 @@
 | ECON-04 | Phase 6 | Complete |
 | ECON-05 | Phase 6 | Complete |
 | ECON-06 | Phase 6 | Complete |
-| ECON-07 | Phase 6 | Pending |
+| ECON-07 | Phase 6 | Complete |
 | ECON-08 | Phase 6 | Complete |
 | ECON-09 | Phase 6 | Complete |
 | ECON-10 | Phase 6 | Complete |
-| ECON-11 | Phase 6 | Pending |
+| ECON-11 | Phase 6 | Complete |
 | ECON-12 | Phase 6 | Complete |
 | THESIS-01 | Phase 7 | Pending |
 | THESIS-02 | Phase 7 | Pending |

@@ -25,7 +25,7 @@
 **Order:** guards before edits; engine before prose about numbers; thesis and architecture text alongside the engine; presentation last. Every phase ends with `node --test`, crosscheck, smoke, a11y and print gates green (QA-05 is owned by Phase 7 after the 2026-10-25 merge of former Phases 7–10).
 
 - [x] **Phase 5: Restructure Scaffold, Evidence Schema & Guards** - Executive-question section order with semantic ids and legacy anchors, evidence classes on every figure, and tests that stop links, figures and depth being lost (completed 2026-10-25)
-- [ ] **Phase 6: Economics Engine** - `calc.js` models W1–W10, the capacity bridge, scenarios A/B/C, investment and sensitivity, with no double counting enforced by invariant tests
+- [x] **Phase 6: Economics Engine** - `calc.js` models W1–W10, the capacity bridge, scenarios A/B/C, investment and sensitivity, with no double counting enforced by invariant tests (completed 2026-10-25)
 - [ ] **Phase 7: Content, Presentation & Publish** - All new reader-facing sections (thesis, Intercom, build, supply chain + diagram, economics/outcomes/calculator, expansion, roadmap, risks, comparison), then validate and publish (merged from former 7–10)
 
 ## Phase Details
@@ -65,7 +65,7 @@ Plans:
 - [x] 06-02-PLAN.md — Portfolio engine workflows.js: W1-W10 states, pools and bridge, scenarios A/B/C, ledger and invariants, investment, primary metric, sensitivity, max multipliers
 - [x] 06-03-PLAN.md — Atomic v1 figure migration: cash-view legacy scenarios, 35.2 h concept split, one price per hour, computed derived claims, page figures and prose
 - [x] 06-04-PLAN.md — Engine inputs in data.js (kind 'engine'), engineContext(), new sources, generated register rows, per-side evidence
-- [ ] 06-05-PLAN.md — Generated econ-* claims, engine evidence trace, no-hand-typed guards, phase-end gates
+- [x] 06-05-PLAN.md — Generated econ-* claims, engine evidence trace, no-hand-typed guards, phase-end gates
 
 ### Phase 7: Content, Presentation & Publish
 **Goal**: Write every new reader-facing section in one push — opening thesis and 2x definition, Intercom evidence, "What needs to be built", the content supply chain with its diagram and worked example, economics and outcomes presentation (calculator on A/B/C), expansion, roadmap, risks and the comparison update — then validate and publish. Merged from former Phases 7–10 on 2026-10-25 at the author's request to cut elapsed time (lean workflow: one plan set, one consolidated code review, one gate run, no per-phase verification).
@@ -93,5 +93,5 @@ Plans:
 | 3.1 Headline Metric Reframe | v1.0 | 7/7 | Complete | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
 | 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete    | 2026-10-25 |
-| 6. Economics Engine | v2.0 | 4/5 | In Progress|  |
+| 6. Economics Engine | v2.0 | 5/5 | Complete   | 2026-10-25 |
 | 7. Content, Presentation & Publish | v2.0 | 0/TBD | Not started | - |
