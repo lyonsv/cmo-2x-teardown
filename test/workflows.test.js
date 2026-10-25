@@ -399,6 +399,23 @@ test('WR-03: the counterfactual funded share applies to avoided agency growth as
   near(half.agency.avoided_funded, 7200000 / 2, 1e-6);
 });
 
+test('WR-05: released hours agree between the pools and the workflow states (an independent path)', () => {
+  for (const [ec, levers] of [[makeEc()], [(() => { const e = makeEc(); e.engine.adoption = 0.5; return e; })()], [makeEc(), { review_overhead: 2 }]]) {
+    const c = run(ec, levers).checks;
+    assert.ok(c.released_hours_pools > 0);
+    near(c.released_hours_gap, 0, 1e-6);
+  }
+});
+
+test('WR-05: a source line saved in two scenarios is rejected', () => {
+  const row = (id, scenario) => ({ id, scenario, line: 'agency:W1', counted_in: 'agency', scope: 'portfolio', kind: 'saving', amount: 10, source_line: 'agency:W1', source_amount: 1000 });
+  assert.equal(checkLedger([row('a', 'B')]).ok, true);
+  const r = checkLedger([row('a', 'B'), row('b', 'funding')]);
+  assert.equal(r.ok, false);
+  assert.match(r.errors[0].message, /more than one scenario/);
+  assert.equal(checkLedger(run().ledger).ok, true);
+});
+
 test('INV-1: slack0 + E = redeployed + removed + unused_remaining, scenarios A and B, every pool', () => {
   const r = run();
   for (const key of ['A', 'B']) {

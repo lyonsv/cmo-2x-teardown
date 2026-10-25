@@ -450,6 +450,18 @@ export function checkLedger(rows) {
   for (const [key, e] of bySource) {
     if (e.sum > e.source + 1e-6) errors.push({ field: key, message: `savings on one source line sum to ${e.sum}, above the line ${e.source} (INV-6)` });
   }
+  // Code review WR-05: a source line may be saved in one scenario only, so the same
+  // dollars cannot reappear as another scenario's (or the funding check's) saving.
+  const savedIn = new Map();
+  for (const row of rows) {
+    if (!row || row.kind !== 'saving' || typeof row.source_line !== 'string') continue;
+    const set = savedIn.get(row.source_line) || new Set();
+    set.add(row.scenario || '');
+    savedIn.set(row.source_line, set);
+  }
+  for (const [line, set] of savedIn) {
+    if (set.size > 1) errors.push({ field: line, message: `source line ${line} is saved in more than one scenario (${[...set].join(', ')})` });
+  }
   return { ok: errors.length === 0, errors };
 }
 
@@ -766,6 +778,17 @@ function buildReconciliation(scenarios) {
   return out;
 }
 
+// Code review WR-05: the reconciliation identity is zero by construction, so it cannot
+// catch an error. This cross-check compares two independent code paths: the hours the
+// pools release (buildPools) against the fall in total human hours between today's and
+// the agent-enabled state of every workflow (buildWorkflows, with W5 from compute()).
+function crossCheck(out) {
+  const pools = out.pool_totals.total_released_hours;
+  let states = 0;
+  for (const w of Object.values(out.workflows)) states += w.current.total_hours - w.agent.total_hours;
+  return { released_hours_pools: pools, released_hours_states: states, released_hours_gap: pools - states };
+}
+
 // ---------------------------------------------------------------- entry point
 
 export function economics(ec, levers) {
@@ -792,6 +815,7 @@ export function economics(ec, levers) {
     if (!check.ok) return { ok: false, errors: check.errors };
     out.scenarios = scenarios;
     out.reconciliation = buildReconciliation(scenarios);
+    out.checks = crossCheck(out);
     out.default_scenario = 'C';
     out.investment = {
       one_off: { build: x.engine.build_one_off, change: scenarios.B.one_off.change, severance_B: scenarios.B.one_off.severance },
