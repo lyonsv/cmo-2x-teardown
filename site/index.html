@@ -1948,6 +1948,51 @@
     </section>
     <section id="risks" aria-labelledby="risks-h">
       <div class="sec-head"><span class="sec-num">09</span><h2 id="risks-h">Risks and assumptions</h2></div>
+      <p class="chain-pos"><b>Software built</b> → <b>Autonomy enabled</b> → <b>Human work reduced</b> → <b>Marketing capacity increased</b> → <b>Business outcomes improved</b></p>
+      <p>Every link in the chain can fail, and agents that act add risks that a content tool does not have. This section first sets out the risks that come with agents, each with a mitigation or a test, and then keeps the first edition's account of what goes wrong with AI-made marketing content.</p>
+      <h3 id="agent-risks">Risks that come with agents</h3>
+      <p>These are design risks, not incidents. Each names the way the programme could mislead its owners or harm the brand, and what would catch it.</p>
+      <div class="risk">
+        <h4 id="risk-irreversible">Irreversible publication</h4>
+        <p>An agent that can publish can publish a mistake. A page that went live, an email that was sent or a budget that was spent cannot be called back by a rerun.</p>
+        <p class="mitigation"><b>Mitigation:</b> Stage, verify, then publish. Agents prepare and a deterministic check verifies before anything goes live, publishing and spend are capped per action, and a kill switch stops every agent at once. Permission rises only for action classes with audit evidence.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-ground-truth">Contested ground truth</h4>
+        <p>Brand, legal and regulatory judgement is not always settled. If reviewers disagree, the set the agents are tested against is itself uncertain, and a high score proves little.</p>
+        <p class="mitigation"><b>Mitigation:</b> Give every rule an identifier and an owner, record disagreements instead of averaging them away, and make legal the owner of any new claim. A rule with no agreed answer stays with a person.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-compounding">Compounding multi-step error</h4>
+        <p>A run that must get every one of many steps right succeeds far less often than any single step does. Small per-step error rates multiply across a long workflow, so a chain that looks reliable step by step can fail often end to end.</p>
+        <p class="mitigation"><b>Test:</b> Measure per-step success and end-to-end success separately in the pilot, and price escalation to a person from the measured per-step figures, not from an assumed one. A step whose success cannot be measured is not automated.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-judge-drift">Judge drift</h4>
+        <p>A review agent that scores other agents' work can drift as its model, its prompts or the work itself change. A newer model is not always a better judge: in <a href="#src-intercom-2x-teardown">the one public reference</a>, a newer model tested worse than its predecessor.</p>
+        <p class="mitigation"><b>Test:</b> Track the agreement between the review agent and a human-curated set for each tier and each rule, and rerun it before any change. Recalibration is a recurring human cost, and it belongs in the platform team's budget.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-inference">Inference and token spend</h4>
+        <p>Agents that loop, retry and call other agents can spend without limit. At current prices the model shows inference at <span data-fig="econ-inv-inference">$9,609</span> <a class="chip c-m" href="#asm-token-price-frontier">Modelled</a> a year, which is small. That can change with price, with longer chains or with a fault.</p>
+        <p class="mitigation"><b>Mitigation:</b> Cap spend per run and per day, monitor it against the run record, and review it with the platform team each quarter. Treat a sudden rise as an incident.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-goodhart-autonomy">Goodhart on the autonomy percentage</h4>
+        <p>The share of work completed autonomously is easy to raise by narrowing what counts as eligible or by loosening review. When it becomes a target, it stops measuring autonomy.</p>
+        <p class="mitigation"><b>Mitigation:</b> Never report it alone. Pair it with the escape rate, first-pass acceptance and the share of actions that achieved their verified objective, and freeze the eligibility definition before the pilot starts.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-labour">Labour relations</h4>
+        <p>Role change handled badly costs trust, and the capacity the programme depends on is the people who must use it. Removing capacity is a separate decision from releasing it, and it carries its own cost: severance in scenario B is priced at <span data-fig="econ-inv-severance_B">$2,926,347</span> <a class="chip c-s" href="#asm-severance-months">Speculative</a>.</p>
+        <p class="mitigation"><b>Mitigation:</b> Consult employee representatives and works councils early, let any removal follow measured adoption, show released hours as redeployed before anything is called a saving, and keep severance on its own line.</p>
+      </div>
+      <div class="risk">
+        <h4 id="risk-regressions">Model regressions</h4>
+        <p>A model update can change behaviour without notice, and an agent that passed its tests last month may not pass them this month.</p>
+        <p class="mitigation"><b>Mitigation:</b> Pin model versions, rerun the evaluation sets before every upgrade, and keep the ability to roll back. Autonomy that was earned on one model version is re-earned on the next.</p>
+      </div>
+      <p>The first edition's account follows: public incidents of AI-made marketing and agent liability, the risks they show, and the register.</p>
     <div id="s14" class="subsection">
       <h3 id="s14-h">What goes wrong</h3>
       <p>Most failures here are governance failures, and several have already happened to someone.</p>
@@ -2021,10 +2066,19 @@
             <tr><th scope="row">IP and copyrightability</th><td>Medium</td><td>Retrieve or license where rights matter; record human selection and edits.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
             <tr><th scope="row">Regulation</th><td>High</td><td>Disclose as the policy source says, and re-check dates with counsel.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
             <tr><th scope="row">Agent liability</th><td>Medium</td><td>Human sign-off on customer-facing agent statements; keep a log of what agents said.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Irreversible publication</th><td>Medium</td><td>Stage, verify, then publish; caps and a kill switch.</td><td>Marketing operations</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Contested ground truth</th><td>Medium</td><td>Rule identifiers, recorded disagreement and legal ownership of new claims.</td><td>Legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Compounding multi-step error</th><td>High</td><td>Measure per-step and end-to-end success; price escalation from the measured figures.</td><td>Marketing operations</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Judge drift</th><td>Medium</td><td>Agreement with a human-curated set for each tier; rerun before any change.</td><td>Evaluation function</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Inference and token spend</th><td>Low</td><td>Caps per run and per day, monitored against the run record.</td><td>Platform team</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Goodhart on the autonomy percentage</th><td>High</td><td>Pair it with escape rate, first-pass acceptance and verified-objective rate; freeze eligibility.</td><td>Analytics</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Labour relations</th><td>Medium</td><td>Early consultation; removal follows measured adoption; severance on its own line.</td><td>People and legal</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
+            <tr><th scope="row">Model regressions</th><td>Medium</td><td>Pin versions; rerun evaluations before upgrades; keep rollback.</td><td>Platform team</td><td><a class="chip c-s" href="#asm-risk-likelihood">Speculative</a></td></tr>
           </tbody>
         </table>
       </div>
     </div>
+      <p class="evidence-stop"><b>Where the evidence stops.</b> The agent-specific risks are design reasoning, not measured incident rates, and the likelihood words are the author's judgement. The mitigations are untested here, and several are tests the pilot would have to run before anyone relied on them.</p>
     </section>
     <div class="appendix-divider"><p class="kicker">Appendices</p><p>Supporting depth for the sections above: the 10,000-asset campaign, the review model, the gate, the evaluation harness, the vendor comparison and the source register.</p></div>
     <section id="appendix-campaign" aria-labelledby="appendix-campaign-h">

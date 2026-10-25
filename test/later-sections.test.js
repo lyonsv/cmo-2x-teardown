@@ -163,3 +163,30 @@ test('roadmap: enablement names the redesigned roles and the platform team; v1 s
   assert.ok(roadmap.includes('<div id="s13" class="subsection">'));
   assert.ok(roadmap.includes('<h4>Backlog 0, defined</h4>'));
 });
+
+// ---- #risks ----
+const risks = elementById(html, 'risks');
+const RISK_IDS = ['risk-irreversible', 'risk-ground-truth', 'risk-compounding', 'risk-judge-drift', 'risk-inference', 'risk-goodhart-autonomy', 'risk-labour', 'risk-regressions'];
+
+test('risks: eight agent risks, each with a mitigation or a test', () => {
+  assert.ok(risks.includes('<h3 id="agent-risks">'));
+  for (const id of RISK_IDS) {
+    const start = risks.indexOf(`<h4 id="${id}">`);
+    assert.ok(start >= 0, id);
+    const block = risks.slice(start, risks.indexOf('</div>', start));
+    assert.ok(/<p class="mitigation"><b>(Mitigation|Test):<\/b>/.test(block), `${id} has a mitigation or test`);
+    assert.ok(start < risks.indexOf('<div id="s14" class="subsection">'), `${id} sits in the lead block`);
+  }
+  assert.deepEqual(figsOf(risks.slice(risks.indexOf('<h3 id="agent-risks">'), risks.indexOf('<div id="s14"'))), ['econ-inv-inference', 'econ-inv-severance_B']);
+  const text = strip(risks.slice(risks.indexOf('<h3 id="agent-risks">'), risks.indexOf('<div id="s14"')));
+  for (const w of ['Stage, verify, then publish', 'kill switch', 'Pin model versions', 'works councils']) assert.ok(text.includes(w), w);
+});
+
+test('risks: the register keeps the v1 rows and adds eight', () => {
+  const t = tableByCaption(risks, 'Risk register: likelihood grade, mitigation and owner');
+  const names = bodyRows(t).map(rowName);
+  assert.equal(names.length, 14);
+  assert.deepEqual(names.slice(0, 6), ['Slop and sameness', 'Reviewer fatigue', 'Goodhart on counts and spend', 'IP and copyrightability', 'Regulation', 'Agent liability']);
+  for (const n of ['Irreversible publication', 'Contested ground truth', 'Compounding multi-step error', 'Judge drift', 'Inference and token spend', 'Goodhart on the autonomy percentage', 'Labour relations', 'Model regressions']) assert.ok(names.includes(n), n);
+  assert.ok(risks.includes('<div id="s14" class="subsection">') && risks.includes('<h4 id="s14-slop">'));
+});

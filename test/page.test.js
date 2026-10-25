@@ -332,10 +332,12 @@ const P7_H3_ECON = 7; // plan 07-06: honest-2x, workflow-inventory, per-workflow
 const P7_H3_OUTCOMES = 3; // plan 07-08: causal-chain, scorecard, diminishing-returns
 const P7_H3_EXPANSION = 2; // plan 07-08: adjacent, reusable
 const P7_H3_ROADMAP = 4; // plan 07-08: pilot, next-two-quarters, portfolio, enablement
+const P7_H3_RISKS = 1; // plan 07-08: agent-risks
+const P7_H4_RISKS = 8; // plan 07-08: eight agent risks
 const P7_H4_ECON = 4; // plan 07-06: where to start, the other workflows, what the programme costs, reviewer capacity
 const P7_H4_SUPPLY = 2; // plan 07-04: autonomous and not-autonomous lists
-const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON + P7_H3_OUTCOMES + P7_H3_EXPANSION + P7_H3_ROADMAP; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
-const MEASURED_H4 = 24 + P7_H4_SUPPLY + P7_H4_ECON - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
+const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON + P7_H3_OUTCOMES + P7_H3_EXPANSION + P7_H3_ROADMAP + P7_H3_RISKS; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const MEASURED_H4 = 24 + P7_H4_SUPPLY + P7_H4_ECON + P7_H4_RISKS - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
 const ALLOWED_NUMERIC_TOKENS = [
@@ -1661,13 +1663,13 @@ test('s14 risk register table', () => {
   const head = [...t[0].match(/<thead>[\s\S]*?<\/thead>/)[0].matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
   assert.deepEqual(head, ['Risk', 'Likelihood', 'Mitigation', 'Owner', 'Grade']);
   const rows = t[0].match(/<tbody>[\s\S]*?<\/tbody>/)[0].match(/<tr>[\s\S]*?<\/tr>/g);
-  assert.equal(rows.length, 6);
+  assert.equal(rows.length, 6 + 8); // the six first-edition rows, then the eight agent risks (plan 07-08)
   assert.match(strip(rows[5]), /^Agent liability/);
   for (const r of rows) {
     const tds = [...r.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
     assert.equal(tds.length, 4);
     assert.ok(['Low', 'Medium', 'High'].includes(strip(tds[0])), strip(tds[0]));
-    assert.ok(['Brand governance', 'Legal', 'Marketing operations', 'Analytics'].includes(strip(tds[2])), strip(tds[2]));
+    assert.ok(['Brand governance', 'Legal', 'Marketing operations', 'Analytics', 'Evaluation function', 'Platform team', 'People and legal'].includes(strip(tds[2])), strip(tds[2]));
     assert.match(tds[3], /^<a class="chip c-s" href="#asm-risk-likelihood">Speculative<\/a>$/);
     for (const c of r.match(/<t[dh]\b[^>]*>[\s\S]*?<\/t[dh]>/g)) assert.ok(strip(c).split(' ').length <= 20, strip(c));
   }
