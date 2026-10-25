@@ -487,9 +487,12 @@ test('cross-reference labels match the new section numbering', () => {
   assert.deepEqual(loose, [], 'section labels use two digits');
 });
 
-test('framing stubs carry the to-follow marker only in the four stub sections', () => {
-  assert.equal((html.match(/class="to-follow"/g) || []).length, 4);
-  for (const id of ['autonomy', 'build', 'supply-chain', 'economics']) {
+// Deliberate change (07-CONTEXT, plan 07-02): #autonomy is now filled, so it leaves the stub set.
+// Later content plans remove their section from this list as they fill it.
+const STUBS = ['build', 'supply-chain', 'economics'];
+test('framing stubs carry the to-follow marker only in the stub sections', () => {
+  assert.equal((html.match(/class="to-follow"/g) || []).length, STUBS.length);
+  for (const id of STUBS) {
     const el = elementById(html, id);
     assert.equal((el.match(/class="to-follow"/g) || []).length, 1, id);
     const firstSub = el.indexOf('class="subsection"');
@@ -574,9 +577,11 @@ test('no vendor names outside s12 and s15 (IN-04)', () => {
   assert.ok(!m, `page names a vendor outside s12/s15: ${m && m[0]}`);
 });
 
-test('Intercom exactly once outside s12 and s15, in s06', () => {
+// Deliberate change (07-CONTEXT, plan 07-02): Intercom is the subject of #autonomy and may
+// be named there; outside #autonomy, s12 and s15 it still appears exactly once, in s06.
+test('Intercom exactly once outside autonomy, s12 and s15, in s06', () => {
   let rest = html;
-  for (const id of ['s12', 's15']) rest = rest.replace(elementById(html, id), '');
+  for (const id of ['autonomy', 's12', 's15']) rest = rest.replace(elementById(html, id), '');
   assert.equal((strip(rest).match(/\bintercom\b/gi) || []).length, 1);
   const s6 = sectionHtml('s06');
   assert.ok(strip(s6).replace(/\s+([.,;])/g, '$1').includes("This is the equivalent of Intercom's review agent, which inspired the design described here."));

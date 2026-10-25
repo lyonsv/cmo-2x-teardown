@@ -62,10 +62,10 @@ test('no assumption is observed (nothing is observed for the subject organisatio
 
 test('source counts', () => {
   const rows = Object.values(sources);
-  assert.equal(rows.length, 45);
+  assert.equal(rows.length, 45 + 5); // plus five Intercom primary posts (Phase 7, plan 07-02)
   assert.equal(count(rows, 'benchmark', 'Benchmark'), 12);
   assert.equal(count(rows, 'benchmark', 'Modelled'), 4);
-  assert.equal(count(rows, 'observed', 'Modelled'), 29);
+  assert.equal(count(rows, 'observed', 'Modelled'), 29 + 5);
 });
 
 test('assumption counts and the hypothesis list', () => {

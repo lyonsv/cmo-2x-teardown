@@ -254,7 +254,69 @@
     <section id="autonomy" aria-labelledby="autonomy-h">
       <div class="sec-head"><span class="sec-num">02</span><h2 id="autonomy-h">Why autonomy is the lever</h2></div>
       <p>Would giving agents responsibility for whole workflows, rather than asking them for more content, raise what a marketing team can complete? This section will set out the evidence from a published engineering programme that did this, what it measured, and where that evidence stops.</p>
-      <p class="to-follow">Detail to follow</p>
+      <div class="table-scroll" role="region" aria-label="Intercom results table" tabindex="0">
+        <table>
+          <caption>Intercom's company-reported results</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Result</th><th scope="col">Source and date</th><th scope="col">Caveat</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">Merged pull requests per person in R&amp;D</th>
+              <td><span data-fig="ic-prs-per-head-multiple">2x</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Against a goal set for one year. No absolute counts or baseline month are published, and the denominator changed from engineers to everyone in R&amp;D. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Core product defect backlog</th>
+              <td><span data-fig="ic-defect-backlog-fall">−54%</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Since the start of that year. One quality signal, not proof of overall quality. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Downtime from breaking code changes</th>
+              <td><span data-fig="ic-downtime-fall">−35%</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Over eleven months while deployments doubled. Covers downtime the company attributes to code changes only. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Pull requests driven by a coding agent</th>
+              <td><span data-fig="ic-agent-driven-pr-share">93.6%</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>A behaviour-change measure, not an output measure. The post does not define &quot;driven&quot;. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Merged pull requests approved by an AI reviewer, with no human reviewer</th>
+              <td><span data-fig="ic-ai-approved-share">19.2%</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>A few weeks after launch and limited to low-risk changes. A later post says about half, in one sentence with no definition. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Median time to merge, auto-approved changes against the whole organisation</th>
+              <td><span data-fig="ic-auto-approved-median-merge-min">14.6 minutes</span> <span class="flag">company-reported</span> against <span data-fig="ic-org-median-merge-min">75.8 minutes</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Auto-approved changes are small and low risk, so the two medians are not like for like. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Auto-approved pull requests that change twenty lines or fewer</th>
+              <td><span data-fig="ic-auto-approved-small-share">86%</span> <span class="flag">company-reported</span></td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Shows the gate works on a narrow class of work. It also rewards small changes, which raises a pull-request count. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Shared skills repository: skills and contributors</th>
+              <td><span data-fig="ic-plugin-skills">267</span> <span class="flag">company-reported</span> skills from <span data-fig="ic-plugin-contributors">153</span> <span class="flag">company-reported</span> contributors</td>
+              <td><a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a> <time datetime="2026-04-16">16 April 2026</time></td>
+              <td>Counts activity, not the quality or use of the skills. <a class="chip c-m" href="#src-fin-2x-nine-months">Modelled</a></td>
+            </tr>
+            <tr>
+              <th scope="row">One frontend infrastructure team and the engineers it supports</th>
+              <td><span data-fig="ic-infra-team-size">8</span> <span class="flag">company-reported</span> people maintain it for <span data-fig="ic-infra-builders">about 450</span> <span class="flag">company-reported</span> engineers who have shipped frontend code</td>
+              <td><a class="cite" href="#src-fin-eight-people">src-fin-eight-people</a> <time datetime="2026-07-09">9 July 2026</time></td>
+              <td>One team's own account of encoded judgment at work, not a whole-organisation headcount effect. <a class="chip c-m" href="#src-fin-eight-people">Modelled</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Also read for this section: <a class="cite" href="#src-fin-2x-2025">src-fin-2x-2025</a> <a class="cite" href="#src-intercom-ai-approving-prs">src-intercom-ai-approving-prs</a> <a class="cite" href="#src-fin-webinar-qa">src-fin-webinar-qa</a></p>
     </section>
     <section id="build" aria-labelledby="build-h">
       <div class="sec-head"><span class="sec-num">03</span><h2 id="build-h">What needs to be built</h2></div>
@@ -1668,6 +1730,61 @@
               <td><span class="ev">observed</span></td>
               <td>company-reported</td>
               <td><a href="https://lyonsv.github.io/intercom-2x-teardown/">https://lyonsv.github.io/intercom-2x-teardown/</a></td>
+            </tr>
+            <tr id="src-fin-2x-2025">
+              <th scope="row" class="id">src-fin-2x-2025</th>
+              <td>2×<br>Published 2025-06-13. Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme; this post states the goal and the metric, not results. Read via: Primary page fetched in full 2026-10-25 (HTTP 200).</td>
+              <td>Darragh Curran, Fin Ideas (Intercom company blog)</td>
+              <td>company</td>
+              <td><time datetime="2026-10-25">2026-10-25</time></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td><span class="ev">observed</span></td>
+              <td>company-reported</td>
+              <td><a href="https://ideas.fin.ai/p/2">https://ideas.fin.ai/p/2</a></td>
+            </tr>
+            <tr id="src-fin-2x-nine-months">
+              <th scope="row" class="id">src-fin-2x-nine-months</th>
+              <td>2× – nine months later: We did it<br>Published 2026-04-16. Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme; absolute pull-request counts, the baseline month and cost values are not published, and the metric definition changed from per engineer to per person in R&amp;D between the 2025 and 2026 posts. Read via: Primary page fetched in full 2026-10-25 (HTTP 200); every figure used here found in the page text (chart images not read).</td>
+              <td>Darragh Curran, Fin Ideas (Intercom company blog)</td>
+              <td>company</td>
+              <td><time datetime="2026-10-25">2026-10-25</time></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td><span class="ev">observed</span></td>
+              <td>company-reported</td>
+              <td><a href="https://ideas.fin.ai/p/2x-nine-months-later">https://ideas.fin.ai/p/2x-nine-months-later</a></td>
+            </tr>
+            <tr id="src-intercom-ai-approving-prs">
+              <th scope="row" class="id">src-intercom-ai-approving-prs</th>
+              <td>AI is approving our pull requests: Here's how we made it safe<br>Published 2026-04-21. Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme; the hundred-change pilot is too small to show parity with human review. Read via: Primary page fetched in full 2026-10-25 (the trailing-slash URL redirects with HTTP 308 to this one, then HTTP 200).</td>
+              <td>Intercom engineering blog</td>
+              <td>company</td>
+              <td><time datetime="2026-10-25">2026-10-25</time></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td><span class="ev">observed</span></td>
+              <td>company-reported</td>
+              <td><a href="https://www.intercom.com/blog/ai-is-approving-our-pull-requests-heres-how-we-made-it-safe">https://www.intercom.com/blog/ai-is-approving-our-pull-requests-heres-how-we-made-it-safe</a></td>
+            </tr>
+            <tr id="src-fin-webinar-qa">
+              <th scope="row" class="id">src-fin-webinar-qa</th>
+              <td>Webinar Q&amp;A: How Fin 3x'd R&amp;D output in 16 months<br>Published 2026-05-22. Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme; answers to audience questions, the richest primary account of mechanisms and caveats. Read via: Primary page fetched in full 2026-10-25 (HTTP 200); the webinar recording itself was not viewed.</td>
+              <td>Darragh Curran, Fin Ideas (Intercom company blog)</td>
+              <td>company</td>
+              <td><time datetime="2026-10-25">2026-10-25</time></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td><span class="ev">observed</span></td>
+              <td>company-reported</td>
+              <td><a href="https://ideas.fin.ai/p/webinar-q-and-a-how-fin-3xd-r-and">https://ideas.fin.ai/p/webinar-q-and-a-how-fin-3xd-r-and</a></td>
+            </tr>
+            <tr id="src-fin-eight-people">
+              <th scope="row" class="id">src-fin-eight-people</th>
+              <td>How eight people hold the bar for 200+ builders<br>Published 2026-07-09. Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme; describes one frontend infrastructure team, not the whole organisation. Read via: Primary page fetched in full 2026-10-25 (HTTP 200).</td>
+              <td>Clíona de Róiste, Fin Ideas (Intercom company blog)</td>
+              <td>company</td>
+              <td><time datetime="2026-10-25">2026-10-25</time></td>
+              <td><span class="chip c-m">Modelled</span></td>
+              <td><span class="ev">observed</span></td>
+              <td>company-reported</td>
+              <td><a href="https://ideas.fin.ai/p/how-eight-people-hold-the-bar-for">https://ideas.fin.ai/p/how-eight-people-hold-the-bar-for</a></td>
             </tr>
             <tr id="src-gradial-integrations">
               <th scope="row" class="id">src-gradial-integrations</th>

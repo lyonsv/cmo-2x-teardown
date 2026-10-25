@@ -575,6 +575,75 @@ export const sources = {
   },
 };
 
+// ---- Phase 7: Intercom sources and claims (sources) ----
+// Primary company posts about its own engineering 2x programme. Every one is a
+// self-report with no counterfactual and no audit (research INTERCOM s2.3 and s6).
+// All five were fetched in full on 2026-10-25 and the quoted figures found in the text.
+const INTERCOM_BIAS = 'Company blog post about its own engineering organisation: self-reported, no control group or counterfactual, no external audit, and model upgrades during the window are confounded with the programme';
+Object.assign(sources, {
+  'fin-2x-2025': {
+    title: '2×',
+    publisher: 'Darragh Curran, Fin Ideas (Intercom company blog)',
+    publisherType: 'company',
+    published: '2025-06-13',
+    accessed: '2026-10-25',
+    url: 'https://ideas.fin.ai/p/2',
+    bias: `${INTERCOM_BIAS}; this post states the goal and the metric, not results`,
+    read_via: 'Primary page fetched in full 2026-10-25 (HTTP 200)',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
+  'fin-2x-nine-months': {
+    title: '2× – nine months later: We did it',
+    publisher: 'Darragh Curran, Fin Ideas (Intercom company blog)',
+    publisherType: 'company',
+    published: '2026-04-16',
+    accessed: '2026-10-25',
+    url: 'https://ideas.fin.ai/p/2x-nine-months-later',
+    bias: `${INTERCOM_BIAS}; absolute pull-request counts, the baseline month and cost values are not published, and the metric definition changed from per engineer to per person in R&D between the 2025 and 2026 posts`,
+    read_via: 'Primary page fetched in full 2026-10-25 (HTTP 200); every figure used here found in the page text (chart images not read)',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
+  'intercom-ai-approving-prs': {
+    title: 'AI is approving our pull requests: Here\'s how we made it safe',
+    publisher: 'Intercom engineering blog',
+    publisherType: 'company',
+    published: '2026-04-21',
+    accessed: '2026-10-25',
+    url: 'https://www.intercom.com/blog/ai-is-approving-our-pull-requests-heres-how-we-made-it-safe',
+    bias: `${INTERCOM_BIAS}; the hundred-change pilot is too small to show parity with human review`,
+    read_via: 'Primary page fetched in full 2026-10-25 (the trailing-slash URL redirects with HTTP 308 to this one, then HTTP 200)',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
+  'fin-webinar-qa': {
+    title: 'Webinar Q&A: How Fin 3x\'d R&D output in 16 months',
+    publisher: 'Darragh Curran, Fin Ideas (Intercom company blog)',
+    publisherType: 'company',
+    published: '2026-05-22',
+    accessed: '2026-10-25',
+    url: 'https://ideas.fin.ai/p/webinar-q-and-a-how-fin-3xd-r-and',
+    bias: `${INTERCOM_BIAS}; answers to audience questions, the richest primary account of mechanisms and caveats`,
+    read_via: 'Primary page fetched in full 2026-10-25 (HTTP 200); the webinar recording itself was not viewed',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
+  'fin-eight-people': {
+    title: 'How eight people hold the bar for 200+ builders',
+    publisher: 'Clíona de Róiste, Fin Ideas (Intercom company blog)',
+    publisherType: 'company',
+    published: '2026-07-09',
+    accessed: '2026-10-25',
+    url: 'https://ideas.fin.ai/p/how-eight-people-hold-the-bar-for',
+    bias: `${INTERCOM_BIAS}; describes one frontend infrastructure team, not the whole organisation`,
+    read_via: 'Primary page fetched in full 2026-10-25 (HTTP 200)',
+    grade: 'Modelled',
+    flag: 'company-reported',
+  },
+});
+// ---- end Phase 7: Intercom sources ----
+
 // Source evidence: a flag means a named organisation reports its own results (observed);
 // press incident reports are observed events. A source is a benchmark only if it is
 // independent of what it describes (code review WR-02): anything a vendor publishes,
@@ -1137,6 +1206,30 @@ function presenterClaims(ctx) {
   return out;
 }
 Object.assign(claims, presenterClaims(modelContext()));
+
+// ---- Phase 7: Intercom sources and claims (claims) ----
+// Company-reported results from Intercom's own posts, shown in #autonomy. Each is
+// Modelled with the company-reported flag (legend rule), observed evidence, and refs
+// the primary post it came from. None is a marketing result.
+{
+  const ic = (id, value, display, unit, ref) => {
+    claims[id] = { id, value, unit: `${unit}, company-reported by Intercom about its engineering organisation`, display, grade: 'Modelled', flag: 'company-reported', ref };
+  };
+  const S2 = 'src-fin-2x-nine-months';
+  ic('ic-prs-per-head-multiple', 2, '2x', 'Merged pull requests per person in R&D against the 12-month goal, as reported in April 2026', S2);
+  ic('ic-defect-backlog-fall',-0.54, '−54%', 'Change in a core product defect backlog since the start of 2026', S2);
+  ic('ic-downtime-fall',-0.35, '−35%', 'Change in downtime attributed to breaking code changes over 11 months, while deployments doubled', S2);
+  ic('ic-agent-driven-pr-share', 0.936, '93.6%', 'Share of pull requests driven by a coding agent in April 2026', S2);
+  ic('ic-ai-approved-share', 0.192, '19.2%', 'Share of merged pull requests approved by an AI reviewer with no human reviewer, a few weeks after launch', S2);
+  ic('ic-auto-approved-median-merge-min', 14.6, '14.6 minutes', 'Median time to merge for auto-approved pull requests', S2);
+  ic('ic-org-median-merge-min', 75.8, '75.8 minutes', 'Median time to merge across the whole organisation', S2);
+  ic('ic-auto-approved-small-share', 0.86, '86%', 'Share of auto-approved pull requests that change 20 lines or fewer', S2);
+  ic('ic-plugin-skills', 267, '267', 'Skills in the shared plugin repository', S2);
+  ic('ic-plugin-contributors', 153, '153', 'Contributors to the shared plugin repository (31% of R&D by the same post)', S2);
+  ic('ic-infra-team-size', 8, '8', 'People maintaining the frontend AI infrastructure', 'src-fin-eight-people');
+  ic('ic-infra-builders', 450, 'about 450', 'Engineers who have shipped frontend code using that infrastructure', 'src-fin-eight-people');
+}
+// ---- end Phase 7: Intercom claims ----
 
 // ---- Evidence classes for assumptions and claims (EVID-01) ----
 // Nothing is observed for the subject organisation, so no assumption is 'observed'.
