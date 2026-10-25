@@ -235,7 +235,7 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
 test('error summary and share panel markup', () => {
   const [, errors, share] = calcLiveWrappers();
   assert.ok(errors.inner.includes('<div class="calc-errors" role="alert" tabindex="-1" hidden>'));
-  assert.ok(share.inner.includes('<h3>Share these numbers</h3>'));
+  assert.ok(share.inner.includes('<h4>Share these numbers</h4>'));
   assert.ok(share.inner.includes('<input readonly id="share-link"'));
   assert.ok(share.inner.includes('<button type="button" class="btn" id="copy-link">Copy link</button>'));
   assert.ok(share.inner.includes('<button type="button" class="btn" id="reset-calc">Reset to defaults</button>'));
@@ -462,7 +462,7 @@ test('s11 text has no "cycle time" and no per-head denominator', () => {
 });
 
 test('.believe: lead, 5-7 items with figure and chip, three carry the result', () => {
-  const m = s11.match(/<div class="believe">\s*<h3>What you must believe<\/h3>\s*<p>The result holds only if these hold\.<\/p>\s*<ul>([\s\S]*?)<\/ul>\s*<\/div>/);
+  const m = s11.match(/<div class="believe">\s*<h4>What you must believe<\/h4>\s*<p>The result holds only if these hold\.<\/p>\s*<ul>([\s\S]*?)<\/ul>\s*<\/div>/);
   assert.ok(m, '.believe');
   const lis = m[1].match(/<li>[\s\S]*?<\/li>/g);
   assert.equal(lis.length, p.believe.length);

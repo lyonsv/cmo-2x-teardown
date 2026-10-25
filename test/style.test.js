@@ -302,8 +302,8 @@ test('print block resets screen min-widths, shows status borders and avoids brea
   const print = css.match(/@media print \{[\s\S]*?\n\}\n/)[0];
   assert.match(print, /\.status \{ border-color: #000; color: #000; \}/);
   assert.match(print, /\.status-disputed \{ border-style: double; \}/);
-  assert.match(print, /\.asat, \.backlog0, \.risk h3, \.risk \.mitigation \{ break-inside: avoid; \}/);
-  assert.match(print, /\.risk h3 \{ break-after: avoid; \}/);
+  assert.match(print, /\.asat, \.backlog0, \.risk h4, \.risk \.mitigation \{ break-inside: avoid; \}/);
+  assert.match(print, /\.risk h4 \{ break-after: avoid; \}/);
   assert.match(print, /\.risk \{ break-inside: auto; \}/);
   assert.match(print, /\[aria-label="Adoption stages by team"\] table, table\.risk-register/);
   assert.match(print, /\.register \[aria-label="Source register table"\] table \{ min-width: 0; \}/);

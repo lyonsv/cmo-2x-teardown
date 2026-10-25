@@ -318,7 +318,13 @@ const HOSTED = {
 const V1_IDS = Object.keys(HOSTED).sort();
 const SECTION_IDS = SECTIONS.map((x) => x.id);
 const SECTION_RE = SECTION_IDS.join('|');
-const MEASURED_H3 = 53; // 15 hosted v1 headings plus 38 in-body h3s, measured after the move
+// Code review WR-04: where an appendix has the same title as its v1 block, the v1
+// heading id is a span inside the appendix h2 (no duplicate heading), and the block's
+// inner headings stay h3. In body sections the v1 heading is an h3 and the headings
+// inside the block are h4, so the outline nests.
+const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTED[id].host).title === HOSTED[id].title);
+const MEASURED_H3 = 23; // 9 hosted v1 headings plus 14 h3s inside appendix blocks
+const MEASURED_H4 = 24; // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
 const ALLOWED_NUMERIC_TOKENS = [
@@ -342,10 +348,14 @@ const stripStep = (h) => h
 // content tests written against the v1 section shape keep reading the same text.
 function sectionHtml(id) {
   if (!HOSTED[id]) return sectionHtmlOf(html, id);
-  return elementById(html, id).replace(
-    new RegExp(`<h3 id="${id}-h">([\\s\\S]*?)</h3>`),
-    `<div class="sec-head"><span class="sec-num">${id.slice(1)}</span><h2 id="${id}-h">$1</h2></div>`,
-  );
+  const el = elementById(html, id);
+  const head = (t) => `<div class="sec-head"><span class="sec-num">${id.slice(1)}</span><h2 id="${id}-h">${t}</h2></div>`;
+  const h3 = new RegExp(`<h3 id="${id}-h">([\\s\\S]*?)</h3>`);
+  if (h3.test(el)) return el.replace(h3, (_, t) => head(t));
+  // An appendix block's heading is the span in its host's h2 (WR-04).
+  const title = html.match(new RegExp(`<span id="${id}-h">([^<]*)</span>`))[1];
+  const open = el.match(/^<div[^>]*>/)[0];
+  return open + head(title) + el.slice(open.length);
 }
 
 function metaHtml() {
@@ -409,7 +419,9 @@ test('fifteen new top-level sections with the fixed snippet', () => {
     assert.equal((html.match(new RegExp(`<section id="${id}"`, 'g')) || []).length, 1, id);
     const s = elementById(html, id);
     assert.ok(s.startsWith(`<section id="${id}" aria-labelledby="${id}-h">`), id);
-    assert.ok(s.includes(`<div class="sec-head"><span class="sec-num">${num}</span><h2 id="${id}-h">${title}</h2></div>`), id);
+    const v1 = APPENDIX_SPANS.find((v) => HOSTED[v].host === id);
+    const inner = v1 ? `<span id="${v1}-h">${title}</span>` : title;
+    assert.ok(s.includes(`<div class="sec-head"><span class="sec-num">${num}</span><h2 id="${id}-h">${inner}</h2></div>`), id);
   }
 });
 
@@ -424,16 +436,30 @@ test('every v1 block is one div.subsection with its v1 title, inside its host', 
     assert.ok(hostHtml.includes(open), `${id} inside ${host}`);
     const el = elementById(html, id);
     assert.ok(el.startsWith(open), id);
+    if (APPENDIX_SPANS.includes(id)) {
+      assert.ok(!el.includes(`id="${id}-h"`), `${id}: no duplicate heading inside the block`);
+      const span = hostHtml.match(new RegExp(`<h2 id="${host}-h"><span id="${id}-h">([^<]*)</span></h2>`));
+      assert.ok(span, `${id}-h span in the ${host} h2`);
+      assert.equal(decode(span[1]), title);
+      assert.ok(!/<h4\b/.test(el), `${id}: appendix headings are h3`);
+      continue;
+    }
     const h3 = el.match(new RegExp(`<h3 id="${id}-h">([^<]*)</h3>`));
     assert.ok(h3, `${id} h3`);
     assert.equal(decode(h3[1]), title);
+    const rest = el.replace(h3[0], '');
+    assert.ok(!/<h3\b/.test(rest), `${id}: headings inside a hosted body block are h4`);
   }
 });
 
-test('heading counts: 16 h2 and 15 h3 hosted headings', () => {
+test('heading counts: 16 h2, 9 hosted h3 headings and 6 appendix spans', () => {
+  assert.equal(APPENDIX_SPANS.length, 6);
   assert.equal((html.match(/<h2\b/g) || []).length, 16);
-  assert.equal((html.match(/<h3 id="s\d\d-h"/g) || []).length, 15);
+  assert.equal((html.match(/<h3 id="s\d\d-h"/g) || []).length, 9);
+  assert.equal((html.match(/<span id="s\d\d-h"/g) || []).length, 6);
   assert.equal((html.match(/<h3\b/g) || []).length, MEASURED_H3);
+  assert.equal((html.match(/<h4\b/g) || []).length, MEASURED_H4);
+  assert.equal((html.match(/<h5\b/g) || []).length, 0);
 });
 
 // Visible ordinal labels on links to v1 blocks must name the block's new location.
@@ -493,8 +519,8 @@ test('copy nits from the Phase 1 UI review', () => {
   assert.ok(!a.includes('it is not rising'));
   assert.ok(a.includes('has flatlined'));
   const s = sectionHtml('s02');
-  assert.ok(s.includes('<h3>Budget: flat in total, not in production</h3>'));
-  assert.ok(!s.includes('<h3>Flat budget</h3>'));
+  assert.ok(s.includes('<h4>Budget: flat in total, not in production</h4>'));
+  assert.ok(!s.includes('<h4>Flat budget</h4>'));
 });
 
 test('s01 metric trio labels are Label style with no line break', () => {
@@ -739,7 +765,7 @@ test('s02 states flat budget, scope, six components, AI-spend floor and review c
     'ai-spend-ratio', 'break-even-auto-approval', 'asm-approval-yield', 'asm-auto-approval']) {
     assert.ok(s.includes(`data-fig="${id}"`), id);
   }
-  assert.match(s, /<h3>Cost per campaign-market<\/h3>/);
+  assert.match(s, /<h4>Cost per campaign-market<\/h4>/);
   assert.match(s, /class="callout/);
   if (claims['gartner-share-2026'].grade === 'Modelled') assert.ok(text.includes(GARTNER_CAVEAT));
   else assert.ok(!text.includes(GARTNER_CAVEAT));
@@ -1224,7 +1250,7 @@ test('s09 opens with the lead and the localisation block', () => {
   assert.ok(!s.includes('class="later"'));
   const first = s.slice(s.indexOf('</div>')).match(/<p\b[^>]*>([\s\S]*?)<\/p>/);
   assert.equal(strip(first[1]), 'The factory doubles output; five other levers decide whether the extra output is worth having.');
-  assert.ok(s.includes('<h3 id="s09-localisation">Localisation and transcreation</h3>'));
+  assert.ok(s.includes('<h4 id="s09-localisation">Localisation and transcreation</h4>'));
   const { head, rows } = tableByCaption(s, 'Localisation and transcreation: output, outcome and evidence');
   assert.deepEqual(head, ['Measure', 'Metric', 'Evidence grade']);
   assert.equal(rows.length, 2);
@@ -1265,7 +1291,7 @@ const blockWords = (b) => strip((b.replace(/<table>[\s\S]*?<\/table>/g, ' ').mat
 
 test('experimentation block: win rates by definition, never averaged, bounded by traffic', () => {
   const s = sectionHtml('s09');
-  assert.ok(s.includes('<h3 id="s09-experimentation">Experimentation</h3>'));
+  assert.ok(s.includes('<h4 id="s09-experimentation">Experimentation</h4>'));
   const block = leverBlock('s09-experimentation', 's09-insight');
   const mini = tableByCaption(block, 'Experimentation: output, outcome and evidence');
   assert.deepEqual(mini.head, ['Measure', 'Metric', 'Evidence grade']);
@@ -1295,7 +1321,7 @@ test('experimentation block: win rates by definition, never averaged, bounded by
 test('insight and reporting block is brief, Modelled, anonymised', () => {
   const s = sectionHtml('s09');
   assert.ok(s.indexOf('id="s09-insight"') > s.indexOf('id="s09-experimentation"'));
-  assert.ok(s.includes('<h3 id="s09-insight">Insight and reporting</h3>'));
+  assert.ok(s.includes('<h4 id="s09-insight">Insight and reporting</h4>'));
   const block = leverBlock('s09-insight', 's09-ops');
   const mini = tableByCaption(block, 'Insight and reporting: output, outcome and evidence');
   assert.equal(mini.rows.length, 2);
@@ -1320,7 +1346,7 @@ test('every statute span carries exactly one of the two pinned citations', () =>
 
 test('ops block: statutory table, callout, reader-owned incident rate, per-work illustration', () => {
   const s = sectionHtml('s09');
-  assert.ok(s.includes('<h3 id="s09-ops">Operations: briefs, approvals, metadata and rights</h3>'));
+  assert.ok(s.includes('<h4 id="s09-ops">Operations: briefs, approvals, metadata and rights</h4>'));
   const block = leverBlock('s09-ops', 's09-aeo');
   const mini = tableByCaption(block, 'Operations: output, outcome and evidence');
   for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-s" href="#asm-lever-05-evidence">Speculative</a></td>'));
@@ -1355,9 +1381,9 @@ test('traffic studies by sell-side authors are not called independent (IN-08)', 
 
 test('aeo block: Speculative, we-did-not-find, independent studies, refresh link to s03', () => {
   const s = sectionHtml('s09');
-  assert.ok(s.includes('<h3 id="s09-aeo">Answer-engine visibility (AEO/GEO)</h3>'));
+  assert.ok(s.includes('<h4 id="s09-aeo">Answer-engine visibility (AEO/GEO)</h4>'));
   assert.ok(s.indexOf('id="s09-aeo"') > s.indexOf('id="s09-ops"'));
-  assert.equal(s.lastIndexOf('<h3 '), s.indexOf('<h3 id="s09-aeo"'), 'aeo is the last block');
+  assert.equal(s.lastIndexOf('<h4 '), s.indexOf('<h4 id="s09-aeo"'), 'aeo is the last block');
   const block = leverBlock('s09-aeo');
   const mini = tableByCaption(block, 'Answer-engine visibility: output, outcome and evidence');
   assert.equal(mini.rows.length, 2);
@@ -1376,7 +1402,7 @@ test('aeo block: Speculative, we-did-not-find, independent studies, refresh link
 
 test('s09 has five blocks in order, no vendor or panel names, anonymised', () => {
   const s = sectionHtml('s09');
-  const ids = [...s.matchAll(/<h3 id="([^"]+)"/g)].map((m) => m[1]);
+  const ids = [...s.matchAll(/<h4 id="([^"]+)"/g)].map((m) => m[1]);
   assert.deepEqual(ids, ['s09-localisation', 's09-experimentation', 's09-insight', 's09-ops', 's09-aeo']);
   const t = strip(s);
   for (const n of ['SparkToro', 'Gumshoe', 'ChatGPT']) assert.ok(!t.includes(n), n);
@@ -1417,7 +1443,7 @@ test('s10 outcome scorecard (OUTC-01)', () => {
 
 test('s10 proof block (OUTC-02)', () => {
   const s = sectionHtml('s10');
-  const h = s.indexOf('<h3>How lift would be proven</h3>');
+  const h = s.indexOf('<h4>How lift would be proven</h4>');
   assert.ok(h > 0);
   const ol = s.slice(h).match(/<ol class="proof-steps">([\s\S]*?)<\/ol>/);
   assert.ok(ol);
@@ -1462,7 +1488,7 @@ test('s13 adoption and Backlog 0', () => {
     assert.ok(r.includes('<a class="chip c-s" href="#asm-adoption-design">Speculative</a>'), r);
   }
   assert.ok(s.includes('<a href="#s11">section 5</a>'));
-  assert.ok(/<h3>What stays human<\/h3>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
+  assert.ok(/<h4>What stays human<\/h4>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
   const t = strip(s);
   assert.ok(!t.includes('Intercom'));
   assert.ok(!VENDOR_RE.test(t));
@@ -1475,7 +1501,7 @@ test('s13 adoption and Backlog 0', () => {
 
 test('s13 Backlog 0 definition block', () => {
   const s = sectionHtml('s13');
-  assert.equal((s.match(/<h3>Backlog 0, defined<\/h3>/g) || []).length, 1);
+  assert.equal((s.match(/<h4>Backlog 0, defined<\/h4>/g) || []).length, 1);
   const blk = s.match(/<div class="backlog0">[\s\S]*?<\/div>/)[0];
   const p = blk.match(/<p>([\s\S]*?)<\/p>/)[1];
   assert.equal(p, 'Backlog 0 means no approved brief waits longer than <span data-fig="asm-backlog0-days">8 days</span> <a class="chip c-m" href="#asm-backlog0-days">Modelled</a> for its first derived set to go live. Replace this with your own service level.');
@@ -1555,20 +1581,20 @@ const RISK_BLOCKS = [
 
 function riskBlock(slug) {
   const s = sectionHtml('s14');
-  const start = s.indexOf(`<h3 id="s14-${slug}">`);
+  const start = s.indexOf(`<h4 id="s14-${slug}">`);
   assert.ok(start >= 0, `no block ${slug}`);
   const rest = s.slice(start + 10);
-  const next = rest.search(/<h3 id="s14-|<div class="table-scroll"[^>]*aria-label="Risk register/);
+  const next = rest.search(/<h4 id="s14-|<div class="table-scroll"[^>]*aria-label="Risk register/);
   return s.slice(start, next < 0 ? s.length : start + 10 + next);
 }
 
 test('s14 risk blocks appear in order with answer-first, mitigation and as-at', () => {
   const s = sectionHtml('s14');
-  const hs = [...s.matchAll(/<h3 id="s14-([a-z]+)">([^<]*)<\/h3>/g)].map((m) => [m[1], m[2]]);
+  const hs = [...s.matchAll(/<h4 id="s14-([a-z]+)">([^<]*)<\/h4>/g)].map((m) => [m[1], m[2]]);
   assert.deepEqual(hs.slice(0, RISK_BLOCKS.length), RISK_BLOCKS);
   for (const [slug] of RISK_BLOCKS) {
     const b = riskBlock(slug);
-    const first = b.match(/<\/h3>\s*<p>([\s\S]*?)<\/p>/);
+    const first = b.match(/<\/h4>\s*<p>([\s\S]*?)<\/p>/);
     assert.ok(first, `${slug}: first paragraph`);
     assert.ok(strip(first[1]).split(' ').length <= 30, `${slug}: answer-first sentence too long`);
     assert.match(b, /<p class="mitigation"><b>Mitigation:<\/b> [^<]/);

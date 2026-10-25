@@ -155,6 +155,8 @@ function figure6MatchesTierTable(f) {
   });
 }
 
+const STEPS_LEVEL = { 2: 4, 3: 4, 4: 3, 5: 3, 7: 3 };
+
 test('visible text equivalent', () => {
   for (const f of figures()) {
     const ol = f.html.match(/<ol class="fig-steps">([\s\S]*?)<\/ol>/);
@@ -164,7 +166,10 @@ test('visible text equivalent', () => {
       continue;
     }
     // IN-03: headings name their figure so a screen-reader heading list can tell them apart.
-    assert.ok(f.html.includes(`<h3 class="steps-h">Steps in Figure ${f.n}</h3>`), `Figure ${f.n} steps heading`);
+    // Code review WR-04: steps headings sit one level below their block heading:
+    // h4 inside a hosted body block, h3 directly under an appendix h2.
+    const lvl = STEPS_LEVEL[f.n];
+    assert.ok(f.html.includes(`<h${lvl} class="steps-h">Steps in Figure ${f.n}</h${lvl}>`), `Figure ${f.n} steps heading`);
     assert.ok(ol, `Figure ${f.n} ol.fig-steps`);
     const items = ol[1].match(/<li>/g) || [];
     assert.ok(items.length >= 3, 'at least 3 steps');

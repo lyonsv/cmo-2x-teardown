@@ -22,7 +22,7 @@ h1 { font-size: clamp(34px, 5.2vw, 58px); line-height: 1.05; font-weight: 600; l
 h1 em { font-style: italic; color: var(--muted); }
 .standfirst { max-width: 46em; font: 400 17px/1.5 var(--serif); color: var(--ink-2); margin: 0 0 var(--s-md); }
 .byline { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0; }
-h3 { font-size: 17px; font-weight: 600; line-height: 1.6; margin: var(--s-xl) 0 var(--s-sm); }
+h3, h4 { font-size: 17px; font-weight: 600; line-height: 1.6; margin: var(--s-xl) 0 var(--s-sm); }
 h2 { font-size: 31px; line-height: 1.15; font-weight: 600; letter-spacing: -.01em; margin: 0; }
 strong, b { font-weight: 600; }
 p, ul, ol { max-width: 44em; }
@@ -184,16 +184,16 @@ svg.fig-live[hidden], .chart-empty[hidden] { display: none; }
 .fig-live .panel-lbl { font-family: var(--serif); } /* the 37-char panel label must fit the 300-unit viewBox under WCAG 1.4.12 text spacing; mono does not */
 .ref-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
 .believe { background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-lg); margin: var(--s-lg) 0; max-width: 44em; }
-.believe h3 { margin-top: 0; }
+.believe h4 { margin-top: 0; }
 .backlog0 { background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-lg); margin: var(--s-lg) 0; max-width: 44em; }
-.backlog0 h3 { margin-top: 0; }
+.backlog0 h4 { margin-top: 0; }
 .backlog0 dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); }
 .backlog0 dt, .backlog0 dd { margin: 0; }
 .status { display: inline-block; font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; padding: var(--s-xs) var(--s-sm); }
 .status-alleged { border-style: dashed; }
 .status-disputed { border-style: double; border-width: 3px; }
 .risk { margin: var(--s-xl) 0; }
-.risk h3 { margin-top: 0; }
+.risk h4 { margin-top: 0; }
 .mitigation { margin: 0 0 var(--s-md); }
 .asat { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: var(--s-sm) 0; margin: 0 0 var(--s-md); }
 table.incidents { min-width: 840px; }
@@ -264,8 +264,8 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .default-mark { border-color: #000; }
   .status { border-color: #000; color: #000; }
   .status-disputed { border-style: double; }
-  .asat, .backlog0, .risk h3, .risk .mitigation { break-inside: avoid; }
-  .risk h3 { break-after: avoid; }
+  .asat, .backlog0, .risk h4, .risk .mitigation { break-inside: avoid; }
+  .risk h4 { break-after: avoid; }
   .risk { break-inside: auto; }
   /* Tables are clipped at the page edge if their screen min-widths survive into print. */
   .matrix, table.incidents, [aria-label="Adoption stages by team"] table, table.risk-register, .register [aria-label="Source register table"] table { min-width: 0; }
