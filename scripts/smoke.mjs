@@ -5,7 +5,7 @@ import { modelContext } from '../site/js/data.js';
 import { present, defaultValues } from '../site/js/model.js';
 import { FIELDS } from '../site/js/fields.js';
 import { toText } from '../site/js/state.js';
-import { elementById } from '../test/helpers/html.js';
+import { elementById } from './lib/html.mjs';
 import { withPage, startServer, dump, sleep, runCleanups } from './cdp.mjs';
 
 const ctx = modelContext();
@@ -13,7 +13,11 @@ let failed = false;
 const fail = (name, msg) => { failed = true; console.error(`FAIL ${name}: ${msg}`); };
 const ok = (name, detail) => console.log(`PASS ${name}${detail ? `: ${detail}` : ''}`);
 
-const s11Of = (dom) => elementById(dom, 's11');
+// A DOM dumped before the page finished loading may lack #s11: report a named FAIL
+// rather than abort the whole run with a stack trace (code review IN-01).
+const s11Of = (dom) => {
+  try { return elementById(dom, 's11'); } catch (e) { fail('s11', e.message); return ''; }
+};
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 const span = (dom, name) => { const m = dom.match(new RegExp(`data-fig="${name}">([^<]*)<`)); return m ? decode(m[1]) : null; };
 const statusOf = (dom) => decode((dom.match(/<p role="status" class="calc-status">([\s\S]*?)<\/p>/) || [])[1] || '');

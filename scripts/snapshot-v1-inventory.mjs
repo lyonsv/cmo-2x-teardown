@@ -3,7 +3,7 @@
 // test/fixtures/retired.json instead.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { strip } from '../test/helpers/html.js';
+import { strip } from './lib/html.mjs';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const ids = [...new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]))].sort();
