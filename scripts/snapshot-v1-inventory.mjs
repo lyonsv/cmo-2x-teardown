@@ -1,9 +1,16 @@
 // Run once on the v1 page at the start of Phase 5; output is a frozen fixture.
 // Never re-run to make a failing inventory test pass; retire items in
 // test/fixtures/retired.json instead.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { strip } from './lib/html.mjs';
+
+const FIXTURE = new URL('../test/fixtures/v1-inventory.json', import.meta.url);
+// Code review IN-02: refuse to rebase the frozen fixture by accident.
+if (existsSync(FIXTURE) && !process.argv.includes('--force')) {
+  console.error('test/fixtures/v1-inventory.json already exists and is frozen; retire items in test/fixtures/retired.json instead (pass --force only to rebuild it deliberately).');
+  process.exit(1);
+}
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const ids = [...new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]))].sort();
@@ -15,5 +22,5 @@ const figures = [...html.matchAll(/<figcaption><b>Figure (\d+)<\/b>([\s\S]*?)<\/
 const tables = [...html.matchAll(/<caption>([\s\S]*?)<\/caption>/g)].map((m) => strip(m[1]));
 const generatedFrom = execSync('git rev-parse --short HEAD').toString().trim();
 const out = { generatedFrom, generatedOn: '2026-10-25', ids, dataFig: sortedFig, figures, tables };
-writeFileSync(new URL('../test/fixtures/v1-inventory.json', import.meta.url), JSON.stringify(out, null, 2) + '\n');
+writeFileSync(FIXTURE, JSON.stringify(out, null, 2) + '\n');
 console.log(ids.length, Object.keys(dataFig).length, figures.length, tables.length);
