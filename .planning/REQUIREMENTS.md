@@ -20,7 +20,7 @@
 
 ### Evidence classes (EVID)
 
-- [ ] **EVID-01**: Every assumption and claim in `data.js` carries an `evidence` class (observed, benchmark, illustrative, hypothesis) alongside its existing grade; a test enforces the allowed (evidence, grade) pairs.
+- [x] **EVID-01**: Every assumption and claim in `data.js` carries an `evidence` class (observed, benchmark, illustrative, hypothesis) alongside its existing grade; a test enforces the allowed (evidence, grade) pairs.
 - [ ] **EVID-02**: The reader can see the evidence class of every figure in the economics tables, the assumptions table and the source register.
 - [ ] **EVID-03**: The grade key explains the four evidence classes and states that nothing on the page is observed for the subject organisation until the pilot runs.
 
@@ -139,7 +139,7 @@
 | STRUCT-04 | Phase 5 | Complete |
 | STRUCT-05 | Phase 5 | Complete |
 | STRUCT-06 | Phase 5 | Complete |
-| EVID-01 | Phase 5 | Pending |
+| EVID-01 | Phase 5 | Complete |
 | EVID-02 | Phase 5 | Pending |
 | EVID-03 | Phase 5 | Pending |
 | ECON-01 | Phase 6 | Pending |

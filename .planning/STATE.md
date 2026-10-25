@@ -4,7 +4,7 @@ milestone: v2.0
 milestone_name: Autonomous Marketing Operations
 status: planning
 stopped_at: Completed 04-07-PLAN.md
-last_updated: "2026-10-25T09:06:00.425Z"
+last_updated: "2026-10-25T09:07:07.192Z"
 last_activity: 2026-10-25 — v2.0 roadmap created (6 phases, 62/62 requirements mapped)
 progress:
   total_phases: 6
@@ -69,6 +69,7 @@ Progress (v2.0): [░░░░░░░░░░] 0%
 | Phase 03.1 P04 | 40min | 3 tasks | 6 files |
 | 03.1 | 7 | - | - |
 | 4 | 9 | - | - |
+| Phase 05 P02 | 10min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,7 @@ Progress (v2.0): [░░░░░░░░░░] 0%
 - [Phase 4]: s11 shows one grade chip per group with a shared-grade guard test; s12 matrix dates collapse into the caption
 - [Phase 03.1]: calc.test.js inlines page defaults rather than importing data.js (red until 03.1-05)
 - [Phase 03.1]: [03.1-04] Hours maths step labelled internal throughput, not the claim; smoke route cases read radio checked over CDP
+- [Phase 05]: 05-02: evidence assigned by post-pass in data.js; claim evidence computed with 2x-side override
 
 ### Pending Todos
 
@@ -126,7 +128,7 @@ Progress (v2.0): [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-10-25T09:06:00.417Z
+Last session: 2026-10-25T09:07:03.192Z
 Stopped at: Completed 04-07-PLAN.md
 Resume file: None
 
