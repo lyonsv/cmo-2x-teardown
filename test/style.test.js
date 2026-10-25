@@ -327,3 +327,10 @@ test('h3 focus ring exists for the calculator heading after a share-link restore
   assert.match(css, /\.toc-group\s*\{/);
   assert.match(css, /\.subsection\s*\{\s*scroll-margin-top/);
 });
+
+test('.ev is a plain label: no status colour, no background, no border', () => {
+  const m = css.match(/^\.ev\s*{([^}]*)}/m);
+  assert.ok(m, 'missing .ev rule');
+  assert.ok(!/var\(--(verified|inferred|low)\)/.test(m[1]), '.ev must not use a status colour');
+  assert.ok(!/background|border/.test(m[1]), '.ev must not have a background or border');
+});

@@ -246,6 +246,21 @@ test('lever evidence rows do not repeat one sentence in Value and Basis', () => 
   }
 });
 
+test('grade key defines the four evidence classes and the pilot sentence', () => {
+  const start = html.indexOf('class="legend"');
+  const legend = html.slice(start, html.indexOf('</div>', start));
+  for (const w of EVIDENCE) assert.ok(legend.includes(`<dt><span class="ev">${w}</span></dt>`), `legend missing ${w}`);
+  for (const d of [
+    "Measured results reported by a named organisation, such as a company's own case data. The flag column says who reported it.",
+    'A published reference: an industry survey, statistic or study, or a primary legal or regulatory text.',
+    'A modelling input that describes the illustrative company, not a measured fact about yours.',
+    'An effect of the programme that needs to be confirmed in a pilot.',
+    'Nothing on this page is observed for your organisation. The twelve-week pilot is what produces observed data.',
+  ]) assert.ok(legend.includes(d), `legend missing: ${d}`);
+  for (const c of ['c-b', 'c-m', 'c-s']) assert.equal((legend.match(new RegExp(`class="chip ${c}"`, 'g')) || []).length, 1, c);
+  assert.equal((html.match(/class="evidence-key"/g) || []).length, 1);
+});
+
 test('every .ev span in the page is one of EVIDENCE', () => {
   const spans = [...html.matchAll(/<span class="ev">([^<]*)<\/span>/g)].map((m) => m[1]);
   assert.ok(spans.length >= 107);
@@ -613,7 +628,7 @@ test('every legal-ref span carries one pinned reference', () => {
 test('numeric gate: no ungraded numerals anywhere on the page', () => {
   const parts = [
     regionHtml('<header class="masthead">', '</header>'), metaHtml(), sectionHtml('answer'),
-    regionHtml('<div class="legend">', '</dl>'),
+    regionHtml('<div class="legend">', '</div>'),
     // The calculator form is not stripped wholesale (WR-06). It sits in a .calc-live
     // wrapper, which carries no data-fig, so two exact strings are exempted instead:
     // the leading "Default N" of each field hint (calc-page.test pins N to data.js

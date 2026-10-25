@@ -39,6 +39,8 @@ p { margin: 0 0 var(--s-md); }
 .legend .legend-title { font-size: 17px; font-weight: 600; line-height: 1.6; letter-spacing: 0; margin: 0 0 var(--s-sm); }
 .legend dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); align-items: baseline; }
 .legend dt, .legend dd { margin: 0; }
+.legend dl + dl { margin-top: var(--s-md); }
+.legend dl + p { margin: var(--s-md) 0 0; }
 .toc { margin: var(--s-2xl) 0; }
 .toc a { display: grid; grid-template-columns: 64px 1fr; column-gap: var(--s-md); align-items: center; min-height: 48px; padding: var(--s-md) 0; border-bottom: 1px solid var(--rule); font: 400 12px/1.6 var(--mono); color: var(--ink); text-decoration: none; }
 .toc a:hover { background: var(--paper-2); text-decoration: underline; }
