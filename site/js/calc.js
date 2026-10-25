@@ -372,3 +372,5 @@ export function variantMatrix(concepts, factors) {
   if (!Number.isFinite(running)) return { ok: false, errors: [{ field: 'factors', message: 'the product is too large to represent' }] };
   return { ok: true, concepts, rows, total: running, per_concept: running / concepts };
 }
+
+export * from './workflows.js';
