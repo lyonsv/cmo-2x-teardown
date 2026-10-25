@@ -63,7 +63,7 @@ function collectUnits() {
 function groupedRows() {
   const s11 = sectionHtml('s11');
   const out = new Map();
-  for (const label of ['Calculator results', 'Headcount scenario', 'Sensitivity']) {
+  for (const label of ['Calculator results', 'Scenario', 'Sensitivity']) {
     const i = s11.indexOf(`aria-label="${label}"`);
     assert.ok(i >= 0, label);
     const endTable = s11.indexOf('</table>', i);

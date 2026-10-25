@@ -59,20 +59,20 @@ async function cases(base) {
     await send('Page.navigate', { url: `${base}#s11?scenario=hold` });
     for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
     await sleep(500);
-    const cap = await evalJs("document.querySelector('[aria-label=\"Headcount scenario\"] caption').textContent");
-    check('caption', cap === 'Headcount scenario: Hold', `caption "${cap}"`);
-    const want = present({ ...d, scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change').text;
-    const cell = await evalJs("document.querySelector('[data-fig=\"calc-scen-production_cost_change\"]').textContent");
+    const cap = await evalJs("document.querySelector('[aria-label=\"Scenario\"] caption').textContent");
+    check('caption', cap === 'Scenario: B: same output, lower cost', `caption "${cap}"`);
+    const want = present({ ...d, scenario: 'b' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change').text;
+    const cell = await evalJs("document.querySelector('[data-fig=\"calc-scen-b-production_cost_change\"]').textContent");
     check('cell', cell === want, `cell ${cell} vs ${want}`);
-    check('radio', (await evalJs("document.querySelector('input[name=scenario]:checked').value")) === 'hold', 'hold radio not checked');
-    await evalJs("(() => { const r = document.querySelector('input[name=scenario][value=reduce]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); })()");
+    check('radio', (await evalJs("document.querySelector('input[name=scenario]:checked').value")) === 'b', 'b radio not checked');
+    await evalJs("(() => { const r = document.querySelector('input[name=scenario][value=a]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); })()");
     await sleep(300);
     const hash = await evalJs('location.hash');
-    check('hash', hash === '#s11?scenario=reduce', `hash "${hash}"`);
+    check('hash', hash === '#s11?scenario=a', `hash "${hash}"`);
     await evalJs("(() => { const r = document.querySelector('input[name=route][value=campaigns]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); })()");
     await sleep(300);
     const hash2 = await evalJs('location.hash');
-    check('route hash', hash2 === '#s11?scenario=reduce&route=campaigns' || hash2 === '#s11?route=campaigns&scenario=reduce', `hash "${hash2}"`);
+    check('route hash', hash2 === '#s11?scenario=a&route=campaigns' || hash2 === '#s11?route=campaigns&scenario=a', `hash "${hash2}"`);
     return `${cap}, ${want}, ${hash2}`;
   }));
 

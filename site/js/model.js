@@ -42,7 +42,7 @@ export function defaultValues(ctx) {
     auto1: a.auto_approval_share.baseline,
     auto2: a.auto_approval_share.scaled,
     route: defaultRoute(ctx),
-    scenario: 'redeploy',
+    scenario: 'c',
   };
 }
 
@@ -217,23 +217,31 @@ function buildRows(r) {
   return by;
 }
 
-// ---- Headcount scenarios (CALC-04) ----
+// ---- Scenarios A, B, C (CALC-04, ECONP-05) ----
 
 const finite = (v) => (Number.isFinite(v) ? v : 0);
 
-// Redeploy keeps the team and the 2x output. Hold keeps the team and today's volume
-// (multiplier 1 with the scaled assumptions). Reduce cuts reviewer headcount only,
-// to the capacity the 2x output needs. The change cost applies in every scenario, on the marketing team (reviewers are inside it).
-// Production change is the external cash view (concept fee, variants, tooling, rights, storage).
+// Scenarios (ECONP-05), all on the pilot slice only (the content workflow), never added to the portfolio figures:
+//   a: same team, more output. Headcount fixed, output at the reader's multiple; reports the largest multiple the reviewers can carry.
+//   b: same output, lower cost. Output held at today's volume with the programme's assumptions; the reviewer FTE that
+//      removes (attributable to the programme only, baseline slack excluded) is a capacity figure, priced at the loaded FTE cost.
+//   c: growing demand, limited hiring (default). Demand at the reader's multiple; reviewers needed without and with the programme;
+//      avoided hires are the hires beyond today's team that the programme makes unnecessary (the engine's avoided_hires).
+// The change cost applies in every scenario on the marketing team (reviewers are inside it). Production change is the external cash view.
+export const LEGACY_SCENARIOS = { redeploy: 'a', hold: 'b', reduce: 'b' };
+export { SCENARIOS };
+
 export function scenarioOutcomes(values, ctx, mode) {
   const out = run(values, ctx);
   if (!out.ok) return { ok: false, errors: out.errors };
-  const m = SCENARIOS.includes(mode) ? mode : 'redeploy';
+  const m = SCENARIOS.includes(mode) ? mode : 'c';
   const { inputs, assumptions } = toCompute(values, ctx);
   const r = out.result;
+  const cb = r.capacity_bridge;
+  const loaded = ctx.fixed.loaded_fte_cost;
   let side = r.scenario;
   let production = r.scenario.cost_cash.total - r.baseline.cost_cash.total;
-  if (m === 'hold') {
+  if (m === 'b') {
     const held = compute({ ...inputs, multiplier: 1 }, assumptions);
     if (!held.ok) return { ok: false, errors: held.errors.map((e) => ({ key: keyFor(e), message: e.message })) };
     side = held.scenario;
@@ -241,13 +249,28 @@ export function scenarioOutcomes(values, ctx, mode) {
   }
   const required = side.reviewer_fte_required;
   const delta = values.reviewers - required;
-  const people = m === 'reduce' && delta > 0 ? -delta * ctx.fixed.loaded_fte_cost : 0;
+  const removable = Math.max(0, cb.removable_same_output);
+  const hiresWith = Math.max(0, cb.required_programme - values.reviewers);
+  const avoided = Math.max(0, cb.avoided_hires);
+  let people = 0;
+  if (m === 'b') people = -removable * loaded;
+  if (m === 'c') people = hiresWith * loaded;
   const oneOff = ctx.fixed.change_cost_per_fte * values.marketers;
   const net = people + production + oneOff;
-  if (![required, delta, people, production, oneOff, net].every(Number.isFinite)) return { ok: false, errors: [{ key: null, message: 'These inputs are too large to calculate.' }] };
+  const extra = {
+    output_multiple: m === 'b' ? 1 : inputs.multiplier,
+    max_multiple: cb.max_multiple_at_target === null ? Infinity : cb.max_multiple_at_target,
+    removable_fte: removable,
+    reviewer_fte_without: cb.required_without_programme,
+    avoided_hires: avoided,
+    avoided_hire_cost: avoided * loaded,
+  };
+  if (![required, delta, people, production, oneOff, net, ...Object.values(extra).filter((v) => v !== Infinity)].every(Number.isFinite)) {
+    return { ok: false, errors: [{ key: null, message: 'These inputs are too large to calculate.' }] };
+  }
   return {
     ok: true, mode: m, reviewer_fte_required: required, reviewer_fte_delta: delta, people_cost_change: people,
-    production_cost_change: production, change_mgmt_one_off: oneOff, first_year_net: net,
+    production_cost_change: production, change_mgmt_one_off: oneOff, first_year_net: net, ...extra,
   };
 }
 
@@ -298,31 +321,45 @@ export function sensitivity(values, ctx) {
   return rows.slice(0, SENSITIVITY_ROWS).map(({ swing, order, ...row }) => row);
 }
 
-const SCENARIO_NAMES = { redeploy: 'Redeploy', hold: 'Hold', reduce: 'Reduce' };
+export const SCENARIO_NAMES = { a: 'A: same team, more output', b: 'B: same output, lower cost', c: 'C: growing demand, limited hiring' };
 
 function scenarioPresentation(values, ctx) {
   const o = scenarioOutcomes(values, ctx, values.scenario);
-  const mode = o.ok ? o.mode : (SCENARIOS.includes(values.scenario) ? values.scenario : 'redeploy');
+  const mode = o.ok ? o.mode : (SCENARIOS.includes(values.scenario) ? values.scenario : 'c');
   const util = weakestGrade(OUTPUT_DEPS.utilisation, ctx.grades);
   const prod = weakestGrade(OUTPUT_DEPS.total_cost, ctx.grades);
   // Each row carries the weakest grade of everything it is computed from: people
-  // cost uses the freed reviewer FTE (all UTIL inputs); the net adds people,
+  // cost uses the reviewer FTE (all UTIL inputs); the net adds people,
   // production and the one-off change cost (marketing and reviewer FTE).
   const people = weakestGrade(['asm-loaded-fte-cost', ...OUTPUT_DEPS.utilisation], ctx.grades);
   const oneOff = weakestGrade(['asm-change-mgmt', 'asm-marketing-fte', 'asm-reviewer-fte'], ctx.grades);
   const net = weakestGrade([
     'asm-change-mgmt', 'asm-loaded-fte-cost', 'asm-marketing-fte', 'asm-reviewer-fte', ...OUTPUT_DEPS.total_cost, ...OUTPUT_DEPS.utilisation,
   ], ctx.grades);
-  const defs = [
-    ['reviewer_fte_required', 'Reviewer FTE required at target utilisation', util, (v) => formatValue(v, 'num1')],
-    ['reviewer_fte_delta', 'Reviewer FTE freed (or needed)', util, (v) => (v >= 0 ? `${formatValue(v, 'num1')} freed` : `needs ${formatValue(-v, 'num1')} more reviewers`)],
-    ['people_cost_change', 'Annual people cost change', people, (v) => formatValue(v, 'usd0')],
-    ['production_cost_change', 'Change in external production spend (cash)', prod, (v) => formatValue(v, 'usd0')],
-    ['change_mgmt_one_off', 'One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],
-    ['first_year_net', 'First-year net cost change', net, (v) => formatValue(v, 'usd0')],
-  ];
-  const rows = defs.map(([id, label, g, fmt]) => {
-    const node = o.ok && Number.isFinite(o[id]) ? { value: o[id], text: fmt(o[id]) } : { text: 'n/a' };
+  const fte = (v) => formatValue(v, 'num1');
+  const multiple = (v) => (v === Infinity ? 'no limit' : `${formatValue(v, 'num1')}x`);
+  const D = {
+    output_multiple: ['Output multiple (pilot slice)', util, (v) => `${formatValue(v, 'num1')}x`],
+    max_multiple: ['Largest multiple the reviewers can carry', util, multiple],
+    reviewer_fte_required: ['Reviewer FTE required at target utilisation', util, fte],
+    removable_fte: ['Reviewer FTE removable at today\'s output (capacity, not a recommendation)', util, fte],
+    reviewer_fte_without: ['Reviewer FTE needed without the programme', util, fte],
+    avoided_hires: ['Reviewer hires avoided', util, fte],
+    avoided_hire_cost: ['Annual cost of those hires avoided', people, (v) => formatValue(v, 'usd0')],
+    people_cost_change: ['Annual people cost change', people, (v) => formatValue(v, 'usd0')],
+    production_cost_change: ['Change in external production spend (cash)', prod, (v) => formatValue(v, 'usd0')],
+    change_mgmt_one_off: ['One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],
+    first_year_net: ['First-year net cost change versus today', net, (v) => formatValue(v, 'usd0')],
+  };
+  const ids = {
+    a: ['output_multiple', 'reviewer_fte_required', 'max_multiple', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net'],
+    b: ['removable_fte', 'reviewer_fte_required', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net'],
+    c: ['reviewer_fte_without', 'reviewer_fte_required', 'avoided_hires', 'avoided_hire_cost', 'change_mgmt_one_off', 'first_year_net'],
+  }[mode];
+  const rows = ids.map((id) => {
+    const [label, g, fmt] = D[id];
+    const ok = o.ok && (Number.isFinite(o[id]) || (id === 'max_multiple' && o[id] === Infinity));
+    const node = ok ? (Number.isFinite(o[id]) ? { value: o[id], text: fmt(o[id]) } : { text: fmt(o[id]) }) : { text: 'n/a' };
     return { id, label, ...node, grade: g.grade, ref: g.ref };
   });
   return { mode, name: SCENARIO_NAMES[mode], rows };

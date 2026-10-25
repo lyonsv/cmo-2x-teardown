@@ -7,7 +7,6 @@ import { FIELDS } from './fields.js';
 import { chartSpec, renderChart } from './svg.js';
 import { writeMaths, writeBelieve, writeSensitivityNote } from './panels.js';
 import { coerce, validate, parseHash, serialiseHash, toText, changedCount } from './state.js';
-
 const ctx = modelContext();
 const defaults = defaultValues(ctx);
 const $ = (id) => document.getElementById(id);
@@ -19,10 +18,9 @@ const shareStatus = document.querySelector('.share-status');
 const copyBtn = $('copy-link');
 const rows = [...document.querySelectorAll('[aria-label="Calculator results"] tbody tr')];
 const inputs = Object.fromEntries(FIELDS.map((f) => [f.key, $(`in-${f.key}`)]));
-
 const GROUPS = ['scenario', 'route'];
 const radios = Object.fromEntries(GROUPS.map((g) => [g, [...document.querySelectorAll(`input[name="${g}"]`)]]));
-const scenTable = document.querySelector('[aria-label="Headcount scenario"]');
+const scenTable = document.querySelector('[aria-label="Scenario"]');
 const scenRows = [...scenTable.querySelectorAll('tbody tr')];
 const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody tr')];
 const sensNote = document.querySelector('[aria-label="Sensitivity"]').nextElementSibling;
@@ -85,8 +83,11 @@ function writeResults(p) {
 }
 
 function writeScenario(sc) {
-  scenTable.querySelector('caption').textContent = `Headcount scenario: ${sc.name}`;
-  sc.rows.forEach((row, i) => { scenRows[i].querySelector('[data-fig]').textContent = row.text; });
+  scenTable.querySelector('caption').textContent = `Scenario: ${sc.name}`;
+  sc.rows.forEach((row, i) => {
+    const [th, fig] = [scenRows[i].querySelector('th'), scenRows[i].querySelector('[data-fig]')];
+    [th.textContent, fig.textContent, fig.dataset.fig] = [row.label, row.text, `calc-scen-${sc.mode}-${row.id}`];
+  });
 }
 
 // Rewrites the static sensitivity rows in the live ranking order.

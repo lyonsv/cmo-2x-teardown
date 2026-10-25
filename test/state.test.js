@@ -98,10 +98,14 @@ test('parseHash: restores valid values and reports invalid ones by label', () =>
   assert.deepEqual(bad.notices, ['Markets per campaign']);
   assert.deepEqual(parseHash('#s11?reviewers=0', ctx).notices, ['Reviewer FTE']);
   assert.equal(parseHash('#s11?markets=6&markets=9', ctx).values.markets, 6);
-  assert.equal(parseHash('#s11?scenario=hold', ctx).values.scenario, 'hold');
+  assert.equal(parseHash('#s11?scenario=hold', ctx).values.scenario, 'b');
+  assert.equal(parseHash('#s11?scenario=redeploy', ctx).values.scenario, 'a');
+  assert.equal(parseHash('#s11?scenario=reduce', ctx).values.scenario, 'b');
+  assert.equal(parseHash('#s11?scenario=c', ctx).values.scenario, 'c');
+  assert.equal(parseHash('#s11?scenario=toString', ctx).values.scenario, 'c');
   const evil = parseHash('#s11?scenario=evil', ctx);
   assert.equal(evil.values.scenario, defaults.scenario);
-  assert.deepEqual(evil.notices, ['Headcount scenario']);
+  assert.deepEqual(evil.notices, ['Scenario']);
 });
 
 test('parseHash: route restores only from the allow-list (T-03.1-04, T-03.1-05)', () => {
@@ -131,14 +135,14 @@ test('parseHash: hostile keys cannot pollute prototypes', () => {
 test('serialiseHash: defaults give an empty string, order follows FIELDS', () => {
   assert.equal(serialiseHash(defaults, ctx), '');
   assert.equal(serialiseHash({ ...defaults, auto2: 0.7, markets: 6 }, ctx), '#s11?markets=6&auto2=70');
-  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', markets: 6 }, ctx), '#s11?markets=6&scenario=hold');
+  assert.equal(serialiseHash({ ...defaults, scenario: 'b', markets: 6 }, ctx), '#s11?markets=6&scenario=b');
   assert.equal(serialiseHash({ ...defaults, route: 'campaigns' }, ctx), '#s11?route=campaigns');
-  assert.equal(serialiseHash({ ...defaults, scenario: 'hold', markets: 6, route: 'markets' }, ctx), '#s11?markets=6&route=markets&scenario=hold');
+  assert.equal(serialiseHash({ ...defaults, scenario: 'b', markets: 6, route: 'markets' }, ctx), '#s11?markets=6&route=markets&scenario=b');
   assert.equal(changedCount(defaults, ctx), 0);
   assert.equal(changedCount({ ...defaults, auto2: 0.7, markets: 6 }, ctx), 2);
-  assert.equal(changedCount({ ...defaults, scenario: 'reduce' }, ctx), 1);
+  assert.equal(changedCount({ ...defaults, scenario: 'a' }, ctx), 1);
   assert.equal(changedCount({ ...defaults, route: 'markets' }, ctx), 1);
-  assert.equal(changedCount({ ...defaults, route: 'markets', scenario: 'hold', markets: 6 }, ctx), 3);
+  assert.equal(changedCount({ ...defaults, route: 'markets', scenario: 'b', markets: 6 }, ctx), 3);
 });
 
 test('serialiseHash and changedCount never write or count a missing or unknown route or scenario (IN-01)', () => {

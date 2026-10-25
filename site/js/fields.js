@@ -25,7 +25,7 @@ export const FIELDS = [
 
 export const ROUTES = ['both', 'campaigns', 'markets'];
 
-export const SCENARIOS = ['redeploy', 'hold', 'reduce'];
+export const SCENARIOS = ['a', 'b', 'c'];
 
 export const COMPUTE_FIELD_TO_KEY = {
   campaigns_per_year: 'campaigns',

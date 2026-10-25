@@ -5,7 +5,7 @@ import { compute } from '../site/js/calc.js';
 import { formatValue } from '../site/js/format.js';
 import { FIELDS, ROUTES, SCENARIOS, COMPUTE_FIELD_TO_KEY } from '../site/js/fields.js';
 import {
-  defaultValues, toCompute, run, ROUTE_SHARE, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity, SENSITIVITY_STEP,
+  defaultValues, toCompute, run, ROUTE_SHARE, LEGACY_SCENARIOS, OUTPUT_DEPS, weakestGrade, RESULT_ROWS, present, scenarioOutcomes, sensitivity, SENSITIVITY_STEP,
 } from '../site/js/model.js';
 import { modelContext, assumptions, defaultInputs, defaultAssumptions } from '../site/js/data.js';
 
@@ -27,7 +27,8 @@ test('FIELDS: 12 rows in order, unique keys, every asm id exists', () => {
   ]);
   assert.equal(new Set(FIELDS.map((x) => x.key)).size, 12);
   for (const x of FIELDS) assert.ok(assumptions[x.asm], `${x.key}: ${x.asm} missing`);
-  assert.deepEqual(SCENARIOS, ['redeploy', 'hold', 'reduce']);
+  assert.deepEqual(SCENARIOS, ['a', 'b', 'c']);
+  assert.deepEqual(LEGACY_SCENARIOS, { redeploy: 'a', hold: 'b', reduce: 'b' });
   assert.equal(FIELDS.find((x) => x.key === 'rework').zeroOk, true);
   assert.equal(FIELDS.find((x) => x.key === 'campaigns').zeroOk, false);
   for (const k of Object.values(COMPUTE_FIELD_TO_KEY)) assert.ok(FIELDS.some((x) => x.key === k));
@@ -62,7 +63,7 @@ test('defaultValues fails loudly when the registered growth share matches no rou
 test('defaultValues reads the data.js defaults', () => {
   assert.deepEqual(defaultValues(ctx), {
     campaigns: 40, concepts: 25, markets: 5, marketers: 120, reviewers: 12, minutes: 12, vcost: 0.8, mconcept: 1200,
-    yield: 0.95, rework: 0.15, auto1: 0.2, auto2: 0.6, route: 'both', scenario: 'redeploy',
+    yield: 0.95, rework: 0.15, auto1: 0.2, auto2: 0.6, route: 'both', scenario: 'c',
   });
 });
 
@@ -118,7 +119,7 @@ test('run maps compute errors to field keys', () => {
     const r = run({ ...defaultValues(ctx), marketers: bad }, ctx);
     assert.equal(r.ok, false, String(bad));
     assert.deepEqual(r.errors, [{ key: 'marketers', message: 'Marketing FTE: enter a number above 0.' }], String(bad));
-    const s = scenarioOutcomes({ ...defaultValues(ctx), marketers: bad }, ctx, 'redeploy');
+    const s = scenarioOutcomes({ ...defaultValues(ctx), marketers: bad }, ctx, 'a');
     assert.equal(s.ok, false, String(bad));
     assert.ok(s.errors.some((e) => e.key === 'marketers'), String(bad));
   }
@@ -308,7 +309,7 @@ test('fuzz: present() never emits NaN, Infinity, undefined or null', () => {
       campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), markets: Math.ceil(between(1, 20)), route: ROUTES[Math.floor(rand() * 3)],
       marketers: between(1, 500), reviewers: between(0.5, 100), minutes: between(1, 60), vcost: between(0.01, 10),
       mconcept: between(1, 5000), yield: between(0.1, 1), rework: between(0, 1), auto1: between(0, 0.75), auto2: between(0, 0.85),
-      scenario: 'redeploy',
+      scenario: 'a',
     };
     const p = present(v, ctx);
     assert.equal(BAD.test(JSON.stringify(p)), false, JSON.stringify(v));
@@ -348,26 +349,49 @@ test('auto-approval errors map to their field by side, not by message text (IN-0
   assert.equal(run({ ...d, auto1: -1 }, ctx).errors[0].key, 'auto1', 'a share error without a side suffix still maps to auto1');
 });
 
-test('scenarioOutcomes goldens at defaults (cash view, change cost on 120 marketing FTE)', () => {
+test('scenarioOutcomes goldens at defaults (A, B, C on the cash view, change cost on 120 marketing FTE)', () => {
   const v = defaultValues(ctx);
-  const red = scenarioOutcomes(v, ctx, 'redeploy');
-  assert.equal(red.reviewer_fte_required.toFixed(2), '8.73');
-  assert.equal(red.reviewer_fte_delta.toFixed(2), '3.27');
-  assert.equal(red.people_cost_change, 0);
+  const cb = run(v, ctx).result.capacity_bridge;
+  const A = scenarioOutcomes(v, ctx, 'a');
+  assert.equal(A.reviewer_fte_required.toFixed(2), '8.73');
+  assert.equal(A.output_multiple, ctx.inputs.multiplier);
+  assert.equal(A.max_multiple, cb.max_multiple_at_target);
+  assert.equal(A.people_cost_change, 0);
   // Cash view: 2x cash total 2,729,683.35 less baseline 1,794,484.21 = 935,199.14.
-  assert.equal(red.production_cost_change.toFixed(2), '935199.14');
+  assert.equal(A.production_cost_change.toFixed(2), '935199.14');
   // One-off: $3,000 x 120 marketing FTE (the 12 reviewers are inside the 120) = 360,000.
-  assert.equal(red.change_mgmt_one_off, 360000);
-  assert.equal(red.first_year_net.toFixed(2), '1295199.14'); // 935,199.14 + 360,000
-  const hold = scenarioOutcomes(v, ctx, 'hold');
-  assert.equal(hold.production_cost_change.toFixed(2), '295052.63');
-  assert.equal(hold.people_cost_change, 0);
-  assert.equal(hold.first_year_net.toFixed(2), '655052.63'); // 295,052.63 + 360,000
-  assert.ok(hold.production_cost_change > 0, 'Hold raises external spend at the defaults: it is not a saving');
-  const cut = scenarioOutcomes(v, ctx, 'reduce');
-  assert.equal(Math.round(cut.people_cost_change), -489783);
-  assert.equal(cut.first_year_net.toFixed(2), '805415.86'); // -489,783.28 + 935,199.14 + 360,000
-  for (const o of [red, hold, cut]) assert.equal(o.change_mgmt_one_off, 360000, 'change cost in every scenario');
+  assert.equal(A.change_mgmt_one_off, 360000);
+  assert.equal(A.first_year_net.toFixed(2), '1295199.14'); // 935,199.14 + 360,000
+  const B = scenarioOutcomes(v, ctx, 'b');
+  assert.equal(B.output_multiple, 1);
+  assert.equal(B.production_cost_change.toFixed(2), '295052.63');
+  assert.equal(B.removable_fte, cb.removable_same_output, 'attributable only: baseline slack excluded');
+  assert.equal(B.people_cost_change, -cb.removable_same_output * ctx.fixed.loaded_fte_cost);
+  assert.equal(B.first_year_net.toFixed(2), '142359.13'); // -512,693.50 + 295,052.63 + 360,000
+  const C = scenarioOutcomes(v, ctx, 'c');
+  assert.equal(C.reviewer_fte_without, cb.required_without_programme);
+  assert.equal(C.reviewer_fte_required, cb.required_programme);
+  assert.equal(C.avoided_hires, cb.avoided_hires);
+  assert.equal(C.avoided_hire_cost, cb.avoided_hires * ctx.fixed.loaded_fte_cost);
+  assert.equal(C.people_cost_change, 0, 'no hires needed with the programme at the defaults');
+  assert.equal(C.first_year_net.toFixed(2), '1295199.14', 'avoided hire cost is against a no-programme plan and is not netted');
+  assert.ok(B.removable_fte !== A.reviewer_fte_delta && B.first_year_net !== A.first_year_net && C.avoided_hires !== B.removable_fte, 'scenarios are distinct');
+  for (const o of [A, B, C]) assert.equal(o.change_mgmt_one_off, 360000, 'change cost in every scenario');
+});
+
+test('scenarioOutcomes: every field is finite for the defaults and for multiplier 1 (identity)', () => {
+  const one = { ...ctx, inputs: { ...ctx.inputs, multiplier: 1 } };
+  for (const c of [ctx, one]) {
+    for (const m of ['a', 'b', 'c']) {
+      const o = scenarioOutcomes(defaultValues(c), c, m);
+      assert.equal(o.ok, true);
+      for (const [k, x] of Object.entries(o)) if (typeof x === 'number') assert.ok(Number.isFinite(x), `${m}.${k}`);
+    }
+  }
+  const cb = run(defaultValues(one), one).result.capacity_bridge;
+  assert.equal(scenarioOutcomes(defaultValues(one), one, 'c').avoided_hires, Math.max(0, cb.avoided_hires));
+  assert.equal(scenarioOutcomes(defaultValues(one), one, 'a').output_multiple, 1);
+  assert.equal(scenarioOutcomes(defaultValues(ctx), ctx, 'unknown').mode, 'c', 'unknown mode falls back to C');
 });
 
 test('run: reviewers cannot outnumber the marketing team', () => {
@@ -377,13 +401,15 @@ test('run: reviewers cannot outnumber the marketing team', () => {
   assert.equal(run({ ...defaultValues(ctx), marketers: 12, reviewers: 12 }, ctx).ok, true);
 });
 
-test('scenarioOutcomes: too few reviewers needs more, reduce cuts nothing; failures return errors', () => {
+test('scenarioOutcomes: too few reviewers needs more, A cuts nothing, C prices the hires it still needs; failures return errors', () => {
   const v = { ...defaultValues(ctx), reviewers: 6 };
-  const red = scenarioOutcomes(v, ctx, 'redeploy');
+  const red = scenarioOutcomes(v, ctx, 'a');
   assert.ok(red.reviewer_fte_delta < 0);
-  assert.equal(scenarioOutcomes(v, ctx, 'reduce').people_cost_change, 0);
-  assert.match(present(v, ctx).scenario.rows[1].text, /^needs \d+\.\d more reviewers$/);
-  const bad = scenarioOutcomes({ ...defaultValues(ctx), reviewers: 0 }, ctx, 'hold');
+  assert.equal(red.people_cost_change, 0);
+  const c = scenarioOutcomes(v, ctx, 'c');
+  assert.ok(c.people_cost_change > 0, 'hires still needed with the programme are priced');
+  assert.ok(c.avoided_hires >= 0);
+  const bad = scenarioOutcomes({ ...defaultValues(ctx), reviewers: 0 }, ctx, 'b');
   assert.equal(bad.ok, false);
   assert.ok(Array.isArray(bad.errors));
 });
@@ -437,7 +463,7 @@ test('sensitivity: auto-approval cap clamps and is marked capped', () => {
 
 test('scenario rows carry the weakest grade of their inputs (WR-01)', () => {
   const at = (grades) => {
-    const p = present({ ...defaultValues(ctx), scenario: 'reduce' }, { ...ctx, grades });
+    const p = present({ ...defaultValues(ctx), scenario: 'b' }, { ...ctx, grades });
     return Object.fromEntries(p.scenario.rows.map((r) => [r.id, [r.grade, r.ref]]));
   };
   const cost = at({ ...ctx.grades, 'asm-master-concept-cost': 'Speculative' });
@@ -457,10 +483,14 @@ test('scenario rows carry the weakest grade of their inputs (WR-01)', () => {
 
 test('present().scenario and .sensitivity are finite and labelled', () => {
   const p = present(defaultValues(ctx), ctx);
-  assert.equal(p.scenario.name, 'Redeploy');
-  assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
-  assert.equal(p.scenario.rows[3].text, '$935,199');
-  assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '$295,053');
+  assert.equal(p.scenario.name, 'C: growing demand, limited hiring');
+  assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_without', 'reviewer_fte_required', 'avoided_hires', 'avoided_hire_cost', 'change_mgmt_one_off', 'first_year_net']);
+  assert.equal(p.scenario.rows[2].text, '3.6');
+  const at = (m) => present({ ...defaultValues(ctx), scenario: m }, ctx).scenario;
+  assert.equal(at('a').rows[3].text, '$935,199');
+  assert.equal(at('b').rows[3].text, '$295,053');
+  assert.deepEqual(at('a').rows.map((r) => r.id), ['output_multiple', 'reviewer_fte_required', 'max_multiple', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
+  assert.deepEqual(at('b').rows.map((r) => r.id), ['removable_fte', 'reviewer_fte_required', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
   assert.equal(p.sensitivity[0].cells.costDown.text, '+21.5%');
   assert.equal(p.sensitivity[0].cells.costUp.text, '−14.3%');
   assert.equal(p.sensitivity.length, 5);
@@ -475,7 +505,7 @@ test('fuzz: scenario and sensitivity never emit NaN, Infinity, undefined or null
       campaigns: Math.ceil(between(1, 200)), concepts: Math.ceil(between(1, 100)), markets: Math.ceil(between(1, 20)), route: ROUTES[Math.floor(rand() * 3)],
       marketers: between(1, 500), reviewers: between(0.5, 100), minutes: between(1, 60), vcost: between(0.01, 10),
       mconcept: between(1, 5000), yield: between(0.1, 1), rework: between(0, 1), auto1: between(0, 0.75), auto2: between(0, 0.85),
-      scenario: ['redeploy', 'hold', 'reduce'][i % 3],
+      scenario: ['a', 'b', 'c'][i % 3],
     };
     const p = present(v, ctx);
     if (!p.ok) continue;

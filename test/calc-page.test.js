@@ -24,7 +24,7 @@ const CHIP_CLASS = { Benchmark: 'c-b', Modelled: 'c-m', Speculative: 'c-s' };
 // otherwise, and per-member chips must be restored.
 const GROUPED = {
   fieldsets: { volume: 'Volume', people: 'People', cost: 'Cost and quality', automation: 'Automation' },
-  tables: ['Calculator results', 'Headcount scenario', 'Sensitivity'],
+  tables: ['Calculator results', 'Scenario', 'Sensitivity'],
 };
 
 function assertGroupRule(name, members, noteHtml) {
@@ -185,7 +185,7 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
   const wrap = calcLiveWrappers()[0].inner;
   assert.match(wrap, /^\s*<form class="calc-form" novalidate>[\s\S]*<\/form>\s*$/);
   const groups = [...wrap.matchAll(/<fieldset class="calc-group">\s*<legend>([^<]*)<\/legend>([\s\S]*?)<\/fieldset>/g)];
-  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'How you get to 2x', 'People', 'Cost and quality', 'Automation', 'Headcount scenario']);
+  assert.deepEqual(groups.map((g) => g[1]), ['Volume', 'How you get to 2x', 'People', 'Cost and quality', 'Automation', 'Scenario']);
   const fields = groups.flatMap((g) => g[2].split('<div class="field">').slice(1));
   fields.forEach((html_, i) => {
     const f = FIELDS[i];
@@ -272,15 +272,15 @@ test('ui.js stays thin', () => {
 
 const decodeAll = (x) => decode(x);
 
-test('Headcount scenario group: three radios, redeploy checked, change-cost line with chip', () => {
+test('Scenario group: three radios a, b, c with C checked, change-cost line with chip', () => {
   const wrap = calcLiveWrappers()[0].inner;
-  const group = wrap.match(/<fieldset class="calc-group">\s*<legend>Headcount scenario<\/legend>([\s\S]*?)<\/fieldset>/);
+  const group = wrap.match(/<fieldset class="calc-group">\s*<legend>Scenario<\/legend>([\s\S]*?)<\/fieldset>/);
   assert.ok(group, 'scenario fieldset');
-  const labels = [...group[1].matchAll(/<label class="radio"><input type="radio" name="scenario" value="(redeploy|hold|reduce)"( checked)?><span class="radio-text"><span class="radio-title">([^<]*)<\/span><span class="radio-desc">([^<]*)<\/span><\/span><\/label>/g)];
+  const labels = [...group[1].matchAll(/<label class="radio"><input type="radio" name="scenario" value="(a|b|c)"( checked)?><span class="radio-text"><span class="radio-title">([^<]*)<\/span><span class="radio-desc">([^<]*)<\/span><\/span><\/label>/g)];
   assert.deepEqual(labels.map((m) => [m[1], !!m[2], m[3], decodeAll(m[4])]), [
-    ['redeploy', true, 'Redeploy', 'Keep the team and move freed capacity to new work.'],
-    ['hold', false, 'Hold', "Keep the team and today's volume; take any saving as lower cost."],
-    ['reduce', false, 'Reduce', 'Cut reviewer headcount to the capacity the 2x output needs.'],
+    ['a', false, 'A: same team, more output', 'Keep the team and deliver the multiple you set above.'],
+    ['b', false, 'B: same output, lower cost', "Hold today's volume and see how much reviewer capacity the programme frees."],
+    ['c', true, 'C: growing demand, limited hiring', 'Demand grows to the multiple you set; see the reviewer hires the programme avoids.'],
   ]);
   const chg = assumptions['asm-change-mgmt'];
   // WR-06: the form sits in a .calc-live wrapper, which carries no data-fig, so the
@@ -312,35 +312,35 @@ function tableAfter(caption) {
 }
 
 test('scenario table: six rows equal present(defaults).scenario; one grade note, no row chips', () => {
-  const { table } = tableAfter('Headcount scenario: Redeploy');
-  assert.equal(p.scenario.name, 'Redeploy');
+  const { table } = tableAfter('Scenario: C: growing demand, limited hiring');
+  assert.equal(p.scenario.name, 'C: growing demand, limited hiring');
   const trs = table.slice(table.indexOf('<tbody>')).match(/<tr>[\s\S]*?<\/tr>/g);
   assert.equal(trs.length, 6);
   trs.forEach((tr, i) => {
     const row = p.scenario.rows[i];
     assert.equal(strip(tr.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]), row.label);
-    const fig = tr.match(new RegExp(`<td class="num"><span data-fig="calc-scen-${row.id}">([^<]*)</span></td>`));
+    const fig = tr.match(new RegExp(`<td class="num"><span data-fig="calc-scen-c-${row.id}">([^<]*)</span></td>`));
     assert.ok(fig, row.id);
     assert.equal(decode(fig[1]), row.text);
-    assert.equal(claims[`calc-scen-${row.id}`].display, row.text);
+    assert.equal(claims[`calc-scen-c-${row.id}`].display, row.text);
     assert.ok(!tr.includes('class="chip'), `${row.id}: grouped rows carry no chip`);
   });
-  // WR-03: the Hold sentence is scoped to the page defaults and its figure is the presenter's Hold row.
-  const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change');
-  const word = hold.value < 0 ? 'a saving' : 'an increase';
-  assert.ok(s11.includes(`At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a> (${word}), because the tooling rise outweighs the cheaper variants; choose Hold above to see the figure for your inputs.`));
-  assert.ok(!/Hold changes annual production cost by only/.test(s11), 'the confusing "only" wording is gone');
-  assert.ok(hold.value > 0 && !/\(a saving\)/.test(s11), 'Hold raises external spend at the defaults and is not called a saving');
-  assert.ok(!/Hold saves little/.test(s11), 'no unscoped Hold claim');
-  const { note } = regionOf('Headcount scenario');
+  // The C sentence is scoped to the page defaults and its figure is the presenter's avoided-hires row.
+  const av = p.scenario.rows.find((r) => r.id === 'avoided_hires');
+  assert.ok(s11.includes(`scenario C avoids <span data-fig="calc-scen-c-avoided_hires">${av.text}</span> <a class="chip ${CHIP_CLASS[av.grade]}" href="#${av.ref}">${av.grade}</a> reviewer hires`));
+  assert.ok(!/Hold's change in annual production cost/.test(s11), 'the retired Hold sentence is gone');
+  assert.ok(/pilot slice/.test(s11) && s11.includes('href="#scenarios"'), 'calculator figures are labelled as the pilot slice and kept apart from the portfolio');
+  const { note } = regionOf('Scenario');
   assert.ok(note, 'scenario table is followed by its grade note');
   assertGroupRule('scenario', p.scenario.rows, note);
-  // The refs do not depend on the chosen scenario, so the one note serves all three.
-  for (const mode of ['redeploy', 'hold', 'reduce']) {
+  // The one note links every register row any scenario's rows can cite.
+  for (const mode of ['a', 'b', 'c']) {
     const rows = present({ ...defaultValues(ctx), scenario: mode }, ctx).scenario.rows;
-    assert.deepEqual([...new Set(rows.map((r) => r.ref))].sort(), [...new Set(p.scenario.rows.map((r) => r.ref))].sort(), `${mode} refs`);
+    const noted = new Set(p.scenario.rows.map((r) => r.ref));
+    for (const ref of new Set(rows.map((r) => r.ref))) assert.ok(noted.has(ref) || mode !== 'c', `${mode}: ${ref} is a register link in the static note`);
+    for (const ref of new Set(rows.map((r) => r.ref))) assert.ok(note.includes(`href="#${ref}"`), `${mode}: ${ref} linked from the note`);
   }
-  assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-([a-z_]+)/)[1]), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
+  assert.deepEqual(trs.map((tr) => tr.match(/calc-scen-c-([a-z_]+)/)[1]), ['reviewer_fte_without', 'reviewer_fte_required', 'avoided_hires', 'avoided_hire_cost', 'change_mgmt_one_off', 'first_year_net']);
 });
 
 test('sensitivity table: header, five ranked rows equal present(defaults), capped marked and footnoted', () => {
@@ -404,8 +404,8 @@ test('sensitivity step text is tied to SENSITIVITY_STEP (IN-03)', () => {
 
 test('scenario and sensitivity tables sit before the share panel and outside .calc-live', () => {
   const share = s11.indexOf('<div class="calc-live" id="calc-share-wrap">');
-  assert.ok(s11.indexOf('Headcount scenario: Redeploy</caption>') > s11.indexOf('Each output carries the weakest grade'));
-  assert.ok(s11.indexOf('Sensitivity: each input moved') > s11.indexOf('Headcount scenario: Redeploy</caption>'));
+  assert.ok(s11.indexOf('Scenario: C: growing demand, limited hiring</caption>') > s11.indexOf('Each output carries the weakest grade'));
+  assert.ok(s11.indexOf('Sensitivity: each input moved') > s11.indexOf('Scenario: C: growing demand, limited hiring</caption>'));
   assert.ok(s11.indexOf('Capped: the input cannot move further') < share);
 });
 
@@ -419,7 +419,7 @@ test('s11 order: results, fixed note, scenario, Figure 8, maths, believe, sensit
   };
   const order = [
     at('<caption>Results for your numbers'), at('<p class="table-note">Each output carries'), at('<p class="fixed-note">'),
-    at('Headcount scenario: Redeploy</caption>'), at('<b>Figure 8</b>'), at('<details class="maths">'), at('<div class="believe">'),
+    at('Scenario: C: growing demand, limited hiring</caption>'), at('<b>Figure 8</b>'), at('<details class="maths">'), at('<div class="believe">'),
     at('Sensitivity: each input moved'), at('<div class="calc-live" id="calc-share-wrap">'),
   ];
   assert.deepEqual([...order].sort((a, b) => a - b), order);

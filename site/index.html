@@ -1295,10 +1295,10 @@
               </div>
             </fieldset>
             <fieldset class="calc-group">
-              <legend>Headcount scenario</legend>
-              <label class="radio"><input type="radio" name="scenario" value="redeploy" checked><span class="radio-text"><span class="radio-title">Redeploy</span><span class="radio-desc">Keep the team and move freed capacity to new work.</span></span></label>
-              <label class="radio"><input type="radio" name="scenario" value="hold"><span class="radio-text"><span class="radio-title">Hold</span><span class="radio-desc">Keep the team and today&#39;s volume; take any saving as lower cost.</span></span></label>
-              <label class="radio"><input type="radio" name="scenario" value="reduce"><span class="radio-text"><span class="radio-title">Reduce</span><span class="radio-desc">Cut reviewer headcount to the capacity the 2x output needs.</span></span></label>
+              <legend>Scenario</legend>
+              <label class="radio"><input type="radio" name="scenario" value="a"><span class="radio-text"><span class="radio-title">A: same team, more output</span><span class="radio-desc">Keep the team and deliver the multiple you set above.</span></span></label>
+              <label class="radio"><input type="radio" name="scenario" value="b"><span class="radio-text"><span class="radio-title">B: same output, lower cost</span><span class="radio-desc">Hold today&#39;s volume and see how much reviewer capacity the programme frees.</span></span></label>
+              <label class="radio"><input type="radio" name="scenario" value="c" checked><span class="radio-text"><span class="radio-title">C: growing demand, limited hiring</span><span class="radio-desc">Demand grows to the multiple you set; see the reviewer hires the programme avoids.</span></span></label>
               <p class="hint radio-note">Change-management cost: $3,000 per affected FTE, included in every scenario. <a class="chip c-m" href="#asm-change-mgmt">Modelled</a></p>
             </fieldset>
           </form>
@@ -1378,40 +1378,41 @@
         <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-campaigns">Modelled</a>. Register rows: <a href="#asm-campaigns">asm-campaigns</a>, <a href="#asm-markets">asm-markets</a>, <a href="#asm-review-service-days">asm-review-service-days</a>.</p>
         <p class="table-note">Each output carries the weakest grade of the inputs it uses. Cost per campaign-market is the same cost as cost per approved asset, expressed per campaign-market, so its change always matches; it is not separate evidence.</p>
         <p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today's variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>
-        <div class="table-scroll" role="region" aria-label="Headcount scenario" tabindex="0">
+        <p class="table-note">These scenario figures cover only the pilot slice, the content workflow modelled in this calculator. They are not added to the portfolio figures in <a href="#scenarios">the economics section</a>, which cover all ten workflows.</p>
+        <div class="table-scroll" role="region" aria-label="Scenario" tabindex="0">
           <table>
-            <caption>Headcount scenario: Redeploy</caption>
+            <caption>Scenario: C: growing demand, limited hiring</caption>
             <thead><tr><th scope="col">Measure</th><th scope="col">Value</th></tr></thead>
             <tbody>
               <tr>
+                <th scope="row">Reviewer FTE needed without the programme</th>
+                <td class="num"><span data-fig="calc-scen-c-reviewer_fte_without">15.6</span></td>
+              </tr>
+              <tr>
                 <th scope="row">Reviewer FTE required at target utilisation</th>
-                <td class="num"><span data-fig="calc-scen-reviewer_fte_required">8.7</span></td>
+                <td class="num"><span data-fig="calc-scen-c-reviewer_fte_required">8.7</span></td>
               </tr>
               <tr>
-                <th scope="row">Reviewer FTE freed (or needed)</th>
-                <td class="num"><span data-fig="calc-scen-reviewer_fte_delta">3.3 freed</span></td>
+                <th scope="row">Reviewer hires avoided</th>
+                <td class="num"><span data-fig="calc-scen-c-avoided_hires">3.6</span></td>
               </tr>
               <tr>
-                <th scope="row">Annual people cost change</th>
-                <td class="num"><span data-fig="calc-scen-people_cost_change">$0</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Change in external production spend (cash)</th>
-                <td class="num"><span data-fig="calc-scen-production_cost_change">$935,199</span></td>
+                <th scope="row">Annual cost of those hires avoided</th>
+                <td class="num"><span data-fig="calc-scen-c-avoided_hire_cost">$535,604</span></td>
               </tr>
               <tr>
                 <th scope="row">One-off change cost (year one)</th>
-                <td class="num"><span data-fig="calc-scen-change_mgmt_one_off">$360,000</span></td>
+                <td class="num"><span data-fig="calc-scen-c-change_mgmt_one_off">$360,000</span></td>
               </tr>
               <tr>
-                <th scope="row">First-year net cost change</th>
-                <td class="num"><span data-fig="calc-scen-first_year_net">$1,295,199</span></td>
+                <th scope="row">First-year net cost change versus today</th>
+                <td class="num"><span data-fig="calc-scen-c-first_year_net">$1,295,199</span></td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="table-note grade-note">Every figure in this table is <a class="chip c-m" href="#asm-markets">Modelled</a>. Register rows: <a href="#asm-markets">asm-markets</a>, <a href="#asm-loaded-fte-cost">asm-loaded-fte-cost</a>, <a href="#asm-change-mgmt">asm-change-mgmt</a>.</p>
-        <p class="table-note">At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">$295,053</span> <a class="chip c-m" href="#asm-markets">Modelled</a> (an increase), because the tooling rise outweighs the cheaper variants; choose Hold above to see the figure for your inputs. Reduce changes reviewer headcount only. The change cost is included in every scenario.</p>
+        <p class="table-note">At the page defaults, scenario C avoids <span data-fig="calc-scen-c-avoided_hires">3.6</span> <a class="chip c-m" href="#asm-markets">Modelled</a> reviewer hires, but its first-year cost is still above today&#39;s because production spend rises and the change cost lands in year one; the avoided hire cost is measured against a plan without the programme and is not netted. Scenario B shows removable reviewer capacity, not a recommendation to cut. The change cost is included in every scenario.</p>
         <figure>
           <div class="fig-grid">
             <div>

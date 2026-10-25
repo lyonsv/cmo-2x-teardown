@@ -1426,21 +1426,17 @@ function presenterClaims(ctx) {
       out[id] = claim;
     }
   }
-  // Headcount scenario (default: Redeploy) and sensitivity cells, from the same presenter.
-  for (const row of p.scenario.rows) {
-    const id = `calc-scen-${row.id}`;
-    out[id] = { id, value: row.value, unit: `Headcount scenario ${p.scenario.name}: ${row.label}`, display: row.text, grade: row.grade, flag: null, ref: row.ref, calc: `scenario.rows.${row.id}`, side: '2x' };
-  }
-  // The s11 note quotes Hold's production cost change at the page defaults, so the
-  // sentence is scoped to the defaults and its number comes from the presenter.
-  {
-    const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario;
-    const row = hold.rows.find((r) => r.id === 'production_cost_change');
-    const id = 'calc-scen-hold-production_cost_change';
-    out[id] = {
-      id, value: row.value, unit: `Headcount scenario ${hold.name} at the page defaults: ${row.label}`, display: row.text, grade: row.grade, flag: null,
-      ref: row.ref, calc: 'scenarioHold.rows.production_cost_change', side: '2x',
-    };
+  // Scenarios A, B and C (pilot slice) at the page defaults, from the same presenter. Only C is the static table; A and B
+  // are generated so the live table's data-fig ids always resolve to a computed claim.
+  for (const mode of ['a', 'b', 'c']) {
+    const sc = present({ ...defaultValues(ctx), scenario: mode }, ctx).scenario;
+    for (const row of sc.rows) {
+      const id = `calc-scen-${mode}-${row.id}`;
+      out[id] = {
+        id, value: row.value, unit: `Scenario ${sc.name}, pilot slice, at the page defaults: ${row.label}`, display: row.text, grade: row.grade, flag: null,
+        ref: row.ref, calc: `scenario${mode.toUpperCase()}.rows.${row.id}`, side: '2x',
+      };
+    }
   }
   for (const row of p.sensitivity) {
     for (const [cellName, node] of Object.entries(row.cells)) {

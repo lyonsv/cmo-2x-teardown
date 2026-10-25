@@ -1,13 +1,13 @@
 // Calculator input state: strict text coercion, cross-field validation and the
 // URL hash contract. Pure and DOM-free; imports only fields.js and model.js.
 import { FIELDS, ROUTES, SCENARIOS } from './fields.js';
-import { defaultValues, run } from './model.js';
+import { defaultValues, run, LEGACY_SCENARIOS } from './model.js';
 
 const PLAIN = /^(\d+(\.\d+)?|\.\d+)$/; // a leading '.5' is accepted (IN-10)
 const THOUSANDS = /^\d{1,3}(,\d{3})+(\.\d+)?$/;
 const MAX = 1e9;
 const HASH_PREFIX = '#s11?';
-const SCENARIO_LABEL = 'Headcount scenario';
+const SCENARIO_LABEL = 'Scenario';
 const ROUTE_LABEL = 'How you get to 2x';
 
 const whole = (v) => Number((v * 100).toPrecision(12));
@@ -86,7 +86,9 @@ export function parseHash(hash, ctx) {
     if (ROUTES.includes(route)) values.route = route;
     else notices.push(ROUTE_LABEL);
   }
-  const sc = params.get('scenario');
+  // Recorded v1 links (redeploy, hold, reduce) map through LEGACY_SCENARIOS, then the allow-list applies.
+  const rawSc = params.get('scenario');
+  const sc = rawSc !== null && Object.hasOwn(LEGACY_SCENARIOS, rawSc) ? LEGACY_SCENARIOS[rawSc] : rawSc;
   if (sc !== null) {
     if (SCENARIOS.includes(sc)) values.scenario = sc;
     else notices.push(SCENARIO_LABEL);

@@ -653,7 +653,7 @@ test('calc claims equal present(defaults)', () => {
   for (const c of calcClaims) {
     const parts = c.calc.split('.');
     const head = parts[0];
-    const [rowId, cellName] = head === 'scenario' || head === 'scenarioHold' ? [parts[2]] : parts.slice(1);
+    const [rowId, cellName] = head.startsWith('scenario') ? [parts[2]] : parts.slice(1);
     let row;
     let node;
     if (head === 'maths') {
@@ -664,14 +664,11 @@ test('calc claims equal present(defaults)', () => {
       row = p.believe.find((b) => b.key === parts[1]);
       node = row?.parts.find((x) => x.fig === c.id);
       assert.ok(c.id === `calc-believe-${parts[1]}` || c.id === `calc-believe-${parts[1]}-swing`);
-    } else if (head === 'scenario') {
-      row = p.scenario.rows.find((r) => r.id === rowId);
+    } else if (head.startsWith('scenario')) {
+      const mode = head.slice('scenario'.length).toLowerCase();
+      row = present({ ...defaultValues(ctx), scenario: mode }, ctx).scenario.rows.find((r) => r.id === rowId);
       node = row;
-      assert.equal(c.id, `calc-scen-${rowId}`);
-    } else if (head === 'scenarioHold') {
-      row = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === rowId);
-      node = row;
-      assert.equal(c.id, `calc-scen-hold-${rowId}`);
+      assert.equal(c.id, `calc-scen-${mode}-${rowId}`);
     } else if (head === 'sensitivity') {
       row = p.sensitivity.find((r) => r.key === rowId);
       node = row?.cells[cellName];

@@ -2,5 +2,13 @@
   "id:fd3-t": "v1 Figure 3 (six-box content supply chain) is superseded by the two-variant supply chain diagram (ff1w/ff1n ids) in section 04; the new diagram carries the Figure 3 number (plan 07-04).",
   "id:fd3-d": "Description of the superseded v1 Figure 3 svg; the new diagram has its own title and description ids (plan 07-04).",
   "id:fd3-arrow": "Marker of the superseded v1 Figure 3 svg (plan 07-04).",
-  "id:fd3-arrow-review": "Review marker of the superseded v1 Figure 3 svg (plan 07-04)."
+  "id:fd3-arrow-review": "Review marker of the superseded v1 Figure 3 svg (plan 07-04).",
+  "data-fig:calc-scen-change_mgmt_one_off": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-first_year_net": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-hold-production_cost_change": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-people_cost_change": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-production_cost_change": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-reviewer_fte_delta": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "data-fig:calc-scen-reviewer_fte_required": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the static table is now scenario C with calc-scen-c-* ids.",
+  "table:Headcount scenario: Redeploy": "calculator scenarios renamed A/B/C (Phase 7, ECONP-05; Decision 5); the caption is now 'Scenario: C: growing demand, limited hiring'."
 }
