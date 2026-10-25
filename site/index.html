@@ -13,12 +13,12 @@
   <header class="masthead">
     <p class="kicker">A forward-looking teardown · projection, not retrospective</p>
     <h1>CMO 2x: <em>what doubling a marketing organisation's output would take</em></h1>
-    <p class="standfirst">A sceptical look at what it would take for a large marketing organisation to double its approved output without doubling its cost, and how a CFO could check each step.</p>
+    <p class="standfirst">A sceptical look at what it would take to increase a large marketing organisation's productive capacity by progressively giving agents responsibility for whole workflows, under permissions, checks and approvals, and how a CFO could check each step.</p>
     <p class="byline">Vincent Lyons</p>
   </header>
   <main id="main">
     <div class="meta">
-      <p><b>Date</b> 2026-10-24</p>
+      <p><b>Date</b> 2026-10-25</p>
       <p><b>Evidence base</b> A few checkable primary sources plus modelled assumptions; every number is graded.</p>
       <p><b>Revenue</b> <span data-fig="asm-revenue">~$1B</span> <a class="chip c-m" href="#asm-revenue">Modelled</a></p>
       <p><b>Marketing budget</b> <span data-fig="asm-marketing-budget">~$78M</span> <a class="chip c-m" href="#asm-marketing-budget">Modelled</a> or <span data-fig="asm-budget-share">7.8%</span> <a class="chip c-m" href="#asm-budget-share">Modelled</a> of revenue</p>
@@ -26,8 +26,29 @@
       <p><b>Campaigns a year</b> <span data-fig="asm-campaigns">~40</span> <a class="chip c-m" href="#asm-campaigns">Modelled</a></p>
     </div>
     <section id="answer" class="answer" aria-label="Summary">
-      <p><strong>A marketing organisation can roughly double the campaign-markets it launches each quarter, from <span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span>, within a flat total marketing budget and flat headcount.</strong> Brief to live falls from <span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span> and cost per approved asset from <span data-fig="cpa-base">$152.18</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$106.38</span>, while production cost rises <span data-fig="total-cost-change">+40%</span>, assumed to be funded from other marketing lines <a class="chip c-m" href="#asm-reallocation">Modelled</a>.</p>
-      <p>Gartner puts spend at <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> of revenue and has flatlined. It holds only with governed review: a tiered gate, a review agent and an eval harness. The falsifier: the claim is false if campaign-markets launched per quarter double but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
+      <p><strong>The thesis: a large marketing organisation can raise its productive capacity by progressively giving agents responsibility for whole marketing workflows, under permissions, checks and human approvals.</strong> The system is software that plans, builds, adapts, checks and publishes work, starting with one workflow and widening as the evidence allows. The ambition is 2x useful work per marketing FTE-equivalent, measured, not assumed.</p>
+      <ol class="chain">
+        <li>Software built</li>
+        <li>Autonomy enabled</li>
+        <li>Human work reduced</li>
+        <li>Marketing capacity increased</li>
+        <li>Business outcomes improved</li>
+      </ol>
+      <p>The page tests that ambition. At default inputs the model gives <span data-fig="econ-metric-org_after_platform">1.60x</span> <a class="chip c-m" href="#asm-agency-fte-cost">Modelled</a> across the whole organisation after the cost of a small platform team, and <span data-fig="econ-metric-portfolio_after_platform">1.99x</span> on the delegated portfolio of workflows. Those are model results, not observations, and not a claim that 2x is achieved. Outcomes are never claimed to double. The falsifier: the claim is false if campaign-markets launched per quarter double but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
+      <dl class="six-answers">
+        <dt>What we're building</dt>
+        <dd>Software that takes a workflow from objective to live work, with checks. <a href="#build">What needs to be built</a></dd>
+        <dt>Why it matters</dt>
+        <dd>Capacity is the constraint; a clear measure shows if it lifts. <a href="#opportunity">What 2x means</a></dd>
+        <dt>Where we start</dt>
+        <dd>One workflow, launching an approved campaign in more markets. <a href="#supply-chain">The first workflow</a></dd>
+        <dt>How it expands</dt>
+        <dd>Adjacent workflows reuse the same parts and permissions. <a href="#expansion">How it expands beyond content</a></dd>
+        <dt>What it is worth</dt>
+        <dd>Three scenarios show the savings, the costs and the payback. <a href="#economics">The economics</a></dd>
+        <dt>How we prove it</dt>
+        <dd>A twelve-week pilot with a baseline and acceptance criteria. <a href="#roadmap">The roadmap</a></dd>
+      </dl>
     </section>
     <div class="legend">
       <h2 class="legend-title">How to read the grades</h2>
@@ -73,6 +94,12 @@
     </nav>
     <section id="opportunity" aria-labelledby="opportunity-h">
       <div class="sec-head"><span class="sec-num">01</span><h2 id="opportunity-h">What 2x means</h2></div>
+    <p class="chain-pos">Software built → Autonomy enabled → Human work reduced → <b>Marketing capacity increased</b> → Business outcomes improved</p>
+    <p class="evidence-stop"><b>Where the evidence stops.</b> The definition of the target is a choice, made so a CFO can check it. The multiples shown are outputs of this page's model, not observations of any organisation, and nothing here shows outcomes improving until a pilot measures them.</p>
+    <div id="first-edition-scenario"><details class="maths"><summary>The launch-rate scenario from the first edition</summary>
+      <p>The first edition tested a narrower claim as a scenario: a marketing organisation roughly doubles the campaign-markets it launches each quarter, from <span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span>, within a flat total marketing budget and flat headcount. Brief to live falls from <span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span> and cost per approved asset from <span data-fig="cpa-base">$152.18</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$106.38</span>.</p>
+      <p>Production cost rises <span data-fig="total-cost-change">+40%</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> in that scenario, assumed to be funded from other marketing lines <a class="chip c-m" href="#asm-reallocation">Modelled</a>. Gartner puts spend at <span data-fig="gartner-share-2026">7.8%</span> <a class="chip c-b" href="#src-gartner-2026-cmo-spend">Benchmark</a> of revenue and has flatlined. The scenario holds only with governed review: a tiered gate, a review agent and an eval harness.</p>
+    </details></div>
     <div id="s01" class="subsection">
       <h3 id="s01-h">Claim &amp; measurement</h3>
       <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. It is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
@@ -3345,7 +3372,7 @@
     </section>
   </main>
   <footer>
-    <p>Vincent Lyons · 2026-10-24 · Projection, not retrospective</p>
+    <p>Vincent Lyons · 2026-10-25 · Projection, not retrospective</p>
   </footer>
 </div>
 <script type="module" src="js/ui.js"></script>

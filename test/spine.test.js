@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { elementById, strip } from './helpers/html.js';
 
 export const SPINE = [
+  'opportunity',
   'autonomy',
   'build',
 ];

@@ -284,3 +284,12 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
 dl.vendor-dl { margin: 0 0 var(--s-lg); max-width: 44em; }
 dl.vendor-dl dt { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
 dl.vendor-dl dd { margin: 0 0 8px; }
+/* Phase 7 first screen: central chain and six answers (plan 07-01) */
+.chain { list-style: none; display: flex; flex-wrap: wrap; gap: var(--s-xs) var(--s-md); padding: 0; margin: var(--s-md) 0; font: 400 12px/1.6 var(--mono); }
+.chain li + li::before { content: "→ "; color: var(--muted); }
+.chain li:last-child { font-weight: 600; }
+.six-answers { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-xs) var(--s-md); margin: var(--s-md) 0 0; }
+.six-answers dt { font-weight: 600; }
+.six-answers dd { margin: 0; }
+@media (max-width: 640px) { .six-answers { grid-template-columns: 1fr; } .six-answers dd { margin-bottom: var(--s-sm); } }
+/* end Phase 7 first screen */

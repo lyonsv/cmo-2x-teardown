@@ -334,7 +334,7 @@ const ALLOWED_NUMERIC_TOKENS = [
   '2x', // the programme name
   '1x', // identity reference
   '2–3', // falsifier time window, locked copy
-  '2026-10-24', // page date
+  '2026-10-25', // page date
   '10,000', // the s05 title phrase if echoed
   '1', // Figure 1 label
 ];
@@ -381,7 +381,7 @@ test('meta grid carries the subject-org assumptions and the date', () => {
   for (const id of ['asm-revenue', 'asm-marketing-budget', 'asm-budget-share', 'asm-marketing-fte', 'asm-campaigns']) {
     assert.ok(meta.includes(`data-fig="${id}"`), `meta missing ${id}`);
   }
-  assert.ok(meta.includes('2026-10-24'));
+  assert.ok(meta.includes('2026-10-25'));
 });
 
 test('grade key defines three grades and a neutral flag', () => {
@@ -531,7 +531,8 @@ test('no section carries the later note', () => {
 test('copy nits from the Phase 1 UI review', () => {
   const a = strip(sectionHtml('answer'));
   assert.ok(!a.includes('it is not rising'));
-  assert.ok(a.includes('has flatlined'));
+  // 07-01: the v1 answer text moved into the first-edition scenario disclosure in #opportunity.
+  assert.ok(strip(sectionHtml('opportunity')).includes('has flatlined'));
   const s = sectionHtml('s02');
   assert.ok(s.includes('<h4>Budget: flat in total, not in production</h4>'));
   assert.ok(!s.includes('<h4>Flat budget</h4>'));
@@ -543,9 +544,11 @@ test('s01 metric trio labels are Label style with no line break', () => {
   assert.equal((trio.match(/<span class="lbl">/g) || []).length, 3);
 });
 
-test('answer-first paragraph is short and states the falsifier', () => {
+test('answer states thesis and falsifier', () => {
   const text = strip(sectionHtml('answer'));
-  assert.ok(text.split(' ').length <= 120, `answer is ${text.split(' ').length} words`);
+  assert.ok(/thesis/i.test(text) && /agents/.test(text), 'thesis names agents');
+  // 07-01: the cap covers the thesis, chain, honest headline and the six answers.
+  assert.ok(text.split(' ').length <= 260, `answer is ${text.split(' ').length} words`);
   assert.match(text, /falsifier|false/);
   // The falsifier is a disjunction (code review WR-04): flat outcomes alone falsify the claim.
   assert.ok(text.includes('do not improve, or first-pass compliance falls, within 2–3 quarters'), 'answer falsifier must use OR');
@@ -789,13 +792,12 @@ test('s02 states flat budget, scope, six components, AI-spend floor and review c
   else assert.ok(!text.includes(GARTNER_CAVEAT));
 });
 
-test('answer carries the cost per asset and stays short', () => {
-  const a = sectionHtml('answer');
-  assert.ok(a.includes('data-fig="cpa-base"'));
-  assert.ok(a.includes('data-fig="cpa-scaled"'));
-  assert.ok(strip(a).split(' ').length <= 120);
-  for (const id of ['cm-base', 'cm-scaled', 'btl-base', 'btl-scaled']) assert.ok(a.includes(`data-fig="${id}"`), id);
+// 07-01: the v1 launch-rate figures moved from #answer to the first-edition scenario disclosure.
+test('first-edition scenario carries the cost per asset and the launch-rate figures', () => {
+  const a = elementById(html, 'first-edition-scenario');
+  for (const id of ['cpa-base', 'cpa-scaled', 'cm-base', 'cm-scaled', 'btl-base', 'btl-scaled']) assert.ok(a.includes(`data-fig="${id}"`), id);
   assert.ok(strip(a).includes('flat headcount'));
+  assert.ok(strip(sectionHtml('answer')).split(' ').length <= 260);
 });
 
 test('gartner 2026 source row is registered', () => {
@@ -804,9 +806,9 @@ test('gartner 2026 source row is registered', () => {
 
 // ---- Code review CR-02: flat total budget, with the production cost rise shown and its funding graded ----
 
-test('answer and s02 show the production cost rise and how a flat total budget funds it', () => {
-  const a = sectionHtml('answer');
-  assert.ok(a.includes('flat total marketing budget'));
+test('first-edition scenario and s02 show the production cost rise and how a flat total budget funds it', () => {
+  const a = elementById(html, 'first-edition-scenario');
+  assert.ok(strip(a).includes('flat total marketing budget'));
   assert.ok(a.includes('data-fig="total-cost-change"'));
   assert.ok(a.includes('href="#asm-reallocation"'));
   assert.ok(!/same money|at a flat budget/.test(html), 'unqualified flat-budget wording is back');
@@ -816,8 +818,8 @@ test('answer and s02 show the production cost rise and how a flat total budget f
   }
 });
 
-test('answer cites the same Gartner year the model uses for the budget share (IN-07)', () => {
-  const a = sectionHtml('answer');
+test('first-edition scenario cites the same Gartner year the model uses for the budget share (IN-07)', () => {
+  const a = elementById(html, 'first-edition-scenario');
   assert.ok(a.includes('data-fig="gartner-share-2026"'));
   assert.ok(!a.includes('data-fig="gartner-share-2025"'));
   assert.equal(assumptions['asm-budget-share'].display, claims['gartner-share-2026'].display);
