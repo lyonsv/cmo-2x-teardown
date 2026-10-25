@@ -538,16 +538,21 @@ Place after the last `claims[...] =` assignment (the file builds claims across ~
 | A15 | No `<div`/`<section` inside SVG text or comments in `index.html` (helper depth count) | Pattern 2 | Helper throws "unbalanced"; Wave 0 asserts this on all 15 ids |
 | A16 | a11y.mjs and print.mjs can hit the same "no page target" flake | gates.sh | Retry wrapper is a harmless superset |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Hosted-heading duplication for 1:1 hosts (appendices and body 06–09).**
    - Known: CONTEXT/UI-SPEC lock `<div id="sNN">` + h3 inside the new h2 section; appendix titles equal the v1 titles.
    - Unclear: whether the author accepts "The review agent" as h2 then h3.
    - Recommendation: accept (locked); alternative that also satisfies the id rule is to give body 06–09 new h2 titles (UI-SPEC already does: "What it means for CMO outcomes" over "The outcome case") and leave appendices duplicated until Phase 8.
+   - RESOLVED: accepted as locked; body 06–09 get new h2 titles per UI-SPEC, appendix duplication collapses in Phase 8 (plan 05-03).
 2. **Where do ordinal link labels get fixed.** Recommendation: a separate text-only commit immediately after the move (Wave 1b), with its three pinned test strings.
+   - RESOLVED: separate text-only commit right after the move (plan 05-03 Task 2).
 3. **Figure renumbering** (A13). Recommendation: defer to Phase 8.
+   - RESOLVED: no renumbering in Phase 5; Phase 8 renumbers.
 4. **A1–A12 classifications**: planner should present A1, A4 and A12 to the author at the first checkpoint; others are low stakes.
+   - RESOLVED (orchestrator, author away): A1 benchmark; A4 observed with vendor-claimed flag; A12 hypothesis; others per research (plan 05-02).
 5. **UI-SPEC says "ten body sections" and also "nine ids"**: render nine body rows plus the Appendices group, per the UI-SPEC's own note. The TOC test must expect 9 + 6.
+   - RESOLVED: 9 body rows + Appendices group + 6 appendix rows (plan 05-03).
 
 ## Security Domain
 
