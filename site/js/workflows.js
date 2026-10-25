@@ -629,15 +629,22 @@ function scenarioC(x) {
   };
 }
 
-function buildFunding(x) {
+// Code review WR-04: the production cost rise happens at the higher volume, so it is
+// compared with the agency change at that same volume (scenario A's output), not with
+// the same-output agency cut of scenario B. At the higher volume agency spend rises by
+// the growth the output needs, so the agency change can free money only where a
+// workflow's agency reduction outruns its volume growth.
+function buildFunding(x, sc) {
   const { cM, rows } = x;
   const slice_cash_rise = cM.scenario.cost_cash.total - cM.baseline.cost_cash.total;
   const reducible_agency = rows.reduce((t, r) => t + r.w.agency * r.e.s_eff, 0);
+  const agency_change_at_volume = rows.reduce((t, r) => t + r.w.agency * (sc.A.output.per_workflow[r.w.id] * (1 - r.e.s_eff) - 1), 0);
+  const agency_released_at_volume = Math.max(0, -agency_change_at_volume);
   const netted_inside_delta = cM.baseline.cost_cash.variants - cM.scenario.cost_cash.variants;
   return {
     scope: 'cross-scope ratio',
-    slice_cash_rise, reducible_agency, netted_inside_delta,
-    coverage: slice_cash_rise > 0 ? (reducible_agency - netted_inside_delta) / slice_cash_rise : null,
+    slice_cash_rise, reducible_agency, agency_change_at_volume, agency_released_at_volume, netted_inside_delta,
+    coverage: slice_cash_rise > 0 ? Math.max(0, agency_released_at_volume - netted_inside_delta) / slice_cash_rise : null,
   };
 }
 
@@ -775,7 +782,7 @@ export function economics(ec, levers) {
       max_multipliers: buildMaxMultipliers(x),
     };
     const scenarios = { A: scenarioA(x), B: scenarioB(x), C: scenarioC(x) };
-    const funding = buildFunding(x);
+    const funding = buildFunding(x, scenarios);
     const ledger = buildLedger(x, scenarios, funding);
     const check = checkLedger(ledger);
     if (!check.ok) return { ok: false, errors: check.errors };

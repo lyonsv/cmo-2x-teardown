@@ -30,7 +30,7 @@ test('economics(engineContext()) reproduces the 06-02 goldens', () => {
   near(e.scenarios.A.net, -7481083, 2);
   near(e.metric.A.org_after_platform, 1.416, 1e-3);
   near(e.metric.A.portfolio_after_platform, 1.721, 1e-3);
-  near(e.funding.coverage, 3.725, 1e-3);
+  near(e.funding.coverage, 0, 1e-9);
 });
 
 test('overrides move one input and nothing is mutated', () => {
@@ -133,7 +133,7 @@ test('econ claim goldens', () => {
   assert.equal(claims['econ-metric-org_after_platform'].display, '1.42x');
   assert.equal(claims['econ-metric-portfolio_after_platform'].display, '1.72x');
   assert.equal(claims['econ-bridge-slack_baseline'].display, '4.21');
-  assert.equal(claims['econ-funding-coverage'].display, '3.7x');
+  assert.equal(claims['econ-funding-coverage'].display, '0.0x');
   assert.equal(claims['econ-sens-adoption-high-net_B'], undefined, 'adoption has no high case');
   assert.equal(claims['econ-scen-A-payback_simple'], undefined);
 });

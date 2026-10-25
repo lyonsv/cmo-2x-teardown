@@ -456,7 +456,11 @@ test('INV-6: funding nets the variant saving already inside the slice delta', ()
   near(f.netted_inside_delta, 116210.53, 0.01);
   near(f.slice_cash_rise, 935199.14, 0.01);
   near(f.reducible_agency, 3600000, 1e-6);
-  near(f.coverage, 3.7252, 1e-4);
+  // WR-04: like with like. At the higher volume agency spend rises ($5,347,436), so
+  // nothing is released to cover the production cost rise.
+  near(f.agency_change_at_volume, 5347435.9, 1);
+  assert.equal(f.agency_released_at_volume, 0);
+  assert.equal(f.coverage, 0);
   assert.equal(f.scope, 'cross-scope ratio');
 });
 

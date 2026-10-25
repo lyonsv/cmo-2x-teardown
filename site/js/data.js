@@ -1150,7 +1150,7 @@ export function engineContext(ctx = modelContext(), values = engineValues()) {
 
 assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the production cost rise', 'context', null, null, null,
   'assumed to come from other marketing lines; agency spend is modelled as its own line',
-  'The page holds the total marketing budget flat, so the rise in external production spend is assumed to be funded from other marketing lines. The economics engine models agency spend explicitly and tests how far the reducible part covers the rise; that counts only if the spend is actually cut. The cheaper-variant saving is already inside the rise and is not counted again. If those lines cannot shrink, the budget is not flat and the claim must be restated. No published benchmark.');
+  'The first-edition scenario holds the total marketing budget flat, so the rise in external production spend is assumed to be funded from other marketing lines. Agency spend does not fund it: the economics engine compares the rise with the agency change at the same higher volume, and at that volume agency spend rises with the output rather than falling, so it releases nothing. Agency spend can fall only at today\'s output (scenario B), which is not the volume at which production cost rises. The cheaper-variant saving is already inside the rise and is not counted again. If the other lines cannot shrink, the budget is not flat and the claim must be restated. No published benchmark.');
 
 // Code review WR-02: "flat headcount" is asserted, not modelled. Only reviewer
 // capacity is checked, so the marketer side is a visible Speculative assumption.
@@ -1842,9 +1842,10 @@ function engineClaims(ec) {
   // Funding check for the production cost rise.
   const fund = (key, format, what) => econ(`funding-${key}`, `funding.${key}`, format, `Funding check: ${what}`, 'asm-reallocation', { side: '2x' });
   fund('slice_cash_rise', 'usd0', 'rise in external production cash spend');
-  fund('reducible_agency', 'usd0', 'agency spend that could be cut');
+  fund('reducible_agency', 'usd0', 'agency spend that could be cut at today\'s output (scenario B)');
+  fund('agency_change_at_volume', 'usd0', 'change in agency spend at the higher volume');
   fund('netted_inside_delta', 'usd0', 'cheaper-variant saving already inside the rise');
-  fund('coverage', 'x1', 'times the reducible agency spend covers the rise');
+  fund('coverage', 'x1', 'times the agency spend released at the higher volume covers the rise');
   return out;
 }
 Object.assign(claims, engineClaims(engineContext()));
