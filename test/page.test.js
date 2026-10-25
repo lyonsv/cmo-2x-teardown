@@ -325,7 +325,7 @@ const SECTION_RE = SECTION_IDS.join('|');
 const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTED[id].host).title === HOSTED[id].title);
 // Phase 7 body h3s, one line per content plan so concurrent plans do not collide.
 const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, bottleneck, principles
-const P7_H3_BUILD = 4; // plan 07-03 task 1: plain English, six parts, capabilities, own-integrate-platform
+const P7_H3_BUILD = 8; // plan 07-03: plain English, six parts, capabilities, own-integrate-platform, permissions, always-human, smallest-slice, expansion-path
 const MEASURED_H3 = 23 + P7_H3_AUTONOMY + P7_H3_BUILD; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24; // headings inside hosted body blocks
 
@@ -701,7 +701,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
         .replace(new RegExp(`<h[23] id="(?:${[...SECTION_IDS, ...V1_IDS].join('|')})-h">(?:<span id="s\\d\\d-h">)?[^<]*(?:</span>)?</h[23]>`, 'g'), ' ')
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
-    ).replace(/\bT[0-3]\b/g, ' ').replace(/\bBacklog 0\b/g, ' '); // tier names and the programme end-state name
+    ).replace(/\bT[0-3]\b/g, ' ').replace(/\bE[0-5]\b/g, ' ').replace(/\bBacklog 0\b/g, ' '); // tier names, expansion step labels E0-E5 (plan 07-03) and the programme end-state name
     for (const tok of cleaned.match(/\d[\d,.–-]*%?x?/g) || []) {
       const t = tok.replace(/[.,–-]+$/, '');
       assert.ok(ALLOWED_NUMERIC_TOKENS.includes(t), `ungraded numeral "${tok}" in: ${cleaned.slice(0, 80)}`);

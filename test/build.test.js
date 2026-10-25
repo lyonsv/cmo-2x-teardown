@@ -109,3 +109,44 @@ test('no to-follow marker and no vendor or product names in #build', () => {
   assert.ok(!section.includes('class="to-follow"'));
   assert.doesNotMatch(text, VENDOR_RE);
 });
+
+test('permission levels read, draft, stage, publish, spend appear in order and stage is the pilot ceiling', () => {
+  const t = tableByCaption('Permission levels beside asset risk tiers');
+  assert.deepEqual(headers(t), ['Permission level', 'What the agent may do', 'Allowed for tiers', 'Pilot ceiling']);
+  const rows = bodyRows(t).map(cells);
+  assert.deepEqual(rows.map((c) => c[0]), ['Read', 'Draft', 'Stage', 'Publish', 'Spend']);
+  assert.match(rows[2][3], /Pilot ceiling/);
+  for (const i of [0, 1, 3, 4]) assert.doesNotMatch(rows[i][3], /Pilot ceiling\./, `row ${i} is not the ceiling`);
+  assert.match(rows[4][3], /Never in the pilot/);
+  assert.match(section, /href="#s07"/, 'links the full tier definitions');
+});
+
+test('always-human list has at least seven items and links the appendix list', () => {
+  const at = section.indexOf('id="always-human"');
+  const ul = section.slice(at).match(/<ul>([\s\S]*?)<\/ul>/)[1];
+  const items = ul.match(/<li>/g) || [];
+  assert.ok(items.length >= 7, `${items.length} items`);
+  assert.ok(section.slice(at, section.indexOf('<ul>', at)).includes('href="#s07"'));
+});
+
+test('smallest useful version is shown, with a pointer forward to the first workflow', () => {
+  const at = section.indexOf('id="smallest-slice"');
+  assert.ok(at > 0);
+  const part = section.slice(at, section.indexOf('<h3 id="expansion-path"'));
+  assert.match(strip(part), /launching an approved campaign in additional markets/);
+  assert.ok(part.includes('href="#supply-chain"'));
+  assert.ok(!/\d/.test(strip(part).replace(/\bsection 04\b/, '')), 'no digits in the slice description');
+});
+
+test('the expansion path has six rows E0 to E5 in order', () => {
+  const t = tableByCaption('How the system grows from the first slice');
+  assert.deepEqual(headers(t), ['Step', 'Adds', 'Autonomy level']);
+  const steps = bodyRows(t).map((r) => cells(r)[0].slice(0, 2));
+  assert.deepEqual(steps, ['E0', 'E1', 'E2', 'E3', 'E4', 'E5']);
+});
+
+test('the evidence stop says the design has not been run here, and carries no digits', () => {
+  const stop = section.match(/<p class="evidence-stop">[\s\S]*?<\/p>/)[0];
+  assert.match(strip(stop), /None of it has been run in this organisation/);
+  assert.ok(!/\d/.test(strip(stop)));
+});

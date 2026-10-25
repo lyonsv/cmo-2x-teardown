@@ -542,6 +542,70 @@
           </tbody>
         </table>
       </div>
+      <h3 id="permissions">What agents are allowed to do</h3>
+      <p>The risk tiers describe assets. Because agents now publish and spend as well as produce, each system also needs a limit on what an agent may do in it. There are five permission levels, and the first version of the system stops at the third.</p>
+      <div class="table-scroll" role="region" aria-label="Permission levels table" tabindex="0">
+        <table>
+          <caption>Permission levels beside asset risk tiers</caption>
+          <thead><tr><th scope="col">Permission level</th><th scope="col">What the agent may do</th><th scope="col">Allowed for tiers</th><th scope="col">Pilot ceiling</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Read</th><td>Pull approved masters, read performance and read rights records, within the run's scope.</td><td>All tiers, T0 to T3.</td><td>Below the ceiling. Always allowed within scope.</td></tr>
+            <tr><th scope="row">Draft</th><td>Write a brief, create localised copy, draft a page. The output goes to the checks.</td><td>All tiers, T0 to T3.</td><td>Below the ceiling.</td></tr>
+            <tr><th scope="row">Stage</th><td>Build the ad set in a paused state, a page in preview or an email to a test list, after the checks pass.</td><td>T0 and T1 after the checks pass. T2 and T3 are staged only for a person to inspect.</td><td><b>Pilot ceiling.</b> The agent stops here and a person clicks go-live.</td></tr>
+            <tr><th scope="row">Publish</th><td>Activate paused ads, publish a page, send to a live list.</td><td>T0 and T1 only, in markets and channels already approved and within caps, once the evidence supports it. T2 and T3 always need a person.</td><td>Above the ceiling. Automatic publishing starts at step E2 of the expansion path below.</td></tr>
+            <tr><th scope="row">Spend</th><td>Change budgets or bids, or open a new channel.</td><td>No tier is automatic above a cap. Within a pre-approved cap, shifts between approved variants may be automated later.</td><td>Never in the pilot.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A level is raised only when the checks show errors in sampled approvals staying within a limit set from the organisation's own data. The full tier definitions are in <a href="#s07">Appendix C</a>. One further rule keeps the design safe: an agent that reads untrusted material, such as competitor pages or reviews, never holds publish or spend rights in the same step.</p>
+      <h3 id="always-human">Decisions that stay with people</h3>
+      <p>Whatever the permission level, these decisions stay with people. The list agrees with the always-human list in <a href="#s07">Appendix C</a> and adds the decisions that belong to the system's own design.</p>
+      <ul>
+        <li>The objective, its measures and its limits.</li>
+        <li>Approval of the plan, during the pilot.</li>
+        <li>Any new or comparative claim, testimonial or endorsement, and any legal decision.</li>
+        <li>Hero and launch work, and any new creative concept.</li>
+        <li>The likeness or voice of a real person, and content aimed at children.</li>
+        <li>Anything touching third-party rights not yet cleared.</li>
+        <li>Regional sign-off in markets with their own rules.</li>
+        <li>Go-live, during the pilot, and the first go-live in any new country.</li>
+        <li>Any change to spend, and any budget increase.</li>
+        <li>Crisis or sensitive topics, and anything the checks mark as could not be checked.</li>
+      </ul>
+      <h3 id="smallest-slice">The smallest useful version</h3>
+      <p>The smallest version that proves the system is one workflow run end to end: launching an approved campaign in additional markets. It crosses many teams and systems, has a clear unit of output and a clear brief-to-live time, and carries low creative risk because the masters and claims are already approved. It exercises all six parts without building a large platform first. The first workflow in <a href="#supply-chain">section 04</a> walks through it.</p>
+      <div class="table-scroll" role="region" aria-label="Smallest slice table" tabindex="0">
+        <table>
+          <caption>Scope of the smallest useful version</caption>
+          <thead><tr><th scope="col">In the first version</th><th scope="col">Left for later</th></tr></thead>
+          <tbody>
+            <tr><td>One campaign family whose masters and claims are already approved in the source market.</td><td>New concepts and new claims, which always go to a person.</td></tr>
+            <tr><td>A few additional markets that already have legal rule sets.</td><td>First entry into a new country.</td></tr>
+            <tr><td>A few channels, for example paid social and a landing page.</td><td>All channels.</td></tr>
+            <tr><td>Derived variants only: resizes, locales, channel cuts and reuse of approved claims.</td><td>Newly generated imagery.</td></tr>
+            <tr><td>Permission level stage, with a person clicking go-live in each market.</td><td>Automatic publishing.</td></tr>
+            <tr><td>An early-performance read against the source market and the guardrails.</td><td>Automatic budget shifts.</td></tr>
+            <tr><td>A plan from a fixed template, filled in by the agent and approved by the owner.</td><td>Plans chosen by the agent.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The minimum version of each capability is small: an objective form, approved claims, market rules and rights records, one plan template, a handful of connectors, rule checks plus a review agent and a seeded test set, plan approval and go-live in the existing work-management tool, a run record, deployment verification, and proposals only for feedback. The slice has to produce acceptance evidence: human hours per market launched, handoffs per launch, time from objective to verified live, first-pass acceptance, planned and unplanned human interventions, errors found in sampled outputs, and early performance against the guardrails. Targets for these are hypotheses set in the <a href="#roadmap">roadmap</a>.</p>
+      <h3 id="expansion-path">How the system grows from the first slice</h3>
+      <p>Each step reuses the six parts and adds only what is new. Autonomy rises only where the evidence supports it.</p>
+      <div class="table-scroll" role="region" aria-label="Expansion path table" tabindex="0">
+        <table>
+          <caption>How the system grows from the first slice</caption>
+          <thead><tr><th scope="col">Step</th><th scope="col">Adds</th><th scope="col">Autonomy level</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">E0 · Pilot</th><td>The smallest useful version above, at minimum size.</td><td>Agentic execution: agents run the workflow, people review and go live.</td></tr>
+            <tr><th scope="row">E1 · Widen</th><td>More markets, more channels and more campaign families. Connectors for new channels and rule sets for new markets.</td><td>Agentic execution at scale.</td></tr>
+            <tr><th scope="row">E2 · Raise permission</th><td>Automatic publishing of T0 and T1 in already-approved markets within caps, batch approvals and a sampled audit after publication.</td><td>Higher autonomy: execute, check, correct and advance, escalating exceptions.</td></tr>
+            <tr><th scope="row">E3 · Close the loop</th><td>A monitoring run that detects tired creative or underperformance, proposes and then applies refreshes of T0 and T1 assets, and pauses.</td><td>Higher autonomy on the optimise stage.</td></tr>
+            <tr><th scope="row">E4 · Adjacent workflows</th><td>Other workflows on the same parts, each costing a template, its checks and a few connectors, described in <a href="#expansion">section 07</a>.</td><td>Varies by workflow.</td></tr>
+            <tr><th scope="row">E5 · Outcome-directed</th><td>The agent chooses among permitted actions to move a stated measure, judged against holdouts.</td><td>Outcome-directed autonomy, only where holdouts show the changes beat making no change.</td></tr>
+          </tbody>
+        </table>
+      </div>
       <p class="evidence-stop"><b>Where the evidence stops.</b> This is a design drawn from published engineering practice. None of it has been run in this organisation, and the classification of each capability as build, integrate or platform is a judgment to test against your own stack.</p>
       <details class="maths">
         <summary>The first edition's layer view</summary>

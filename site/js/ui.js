@@ -28,7 +28,6 @@ const sensRows = [...document.querySelectorAll('[aria-label="Sensitivity"] tbody
 const sensNote = document.querySelector('[aria-label="Sensitivity"]').nextElementSibling;
 const chart = document.querySelector('svg.fig-live');
 const chartEmpty = document.querySelector('.chart-empty');
-const mathsBox = document.querySelector('details.maths');
 const mathsItems = [...document.querySelectorAll('.maths-steps > li')];
 const believeList = document.querySelector('.believe ul');
 const SENS_CELLS = ['costDown', 'costUp', 'utilDown', 'utilUp'];
@@ -283,10 +282,10 @@ $('reset-calc').addEventListener('click', () => {
   inputs.campaigns.focus();
 });
 
-// The maths opens for printing and goes back afterwards.
-let mathsWasOpen = false;
-window.addEventListener('beforeprint', () => { mathsWasOpen = mathsBox.open; mathsBox.open = true; });
-window.addEventListener('afterprint', () => { mathsBox.open = mathsWasOpen; });
+// Every details.maths fold (the calculator's maths and the content folds) opens for printing; folds closed before are reset.
+let openedForPrint = [];
+window.addEventListener('beforeprint', () => { openedForPrint = [...document.querySelectorAll('details.maths')].filter((d) => !d.open); openedForPrint.forEach((d) => { d.open = true; }); });
+window.addEventListener('afterprint', () => { openedForPrint.forEach((d) => { d.open = false; }); openedForPrint = []; });
 
 window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#s11?')) restore();
