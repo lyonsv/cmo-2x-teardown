@@ -25,7 +25,10 @@ test('economics(engineContext()) reproduces the 06-02 goldens', () => {
   const e = economics(engineContext());
   assert.equal(e.ok, true);
   near(e.scenarios.B.net, 7451190, 2);
-  near(e.scenarios.C.net, 15523156, 2);
+  // CR-02: C's net is cash against today; the avoided-cost figure is separate.
+  near(e.scenarios.C.net, -11912448, 2);
+  near(e.scenarios.C.net_avoided, 15523156, 2);
+  assert.equal(e.scenarios.C.payback_simple, null);
   // CR-01: scenario A charges the agency growth the output needs ($5,347,436).
   near(e.scenarios.A.net, -7481083, 2);
   near(e.metric.A.org_after_platform, 1.416, 1e-3);

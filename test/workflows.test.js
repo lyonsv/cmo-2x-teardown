@@ -376,9 +376,12 @@ test('scenario C goldens', () => {
   near(C.agency.today, 16000000, 1e-6);
   near(C.avoided_cost, 17635603.72, 3);
   near(C.run_cost.total, 2112447.6, 3);
-  near(C.net, 15523156.11, 3);
+  near(C.net_avoided, 15523156.11, 3);
   near(C.versus_today, 11912447.6, 3);
-  near(C.payback_simple, 0.12, 0.005);
+  // CR-02: the net is cash against today (spend rises), so there is no cash payback.
+  near(C.net, -11912447.6, 3);
+  assert.equal(C.payback_simple, null);
+  near(C.payback_avoided, 0.12, 0.005);
   assert.equal(C.label, 'Growing demand, limited hiring');
   assert.equal(run().default_scenario, 'C');
 });
@@ -388,7 +391,7 @@ test('WR-03: the counterfactual funded share applies to avoided agency growth as
   ec.engine.counterfactual_funded_share = 0;
   const r = run(ec);
   assert.equal(r.scenarios.C.avoided_cost, 0);
-  near(r.scenarios.C.net, -r.scenarios.C.run_cost.total, 1e-6);
+  near(r.scenarios.C.net_avoided, -r.scenarios.C.run_cost.total, 1e-6);
   assert.equal(r.ledger.filter((l) => l.scenario === 'C' && l.kind === 'avoided').length, 0);
   ec.engine.counterfactual_funded_share = 0.5;
   const half = run(ec).scenarios.C;
@@ -517,13 +520,13 @@ test('W5 is not in the numerator: reviewer headcount leaves I0 unchanged', () =>
 });
 
 const SENS = {
-  base: { org: 1.416, A: -7481083, B: 7451190, C: 15523156, rem: 39.02 },
-  adoption: { low: { org: 1.134, A: -3923000, B: 2549000, C: 7228000, rem: 18.11 } },
-  escape: { low: { A: -7405000, B: 7485000, C: 15591000 }, high: { A: -7784000, B: 7315000, C: 15250000 } },
-  inference: { low: { A: -7472000, B: 7456000, C: 15532000 }, high: { A: -7550000, B: 7413000, C: 15449000 } },
+  base: { org: 1.416, A: -7481083, B: 7451190, C: -11912448, rem: 39.02 },
+  adoption: { low: { org: 1.134, A: -3923000, B: 2549000, C: -20207000, rem: 18.11 } },
+  escape: { low: { A: -7405000, B: 7485000, C: -11844000 }, high: { A: -7784000, B: 7315000, C: -12185000 } },
+  inference: { low: { A: -7472000, B: 7456000, C: -11903000 }, high: { A: -7550000, B: 7413000, C: -11987000 } },
   review_overhead: {
-    low: { org: 1.462, A: -10482000, B: 8391000, C: 16633000, rem: 44.51 },
-    high: { org: 1.306, A: -4416000, B: 5392000, C: 12781000, rem: 26.84 },
+    low: { org: 1.462, A: -10482000, B: 8391000, C: -10774000, rem: 44.51 },
+    high: { org: 1.306, A: -4416000, B: 5392000, C: -14711000, rem: 26.84 },
   },
 };
 

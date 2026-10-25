@@ -5,6 +5,8 @@ import { readFileSync } from 'node:fs';
 import { elementById, strip } from './helpers/html.js';
 import { claims } from '../site/js/data.js';
 
+const near = (a, b, tol) => assert.ok(Math.abs(a - b) <= tol, `${a} vs ${b}`);
+
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const whole = elementById(html, 'economics');
 // The calculator (#s11) is rewired in plan 07-07 and is out of scope for this file.
@@ -136,18 +138,26 @@ test('scenarios table: three scenario columns with C marked default, honest net,
   const rows = bodyRows(t);
   const label = (r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]);
   const byLabel = Object.fromEntries(rows.map((r) => [label(r), r]));
-  const net = byLabel['Annual net cash effect'];
+  const net = byLabel['Annual net cash effect against today'];
   assert.deepEqual(figsOf(net), ['econ-scen-A-net', 'econ-scen-B-net', 'econ-scen-C-net']);
   assert.deepEqual(figsOf(byLabel['Annual run cost of the programme']), ['econ-scen-A-run_cost', 'econ-scen-B-run_cost', 'econ-scen-C-run_cost']);
   // A has no cash saving and no payback; the engine returns no figure, so the cell says so in words
   assert.ok(claims['econ-scen-A-net'].value < 0, 'scenario A has no cash saving');
   assert.equal(claims['econ-scen-A-payback_simple'], undefined);
-  assert.match(strip(byLabel['Simple payback on the one-off cost']), /Not applicable/);
-  assert.deepEqual(figsOf(byLabel['Simple payback on the one-off cost']), ['econ-scen-B-payback_simple', 'econ-scen-C-payback']);
+  assert.match(strip(byLabel['Simple cash payback on the one-off cost']), /Not applicable: no cash saving/);
+  // CR-02: C's spend rises against today, so it has no cash payback; the avoided-cost
+  // payback is on its own labelled row.
+  assert.match(strip(byLabel['Simple cash payback on the one-off cost']), /Not applicable: spend rises against today/);
+  assert.deepEqual(figsOf(byLabel['Simple cash payback on the one-off cost']), ['econ-scen-B-payback_simple']);
+  assert.ok(claims['econ-scen-C-net'].value < 0, 'scenario C spend rises against today');
+  near(claims['econ-scen-C-net'].value, -claims['econ-scen-C-versus_today'].value, 1e-6);
+  const avoidedRows = rows.filter((r) => /against growing without the programme/.test(label(r)));
+  assert.deepEqual(avoidedRows.flatMap(figsOf), ['econ-scen-C-avoided_cost', 'econ-scen-C-net_avoided', 'econ-scen-C-payback_avoided']);
+  for (const r of avoidedRows) assert.match(label(r), /not (cash|a cash payback)/);
   for (const id of ['econ-scen-A-net', 'econ-scen-B-net', 'econ-scen-C-net']) assert.equal(claims[id].grade, 'Speculative', id);
   // scenario-specific rows
   for (const id of ['econ-scen-A-implied_agency_growth', 'econ-scen-B-removable_fte', 'econ-scen-B-labour_saving', 'econ-scen-B-agency_saving', 'econ-scen-B-year1_net',
-    'econ-scen-B-one_off', 'econ-scen-C-hires_with', 'econ-scen-C-hires_without', 'econ-scen-C-avoided_hires', 'econ-scen-C-avoided_cost', 'econ-scen-C-versus_today']) {
+    'econ-scen-B-one_off', 'econ-scen-C-hires_with', 'econ-scen-C-hires_without', 'econ-scen-C-avoided_hires', 'econ-scen-C-avoided_cost', 'econ-scen-C-net_avoided']) {
     assert.ok(figsOf(t).includes(id), id);
   }
   for (const r of rows) assert.ok(strip(r).length > 0);

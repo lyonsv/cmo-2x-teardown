@@ -345,7 +345,7 @@ function scenarioPresentation(values, ctx) {
     removable_fte: ['Reviewer FTE removable at today\'s output (capacity, not a recommendation)', util, fte],
     reviewer_fte_without: ['Reviewer FTE needed without the programme', util, fte],
     avoided_hires: ['Reviewer hires avoided', util, fte],
-    avoided_hire_cost: ['Annual cost of those hires avoided', people, (v) => formatValue(v, 'usd0')],
+    avoided_hire_cost: ['Avoided hire cost against growing without the programme (not cash, not netted)', people, (v) => formatValue(v, 'usd0')],
     people_cost_change: ['Annual people cost change', people, (v) => formatValue(v, 'usd0')],
     production_cost_change: ['Change in external production spend (cash)', prod, (v) => formatValue(v, 'usd0')],
     change_mgmt_one_off: ['One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],

@@ -615,17 +615,21 @@ function scenarioC(x) {
   // against a plan that would really have been funded, so the funded share applies to both.
   const funded = engine.counterfactual_funded_share;
   const avoided_cost = (avoided * loaded + (agencyWithout - agencyWith)) * funded;
-  const net = avoided_cost - run_cost.total;
+  // Code review CR-02: like A and B, C's net is the cash effect against today. Spend
+  // rises (hires, agency growth and run cost), so there is no cash payback. The saving
+  // against growing without the programme is a separate, avoided-cost figure.
+  const net_avoided = avoided_cost - run_cost.total;
   const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
   const one_off_total = engine.build_one_off + change;
   const versus_today = hiresWith * loaded + (agencyWith - today) + run_cost.total;
+  const net = -versus_today;
   return {
     id: 'C', label: SCENARIO_LABELS.C,
     output: { per_workflow: demand, slice: d },
     labour: { cash_change: hiresWith * loaded, removable_fte: 0, hires_with: hiresWith, hires_without: hiresWithout, avoided_hires: avoided, unused, per_pool },
     agency: { today, without: agencyWithout, scenario: agencyWith, avoided: agencyWithout - agencyWith, avoided_funded: (agencyWithout - agencyWith) * funded },
-    avoided_cost, run_cost, one_off: { build: engine.build_one_off, change, total: one_off_total },
-    net, payback_simple: payback(one_off_total, net), payback_ramped: null, versus_today, bridge,
+    avoided_cost, net_avoided, run_cost, one_off: { build: engine.build_one_off, change, total: one_off_total },
+    net, payback_simple: payback(one_off_total, net), payback_avoided: payback(one_off_total, net_avoided), payback_ramped: null, versus_today, bridge,
   };
 }
 

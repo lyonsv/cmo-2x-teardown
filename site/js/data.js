@@ -1774,14 +1774,15 @@ function engineClaims(ec) {
   scen('B', 'one_off', 'one_off.total', 'usd0', 'one-off cost including severance', 'asm-severance-months', SPEC);
   scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-escape-rate', SPEC);
   scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-escape-rate', SPEC);
-  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
+  scen('C', 'net', 'net', 'usd0', 'net cash effect against today a year (spend rises)', 'asm-escape-rate', SPEC);
   scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
   scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'hires_without', 'labour.hires_without', 'num1', 'hires needed without the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided (FTE)', 'asm-demand-multiplier');
-  scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided a year', 'asm-demand-multiplier');
+  scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided against growing without the programme, a year', 'asm-demand-multiplier');
+  scen('C', 'net_avoided', 'net_avoided', 'usd0', 'cost avoided against growing without the programme, net of run cost, a year (not cash against today)', 'asm-escape-rate', SPEC);
   scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-escape-rate', SPEC);
-  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-escape-rate', SPEC);
+  scen('C', 'payback_avoided', 'payback_avoided', 'years1', 'payback on the cost avoided against growing without the programme (not a cash payback)', 'asm-escape-rate', SPEC);
   scen('C', 'agency_avoided', 'agency.avoided', 'usd0', 'agency spend avoided against the no-programme plan', 'asm-adoption-rate');
 
   // Released-capacity reconciliation (ECON-02), portfolio scope, in FTE. Slack at baseline
