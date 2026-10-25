@@ -26,7 +26,7 @@
 
 - [x] **Phase 5: Restructure Scaffold, Evidence Schema & Guards** - Executive-question section order with semantic ids and legacy anchors, evidence classes on every figure, and tests that stop links, figures and depth being lost (completed 2026-10-25)
 - [x] **Phase 6: Economics Engine** - `calc.js` models W1–W10, the capacity bridge, scenarios A/B/C, investment and sensitivity, with no double counting enforced by invariant tests (completed 2026-10-25)
-- [ ] **Phase 7: Content, Presentation & Publish** - All new reader-facing sections (thesis, Intercom, build, supply chain + diagram, economics/outcomes/calculator, expansion, roadmap, risks, comparison), then validate and publish (merged from former 7–10)
+- [x] **Phase 7: Content, Presentation & Publish** - All new reader-facing sections (thesis, Intercom, build, supply chain + diagram, economics/outcomes/calculator, expansion, roadmap, risks, comparison), then validate and publish (merged from former 7–10) (completed 2026-10-25)
 
 ## Phase Details
 
@@ -94,4 +94,4 @@ Plans:
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
 | 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete    | 2026-10-25 |
 | 6. Economics Engine | v2.0 | 5/5 | Complete    | 2026-10-25 |
-| 7. Content, Presentation & Publish | v2.0 | 9/10 | In Progress|  |
+| 7. Content, Presentation & Publish | v2.0 | 10/10 | Complete   | 2026-10-25 |

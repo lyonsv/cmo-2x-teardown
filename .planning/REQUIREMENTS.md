@@ -45,23 +45,23 @@
 - [x] **THESIS-02**: The reader sees an explicit 2x definition: one primary metric, a speed measure, quality guardrails and outcome metrics, with trade-offs explained.
 - [x] **THESIS-03**: Capacity, efficiency and effectiveness are defined and kept separate, and the page states that doubled capacity does not establish doubled revenue.
 - [x] **THESIS-04**: The page states honestly what the default model gives organisation-wide versus on the delegated portfolio.
-- [ ] **THESIS-05**: The reader sees the autonomy ladder (assistance, agentic execution, higher autonomy, outcome-directed autonomy) and when higher autonomy is and is not justified.
+- [x] **THESIS-05**: The reader sees the autonomy ladder (assistance, agentic execution, higher autonomy, outcome-directed autonomy) and when higher autonomy is and is not justified.
 - [x] **THESIS-06**: The page explains why marketing has no merged-PR equivalent and how the constructed unit of completed work avoids that trap.
 
 ### Intercom evidence (INTERCOM)
 
-- [ ] **INTERCOM-01**: The reader sees what Intercom measured and why, its results tagged company-reported with dates and sources.
-- [ ] **INTERCOM-02**: The reader sees what Intercom demonstrated versus what remains uncertain.
-- [ ] **INTERCOM-03**: The reader sees how the bottleneck moved across the engineering lifecycle and why the same happens in marketing.
-- [ ] **INTERCOM-04**: The reader sees a table of transferable operating principles, their marketing translation and what does not transfer.
+- [x] **INTERCOM-01**: The reader sees what Intercom measured and why, its results tagged company-reported with dates and sources.
+- [x] **INTERCOM-02**: The reader sees what Intercom demonstrated versus what remains uncertain.
+- [x] **INTERCOM-03**: The reader sees how the bottleneck moved across the engineering lifecycle and why the same happens in marketing.
+- [x] **INTERCOM-04**: The reader sees a table of transferable operating principles, their marketing translation and what does not transfer.
 
 ### What needs to be built (BUILD)
 
-- [ ] **BUILD-01**: An early, prominent section titled "What needs to be built" opens with a plain-English description of what the system does, who uses it and how it works, readable in about 60 seconds.
-- [ ] **BUILD-02**: The reader sees each capability (objective record, context library, workflow engine, connectors and permissions, worker agents, checks and evals, approval inbox, run record, outcome measurement, feedback) with problem, software, inputs/integrations, agent permissions, verification, human intervention and autonomy contribution.
-- [ ] **BUILD-03**: Each capability is marked build-and-own, integrate, or already provided by existing platforms (by category in the body).
-- [ ] **BUILD-04**: The reader sees permission levels (read, draft, stage, publish, spend) beside asset risk tiers T0–T3 and the always-human decisions.
-- [ ] **BUILD-05**: The reader sees the smallest useful end-to-end slice and how the architecture expands from it (E0–E5).
+- [x] **BUILD-01**: An early, prominent section titled "What needs to be built" opens with a plain-English description of what the system does, who uses it and how it works, readable in about 60 seconds.
+- [x] **BUILD-02**: The reader sees each capability (objective record, context library, workflow engine, connectors and permissions, worker agents, checks and evals, approval inbox, run record, outcome measurement, feedback) with problem, software, inputs/integrations, agent permissions, verification, human intervention and autonomy contribution.
+- [x] **BUILD-03**: Each capability is marked build-and-own, integrate, or already provided by existing platforms (by category in the body).
+- [x] **BUILD-04**: The reader sees permission levels (read, draft, stage, publish, spend) beside asset risk tiers T0–T3 and the always-human decisions.
+- [x] **BUILD-05**: The reader sees the smallest useful end-to-end slice and how the architecture expands from it (E0–E5).
 
 ### Content supply chain (FLOW)
 
@@ -109,8 +109,8 @@
 ### Quality gates (QA)
 
 - [x] **QA-05**: `node --test`, crosscheck, smoke, a11y and print gates pass, and the page is checked at desktop and 320px, before each publish.
-- [ ] **QA-06**: W3C Nu validation reports 0 errors on the final page.
-- [ ] **QA-07**: The final page is published to GitHub Pages and a completion summary lists changes, material assumptions, what remains unverified and checks run.
+- [x] **QA-06**: W3C Nu validation reports 0 errors on the final page.
+- [x] **QA-07**: The final page is published to GitHub Pages and a completion summary lists changes, material assumptions, what remains unverified and checks run.
 
 ## Future Requirements
 
@@ -158,17 +158,17 @@
 | THESIS-02 | Phase 7 | Complete |
 | THESIS-03 | Phase 7 | Complete |
 | THESIS-04 | Phase 7 | Complete |
-| THESIS-05 | Phase 7 | Pending |
+| THESIS-05 | Phase 7 | Complete |
 | THESIS-06 | Phase 7 | Complete |
-| INTERCOM-01 | Phase 7 | Pending |
-| INTERCOM-02 | Phase 7 | Pending |
-| INTERCOM-03 | Phase 7 | Pending |
-| INTERCOM-04 | Phase 7 | Pending |
-| BUILD-01 | Phase 7 | Pending |
-| BUILD-02 | Phase 7 | Pending |
-| BUILD-03 | Phase 7 | Pending |
-| BUILD-04 | Phase 7 | Pending |
-| BUILD-05 | Phase 7 | Pending |
+| INTERCOM-01 | Phase 7 | Complete |
+| INTERCOM-02 | Phase 7 | Complete |
+| INTERCOM-03 | Phase 7 | Complete |
+| INTERCOM-04 | Phase 7 | Complete |
+| BUILD-01 | Phase 7 | Complete |
+| BUILD-02 | Phase 7 | Complete |
+| BUILD-03 | Phase 7 | Complete |
+| BUILD-04 | Phase 7 | Complete |
+| BUILD-05 | Phase 7 | Complete |
 | FLOW-01 | Phase 7 | Complete |
 | FLOW-02 | Phase 7 | Complete |
 | FLOW-03 | Phase 7 | Complete |
@@ -193,8 +193,8 @@
 | RISK-01 | Phase 7 | Complete |
 | COMP-01 | Phase 7 | Complete |
 | QA-05 | Phase 7 | Complete |
-| QA-06 | Phase 7 | Pending |
-| QA-07 | Phase 7 | Pending |
+| QA-06 | Phase 7 | Complete |
+| QA-07 | Phase 7 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 62 total
