@@ -478,6 +478,13 @@ test('cross-reference labels match the new section numbering', () => {
     }
   }
   assert.ok(checked >= 20, `only ${checked} labelled links checked`);
+  // Code review IN-06: one label form, "section NN" with two digits, in links and in prose.
+  for (const [, , text] of html.matchAll(/<a href="#(s\d\d)">([^<]*)<\/a>/g)) {
+    if (/^section /i.test(text)) assert.match(text, /^[Ss]ection \d\d$/, text);
+  }
+  const prose = strip(html.replace(/<tr id="src-[^"]+">[\s\S]*?<\/tr>/g, ' '));
+  const loose = prose.match(/\b[Ss]ection (?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|\d(?!\d))\b/g) || [];
+  assert.deepEqual(loose, [], 'section labels use two digits');
 });
 
 test('framing stubs carry the to-follow marker only in the four stub sections', () => {
@@ -1489,13 +1496,13 @@ test('s13 adoption and Backlog 0', () => {
     // WR-06: every stage, including Steady state, is the author's design.
     assert.ok(r.includes('<a class="chip c-s" href="#asm-adoption-design">Speculative</a>'), r);
   }
-  assert.ok(s.includes('<a href="#s11">section 5</a>'));
+  assert.ok(s.includes('<a href="#s11">section 05</a>'));
   assert.ok(/<h4>What stays human<\/h4>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
   const t = strip(s);
   assert.ok(!t.includes('Intercom'));
   assert.ok(!VENDOR_RE.test(t));
   assert.ok(!/does not have|does not exist/.test(t));
-  assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 5 .'));
+  assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 05 .'));
   // IN-07: no ungraded illustrative quantity in the role-shift paragraph.
   assert.ok(t.includes('A designer who once produced every resize by hand now sets the rules'));
   assert.ok(!/\bforty resizes\b/.test(t));
