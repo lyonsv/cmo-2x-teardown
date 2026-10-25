@@ -278,9 +278,9 @@ test('Scenario group: three radios a, b, c with C checked, change-cost line with
   assert.ok(group, 'scenario fieldset');
   const labels = [...group[1].matchAll(/<label class="radio"><input type="radio" name="scenario" value="(a|b|c)"( checked)?><span class="radio-text"><span class="radio-title">([^<]*)<\/span><span class="radio-desc">([^<]*)<\/span><\/span><\/label>/g)];
   assert.deepEqual(labels.map((m) => [m[1], !!m[2], m[3], decodeAll(m[4])]), [
-    ['a', false, 'A: same team, more output', 'Keep the team and deliver the multiple you set above.'],
+    ['a', false, 'A: same team, more output', 'Keep the team and deliver the 2x output.'],
     ['b', false, 'B: same output, lower cost', "Hold today's volume and see how much reviewer capacity the programme frees."],
-    ['c', true, 'C: growing demand, limited hiring', 'Demand grows to the multiple you set; see the reviewer hires the programme avoids.'],
+    ['c', true, 'C: growing demand, limited hiring', 'Demand doubles; see the reviewer hires the programme avoids.'],
   ]);
   const chg = assumptions['asm-change-mgmt'];
   // WR-06: the form sits in a .calc-live wrapper, which carries no data-fig, so the
