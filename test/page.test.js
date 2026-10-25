@@ -426,6 +426,21 @@ test('cross-reference labels match the new section numbering', () => {
   assert.ok(checked >= 20, `only ${checked} labelled links checked`);
 });
 
+test('framing stubs carry the to-follow marker only in the four stub sections', () => {
+  assert.equal((html.match(/class="to-follow"/g) || []).length, 4);
+  for (const id of ['autonomy', 'build', 'supply-chain', 'economics']) {
+    const el = elementById(html, id);
+    assert.equal((el.match(/class="to-follow"/g) || []).length, 1, id);
+    const firstSub = el.indexOf('class="subsection"');
+    const marker = el.indexOf('class="to-follow"');
+    assert.ok(firstSub === -1 || marker < firstSub, `${id} marker precedes hosted blocks`);
+    const stub = el.slice(0, marker).split('<p>').pop();
+    assert.ok(!/\d/.test(stub), `${id} stub has a digit`);
+    assert.ok(!stub.includes('data-fig') && !stub.includes('chip'), `${id} stub has a figure or chip`);
+    assert.ok(!stub.includes('Intercom'), `${id} stub names Intercom`);
+  }
+});
+
 // Every section is now filled; the later note must not appear anywhere.
 test('no section carries the later note', () => {
   assert.ok(!html.includes('class="later"'));

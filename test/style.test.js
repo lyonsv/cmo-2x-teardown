@@ -42,7 +42,7 @@ test('grade chip text is at least 4.5:1 on every background it sits on', () => {
   }
 });
 
-test('muted text (meta, captions, flags, later notes) is at least 4.5:1 on paper and paper-2', () => {
+test('muted text (meta, captions, flags, later and to-follow notes) is at least 4.5:1 on paper and paper-2', () => {
   for (const bg of ['paper', 'paper-2']) {
     const c = contrast(token('muted'), token(bg));
     assert.ok(c >= 4.5, `--muted on ${bg} is ${c.toFixed(2)}:1`);
