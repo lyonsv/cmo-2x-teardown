@@ -65,6 +65,8 @@ const NONNEG_FIELDS = [
   'storage_cost_per_variant', 'tooling_cost_annual', 'build_days', 'review_service_days',
 ];
 
+const OPTIONAL_NONNEG_FIELDS = ['concept_internal_hours', 'marketer_rate_per_hour'];
+
 const isNonNeg = (x) => typeof x === 'number' && Number.isFinite(x) && x >= 0;
 const isShare = (x) => isNonNeg(x) && x <= 1;
 
@@ -78,6 +80,11 @@ function validateCost(assumptions, errors) {
   both('auto_approval_share', isShare, 'must be a finite share between 0 and 1');
   for (const f of SHARE_FIELDS) both(f, isShare, 'must be a finite share between 0 and 1');
   for (const f of NONNEG_FIELDS) both(f, isNonNeg, 'must be a finite number of at least 0');
+  // Optional per-side fields: absent means 0 (legacy numbers unchanged); present must be valid.
+  for (const f of OPTIONAL_NONNEG_FIELDS) {
+    if (a[f] === undefined) continue;
+    both(f, isNonNeg, 'must be a finite number of at least 0');
+  }
   if (!isShare(a.target_utilisation) || a.target_utilisation <= 0) {
     errors.push({ field: 'target_utilisation', message: 'target_utilisation must be greater than 0 and at most 1' });
   }
@@ -127,8 +134,11 @@ function side(inputs, a, which, m) {
   const utilisation = (review_hours * (1 + r)) / review_capacity_hours;
   const variantCost = S('variant_cost');
   const tooling = S('tooling_cost_annual');
+  // master_concept_cost is the agency fee per concept; internal hours are priced at the marketer rate.
+  const conceptHours = S('concept_internal_hours') ?? 0;
+  const marketerRate = S('marketer_rate_per_hour') ?? 0;
   const cost = {
-    generation: concepts * S('master_concept_cost') + G * variantCost,
+    generation: concepts * (S('master_concept_cost') + conceptHours * marketerRate) + G * variantCost,
     review: review_hours * rate,
     rework: r * G * variantCost + r * G * h * hoursPer * rate,
     tooling,
@@ -136,6 +146,20 @@ function side(inputs, a, which, m) {
     storage: V * S('storage_cost_per_variant'),
   };
   cost.total = cost.generation + cost.review + cost.rework + cost.tooling + cost.rights + cost.storage;
+  const cost_cash = {
+    concept_fee: concepts * S('master_concept_cost'),
+    variants: G * variantCost * (1 + r),
+    tooling,
+    rights: cost.rights,
+    storage: cost.storage,
+  };
+  cost_cash.total = cost_cash.concept_fee + cost_cash.variants + cost_cash.tooling + cost_cash.rights + cost_cash.storage;
+  const cost_internal = {
+    concept_hours: concepts * conceptHours * marketerRate,
+    review: review_hours * (1 + r) * rate,
+  };
+  cost_internal.total = cost_internal.concept_hours + cost_internal.review;
+  const reviewer_fte_required = (review_hours * (1 + r)) / (a.reviewer_hours_per_fte_year * a.target_utilisation);
   const cost_per_asset_by_component = {};
   for (const comp of ['generation', 'review', 'rework', 'tooling', 'rights', 'storage']) cost_per_asset_by_component[comp] = cost[comp] / V;
   const ai_spend = G * variantCost * S('ai_share_of_variant_cost') + tooling * S('ai_share_of_tooling');
@@ -143,7 +167,14 @@ function side(inputs, a, which, m) {
   const service = S('review_service_days');
   const brief_to_live_days = exceeded ? null
     : S('build_days') + (1 + r) * (service + (service * utilisation) / (1 - utilisation));
+  // Pooled lower bound: Erlang C with floor(reviewer_fte) servers; M/M/1 above is the upper bound.
+  // Capped at 2000 servers so extreme reviewer counts cannot make the recurrence run for ever;
+  // fewer servers at the same utilisation wait longer, so the cap stays conservative.
+  const servers = Math.min(2000, Math.floor(inputs.reviewer_fte));
+  const brief_to_live_days_pooled = exceeded || servers < 1 ? null
+    : S('build_days') + (1 + r) * (service + waitMMc(servers, utilisation, service));
   return {
+    cost_cash, cost_internal, reviewer_fte_required, brief_to_live_days_pooled,
     campaigns, markets, campaign_markets_per_year, campaign_markets_per_quarter,
     concepts, variants_per_concept, variants_per_campaign_market, variants_per_year, generated_variants_per_year,
     human_touch_share: h, review_hours, review_capacity_hours, utilisation, review_capacity_exceeded: exceeded,
@@ -151,6 +182,25 @@ function side(inputs, a, which, m) {
     cost_per_campaign_market: cost.total / campaign_markets_per_year, ai_spend, brief_to_live_days,
     production_share_of_budget: cost.total / inputs.marketing_budget,
   };
+}
+
+// Erlang C probability of waiting for c servers at utilisation rho (Erlang B recurrence).
+// Function declarations (hoisted) so an import cycle with workflows.js stays safe.
+export function erlangC(c, rho) {
+  const A = rho * c;
+  let B = 1;
+  for (let k = 1; k <= c; k++) B = (A * B) / (k + A * B);
+  return B / (1 - rho * (1 - B));
+}
+export function waitMMc(c, rho, s) {
+  return (erlangC(c, rho) * s) / (c * (1 - rho));
+}
+export function waitMM1(rho, s) {
+  return (s * rho) / (1 - rho);
+}
+// p per-step success, k steps between verification gates, R retries per segment.
+export function chainSuccess(p, steps, k, R) {
+  return Math.pow(1 - Math.pow(1 - Math.pow(p, k), R + 1), Math.ceil(steps / k));
 }
 
 // Minimum auto-approval share at 2x that keeps reviewer utilisation at or below
@@ -217,10 +267,56 @@ export function compute(inputs, assumptions) {
     total_cost: scenario.cost.total - baseline.cost.total,
     production_share_of_budget: scenario.production_share_of_budget - baseline.production_share_of_budget,
   };
+  // Extra sides: programme at today's volume, and 2x volume with baseline assumptions (scale only).
+  const programme1 = side(inputs, assumptions, 'scaled', 1);
+  const scaleOnly = side(inputs, assumptions, 'baseline', inputs.multiplier);
+  const F = inputs.reviewer_fte;
+  const Req0 = baseline.reviewer_fte_required;
+  const ReqP1 = programme1.reviewer_fte_required;
+  const ReqPm = scenario.reviewer_fte_required;
+  const ReqWo = scaleOnly.reviewer_fte_required;
+  const div = (n, d) => (d === 0 ? null : n / d);
+  const capacity_bridge = {
+    fte: F,
+    required_baseline: Req0,
+    slack_baseline: F - Req0,
+    required_programme_same_output: ReqP1,
+    removable_same_output: Req0 - ReqP1,
+    required_programme: ReqPm,
+    programme_added_load: ReqPm - Req0,
+    required_without_programme: ReqWo,
+    work_avoided: ReqWo - ReqPm,
+    avoided_hires: Math.max(0, ReqWo - F) - Math.max(0, ReqPm - F),
+    unused: Math.max(0, F - ReqPm),
+    max_multiple_at_target: div(F, ReqP1),
+    max_multiple_at_full: div(F, ReqP1 * assumptions.target_utilisation),
+    max_multiple_without_programme: div(F, Req0),
+  };
+  // Scale-vs-programme decomposition. scale_effect = 2x volume at baseline assumptions;
+  // programme_effect = the programme's assumption changes at 2x volume.
+  const effectOf = (get) => {
+    const b = get(baseline);
+    const so = get(scaleOnly);
+    const wp = get(scenario);
+    if (b === null || so === null || wp === null) {
+      return { baseline: b, scale_only: so, with_programme: wp, scale_effect: null, programme_effect: null, scale_share: null, reason: 'over_capacity' };
+    }
+    return {
+      baseline: b, scale_only: so, with_programme: wp, scale_effect: so - b, programme_effect: wp - so,
+      scale_share: div(so - b, wp - b),
+    };
+  };
+  const effects = {
+    total_cost: effectOf((x) => x.cost.total),
+    cost_per_asset: effectOf((x) => x.cost_per_asset),
+    cost_per_campaign_market: effectOf((x) => x.cost_per_campaign_market),
+    brief_to_live_days: effectOf((x) => x.brief_to_live_days),
+  };
   const break_even_auto_approval = breakEven(assumptions, scenario, assumptions.target_utilisation);
   const capacity_auto_approval = breakEven(assumptions, scenario, 1);
   const out = {
     ok: true, baseline, scenario, ratios, undefined_ratios, deltas, break_even_auto_approval, capacity_auto_approval,
+    capacity_bridge, effects,
   };
   // Last resort only: validation should stop every bad input first. Reaching
   // this means overflow from extreme but individually valid inputs, so no single
