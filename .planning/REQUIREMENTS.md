@@ -77,7 +77,7 @@
 - [x] **ECONP-02**: The reader sees scenarios A, B and C side by side with annual financial implications, required investment and payback.
 - [x] **ECONP-03**: The reader sees the released-hours reconciliation (eliminated, redeployed, avoided hires, external spend, removable headcount, baseline slack) and the reconciled reviewer capacity.
 - [x] **ECONP-04**: The reader sees sensitivity to adoption, error rates, inference cost and review overhead.
-- [ ] **ECONP-05**: The calculator offers scenarios A/B/C, keeps its existing inputs, share link and "show the maths", and labels corrected (no mislabelled "fully loaded").
+- [x] **ECONP-05**: The calculator offers scenarios A/B/C, keeps its existing inputs, share link and "show the maths", and labels corrected (no mislabelled "fully loaded").
 - [x] **ECONP-06**: The reader sees the workflow inventory with all eight brief fields and a prioritisation by value, feasibility, repeatability, risk and measurable autonomy.
 
 ### Outcomes (OUT)
@@ -179,7 +179,7 @@
 | ECONP-02 | Phase 7 | Complete |
 | ECONP-03 | Phase 7 | Complete |
 | ECONP-04 | Phase 7 | Complete |
-| ECONP-05 | Phase 7 | Pending |
+| ECONP-05 | Phase 7 | Complete |
 | ECONP-06 | Phase 7 | Complete |
 | OUT-01 | Phase 7 | Pending |
 | OUT-02 | Phase 7 | Pending |
