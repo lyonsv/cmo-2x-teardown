@@ -9,8 +9,9 @@ import { withPage, startServer, sleep, runCleanups } from './cdp.mjs';
 
 // Drift ceiling = round(measured pages * 1.15). Measured 87 pages on 2026-10-24 (preferCSSPageSize, printBackground).
 // Raised deliberately in Phase 7 plan 07-03: sections 02 and 03 now carry long tables and folds (print opens every
-// details.maths fold). Measured 114 pages on 2026-10-25, ceiling round(114 * 1.15) = 131. Later Phase 7 plans re-measure.
-const CEILING = 131;
+// details.maths fold). Measured 114 pages on 2026-10-25, ceiling round(114 * 1.15) = 131. Raised again in plan 07-04 (section 04 with the
+// two-variant diagram, stage table and worked example): measured 133 pages on 2026-10-25, ceiling round(133 * 1.15) = 153.
+const CEILING = 153;
 
 let failed = false;
 const pass = (n, d) => console.log(`PASS ${n}${d ? `: ${d}` : ''}`);

@@ -127,6 +127,31 @@ svg.fig-d { display: block; width: 100%; max-width: 360px; height: auto; margin:
 .fig-d .edge-soft { stroke: var(--muted); stroke-dasharray: 4 4; }
 .fig-d .arrow-head { fill: var(--ink); }
 .fig-d .arrow-head-review { fill: var(--verified); }
+/* Phase 7 content supply chain diagram (Figure 3, plan 07-04): two SVG variants, switched by CSS only (CSP forbids inline style). */
+.fig-flow { display: block; width: 100%; height: auto; margin: 0 auto; }
+.flow-wide { display: none; max-width: 960px; }
+.flow-narrow { max-width: 360px; }
+@media (min-width: 760px) { .flow-wide { display: block; } .flow-narrow { display: none; } }
+.fig-flow text { font: 400 12px var(--mono); fill: var(--ink); }
+.fig-flow .lane-lbl { font-weight: 600; fill: var(--muted); letter-spacing: .08em; }
+.fig-flow .stage-lbl, .fig-flow .node-t { font-weight: 600; }
+.fig-flow .note { fill: var(--muted); }
+.fig-flow .rule { stroke: var(--rule); stroke-width: 1; }
+.fig-flow .node rect, .fig-flow .key-agent { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+.fig-flow .node-human rect, .fig-flow .key-human { fill: var(--paper-2); stroke: var(--ink); stroke-width: 2.5; }
+.fig-flow .node-fades rect, .fig-flow .key-fades { stroke-dasharray: 5 3; }
+.fig-flow .node-review rect, .fig-flow .key-review { fill: var(--paper-2); stroke: var(--verified); stroke-width: 2; }
+.fig-flow .key-fades { fill: var(--paper-2); stroke: var(--ink); stroke-width: 2.5; }
+.fig-flow .run rect, .fig-flow .key-run { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; }
+.fig-flow .run path { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 2 3; }
+.fig-flow .platform rect { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.5; }
+.fig-flow .system rect { fill: var(--paper); stroke: var(--rule); stroke-width: 1; }
+.fig-flow .boundary, .fig-flow .key-boundary { stroke: var(--verified); stroke-width: 2; stroke-dasharray: 8 4; }
+.fig-flow .edge { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.fig-flow .edge-review { stroke: var(--verified); stroke-width: 2; }
+.fig-flow .edge-soft { stroke: var(--muted); stroke-dasharray: 4 4; }
+.fig-flow .arrow-head { fill: var(--ink); }
+.fig-flow .arrow-head-review { fill: var(--verified); }
 .steps-h { font: 600 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 var(--s-sm); }
 .fig-steps { margin: 0; padding-left: var(--s-lg); max-width: 44em; }
 .fig-steps li + li { margin-top: var(--s-sm); }
@@ -264,6 +289,15 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .fig-d .edge-review, .fig-d .node-review rect { stroke: #000; stroke-width: 3; }
   .fig-d .arrow-head-review { fill: #000; }
   .fig-d .node-review rect { fill: #fff; }
+  .flow-wide { display: block; max-width: 100%; }
+  .flow-narrow { display: none; }
+  .fig-flow text { fill: #000; }
+  .fig-flow .note, .fig-flow .lane-lbl { fill: #333; }
+  .fig-flow .edge, .fig-flow .node rect, .fig-flow .platform rect { stroke: #555; }
+  .fig-flow .node-human rect, .fig-flow .key-human, .fig-flow .key-fades { stroke: #000; }
+  .fig-flow .edge-review, .fig-flow .node-review rect, .fig-flow .boundary, .fig-flow .key-boundary, .fig-flow .key-review { stroke: #000; }
+  .fig-flow .arrow-head-review { fill: #000; }
+  .fig-flow .node-review rect, .fig-flow .key-review { fill: #fff; }
   .default-mark { border-color: #000; }
   .status { border-color: #000; color: #000; }
   .status-disputed { border-style: double; }
