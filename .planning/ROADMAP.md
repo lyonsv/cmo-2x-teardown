@@ -46,7 +46,7 @@
 **Plans**: 5 plans
 Plans:
 - [x] 05-01-PLAN.md — Guards on the v1 page: balanced-tag test helper, inventory and share-link fixtures, anchor and jargon tests, scripts/gates.sh
-- [ ] 05-02-PLAN.md — Evidence schema in data.js (EVIDENCE, ALLOWED_PAIRS, evidence on every source, assumption and claim) with pair tests
+- [x] 05-02-PLAN.md — Evidence schema in data.js (EVIDENCE, ALLOWED_PAIRS, evidence on every source, assumption and claim) with pair tests
 - [ ] 05-03-PLAN.md — Mechanical move to executive-question order with semantic ids and new TOC, then ordinal-label text fix
 - [ ] 05-04-PLAN.md — Framing stubs, appendix divider and Supports pointers
 - [ ] 05-05-PLAN.md — Evidence column in both registers, evidence key in the grade legend, phase-close gates
@@ -126,7 +126,7 @@ Plans:
 | 3. Levers, Outcomes, Calculator & Comparison Slice | v1.0 | 12/12 | Complete | 2026-10-24 |
 | 3.1 Headline Metric Reframe | v1.0 | 7/7 | Complete | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
-| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 1/5 | In Progress|  |
+| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 2/5 | In Progress|  |
 | 6. Economics Engine | v2.0 | 0/TBD | Not started | - |
 | 7. Thesis, Intercom Evidence & What Needs to Be Built | v2.0 | 0/TBD | Not started | - |
 | 8. Content Supply Chain & Diagram | v2.0 | 0/TBD | Not started | - |
