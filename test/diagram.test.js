@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 
@@ -15,14 +16,22 @@ function attr(tag, name) {
   return m ? m[1] : null;
 }
 
+// Code review IN-05: a figure belongs to the v1 block whose element actually contains
+// it, so a figure added after a block closes is not credited to that block.
+const V1_SPANS = Array.from({ length: 15 }, (_, i) => `s${String(i + 1).padStart(2, '0')}`).map((id) => {
+  const el = elementById(html, id);
+  const at = html.indexOf(el);
+  return { id, start: at, end: at + el.length };
+});
+const containingV1 = (pos) => (V1_SPANS.filter((x) => pos >= x.start && pos < x.end).sort((a, b) => b.start - a.start)[0] || { id: null }).id;
+
 function figures() {
   const out = [];
   for (const m of html.matchAll(/<figure>[\s\S]*?<\/figure>/g)) {
     if (!m[0].includes('<svg class="fig-d"')) continue;
     const svg = m[0].match(/<svg class="fig-d"[\s\S]*?<\/svg>/)[0];
     const n = Number(svg.match(/<title id="fd(\d+)-t"/)[1]);
-    const before = html.slice(0, m.index);
-    const sec = [...before.matchAll(/<(?:section|div) id="(s\d\d)"/g)].pop()[1];
+    const sec = containingV1(m.index);
     out.push({ html: m[0], svg, n, sec, index: m.index });
   }
   return out;
