@@ -374,6 +374,293 @@ function buildPoolTotals(x, pools) {
   };
 }
 
+// ---------------------------------------------------------------- run cost and ledger
+
+const COUNTED_IN = ['labour', 'agency', 'vendor', 'ai'];
+const RUN_LINE_KIND = {
+  platform_team: 'labour', platform_tooling: 'vendor', autonomy_overhead: 'labour',
+  inference: 'ai', variant_ai: 'ai', escape: 'vendor',
+};
+
+// Programme run cost at a scenario's volumes. volumeOf(row) is the volume multiple
+// of each typed workflow; mSlice is the volume multiple of the pilot slice (W5).
+function runCost(x, volumeOf, mSlice) {
+  const { engine, fixed, asm, k, c1, rows } = x;
+  const pt = engine.platform_team;
+  const tooling = pickSide(asm.tooling_cost_annual, 'scaled') - pickSide(asm.tooling_cost_annual, 'baseline');
+  const n = rows.filter((r) => r.w.level >= 3).length + 1;
+  const ao = engine.autonomy_overhead_hours;
+  const overhead_hours = (ao.per_workflow_month * 12 * n + ao.calibration_month * 12) * k.review_overhead;
+  const overhead_rate = fixed.loaded_fte_cost / asm.reviewer_hours_per_fte_year;
+  let inference = 0;
+  for (const r of rows) inference += r.w.units * volumeOf(r) * inferencePerUnit(r.w.profile, engine, k.inference);
+  const G = c1.scenario.generated_variants_per_year * mSlice;
+  const autoB = pickSide(asm.auto_approval_share, 'baseline');
+  const autoS = pickSide(asm.auto_approval_share, 'scaled');
+  const unseen = 1 - pickSide(asm.sampling_rate, 'scaled') - pickSide(asm.escalation_rate, 'scaled');
+  const lines = {
+    platform_team: pt.fte * pt.cost_per_fte,
+    platform_tooling: tooling,
+    autonomy_overhead: overhead_hours * overhead_rate,
+    inference,
+    variant_ai: G * pickSide(asm.variant_cost, 'scaled'),
+    escape: G * (autoS - autoB) * unseen * engine.escape_rate * k.escape * engine.cost_per_escape,
+  };
+  lines.total = lines.platform_team + lines.platform_tooling + lines.autonomy_overhead + lines.inference + lines.variant_ai + lines.escape;
+  return { ...lines, autonomy_overhead_hours: overhead_hours, autonomy_workflows: n };
+}
+
+export function checkLedger(rows) {
+  const errors = [];
+  if (!Array.isArray(rows)) return { ok: false, errors: [{ field: 'rows', message: 'ledger must be an array of rows' }] };
+  const ids = new Set();
+  const bySource = new Map();
+  rows.forEach((row, i) => {
+    const bad = (message) => errors.push({ field: row && row.id !== undefined ? row.id : `rows[${i}]`, message });
+    if (!row || typeof row !== 'object') return bad('row must be an object');
+    if (typeof row.id !== 'string' || row.id === '') bad('id must be a non-empty string');
+    else if (ids.has(row.id)) bad(`id "${row.id}" is used twice (INV-6)`);
+    else ids.add(row.id);
+    if (!COUNTED_IN.includes(row.counted_in)) bad(`counted_in must be one of ${COUNTED_IN.join(', ')}`);
+    if (row.scope !== 'portfolio' && row.scope !== 'slice') bad("scope must be 'portfolio' or 'slice'");
+    if (!['saving', 'cost', 'avoided'].includes(row.kind)) bad("kind must be 'saving', 'cost' or 'avoided'");
+    if (!isNum(row.amount)) return bad('amount must be a finite number');
+    const isMedia = typeof row.line === 'string' && /media/i.test(row.line);
+    if (isMedia && row.kind !== 'cost') bad('paid media is never a saving');
+    if (row.kind === 'saving' || row.kind === 'avoided') {
+      if (row.amount < 0) bad('a saving cannot be negative');
+      if (isNum(row.source_amount)) {
+        if (row.amount > row.source_amount + 1e-6) bad(`saving ${row.amount} exceeds its source line ${row.source_amount} (INV-5)`);
+        const key = `${row.scenario || ''}|${row.source_line}`;
+        const entry = bySource.get(key) || { sum: 0, source: row.source_amount };
+        entry.sum += row.amount;
+        bySource.set(key, entry);
+      }
+    }
+  });
+  for (const [key, e] of bySource) {
+    if (e.sum > e.source + 1e-6) errors.push({ field: key, message: `savings on one source line sum to ${e.sum}, above the line ${e.source} (INV-6)` });
+  }
+  return { ok: errors.length === 0, errors };
+}
+
+// Sums one scope only; rows from two scopes never add up to one total.
+export function sumLedger(rows, scope) {
+  if (!Array.isArray(rows)) return { ok: false, errors: [{ field: 'rows', message: 'ledger must be an array of rows' }] };
+  const scopes = new Set(rows.map((r) => r && r.scope));
+  if (scopes.size > 1 || (scope !== undefined && scopes.size === 1 && !scopes.has(scope))) {
+    return { ok: false, errors: [{ field: 'scope', message: 'rows of different scopes (slice and portfolio) cannot be summed' }] };
+  }
+  const by_counted_in = {};
+  let savings = 0;
+  let cost = 0;
+  for (const r of rows) {
+    if (r.kind === 'cost') cost += r.amount;
+    else savings += r.amount;
+    by_counted_in[r.counted_in] = (by_counted_in[r.counted_in] || 0) + (r.kind === 'cost' ? -r.amount : r.amount);
+  }
+  return { ok: true, scope: scope === undefined ? (rows.length ? rows[0].scope : null) : scope, savings, cost, net: savings - cost, by_counted_in };
+}
+
+// ---------------------------------------------------------------- scenarios
+
+const SCENARIO_LABELS = { A: 'Same team, more output', B: 'Same output, lower cost', C: 'Growing demand, limited hiring' };
+
+function totalAgency(rows) {
+  return rows.reduce((t, r) => t + r.w.agency, 0);
+}
+
+function payback(oneOff, net) {
+  return net > 0 ? oneOff / net : null;
+}
+
+function scenarioA(x) {
+  const { rows, engine, fixed, F, req0, reqP1 } = x;
+  const per_workflow = {};
+  const agency_budget_binds = {};
+  let implied = 0;
+  const bridge = {};
+  for (const r of rows) {
+    per_workflow[r.w.id] = r.m_A;
+    const headroom = 1 / (1 - r.e.s_eff);
+    agency_budget_binds[r.w.id] = r.m_A > headroom + 1e-9;
+    implied += Math.max(0, r.w.agency * (r.m_A * (1 - r.e.s_eff) - 1));
+    bridge[r.w.id] = bridgePool(r.w.fte, r.w.fte, r.w.fte * (1 - r.e.r_eff), r.m_A, 0);
+  }
+  bridge.W5 = bridgePool(F, req0, reqP1, x.sliceA, 0);
+  per_workflow.W5 = x.sliceA;
+  const run_cost = runCost(x, (r) => r.m_A, x.sliceA);
+  const today = totalAgency(rows);
+  const net = -run_cost.total - (engine.agency_scales_with_output ? implied : 0);
+  const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
+  return {
+    id: 'A', label: SCENARIO_LABELS.A,
+    output: { per_workflow, slice: x.sliceA },
+    labour: { cash_change: 0, removable_fte: 0, hires_with: 0, hires_without: 0, avoided_hires: 0, unused: null },
+    agency: { today, scenario: today, saving: 0, implied_growth: implied, scales_with_output: !!engine.agency_scales_with_output, budget_binds: agency_budget_binds },
+    run_cost, one_off: { build: engine.build_one_off, change, total: engine.build_one_off + change },
+    net, payback_simple: null, payback_ramped: null, bridge,
+  };
+}
+
+function scenarioB(x) {
+  const { rows, engine, fixed, F, req0, reqP1 } = x;
+  const thr = engine.min_removable_fte;
+  const bridge = {};
+  const removable_by_pool = {};
+  const fragmented = {};
+  let removable = 0;
+  let agency_saving = 0;
+  const agency_by_workflow = {};
+  for (const r of rows) {
+    const gross = r.w.fte * r.e.r_eff;
+    const removed = gross >= thr && gross > 0 ? gross : 0;
+    if (removed === 0 && gross > 0) fragmented[r.w.id] = gross;
+    removable_by_pool[r.w.id] = removed;
+    removable += removed;
+    bridge[r.w.id] = bridgePool(r.w.fte, r.w.fte, r.w.fte * (1 - r.e.r_eff), 1, removed);
+    const sv = r.w.agency * r.e.s_eff;
+    agency_by_workflow[r.w.id] = sv;
+    agency_saving += sv;
+  }
+  const E = req0 - reqP1;
+  const remRev = E >= thr && E > 0 ? E : 0;
+  if (remRev === 0 && E > 0) fragmented.W5 = E;
+  removable_by_pool.W5 = remRev;
+  removable += remRev;
+  bridge.W5 = bridgePool(F, req0, reqP1, 1, remRev);
+  const loaded = fixed.loaded_fte_cost;
+  const labour_saving = removable * loaded;
+  const run_cost = runCost(x, () => 1, 1);
+  const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
+  const severance = (removable * loaded * engine.severance_months) / 12;
+  const one_off_total = engine.build_one_off + change + severance;
+  const gross = labour_saving + agency_saving;
+  const net = gross - run_cost.total;
+  const year1_net = engine.year1_realisation * gross - run_cost.total;
+  let ramped = null;
+  if (net > 0) {
+    if (one_off_total <= year1_net && year1_net > 0) ramped = one_off_total / year1_net;
+    else ramped = 1 + (one_off_total - year1_net) / net;
+  }
+  const per_workflow = Object.fromEntries(rows.map((r) => [r.w.id, 1]));
+  per_workflow.W5 = 1;
+  const agencyToday = totalAgency(rows);
+  return {
+    id: 'B', label: SCENARIO_LABELS.B,
+    output: { per_workflow, slice: 1 },
+    labour: { cash_change: -labour_saving, saving: labour_saving, removable_fte: removable, removable_by_pool, fragmented, hires_with: 0, hires_without: 0, avoided_hires: 0, unused: null },
+    agency: { today: agencyToday, scenario: agencyToday - agency_saving, saving: agency_saving, by_workflow: agency_by_workflow },
+    run_cost, one_off: { build: engine.build_one_off, change, severance, total: one_off_total },
+    net, year1_net, payback_simple: payback(one_off_total, net), payback_ramped: ramped, bridge,
+  };
+}
+
+function scenarioC(x) {
+  const { rows, engine, fixed, F, req0, reqP1 } = x;
+  const d = engine.demand_multiplier;
+  const bridge = {};
+  const per_pool = {};
+  let hiresWith = 0;
+  let hiresWithout = 0;
+  let unused = 0;
+  let avoided = 0;
+  let agencyWithout = 0;
+  let agencyWith = 0;
+  const demand = {};
+  const pool = (id, Fp, without, wth) => {
+    const hw = Math.max(0, without - Fp);
+    const hi = Math.max(0, wth - Fp);
+    const un = Math.max(0, Fp - wth);
+    const av = hw - hi;
+    per_pool[id] = {
+      F: Fp, without, with: wth, hires_without: hw, hires_with: hi, unused: un, avoided: av,
+      gap: av + un - (without - wth),
+      identity_gap: Fp + hi - (wth + un),
+    };
+    hiresWith += hi;
+    hiresWithout += hw;
+    unused += un;
+    avoided += av;
+  };
+  for (const r of rows) {
+    const dw = r.w.constraint === 'traffic' ? Math.min(d, engine.traffic_growth) : d;
+    demand[r.w.id] = dw;
+    pool(r.w.id, r.w.fte, r.w.fte * dw, r.w.fte * dw * (1 - r.e.r_eff));
+    bridge[r.w.id] = bridgePool(r.w.fte, r.w.fte, r.w.fte * (1 - r.e.r_eff), dw, 0);
+    agencyWithout += r.w.agency * dw;
+    agencyWith += r.w.agency * dw * (1 - r.e.s_eff);
+  }
+  demand.W5 = d;
+  pool('W5', F, req0 * d, reqP1 * d);
+  bridge.W5 = bridgePool(F, req0, reqP1, d, 0);
+  const loaded = fixed.loaded_fte_cost;
+  const today = totalAgency(rows);
+  const run_cost = runCost(x, (r) => demand[r.w.id], d);
+  const avoided_cost = avoided * loaded * engine.counterfactual_funded_share + (agencyWithout - agencyWith);
+  const net = avoided_cost - run_cost.total;
+  const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
+  const one_off_total = engine.build_one_off + change;
+  const versus_today = hiresWith * loaded + (agencyWith - today) + run_cost.total;
+  return {
+    id: 'C', label: SCENARIO_LABELS.C,
+    output: { per_workflow: demand, slice: d },
+    labour: { cash_change: hiresWith * loaded, removable_fte: 0, hires_with: hiresWith, hires_without: hiresWithout, avoided_hires: avoided, unused, per_pool },
+    agency: { today, without: agencyWithout, scenario: agencyWith, avoided: agencyWithout - agencyWith },
+    avoided_cost, run_cost, one_off: { build: engine.build_one_off, change, total: one_off_total },
+    net, payback_simple: payback(one_off_total, net), payback_ramped: null, versus_today, bridge,
+  };
+}
+
+function buildFunding(x) {
+  const { cM, rows } = x;
+  const slice_cash_rise = cM.scenario.cost_cash.total - cM.baseline.cost_cash.total;
+  const reducible_agency = rows.reduce((t, r) => t + r.w.agency * r.e.s_eff, 0);
+  const netted_inside_delta = cM.baseline.cost_cash.variants - cM.scenario.cost_cash.variants;
+  return {
+    scope: 'cross-scope ratio',
+    slice_cash_rise, reducible_agency, netted_inside_delta,
+    coverage: slice_cash_rise > 0 ? (reducible_agency - netted_inside_delta) / slice_cash_rise : null,
+  };
+}
+
+function buildLedger(x, sc, funding) {
+  const { rows, fixed, engine } = x;
+  const loaded = fixed.loaded_fte_cost;
+  const out = [];
+  const add = (row) => out.push({ scope: 'portfolio', ...row });
+  const B = sc.B;
+  for (const [id, fte] of Object.entries(B.labour.removable_by_pool)) {
+    if (fte <= 0) continue;
+    add({ id: `B-labour-${id}`, scenario: 'B', line: `labour:${id}`, counted_in: 'labour', kind: 'saving', amount: fte * loaded, source_line: `pool:${id}`, source_amount: B.bridge[id].F * loaded });
+  }
+  for (const r of rows) {
+    const sv = B.agency.by_workflow[r.w.id];
+    if (sv > 0) add({ id: `B-agency-${r.w.id}`, scenario: 'B', line: `agency:${r.w.id}`, counted_in: 'agency', kind: 'saving', amount: sv, source_line: `agency:${r.w.id}`, source_amount: r.w.agency });
+  }
+  for (const key of ['A', 'B', 'C']) {
+    for (const [line, counted_in] of Object.entries(RUN_LINE_KIND)) {
+      add({ id: `${key}-run-${line}`, scenario: key, line, counted_in, kind: 'cost', amount: sc[key].run_cost[line], source_line: null, source_amount: null });
+    }
+  }
+  const C = sc.C;
+  for (const [id, p] of Object.entries(C.labour.per_pool)) {
+    const amount = p.avoided * loaded * engine.counterfactual_funded_share;
+    if (amount > 0) add({ id: `C-labour-${id}`, scenario: 'C', line: `labour:${id}`, counted_in: 'labour', kind: 'avoided', amount, source_line: `C-hires:${id}`, source_amount: p.hires_without * loaded });
+  }
+  for (const r of rows) {
+    const dw = C.output.per_workflow[r.w.id];
+    const without = r.w.agency * dw;
+    const amount = without - r.w.agency * dw * (1 - r.e.s_eff);
+    if (amount > 0) add({ id: `C-agency-${r.w.id}`, scenario: 'C', line: `agency:${r.w.id}`, counted_in: 'agency', kind: 'avoided', amount, source_line: `C-agency:${r.w.id}`, source_amount: without });
+  }
+  out.push({
+    id: 'funding-netted-variants', scenario: 'funding', line: 'variants', counted_in: 'vendor', scope: 'slice', kind: 'saving',
+    amount: funding.netted_inside_delta, source_line: 'slice:variants', source_amount: x.c1.baseline.cost_cash.variants,
+  });
+  return out;
+}
+
 // ---------------------------------------------------------------- entry point
 
 export function economics(ec, levers) {
@@ -393,6 +680,19 @@ export function economics(ec, levers) {
       rollup: buildRollup(x),
       max_multipliers: buildMaxMultipliers(x),
     };
+    const scenarios = { A: scenarioA(x), B: scenarioB(x), C: scenarioC(x) };
+    const funding = buildFunding(x);
+    const ledger = buildLedger(x, scenarios, funding);
+    const check = checkLedger(ledger);
+    if (!check.ok) return { ok: false, errors: check.errors };
+    out.scenarios = scenarios;
+    out.default_scenario = 'C';
+    out.investment = {
+      one_off: { build: x.engine.build_one_off, change: scenarios.B.one_off.change, severance_B: scenarios.B.one_off.severance },
+      run: { A: scenarios.A.run_cost, B: scenarios.B.run_cost, C: scenarios.C.run_cost },
+    };
+    out.ledger = ledger;
+    out.funding = funding;
     if (!allFinite(out)) return { ok: false, errors: [{ field: null, message: 'inputs produce a value outside the representable range' }] };
     return out;
   } catch (err) {

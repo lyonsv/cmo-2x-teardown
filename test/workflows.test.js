@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { economics as economicsViaCalc, compute } from '../site/js/calc.js';
-import { economics, validateEngine, workflowState, WORKFLOW_IDS } from '../site/js/workflows.js';
+import { economics, validateEngine, workflowState, WORKFLOW_IDS, checkLedger, sumLedger } from '../site/js/workflows.js';
 
 const near = (actual, expected, tol = 1e-6) => assert.ok(Math.abs(actual - expected) <= tol, `expected ${actual} to be within ${tol} of ${expected}`);
 
@@ -260,4 +260,176 @@ test('economics does not mutate its input', () => {
   const before = structuredClone(ec);
   run(ec);
   assert.deepEqual(ec, before);
+});
+
+// ---------------------------------------------------------------- Task 2: scenarios, investment, ledger
+
+const M_A = { W1: 1.6667, W2: 2.0, W3: 1.5385, W4: 2.2222, W6: 2.5, W7: 1.6667, W8: 1.0, W9: 2.0, W10: 1.6667 };
+
+test('scenario A: output bounded by the binding role, no cash saving, agency held', () => {
+  const A = run().scenarios.A;
+  for (const [id, v] of Object.entries(M_A)) near(A.output.per_workflow[id], v, 1e-4);
+  near(A.output.slice, 2.2222, 1e-4);
+  assert.equal(A.labour.cash_change, 0);
+  near(A.run_cost.total, 2133647.05, 1);
+  near(A.net, -2133647.05, 1);
+  near(A.agency.implied_growth, 5347435.9, 1);
+  const binds = A.agency.budget_binds;
+  for (const id of ['W2', 'W3', 'W4', 'W6', 'W9']) assert.equal(binds[id], true, id);
+  for (const id of ['W1', 'W7', 'W8', 'W10']) assert.equal(binds[id], false, id);
+  assert.equal(A.payback_simple, null);
+  assert.equal(A.payback_ramped, null);
+  assert.equal(A.label, 'Same team, more output');
+});
+
+test('INV-3: scenario A has zero cash labour change at any adoption', () => {
+  for (const adoption of [0, 0.3, 1]) {
+    const ec = makeEc();
+    ec.engine.adoption = adoption;
+    assert.equal(run(ec).scenarios.A.labour.cash_change, 0);
+  }
+});
+
+test('scenario A with agency_scales_with_output charges the implied growth', () => {
+  const base = run().scenarios.A;
+  const ec = makeEc();
+  ec.engine.agency_scales_with_output = true;
+  const A = run(ec).scenarios.A;
+  near(A.net, base.net - base.agency.implied_growth, 1e-6);
+});
+
+test('scenario B goldens: removable FTE, savings, run lines, one-off, payback', () => {
+  const B = run().scenarios.B;
+  near(B.labour.removable_fte, 39.017957, 1e-5);
+  near(B.labour.removable_by_pool.W5, 3.417957, 1e-6);
+  assert.ok(Math.abs(B.labour.removable_by_pool.W5 - 7.63) > 1);
+  near(B.labour.saving, 5852693.5, 1);
+  near(B.agency.saving, 3600000, 1e-6);
+  near(B.run_cost.platform_team, 1200000, 1e-6);
+  near(B.run_cost.platform_tooling, 450000, 1e-6);
+  near(B.run_cost.autonomy_overhead, 240000, 1e-6);
+  near(B.run_cost.autonomy_overhead_hours, 1920, 1e-9);
+  near(B.run_cost.inference, 9608, 1);
+  near(B.run_cost.variant_ai, 33684.21, 0.01);
+  near(B.run_cost.escape, 68210.53, 0.01);
+  near(B.run_cost.total, 2001503.4, 1);
+  near(B.net, 7451190.1, 1);
+  near(B.one_off.build, 1500000, 1e-6);
+  near(B.one_off.change, 360000, 1e-6);
+  near(B.one_off.severance, 2926346.75, 1);
+  near(B.one_off.total, 4786346.75, 1);
+  near(B.year1_net, 2724843.35, 1);
+  near(B.payback_simple, 0.642, 1e-3);
+  near(B.payback_ramped, 1.277, 1e-3);
+});
+
+test('B never counts baseline reviewer slack; fragmented pools are reported', () => {
+  const ec = makeEc();
+  ec.engine.min_removable_fte = 5;
+  const B = run(ec).scenarios.B;
+  assert.equal(B.labour.removable_by_pool.W1, 0);
+  assert.ok('W1' in B.labour.fragmented);
+  near(B.labour.removable_by_pool.W5, 0);
+  near(B.bridge.W1.unused_remaining, 2, 1e-9);
+});
+
+test('scenario C goldens', () => {
+  const C = run().scenarios.C;
+  near(C.labour.hires_without, 79.5707, 1e-4);
+  near(C.labour.hires_with, 10.0, 1e-9);
+  near(C.labour.avoided_hires, 69.5707, 1e-4);
+  near(C.labour.unused, 7.2652, 1e-4);
+  const want = { W1: 4.0, W2: 12.0, W3: 15.4, W4: 10.0, W6: 9.0, W7: 3.2, W8: 0, W9: 6.0, W10: 6.4, W5: 3.570691 };
+  for (const [id, v] of Object.entries(want)) near(C.labour.per_pool[id].avoided, v, 1e-6);
+  near(C.agency.without, 31500000, 1e-6);
+  near(C.agency.scenario, 24300000, 1e-6);
+  near(C.agency.today, 16000000, 1e-6);
+  near(C.avoided_cost, 17635603.72, 3);
+  near(C.run_cost.total, 2112447.6, 3);
+  near(C.net, 15523156.11, 3);
+  near(C.versus_today, 11912447.6, 3);
+  near(C.payback_simple, 0.12, 0.005);
+  assert.equal(C.label, 'Growing demand, limited hiring');
+  assert.equal(run().default_scenario, 'C');
+});
+
+test('INV-1: slack0 + E = redeployed + removed + unused_remaining, scenarios A and B, every pool', () => {
+  const r = run();
+  for (const key of ['A', 'B']) {
+    for (const b of Object.values(r.scenarios[key].bridge)) {
+      near(b.slack0 + b.E, b.redeployed + b.removed + b.unused_remaining, 1e-9);
+      near(b.gap, 0, 1e-9);
+    }
+  }
+  assert.equal(Object.keys(r.scenarios.A.bridge).length, 10);
+});
+
+test('INV-1 general form for C: F + hires_with = requirement + unused, per pool', () => {
+  const C = run().scenarios.C;
+  for (const p of Object.values(C.labour.per_pool)) near(p.identity_gap, 0, 1e-9);
+});
+
+test('INV-7: avoided + unused = without - with for all ten pools', () => {
+  const C = run().scenarios.C;
+  assert.equal(Object.keys(C.labour.per_pool).length, 10);
+  for (const p of Object.values(C.labour.per_pool)) near(p.avoided + p.unused, p.without - p.with, 1e-9);
+});
+
+test('INV-5: savings are bounded by their source line', () => {
+  const r = run();
+  const agency = Object.fromEntries(makeEc().workflows.map((w) => [w.id, w.agency]));
+  for (const [id, v] of Object.entries(r.scenarios.B.agency.by_workflow)) assert.ok(v <= agency[id] + 1e-9, id);
+  for (const [id, v] of Object.entries(r.scenarios.B.labour.removable_by_pool)) assert.ok(v <= r.pools[id].F + 1e-9, id);
+  assert.deepEqual(checkLedger(r.ledger).errors, []);
+  const bad = checkLedger([{ id: 'x', line: 'agency:W1', counted_in: 'agency', scope: 'portfolio', kind: 'saving', amount: 2000000, source_line: 'agency:W1', source_amount: 1500000 }]);
+  assert.equal(bad.ok, false);
+  assert.match(bad.errors[0].message, /INV-5/);
+});
+
+test('INV-6: ledger rejects a repeated id and two savings summing above one source line', () => {
+  const row = (id, amount) => ({ id, line: 'agency:W1', counted_in: 'agency', scope: 'portfolio', kind: 'saving', amount, source_line: 'agency:W1', source_amount: 1000000 });
+  assert.equal(checkLedger([row('a', 400000), row('a', 100000)]).ok, false);
+  assert.equal(checkLedger([row('a', 600000), row('b', 600000)]).ok, false);
+  assert.equal(checkLedger([row('a', 400000), row('b', 600000)]).ok, true);
+});
+
+test('INV-6: funding nets the variant saving already inside the slice delta', () => {
+  const f = run().funding;
+  near(f.netted_inside_delta, 116210.53, 0.01);
+  near(f.slice_cash_rise, 935199.14, 0.01);
+  near(f.reducible_agency, 3600000, 1e-6);
+  near(f.coverage, 3.7252, 1e-4);
+  assert.equal(f.scope, 'cross-scope ratio');
+});
+
+test('INV-10: B labour saving is bounded by hours released plus reviewer headroom', () => {
+  const r = run();
+  let bound = 0;
+  for (const p of Object.values(r.pools)) bound += p.E;
+  assert.ok(r.scenarios.B.labour.saving <= bound * 150000 + 1e-6);
+});
+
+test('ledger: counted_in values, paid media and scope mixing', () => {
+  const base = { id: 'm', line: 'media:search', counted_in: 'agency', scope: 'portfolio', kind: 'saving', amount: 1, source_line: 's', source_amount: 10 };
+  assert.equal(checkLedger([{ ...base, counted_in: 'media' }]).ok, false);
+  assert.equal(checkLedger([base]).ok, false);
+  assert.equal(checkLedger([{ ...base, line: 'agency:media buying' }]).ok, false);
+  assert.equal(checkLedger([{ ...base, line: 'agency:W1' }]).ok, true);
+  for (const c of ['labour', 'agency', 'vendor', 'ai']) assert.equal(checkLedger([{ ...base, line: 'x', counted_in: c }]).ok, true);
+  const r = run();
+  const slice = r.ledger.filter((l) => l.scope === 'slice');
+  assert.deepEqual(slice.map((l) => l.id), ['funding-netted-variants']);
+  for (const l of r.ledger) if (l.scope !== 'slice') assert.equal(l.scope, 'portfolio');
+  assert.equal(sumLedger(r.ledger).ok, false);
+  assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'portfolio'), 'portfolio').ok, true);
+  assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'slice'), 'portfolio').ok, false);
+});
+
+test('every ledger row carries counted_in and scope and ids are unique', () => {
+  const r = run();
+  for (const l of r.ledger) {
+    assert.ok(['labour', 'agency', 'vendor', 'ai'].includes(l.counted_in), l.id);
+    assert.ok(typeof l.scope === 'string', l.id);
+  }
+  assert.equal(new Set(r.ledger.map((l) => l.id)).size, r.ledger.length);
 });
