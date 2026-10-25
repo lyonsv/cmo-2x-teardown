@@ -329,7 +329,9 @@ test('scenario table: six rows equal present(defaults).scenario; one grade note,
   const av = p.scenario.rows.find((r) => r.id === 'avoided_hires');
   assert.ok(s11.includes(`scenario C avoids <span data-fig="calc-scen-c-avoided_hires">${av.text}</span> <a class="chip ${CHIP_CLASS[av.grade]}" href="#${av.ref}">${av.grade}</a> reviewer hires`));
   assert.ok(!/Hold's change in annual production cost/.test(s11), 'the retired Hold sentence is gone');
-  assert.ok(/pilot slice/.test(s11) && s11.includes('href="#scenarios"'), 'calculator figures are labelled as the pilot slice and kept apart from the portfolio');
+  // WR-07: three scopes, three names; the calculator models the content-production slice.
+  assert.ok(/content-production slice/.test(s11) && s11.includes('href="#scenarios"'), 'calculator figures are labelled as the content-production slice and kept apart from the portfolio');
+  assert.ok(!/pilot slice/.test(html), 'the ambiguous name "pilot slice" is gone');
   const { note } = regionOf('Scenario');
   assert.ok(note, 'scenario table is followed by its grade note');
   assertGroupRule('scenario', p.scenario.rows, note);

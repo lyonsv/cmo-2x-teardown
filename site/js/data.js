@@ -1086,7 +1086,9 @@ const engineRows = [
   eng('asm-chain-success', 'Per-step success of an agent chain', 'chain', { p: 0.95, steps: 8, steps_between_gates: 8, retries: 0 }, 'probability and steps', '95% a step, 8 steps, no gates',
     'A diagnostic shown beside the 60 percent autonomous share, not an input that moves hours: success compounds as the per-step rate to the number of steps (range 90 to 99 percent), and a published benchmark of tool-using agents reports repeated-trial reliability below 25 percent in retail tasks.', 'illustrative', 'Modelled', ['tau-bench-2024']),
   eng('asm-portfolio-workflows', 'Delegated portfolio', 'portfolio', ['W2', 'W4', 'W6', 'W9'], 'workflow ids', 'W2, W4, W6, W9',
-    'The workflows the programme hands to agents first, used for the portfolio version of the headline metric: planning and operations, adaptation and localisation, publishing and activation, and measurement and reporting.', 'illustrative'),
+    'The delegated portfolio used for the portfolio version of the headline metric: planning and operations, adaptation and localisation, publishing and activation, and measurement and reporting. It was chosen as the four workflows with the largest assumed net hour reductions (50 to 60 percent), so it is the best case among the workflows, not a typical one; the pilot workflows and the whole organisation are shown beside it.', 'illustrative'),
+  eng('asm-pilot-workflows', 'Pilot workflows counted as output', 'pilot', ['W2', 'W4', 'W6'], 'workflow ids', 'W2, W4, W6',
+    'The workflows of the twelve-week pilot that count as output in the metric: planning and operations, adaptation and localisation, and publishing and activation. Review (W5) is also in the pilot, but it is a gate, not output, so it is not counted. The whole platform team is charged against them, so the after-platform figure is a worst case for a pilot this small.', 'illustrative'),
 ];
 for (const row of engineRows) assumptions[row.id] = row;
 
@@ -1837,6 +1839,8 @@ function engineClaims(ec) {
   met('org_after_platform', 'A.org_after_platform', 'organisation-wide, after the platform team');
   met('portfolio_before_platform', 'A.portfolio_before_platform', 'delegated workflows, before the platform team');
   met('portfolio_after_platform', 'A.portfolio_after_platform', 'delegated workflows, after the platform team');
+  met('pilot_before_platform', 'A.pilot_before_platform', 'pilot workflows, before the platform team');
+  met('pilot_after_platform', 'A.pilot_after_platform', 'pilot workflows, after the whole platform team');
   met('B_org', 'B.org', 'organisation-wide under scenario B');
   met('C_org', 'C.org', 'organisation-wide under scenario C');
   met('pooled_hours_multiple', 'pooled_hours_multiple', 'capacity multiple from pooling the released hours');

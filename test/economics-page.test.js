@@ -213,7 +213,7 @@ test('reviewer bridge keeps baseline slack separate and links Appendix C and bac
 test('scale versus programme: slice scope labelled, every effect an econ claim', () => {
   const start = section.indexOf('<h3 id="scale-programme">');
   const block = section.slice(start, section.indexOf('<h3 id="sensitivity">'));
-  assert.ok(/Scope: the production slice/.test(strip(block)));
+  assert.ok(/Scope: the content-production slice/.test(strip(block)));
   const ids = figsOf(block);
   assert.deepEqual(ids, ['econ-effects-total_cost-scale_effect', 'econ-effects-total_cost-programme_effect', 'econ-effects-total_cost-scale_share', 'econ-effects-cost_per_asset-scale_effect', 'econ-effects-cost_per_asset-programme_effect', 'econ-effects-cost_per_asset-scale_share']);
 });

@@ -132,6 +132,10 @@ export function validateEngine(ec, levers) {
   if (Array.isArray(engine.portfolio)) {
     for (const id of engine.portfolio) if (!seen.has(id)) bad('engine.portfolio', `portfolio id "${id}" is not a workflow`);
   }
+  if (engine.pilot !== undefined) {
+    if (!Array.isArray(engine.pilot)) bad('engine.pilot', 'pilot must be an array of workflow ids');
+    else for (const id of engine.pilot) if (!seen.has(id)) bad('engine.pilot', `pilot id "${id}" is not a workflow`);
+  }
   return errors;
 }
 
@@ -723,12 +727,18 @@ function buildMetric(x, sc, rollup, maxMult) {
   const I0p = portfolio.reduce((t, r) => t + r.H0, 0);
   const IAp = portfolio.reduce((t, r) => t + r.H0 * r.m_A, 0);
   const Dp = portfolio.reduce((t, r) => t + r.w.fte + r.w.agency / eq, 0);
+  // Code review WR-07: the same multiple for the pilot workflows (review, a gate, is not output).
+  const pilot = Array.isArray(engine.pilot) ? rows.filter((r) => engine.pilot.includes(r.w.id)) : [];
+  const I0q = pilot.reduce((t, r) => t + r.H0, 0);
+  const IAq = pilot.reduce((t, r) => t + r.H0 * r.m_A, 0);
+  const Dq = pilot.reduce((t, r) => t + r.w.fte + r.w.agency / eq, 0);
   // Code review CR-01: the agency input the extra output needs is counted in the
   // denominator, so units that need agency work cannot be counted while that work is
   // held flat. Zero when agency spend is held at today's budget (output is capped).
   const growthBy = sc.A.agency.implied_by_workflow;
   const gA = rows.reduce((t, r) => t + growthBy[r.w.id], 0) / eq;
   const gAp = portfolio.reduce((t, r) => t + growthBy[r.w.id], 0) / eq;
+  const gAq = pilot.reduce((t, r) => t + growthBy[r.w.id], 0) / eq;
   const ratio = (n, d) => (d > 0 ? n / d : null);
   const B = sc.B;
   const D_B = D0 - B.labour.removable_fte - B.agency.saving / eq + pf;
@@ -744,6 +754,8 @@ function buildMetric(x, sc, rollup, maxMult) {
       org_after_platform: ratio(IA / (D0 + gA + pf), I0 / D0),
       portfolio_before_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + gAp)) / (I0p / Dp) : null,
       portfolio_after_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + gAp + pf)) / (I0p / Dp) : null,
+      pilot_before_platform: Dq > 0 && I0q > 0 ? (IAq / (Dq + gAq)) / (I0q / Dq) : null,
+      pilot_after_platform: Dq > 0 && I0q > 0 ? (IAq / (Dq + gAq + pf)) / (I0q / Dq) : null,
       agency_growth_fte_equiv: gA,
       agency_growth_fte_equiv_portfolio: gAp,
       per_workflow: Object.fromEntries(rows.map((r) => [r.w.id, r.m_A])),

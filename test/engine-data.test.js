@@ -62,7 +62,7 @@ test('defaultInputs and defaultAssumptions keep their key sets', () => {
 });
 
 test('every engine row is graded, evidenced and explained', () => {
-  assert.equal(engineRows.length, 42); // 23 globals, asm-productive-hours, 18 workflow rows
+  assert.equal(engineRows.length, 43); // 24 globals (asm-pilot-workflows added for code review WR-07), asm-productive-hours, 18 workflow rows
   for (const e of engineRows) {
     assert.ok(GRADES.includes(e.grade), e.id);
     assert.ok(['illustrative', 'hypothesis'].includes(e.evidence), e.id);

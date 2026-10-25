@@ -221,7 +221,7 @@ function buildRows(r) {
 
 const finite = (v) => (Number.isFinite(v) ? v : 0);
 
-// Scenarios (ECONP-05), all on the pilot slice only (the content workflow), never added to the portfolio figures:
+// Scenarios (ECONP-05), all on the content-production slice only (the content workflow), never added to the portfolio figures:
 //   a: same team, more output. Headcount fixed, output at the reader's multiple; reports the largest multiple the reviewers can carry.
 //   b: same output, lower cost. Output held at today's volume with the programme's assumptions; the reviewer FTE that
 //      removes (attributable to the programme only, baseline slack excluded) is a capacity figure, priced at the loaded FTE cost.
@@ -342,7 +342,7 @@ function scenarioPresentation(values, ctx) {
   const fte = (v) => formatValue(v, 'num1');
   const multiple = (v) => (v === Infinity ? 'no limit' : `${formatValue(v, 'num1')}x`);
   const D = {
-    output_multiple: ['Output multiple (pilot slice)', util, (v) => `${formatValue(v, 'num1')}x`],
+    output_multiple: ['Output multiple (content-production slice)', util, (v) => `${formatValue(v, 'num1')}x`],
     max_multiple: ['Largest multiple the reviewers can carry', util, multiple],
     reviewer_fte_required: ['Reviewer FTE required at target utilisation', util, fte],
     removable_fte: ['Reviewer FTE removable at today\'s output (capacity, not a recommendation)', util, fte],

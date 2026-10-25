@@ -68,6 +68,7 @@ export const makeEc = () => structuredClone({
     agency_scales_with_output: true,
     chain: { p: 0.95, steps: 8, steps_between_gates: 8, retries: 0 },
     portfolio: ['W2', 'W4', 'W6', 'W9'],
+    pilot: ['W2', 'W4', 'W6'],
   },
   workflows: ROWS,
 });

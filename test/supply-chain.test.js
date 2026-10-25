@@ -41,7 +41,7 @@ test('worked example: ten steps, each starting with Agent or People, in a titled
 });
 
 test('per-unit table: four workflows, today and with agents, only engine claims, one chip per row', () => {
-  const t = tableByCaption('What the slice changes, per unit of work');
+  const t = tableByCaption('What the pilot workflows change, per unit of work');
   const rows = bodyRows(t);
   assert.equal(rows.length, 8, 'four workflows, two states each');
   assert.equal((t.match(/rowspan="2"/g) || []).length, 4);
