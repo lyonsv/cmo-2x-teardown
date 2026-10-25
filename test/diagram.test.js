@@ -22,7 +22,7 @@ function figures() {
     const svg = m[0].match(/<svg class="fig-d"[\s\S]*?<\/svg>/)[0];
     const n = Number(svg.match(/<title id="fd(\d+)-t"/)[1]);
     const before = html.slice(0, m.index);
-    const sec = [...before.matchAll(/<section id="(s\d\d)"/g)].pop()[1];
+    const sec = [...before.matchAll(/<(?:section|div) id="(s\d\d)"/g)].pop()[1];
     out.push({ html: m[0], svg, n, sec, index: m.index });
   }
   return out;

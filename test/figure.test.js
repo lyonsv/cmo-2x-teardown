@@ -2,9 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { claims } from '../site/js/data.js';
+import { elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const s02 = html.match(/<section id="s02"[\s\S]*?<\/section>/)[0];
+const s02 = elementById(html, 's02');
 const svg = (s02.match(/<svg[\s\S]*?<\/svg>/) || [''])[0];
 const COMPONENTS = ['generation', 'review', 'rework', 'tooling', 'rights', 'storage'];
 const X0 = 240;

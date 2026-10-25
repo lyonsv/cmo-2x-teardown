@@ -2,11 +2,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { sources } from '../site/js/data.js';
+import { elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../site/assets/style.css', import.meta.url), 'utf8');
-const a = html.indexOf('<section id="s12"');
-const s12 = html.slice(a, html.indexOf('</section>', a));
+const s12 = elementById(html, 's12');
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 const text = strip(s12);

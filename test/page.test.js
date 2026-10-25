@@ -4,6 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { claims, assumptions, sources, PUBLISHER_TYPES } from '../site/js/data.js';
 import { SENSITIVITY_STEP } from '../site/js/model.js';
 import { formatValue } from '../site/js/format.js';
+import { decode, strip, sectionHtml as sectionHtmlOf, elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 
@@ -290,14 +291,8 @@ const stripStep = (h) => h
   .replaceAll(`at −${STEP}`, ' ').replaceAll(`at +${STEP}`, ' ')
   .replace(`A ${STEP} rise moves`, ' ');
 
-const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
-const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
-
 function sectionHtml(id) {
-  const start = html.indexOf(`<section id="${id}"`);
-  assert.ok(start >= 0, `missing section ${id}`);
-  const end = html.indexOf('</section>', start);
-  return html.slice(start, end + '</section>'.length);
+  return sectionHtmlOf(html, id);
 }
 
 function metaHtml() {
@@ -1579,7 +1574,7 @@ test('03.1 reframe guards: s11 variant maths is labelled internal throughput', (
 });
 
 test('03.1 reframe guards: pipeline is not a headline', () => {
-  const ans = html.slice(html.indexOf('<section id="answer"'), html.indexOf('</section>', html.indexOf('<section id="answer"')));
+  const ans = elementById(html, 'answer');
   const ansP = ans.match(/<p\b[\s\S]*?<\/p>/)[0];
   assert.ok(!/pipeline/i.test(strip(ansP)), 'answer paragraph');
   const s01 = sectionHtml('s01');

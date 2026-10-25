@@ -6,10 +6,10 @@ import { present, defaultValues, RESULT_ROWS, SENSITIVITY_STEP } from '../site/j
 import { FIELDS } from '../site/js/fields.js';
 import { toText } from '../site/js/state.js';
 import { formatValue } from '../site/js/format.js';
+import { elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const start = html.indexOf('<section id="s11"');
-const s11 = html.slice(start, html.indexOf('</section>', start));
+const s11 = elementById(html, 's11');
 const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 
@@ -229,7 +229,7 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
     assertGroupRule(g[1], members, note[1] + hintLinks);
   });
   assert.deepEqual(FIELDS.map((f) => f.group), ['volume', 'volume', 'volume', 'people', 'people', 'people', 'cost', 'cost', 'cost', 'cost', 'automation', 'automation']);
-  assert.ok(!/<h2[^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
+  assert.ok(!/<h[23][^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
 });
 
 test('error summary and share panel markup', () => {

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { elementById } from './helpers/html.js';
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
 
@@ -17,7 +18,7 @@ test('no legal-review inventory ids remain on the page', () => {
 });
 
 test('s15 lists evidence gaps with closers and the not-used notes', () => {
-  const s15 = html.slice(html.indexOf('<section id="s15"'));
+  const s15 = elementById(html, 's15');
   assert.ok(s15.includes('<h3 id="s15-gaps">Evidence gaps</h3>'));
   assert.ok(s15.includes('These are the numbers this page could not find. Each is a gap, not an estimate.'));
   const ul = s15.match(/<ul class="gaps">([\s\S]*?)<\/ul>/);
