@@ -310,7 +310,7 @@ test('Phase 4 sources carry the researched grade, publisherType and event date',
     assert.equal(sources[k].accessed, '2026-10-24', `${k} accessed`);
   }
   assert.equal(sources['incident-levis-2023'].flag, 'company-reported');
-  assert.equal(Object.keys(sources).length, 45 + 5 + 6 + 2); // 45 before Phase 7, plus five Intercom primary posts (plan 07-02), six engine sources (plan 06-04) and two academic sources on advertising returns (plan 07-08)
+  assert.equal(Object.keys(sources).length, 45 + 5 + 6 + 2 + 14); // plus fourteen platform-capability sources for the #compare sub-table (plan 07-09); 45 before Phase 7, plus five Intercom primary posts (plan 07-02), six engine sources (plan 06-04) and two academic sources on advertising returns (plan 07-08)
 });
 
 test('Phase 4 context assumptions: backlog 0 N, adoption design, risk likelihood', () => {

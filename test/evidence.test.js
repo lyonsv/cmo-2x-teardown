@@ -62,11 +62,11 @@ test('no assumption is observed (nothing is observed for the subject organisatio
 
 test('source counts', () => {
   const rows = Object.values(sources);
-  assert.equal(rows.length, 45 + 5 + 6 + 2); // plus two academic sources on advertising returns (07-08); plus five Intercom primary posts (Phase 7, plan 07-02) and six engine sources (06-04)
+  assert.equal(rows.length, 45 + 5 + 6 + 2 + 14); // plus fourteen platform-capability sources (07-09), all observed and Modelled; plus two academic sources on advertising returns (07-08); plus five Intercom primary posts (Phase 7, plan 07-02) and six engine sources (06-04)
   // 06-04 adds: two model price lists, a multi-agent token note, an agency billing survey (observed), BLS (benchmark/Benchmark), tau-bench (benchmark/Modelled)
   assert.equal(count(rows, 'benchmark', 'Benchmark'), 12 + 1 + 2);
   assert.equal(count(rows, 'benchmark', 'Modelled'), 4 + 1);
-  assert.equal(count(rows, 'observed', 'Modelled'), 29 + 5 + 4);
+  assert.equal(count(rows, 'observed', 'Modelled'), 29 + 5 + 4 + 14);
 });
 
 test('assumption counts and the hypothesis list', () => {

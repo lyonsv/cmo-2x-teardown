@@ -332,11 +332,12 @@ const P7_H3_ECON = 7; // plan 07-06: honest-2x, workflow-inventory, per-workflow
 const P7_H3_OUTCOMES = 3; // plan 07-08: causal-chain, scorecard, diminishing-returns
 const P7_H3_EXPANSION = 2; // plan 07-08: adjacent, reusable
 const P7_H3_ROADMAP = 4; // plan 07-08: pilot, next-two-quarters, portfolio, enablement
+const P7_H3_COMPARE = 1; // plan 07-09: suites-automate
 const P7_H3_RISKS = 1; // plan 07-08: agent-risks
 const P7_H4_RISKS = 8; // plan 07-08: eight agent risks
 const P7_H4_ECON = 4; // plan 07-06: where to start, the other workflows, what the programme costs, reviewer capacity
 const P7_H4_SUPPLY = 2; // plan 07-04: autonomous and not-autonomous lists
-const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON + P7_H3_OUTCOMES + P7_H3_EXPANSION + P7_H3_ROADMAP + P7_H3_RISKS; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON + P7_H3_OUTCOMES + P7_H3_EXPANSION + P7_H3_ROADMAP + P7_H3_RISKS + P7_H3_COMPARE; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24 + P7_H4_SUPPLY + P7_H4_ECON + P7_H4_RISKS - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
@@ -848,7 +849,7 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
 // Plan 07-04: s03 shrinks to a condensed block (the factory figure and its prose moved to Appendix A), so its floor drops from 400 to 250.
-const PROSE_BUDGET = { s03: [250, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [900, 1600] };
+const PROSE_BUDGET = { s03: [250, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 1100], s13: [400, 700], s14: [900, 1600] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {

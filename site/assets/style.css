@@ -90,6 +90,10 @@ thead th { border-bottom: 2px solid var(--ink); }
 .matrix td, .matrix th { vertical-align: top; padding-right: var(--s-md); min-width: 200px; }
 .matrix tbody th[scope=row] { position: sticky; left: 0; background: var(--paper); border-right: 1px solid var(--rule); min-width: 160px; }
 .matrix .spine { background: var(--paper-2); }
+/* s12 platform sub-table (07-09) */
+.suites { min-width: 720px; }
+.suites td, .suites th { vertical-align: top; padding-right: var(--s-md); }
+.suites td:nth-child(2) { min-width: 22em; }
 .cite { font: 400 12px/1.6 var(--mono); color: var(--muted); display: inline-block; min-height: 24px; margin-right: var(--s-xs); }
 .cite-date { font: 400 12px/1.6 var(--mono); color: var(--muted); }
 .nd { color: var(--muted); }
@@ -305,7 +309,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   .risk h4 { break-after: avoid; }
   .risk { break-inside: auto; }
   /* Tables are clipped at the page edge if their screen min-widths survive into print. */
-  .matrix, table.incidents, [aria-label="Adoption stages by team"] table, table.risk-register, .register [aria-label="Source register table"] table { min-width: 0; }
+  .suites, .matrix, table.incidents, [aria-label="Adoption stages by team"] table, table.risk-register, .register [aria-label="Source register table"] table { min-width: 0; }
   .matrix td, .matrix th, .matrix tbody th[scope=row] { min-width: 0; }
   svg.fig { min-width: 0; max-width: 100%; height: auto; }
   th, td { overflow-wrap: anywhere; }

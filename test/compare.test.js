@@ -164,3 +164,57 @@ test('vendor-claims callout; no competitor-authored flag; vendor css', () => {
   assert.match(css, /dl\.vendor-dl dt\s*\{[^}]*600[^}]*uppercase[^}]*var\(--muted\)/);
   assert.match(css, /dl\.vendor-dl dd\s*\{[^}]*margin: 0 0 8px/);
 });
+
+// ---- Plan 07-09: dated platform sub-table (COMP-01) ----
+const suitesAt = s12.indexOf('<h3 id="suites-automate">');
+const suites = suitesAt < 0 ? '' : s12.slice(suitesAt, s12.indexOf('</table>', suitesAt));
+const suiteRows = [...suites.slice(suites.indexOf('<tbody>')).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((m) => m[1]);
+
+test('platform sub-table: heading, caption, five columns and at least nine rows', () => {
+  assert.ok(suitesAt > 0, 'h3#suites-automate missing');
+  assert.ok(s12.includes('<h3 id="suites-automate">What major suites and channels already automate</h3>'));
+  assert.ok(suitesAt > s12.indexOf('<h3>Profound</h3>') && suitesAt < s12.indexOf('<h3>Build, buy and lock-in</h3>'));
+  assert.ok(suites.includes('<caption>What major suites and channels already automate, as documented</caption>'));
+  const head = [...suites.slice(0, suites.indexOf('<tbody>')).matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
+  assert.deepEqual(head, ['Platform family', 'What is documented', 'Status', 'Date', 'Source']);
+  assert.ok(suiteRows.length >= 9, `${suiteRows.length} rows`);
+  for (const r of suiteRows) assert.equal(cells(r).length, 5);
+});
+
+test('platform sub-table: honest status words, a time element and resolving sources on every row', () => {
+  for (const r of suiteRows) {
+    const c = cells(r);
+    assert.ok(['Generally available', 'Announced', 'Reported'].includes(strip(c[2])), `status: ${strip(c[2])}`);
+    assert.match(c[3], /<time datetime="\d{4}-\d{2}-\d{2}">\d{4}-\d{2}-\d{2}<\/time>/);
+    const keys = [...c[4].matchAll(/<a class="cite" href="#src-([a-z0-9-]+)">src-\1<\/a>/g)].map((m) => m[1]);
+    assert.ok(keys.length >= 1, 'no source link');
+    for (const k of keys) {
+      assert.ok(sources[k], `${k} not in data.js`);
+      assert.ok(html.includes(`<tr id="src-${k}">`), `${k} not in register`);
+      assert.equal(sources[k].flag, 'vendor-claimed');
+      assert.notEqual(sources[k].grade, 'Benchmark');
+    }
+    // Generally available only where the cited source says so: pinned to the two sources read as stating it.
+    if (strip(c[2]) === 'Generally available') assert.ok(keys.some((k) => ['adobe-aep-agents', 'adobe-workfront'].includes(k)), strip(c[0]));
+  }
+  assert.ok(!/\d/.test(strip(suites.replace(/<time\b[^>]*>[^<]*<\/time>/g, ' ').replace(/<a class="cite"[^>]*>[^<]*<\/a>/g, ' '))), 'no digits outside time elements and source links');
+});
+
+test('platform sub-table: four implications and the absence-of-documentation wording', () => {
+  const after = s12.slice(s12.indexOf('</table>', suitesAt), s12.indexOf('<h3>Build, buy and lock-in</h3>'));
+  assert.equal([...after.matchAll(/<li>/g)].length, 4);
+  assert.ok(strip(after).includes('absence of documentation'));
+  assert.ok(strip(s12.slice(suitesAt)).includes('Absence of a row or a statement is an absence of documentation'));
+});
+
+test('new platform sources are vendor-claimed, never Benchmark, read on the check date', () => {
+  const keys = Object.keys(sources).filter((k) => /^(adobe|salesforce|hubspot|google-ads|meta|smartling|phrase|bynder)-/.test(k));
+  assert.ok(keys.length >= 8, `${keys.length}`);
+  for (const k of keys) {
+    assert.ok(['vendor', 'press'].includes(sources[k].publisherType), k);
+    assert.equal(sources[k].flag, 'vendor-claimed', k);
+    assert.equal(sources[k].grade, 'Modelled', k);
+    assert.equal(sources[k].accessed, '2026-10-25', k);
+  }
+  for (const k of ['adobe-cx-enterprise', 'meta-advantage-plus', 'bynder-compliance-agent']) assert.match(sources[k].read_via, /Re-check failed/, k);
+});
