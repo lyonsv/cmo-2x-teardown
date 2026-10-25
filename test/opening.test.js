@@ -47,3 +47,14 @@ test('Final test: standfirst names agents', () => {
   const sf = html.match(/<p class="standfirst">([\s\S]*?)<\/p>/)[1];
   assert.ok(/agents/.test(strip(sf)));
 });
+
+// ---- Task 2: section 01 body ----
+const opp = elementById(html, 'opportunity');
+
+test('#opportunity defines 2x, separates capacity from effectiveness and explains the missing merged PR', () => {
+  for (const id of ['define-2x', 'capacity-efficiency-effectiveness', 'no-merged-pr']) assert.ok(opp.includes(`<h3 id="${id}">`), id);
+  const t = opp.match(/<caption>How 2x is measured<\/caption>[\s\S]*?<\/table>/);
+  assert.ok(t, 'caption');
+  assert.equal((t[0].match(/<tbody>[\s\S]*<\/tbody>/)[0].match(/<tr>/g) || []).length, 5);
+  assert.match(strip(opp), /does not (establish|mean) doubled revenue/i);
+});

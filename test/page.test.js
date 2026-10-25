@@ -326,7 +326,8 @@ const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTE
 // Phase 7 body h3s, one line per content plan so concurrent plans do not collide.
 const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, bottleneck, principles
 const P7_H3_BUILD = 8; // plan 07-03: plain English, six parts, capabilities, own-integrate-platform, permissions, always-human, smallest-slice, expansion-path
-const MEASURED_H3 = 23 + P7_H3_AUTONOMY + P7_H3_BUILD; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const P7_H3_OPPORTUNITY = 3; // plan 07-01: define-2x, capacity-efficiency-effectiveness, no-merged-pr
+const MEASURED_H3 = 23 + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24; // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).

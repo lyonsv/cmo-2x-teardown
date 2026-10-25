@@ -95,6 +95,40 @@
     <section id="opportunity" aria-labelledby="opportunity-h">
       <div class="sec-head"><span class="sec-num">01</span><h2 id="opportunity-h">What 2x means</h2></div>
     <p class="chain-pos">Software built → Autonomy enabled → Human work reduced → <b>Marketing capacity increased</b> → Business outcomes improved</p>
+    <h3 id="define-2x">What we mean by 2x</h3>
+    <p>Doubling output is easy to claim and easy to fake. This page counts one thing: useful work completed per marketing FTE-equivalent, with agency FTE-equivalents in the denominator so that moving work to an agency cannot fake a gain. The other measures guard it, or sit beside it as outcomes.</p>
+    <div class="table-scroll" role="region" aria-label="How 2x is measured table" tabindex="0">
+      <table>
+        <caption>How 2x is measured</caption>
+        <thead><tr><th scope="col">Measure</th><th scope="col">What it counts</th><th scope="col">Why this one</th><th scope="col">Trade-off</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Primary metric</th><td>Useful work completed per marketing FTE-equivalent, valued at frozen baseline standard hours. A unit counts only if it is linked to an objective, approved and live.</td><td>It handles different kinds of work, and cheap units cannot be inflated because the weights are frozen.</td><td>It needs a baseline time study, which the pilot does, and the weights age.</td></tr>
+          <tr><th scope="row">Operational unit for the first workflow</th><td>Campaign-markets launched per quarter.</td><td>A CMO can see it, and it is hard to inflate without real launches.</td><td>It covers launches only, and launches vary in size.</td></tr>
+          <tr><th scope="row">Speed</th><td>Median time from an approved objective to verified live work, by size class.</td><td>It captures the handoffs that agents remove, which is the thesis.</td><td>It is a speed measure, not a volume measure, and can improve while output falls.</td></tr>
+          <tr><th scope="row">Quality guardrails</th><td>First-pass acceptance, and brand or compliance escapes found after publication.</td><td>Published work cannot be recalled, so quality has to be tested before and sampled after.</td><td>Checks add review work, which the model counts.</td></tr>
+          <tr><th scope="row">Outcome metrics</th><td>Pipeline, cost to acquire a customer and return on marketing investment, measured with holdouts. Never claimed doubled.</td><td>They are what the business cares about.</td><td>They lag by quarters, credit is shared and measurement is noisy.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 id="capacity-efficiency-effectiveness">Capacity, efficiency and effectiveness</h3>
+    <dl class="def-list">
+      <dt>Capacity</dt>
+      <dd>How much useful work the same people complete. The primary metric measures this.</dd>
+      <dt>Efficiency</dt>
+      <dd>What the same work costs, after agency fees, software and platform cost. Hours released are cash only when they are removable.</dd>
+      <dt>Effectiveness</dt>
+      <dd>Whether the extra work improves business outcomes. This is not known until it is measured.</dd>
+    </dl>
+    <p>Doubled capacity does not establish doubled revenue. Large studies of advertising find small average effects and sharply diminishing returns, and field experiments are too noisy to settle returns from a single campaign. So the page treats capacity as the claim and outcomes as hypotheses with named tests. <a href="#outcomes">What it means for CMO outcomes</a> sets out the four mechanisms that could carry a real gain.</p>
+    <h3 id="no-merged-pr">Why marketing has no merged pull request</h3>
+    <p>Software teams have a clean unit of completed work: the merged pull request. It sits in one system of record, has a clear end state, is checked by tests, and reaches customers within minutes. Marketing has none of these.</p>
+    <ul>
+      <li>There is no single system of record or merge event. Work is spread across planning tools, asset stores, publishing and advertising platforms and agency trackers.</li>
+      <li>Published work cannot be reverted. An advert that has been seen stays seen.</li>
+      <li>Ground truth is contested. There is no test suite for persuasion, and brand harm is diffuse.</li>
+      <li>Outcomes lag by weeks or quarters, and credit for pipeline is shared with sales, product and partners.</li>
+    </ul>
+    <p>So the unit has to be constructed. A request closes only when the system verifies the terminal event: it is live in its channel, or its owner has accepted the research or plan. Each unit has a size class set at intake by a rubric, not by the requester, and baseline hours that are frozen. Quality comes from pre-flight checks and sampled human audit rather than from reverts. Outcomes are tracked separately, as lagging results to test, not as the productivity measure.</p>
     <p class="evidence-stop"><b>Where the evidence stops.</b> The definition of the target is a choice, made so a CFO can check it. The multiples shown are outputs of this page's model, not observations of any organisation, and nothing here shows outcomes improving until a pilot measures them.</p>
     <div id="first-edition-scenario"><details class="maths"><summary>The launch-rate scenario from the first edition</summary>
       <p>The first edition tested a narrower claim as a scenario: a marketing organisation roughly doubles the campaign-markets it launches each quarter, from <span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span>, within a flat total marketing budget and flat headcount. Brief to live falls from <span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span> and cost per approved asset from <span data-fig="cpa-base">$152.18</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$106.38</span>.</p>
@@ -102,8 +136,10 @@
     </details></div>
     <div id="s01" class="subsection">
       <h3 id="s01-h">Claim &amp; measurement</h3>
-      <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. It is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
+      <details class="maths"><summary>The launch-rate measure from the first edition</summary>
+      <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. In the first-edition scenario it is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
       <p>The factory behind it derives many variants for each campaign-market. Those variants are internal throughput, counted in the <a href="#s05">worked campaign</a> and <a href="#s07">review-capacity</a> sections, not the claim. The number is always shown beside brief-to-live time and cost per approved asset.</p>
+      </details>
       <div class="metric-trio">
         <div><span class="lbl">Campaign-markets launched per quarter</span><span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span></div>
         <div><span class="lbl">Brief-to-live time</span><span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span></div>

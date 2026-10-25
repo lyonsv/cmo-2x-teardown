@@ -293,3 +293,6 @@ dl.vendor-dl dd { margin: 0 0 8px; }
 .six-answers dd { margin: 0; }
 @media (max-width: 640px) { .six-answers { grid-template-columns: 1fr; } .six-answers dd { margin-bottom: var(--s-sm); } }
 /* end Phase 7 first screen */
+dl.def-list { margin: 0 0 var(--s-lg); max-width: 44em; }
+dl.def-list dt { font-weight: 600; }
+dl.def-list dd { margin: 0 0 var(--s-sm); }
