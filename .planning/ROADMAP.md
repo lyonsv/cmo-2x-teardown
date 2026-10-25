@@ -94,4 +94,4 @@ Plans:
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
 | 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete    | 2026-10-25 |
 | 6. Economics Engine | v2.0 | 5/5 | Complete    | 2026-10-25 |
-| 7. Content, Presentation & Publish | v2.0 | 8/10 | In Progress|  |
+| 7. Content, Presentation & Publish | v2.0 | 9/10 | In Progress|  |

@@ -104,11 +104,11 @@
 
 ### Comparison (COMP)
 
-- [ ] **COMP-01**: The comparison section adds a dated sub-table of what major marketing suites and channels already automate, with sources, "announced" wording where availability is unconfirmed, and new register rows.
+- [x] **COMP-01**: The comparison section adds a dated sub-table of what major marketing suites and channels already automate, with sources, "announced" wording where availability is unconfirmed, and new register rows.
 
 ### Quality gates (QA)
 
-- [ ] **QA-05**: `node --test`, crosscheck, smoke, a11y and print gates pass, and the page is checked at desktop and 320px, before each publish.
+- [x] **QA-05**: `node --test`, crosscheck, smoke, a11y and print gates pass, and the page is checked at desktop and 320px, before each publish.
 - [ ] **QA-06**: W3C Nu validation reports 0 errors on the final page.
 - [ ] **QA-07**: The final page is published to GitHub Pages and a completion summary lists changes, material assumptions, what remains unverified and checks run.
 
@@ -191,8 +191,8 @@
 | ROAD-03 | Phase 7 | Complete |
 | ROAD-04 | Phase 7 | Complete |
 | RISK-01 | Phase 7 | Complete |
-| COMP-01 | Phase 7 | Pending |
-| QA-05 | Phase 7 | Pending |
+| COMP-01 | Phase 7 | Complete |
+| QA-05 | Phase 7 | Complete |
 | QA-06 | Phase 7 | Pending |
 | QA-07 | Phase 7 | Pending |
 
