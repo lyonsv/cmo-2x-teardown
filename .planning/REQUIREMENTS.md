@@ -11,11 +11,11 @@
 ### Structure and guards (STRUCT)
 
 - [ ] **STRUCT-01**: The page is reordered around the executive questions (opportunity, why autonomy, what needs to be built, first workflow, economics, outcomes, expansion, roadmap, risks, appendices), with a TOC that matches.
-- [ ] **STRUCT-02**: Sections use semantic ids; every v1 anchor (`#s01`–`#s15`, figure and table ids) still resolves to the matching content.
-- [ ] **STRUCT-03**: v1 calculator share links (`#s11?…`, including `scenario=redeploy|hold|reduce`) still restore a scenario, proven by a recorded-URL fixture test.
-- [ ] **STRUCT-04**: A test fails if any v1 `data-fig` id or `<figure>` disappears without being listed as deliberately retired.
-- [ ] **STRUCT-05**: A test fails if any in-page `href="#…"` does not resolve.
-- [ ] **STRUCT-06**: A test fails if banned jargon (e.g. "agentic marketing operating system", "AI transformation", "unlock", "supercharge") appears in the page body.
+- [x] **STRUCT-02**: Sections use semantic ids; every v1 anchor (`#s01`–`#s15`, figure and table ids) still resolves to the matching content.
+- [x] **STRUCT-03**: v1 calculator share links (`#s11?…`, including `scenario=redeploy|hold|reduce`) still restore a scenario, proven by a recorded-URL fixture test.
+- [x] **STRUCT-04**: A test fails if any v1 `data-fig` id or `<figure>` disappears without being listed as deliberately retired.
+- [x] **STRUCT-05**: A test fails if any in-page `href="#…"` does not resolve.
+- [x] **STRUCT-06**: A test fails if banned jargon (e.g. "agentic marketing operating system", "AI transformation", "unlock", "supercharge") appears in the page body.
 - [ ] **STRUCT-07**: v1 depth (10,000-asset campaign, review agent, gate, eval harness, telemetry, comparison, register) is preserved in body summaries or appendices, not deleted.
 
 ### Evidence classes (EVID)
@@ -134,11 +134,11 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | STRUCT-01 | Phase 5 | Pending |
-| STRUCT-02 | Phase 5 | Pending |
-| STRUCT-03 | Phase 5 | Pending |
-| STRUCT-04 | Phase 5 | Pending |
-| STRUCT-05 | Phase 5 | Pending |
-| STRUCT-06 | Phase 5 | Pending |
+| STRUCT-02 | Phase 5 | Complete |
+| STRUCT-03 | Phase 5 | Complete |
+| STRUCT-04 | Phase 5 | Complete |
+| STRUCT-05 | Phase 5 | Complete |
+| STRUCT-06 | Phase 5 | Complete |
 | EVID-01 | Phase 5 | Pending |
 | EVID-02 | Phase 5 | Pending |
 | EVID-03 | Phase 5 | Pending |
