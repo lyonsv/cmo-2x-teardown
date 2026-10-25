@@ -656,6 +656,13 @@ for (const [key, src] of Object.entries(sources)) {
 
 export { formatValue };
 
+// One price per hour (ECON-04): the reviewer and marketer hourly rates are derived
+// from the one loaded annual cost, so a change to it moves both and no two prices
+// for an hour of the same person can drift apart.
+const LOADED_FTE_COST = 150000;
+const PRODUCTIVE_HOURS = 1600;
+const REVIEWER_HOURS = 1200;
+
 function a(id, label, kind, key, value, unit, display, basis) {
   return { id, label, kind, key, value, unit, display, grade: 'Modelled', flag: null, basis };
 }
@@ -704,12 +711,16 @@ m('asm-review-minutes', 'Review time per reviewed variant', 'review_minutes_per_
   'Human review time for each variant a person touches; no published benchmark.');
 m('asm-rework-rate', 'Rework rate', 'rework_rate', 0.15, 'share of variants', '15%',
   'Share of variants needing one regenerate-and-re-review loop; no published benchmark.');
-m('asm-reviewer-hours', 'Review hours per reviewer per year', 'reviewer_hours_per_fte_year', 1200, 'hours', '1,200',
+m('asm-reviewer-hours', 'Review hours per reviewer per year', 'reviewer_hours_per_fte_year', REVIEWER_HOURS, 'hours', '1,200',
   'A fatigue cap on productive review time, not the 2,080 contract hours; no published benchmark.');
-m('asm-reviewer-rate', 'Reviewer cost per hour', 'reviewer_rate_per_hour', 100, 'USD per hour', '$100',
-  'Fully loaded cost of a review hour; no published benchmark.');
-m('asm-master-concept-cost', 'Cost per master concept', 'master_concept_cost', 1200, 'USD per concept', '$1,200',
-  'Human-directed creative for each unique concept; no published benchmark.');
+m('asm-reviewer-rate', 'Reviewer cost per hour', 'reviewer_rate_per_hour', LOADED_FTE_COST / REVIEWER_HOURS, 'USD per hour', '$125',
+  'One price per hour: loaded annual cost per FTE divided by the 1,200 productive review hours (asm-loaded-fte-cost / asm-reviewer-hours). Derived, not an independent input.');
+m('asm-marketer-rate', 'Marketer cost per hour', 'marketer_rate_per_hour', LOADED_FTE_COST / PRODUCTIVE_HOURS, 'USD per hour', '$93.75',
+  'One price per hour: loaded annual cost per FTE divided by the 1,600 productive hours of a marketer (asm-loaded-fte-cost / asm-productive-hours). Derived, not an independent input.');
+m('asm-concept-hours', 'Internal hours per master concept', 'concept_internal_hours', 35.2, 'hours per master concept', '35.2 hours',
+  'Internal creative direction and production hours per master concept, priced at the marketer rate. Set to the average of the creative-production workflow, 35.2 hours (35,200 hours over 1,000 concepts a year) so one quantity has one number; no published benchmark.');
+m('asm-master-concept-cost', 'Agency fee per master concept', 'master_concept_cost', 1200, 'USD per concept', '$1,200',
+  'The external agency fee only, for each unique concept; the internal hours are asm-concept-hours, priced at the marketer rate. No published benchmark.');
 m('asm-variant-cost', 'Cost per derived variant', 'variant_cost', { baseline: 4.00, scaled: 0.80 }, 'USD per variant', '$4.00 today, $0.80 at 2x',
   'Manual or agency derivation today versus AI-derived at 2x; the most contestable cost driver, no published benchmark.');
 m('asm-rights-per-concept', 'Rights and licensing per concept', 'rights_cost_per_concept', 250, 'USD per concept', '$250',
@@ -717,7 +728,7 @@ m('asm-rights-per-concept', 'Rights and licensing per concept', 'rights_cost_per
 m('asm-storage-per-variant', 'Storage per approved asset per year', 'storage_cost_per_variant', 0.02, 'USD per variant', '$0.02',
   'Only approved, live assets are stored; no published benchmark.');
 m('asm-tooling', 'Annual tooling cost', 'tooling_cost_annual', { baseline: 150000, scaled: 600000 }, 'USD per year', '$150k today, $600k at 2x',
-  'Platform, model commitments and eval-harness upkeep, as a fixed annual cost; no published benchmark.');
+  'Platform licences, observability and eval-harness upkeep, as a fixed annual cost (not inference); no published benchmark.');
 m('asm-ai-share-variant', 'AI share of variant cost', 'ai_share_of_variant_cost', { baseline: 0.05, scaled: 0.60 }, 'share of variant cost', '5% today, 60% at 2x',
   'Share of the cost of a derived variant that is AI inference; no published benchmark.');
 m('asm-ai-share-tooling', 'AI share of tooling cost', 'ai_share_of_tooling', { baseline: 0.20, scaled: 0.50 }, 'share of tooling cost', '20% today, 50% at 2x',
@@ -729,9 +740,12 @@ m('asm-review-service-days', 'Review turnaround per touch', 'review_service_days
 m('asm-target-utilisation', 'Target reviewer utilisation', 'target_utilisation', 0.85, 'share of capacity', '85%',
   'Utilisation above which queues grow quickly; used for the break-even auto-approval share. No published benchmark.');
 
+assumptions['asm-productive-hours'] = { ...a('asm-productive-hours', 'Productive hours per marketer per year', 'engine', 'productive_hours', PRODUCTIVE_HOURS, 'hours per marketer FTE per year', '1,600',
+  'About 2,080 contract hours less about 200 for leave and about 280 not attributable to production work. No published benchmark.') };
+
 assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the production cost rise', 'context', null, null, null,
-  'reallocated from other marketing lines, chiefly agency and production fees',
-  'The page holds the total marketing budget flat. The rise in production-attributable cost is assumed to be funded by moving money from other marketing lines, chiefly the agency and production fees that AI-derived variants replace. No published benchmark; if those lines cannot shrink, the budget is not flat and the claim must be restated.');
+  'assumed to come from other marketing lines; agency spend is modelled as its own line',
+  'The page holds the total marketing budget flat, so the rise in external production spend is assumed to be funded from other marketing lines. The economics engine models agency spend explicitly and tests how far the reducible part covers the rise; that counts only if the spend is actually cut. The cheaper-variant saving is already inside the rise and is not counted again. If those lines cannot shrink, the budget is not flat and the claim must be restated. No published benchmark.');
 
 // Code review WR-02: "flat headcount" is asserted, not modelled. Only reviewer
 // capacity is checked, so the marketer side is a visible Speculative assumption.
@@ -839,49 +853,49 @@ export const claims = {
     grade: 'Benchmark', flag: null, ref: 'src-nyu-emory-ai-ads-2025',
   },
   ...Object.fromEntries([
-    ['concepts-base', 1000, 'baseline.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
-    ['concepts-scaled', 1414, 'scenario.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
-  ].map(([id, value, derived, ref, unit]) => [id, {
-    id, value, unit, display: formatValue(value, 'int'), grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
+    ['concepts-base', 'baseline.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
+    ['concepts-scaled', 'scenario.concepts', 'asm-concepts-per-campaign', 'unique concepts a year'],
+  ].map(([id, derived, ref, unit]) => [id, {
+    id, value: null, unit, display: '', grade: 'Modelled', flag: null, ref, derived, decimals: 0, format: 'int',
   }])),
   ...Object.fromEntries([
-    ['cm-base', 50, 'baseline.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
-    ['cm-scaled', 100, 'scenario.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
-    ['btl-base', 11.8, 'baseline.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
-    ['btl-scaled', 7.5, 'scenario.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
-    ['cpcm-base', 12943, 'baseline.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
-    ['cpcm-scaled', 9052, 'scenario.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
-    ['cpcm-change', -0.3, 'ratios.cost_per_campaign_market_change', 'asm-master-concept-cost', 'change in production cost per campaign-market', 2, 'pctchg0'],
-    ['cpa-base', 64.71, 'baseline.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
-    ['cpa-scaled', 45.26, 'scenario.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
-    ['cpa-change', -0.3, 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved asset', 2, 'pctchg0'],
-    ['total-cost-base', 2588589, 'baseline.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
-    ['total-cost-scaled', 3620631, 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
-    ['total-cost-delta', 1032041, 'deltas.total_cost', 'asm-variant-cost', 'USD per year, 2x minus baseline', 0, 'usdm2'],
-    ['total-cost-change', 0.4, 'ratios.total_cost_change', 'asm-variant-cost', 'change in production-attributable cost', 2, 'pctchg0'],
-    ['budget-share-delta', 0.013, 'deltas.production_share_of_budget', 'asm-marketing-budget', 'percentage points of marketing budget', 3, 'pts1'],
-    ['budget-share-base', 0.033, 'baseline.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
-    ['budget-share-scaled', 0.046, 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
-    ['ai-spend-base', 38421, 'baseline.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
-    ['ai-spend-scaled', 340421, 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
-    ['ai-spend-ratio', 8.9, 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
-    ['break-even-auto-approval', 0.41, 'break_even_auto_approval.value', 'asm-auto-approval', 'minimum auto-approval share at flat reviewers', 2, 'pct0'],
-    ['human-touch-share-scaled', 0.46, 'scenario.human_touch_share', 'asm-auto-approval', 'share of derived variants seen by a person at 2x (full review, sampling or escalation)', 2, 'pct0'],
-    ['capacity-auto-approval', 0.29, 'capacity_auto_approval.value', 'asm-auto-approval', 'auto-approval share below which review capacity is exceeded', 2, 'pct0'],
-  ].map(([id, value, derived, ref, unit, decimals, format]) => [id, {
-    id, value, unit, display: formatValue(value, format), grade: 'Modelled', flag: null, ref, derived, decimals, format,
+    ['cm-base', 'baseline.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
+    ['cm-scaled', 'scenario.campaign_markets_per_quarter', 'asm-markets', 'campaign-markets launched per quarter: one campaign launched in one market counts once', 0, 'int'],
+    ['btl-base', 'baseline.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
+    ['btl-scaled', 'scenario.brief_to_live_days', 'asm-build-days', 'brief-to-live time, days', 1, 'days1'],
+    ['cpcm-base', 'baseline.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
+    ['cpcm-scaled', 'scenario.cost_per_campaign_market', 'asm-master-concept-cost', 'USD production cost per campaign-market', 0, 'usd0'],
+    ['cpcm-change', 'ratios.cost_per_campaign_market_change', 'asm-master-concept-cost', 'change in production cost per campaign-market', 2, 'pctchg0'],
+    ['cpa-base', 'baseline.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
+    ['cpa-scaled', 'scenario.cost_per_asset', 'asm-variant-cost', 'USD per approved asset', 2, 'usd2'],
+    ['cpa-change', 'ratios.cost_per_asset_change', 'asm-variant-cost', 'change in cost per approved asset', 2, 'pctchg0'],
+    ['total-cost-base', 'baseline.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['total-cost-scaled', 'scenario.cost.total', 'asm-variant-cost', 'USD per year', 0, 'usdm2'],
+    ['total-cost-delta', 'deltas.total_cost', 'asm-variant-cost', 'USD per year, 2x minus baseline', 0, 'usdm2'],
+    ['total-cost-change', 'ratios.total_cost_change', 'asm-variant-cost', 'change in production-attributable cost', 2, 'pctchg0'],
+    ['budget-share-delta', 'deltas.production_share_of_budget', 'asm-marketing-budget', 'percentage points of marketing budget', 3, 'pts1'],
+    ['budget-share-base', 'baseline.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
+    ['budget-share-scaled', 'scenario.production_share_of_budget', 'asm-marketing-budget', 'share of marketing budget', 3, 'pct1'],
+    ['ai-spend-base', 'baseline.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
+    ['ai-spend-scaled', 'scenario.ai_spend', 'asm-ai-share-tooling', 'USD per year', 0, 'usd0'],
+    ['ai-spend-ratio', 'ratios.ai_spend', 'asm-ai-share-tooling', 'x', 1, 'x1'],
+    ['break-even-auto-approval', 'break_even_auto_approval.value', 'asm-auto-approval', 'minimum auto-approval share at flat reviewers', 2, 'pct0'],
+    ['human-touch-share-scaled', 'scenario.human_touch_share', 'asm-auto-approval', 'share of derived variants seen by a person at 2x (full review, sampling or escalation)', 2, 'pct0'],
+    ['capacity-auto-approval', 'capacity_auto_approval.value', 'asm-auto-approval', 'auto-approval share below which review capacity is exceeded', 2, 'pct0'],
+  ].map(([id, derived, ref, unit, decimals, format]) => [id, {
+    id, value: null, unit, display: '', grade: 'Modelled', flag: null, ref, derived, decimals, format,
   }])),
   ...Object.fromEntries(['base', 'scaled'].flatMap((side) => [
-    ['generation', 'asm-variant-cost', { base: 34.21, scaled: 22.06 }],
-    ['review', 'asm-review-minutes', { base: 17.26, scaled: 9.68 }],
-    ['rework', 'asm-rework-rate', { base: 3.22, scaled: 1.58 }],
-    ['tooling', 'asm-tooling', { base: 3.75, scaled: 7.5 }],
-    ['rights', 'asm-rights-per-concept', { base: 6.25, scaled: 4.42 }],
-    ['storage', 'asm-storage-per-variant', { base: 0.02, scaled: 0.02 }],
-  ].map(([comp, ref, vals]) => {
+    ['generation', 'asm-variant-cost'],
+    ['review', 'asm-review-minutes'],
+    ['rework', 'asm-rework-rate'],
+    ['tooling', 'asm-tooling'],
+    ['rights', 'asm-rights-per-concept'],
+    ['storage', 'asm-storage-per-variant'],
+  ].map(([comp, ref]) => {
     const id = `cpa-${comp}-${side}`;
     return [id, {
-      id, value: vals[side], unit: `USD per approved asset, ${comp}`, display: formatValue(vals[side], 'usd2'),
+      id, value: null, unit: `USD per approved asset, ${comp}`, display: '',
       grade: 'Modelled', flag: null, ref,
       derived: `${side === 'base' ? 'baseline' : 'scenario'}.cost_per_asset_by_component.${comp}`, decimals: 2, format: 'usd2',
     }];
@@ -919,6 +933,21 @@ export const claims = {
     grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
   },
 };
+
+// ECON-12: derived claims carry no typed values. Each value is resolved once, at
+// module load, from compute() at the page defaults and rounded to the claim's
+// decimals; display follows from the format. Claims with an override (the capacity
+// rows) keep their own literals and are re-checked by data.test under their scenario.
+{
+  const r = compute(defaultInputs(), defaultAssumptions());
+  if (!r.ok) throw new Error(`derived claims: compute rejected the defaults (${r.errors.map((e) => e.message).join('; ')})`);
+  for (const c of Object.values(claims)) {
+    if (!c.derived || c.override || c.value !== null) continue;
+    const v = c.derived.split('.').reduce((o, k) => o[k], r);
+    c.value = Number(v.toFixed(c.decimals ?? 0));
+    c.display = formatValue(c.value, c.format);
+  }
+}
 
 // Winners a quarter (s10): the test cadence times the lowest and highest reported
 // win rates, read from the assumption and the claims rather than repeated as literals.
@@ -1119,8 +1148,8 @@ for (const [id, value, unit, display, ref] of [
 // asm-formats-per-market), so defaultInputs() carries them into compute(). The two
 // rows below are kind 'calc' and used only by the headcount scenarios.
 
-assumptions['asm-loaded-fte-cost'] = a('asm-loaded-fte-cost', 'Loaded annual cost per FTE', 'calc', null, 150000, 'USD per FTE per year', '$150,000',
-  'A round figure for salary plus on-costs, used only by the headcount scenarios; replace it with your own. No published benchmark.');
+assumptions['asm-loaded-fte-cost'] = a('asm-loaded-fte-cost', 'Loaded annual cost per FTE', 'calc', null, LOADED_FTE_COST, 'USD per FTE per year', '$150,000',
+  'A round figure for salary plus on-costs, used by the headcount scenarios and to set the one hourly price for reviewers and marketers; replace it with your own. No published benchmark.');
 assumptions['asm-change-mgmt'] = a('asm-change-mgmt', 'One-off change cost per affected FTE', 'calc', null, 3000, 'USD per affected FTE', '$3,000 per affected FTE',
   'About one week of loaded time per person in the marketing team, reviewers included (they are inside the 120), for training and process change; it excludes severance and exit costs. No published benchmark.');
 
@@ -1294,7 +1323,12 @@ for (const asm of Object.values(assumptions)) {
         variants.push([asm.id, { ...base, assumptions: { ...base.assumptions, [asm.key]: moved } }]);
       }
     }
-    variants.push(['asm-loaded-fte-cost', { ...base, fixed: { ...base.fixed, loaded_fte_cost: nudge(base.fixed.loaded_fte_cost) } }]);
+    // Both hourly prices are derived from the loaded cost, so they move with it.
+    const loadedFactor = nudge(base.fixed.loaded_fte_cost) / base.fixed.loaded_fte_cost;
+    variants.push(['asm-loaded-fte-cost', { ...base, fixed: { ...base.fixed, loaded_fte_cost: nudge(base.fixed.loaded_fte_cost) },
+      assumptions: { ...base.assumptions,
+        reviewer_rate_per_hour: base.assumptions.reviewer_rate_per_hour * loadedFactor,
+        marketer_rate_per_hour: base.assumptions.marketer_rate_per_hour * loadedFactor } }]);
     variants.push(['asm-change-mgmt', { ...base, fixed: { ...base.fixed, change_cost_per_fte: nudge(base.fixed.change_cost_per_fte) } }]);
 
     // Compare against the unmoved model output: derived claims store rounded values.

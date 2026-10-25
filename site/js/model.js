@@ -111,7 +111,7 @@ const VOLUME = ['asm-campaigns', 'asm-markets', 'asm-concepts-per-campaign', 'as
 const COST = uniq([
   'asm-markets', 'asm-master-concept-cost', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield',
   'asm-rework-rate', 'asm-variant-cost', ...VOLUME, 'asm-sampling-rate',
-  'asm-escalation-rate', 'asm-reviewer-rate', 'asm-rights-per-concept', 'asm-storage-per-variant', 'asm-tooling',
+  'asm-escalation-rate', 'asm-reviewer-rate', 'asm-concept-hours', 'asm-marketer-rate', 'asm-rights-per-concept', 'asm-storage-per-variant', 'asm-tooling',
 ]);
 const UTIL = uniq([
   'asm-markets', 'asm-reviewer-fte', 'asm-auto-approval', 'asm-review-minutes', 'asm-approval-yield', 'asm-rework-rate',
@@ -149,7 +149,7 @@ export function weakestGrade(ids, grades) {
 export const RESULT_ROWS = [
   { id: 'campaign_markets', label: 'Campaign-markets launched per quarter', format: 'int', changeFormat: 'pctchg0' },
   { id: 'brief_to_live', label: 'Brief-to-live time (days)', format: 'days1', changeFormat: 'pctchg0' },
-  { id: 'cost_per_asset', label: 'Fully loaded cost per approved asset', format: 'usd2', changeFormat: 'pctchg0' },
+  { id: 'cost_per_asset', label: 'Activity cost per approved asset', format: 'usd2', changeFormat: 'pctchg0' },
   { id: 'cost_per_campaign_market', label: 'Production cost per campaign-market', format: 'usd0', changeFormat: 'pctchg0' },
   { id: 'total_cost', label: 'Total production cost', format: 'usdm2', changeFormat: 'pctchg0' },
   { id: 'budget_share', label: 'Production share of marketing budget', format: 'pct1', changeFormat: 'ptschg1' },
@@ -410,7 +410,7 @@ const SAYS = {
   campaigns: 'You run this many campaigns a year', concepts: 'Each campaign needs this many master concepts',
   markets: 'Each campaign runs in this many markets', marketers: 'This many marketing FTE do the work',
   reviewers: 'This many reviewer FTE check the work', minutes: 'A reviewer needs this many minutes per variant',
-  vcost: 'Variant generation at 2x costs this much per variant', mconcept: 'A master concept costs this much to make',
+  vcost: 'Variant generation at 2x costs this much per variant', mconcept: "A master concept's agency fee is this much",
   yield: 'This share of generated variants is approved', rework: 'This share of reviewed work is reworked',
   auto1: 'This share of variants is auto-approved today', auto2: 'This share of variants can be auto-approved at 2x',
   tooling: 'Tooling costs this much a year at 2x',

@@ -90,15 +90,17 @@ test('gartner-share-2026 grade matches the 01-02 browser check', () => {
 
 test('s02 derived claims carry the expected displays', () => {
   const want = {
-    // Hand arithmetic: 3,620,631 / 80,000 = 45.26; 45.26 / 64.71 - 1 = -30%; 3.62M / 2.59M - 1 = +40%; 3.62M / 78M = 4.6%.
-    'cpa-base': '$64.71', 'cpa-scaled': '$45.26', 'cpa-change': '\u221230%',
-    'total-cost-base': '$2.59M', 'total-cost-scaled': '$3.62M', 'total-cost-delta': '$1.03M', 'total-cost-change': '+40%',
-    'budget-share-base': '3.3%', 'budget-share-scaled': '4.6%',
-    // Campaign-markets: 40 x 5 / 4 = 50 a quarter, doubled to 100; cost per campaign-market 2.59M / 200 = $12,943, 3.62M / 400 = $9,052.
+    // Hand arithmetic (activity cost = cash + internal hours at one price per hour):
+    // base 6,087,116 / 40,000 approved = 152.18; 2x 8,510,272 / 80,000 = 106.38; 106.38 / 152.18 - 1 = -30%;
+    // 8.51M / 6.09M - 1 = +40%; delta 2.42M; 6.09M / 78M = 7.8%; 8.51M / 78M = 10.9%; 3.1 points.
+    'cpa-base': '$152.18', 'cpa-scaled': '$106.38', 'cpa-change': '\u221230%',
+    'total-cost-base': '$6.09M', 'total-cost-scaled': '$8.51M', 'total-cost-delta': '$2.42M', 'total-cost-change': '+40%',
+    'budget-share-base': '7.8%', 'budget-share-scaled': '10.9%', 'budget-share-delta': '3.1 points',
+    // Campaign-markets: 40 x 5 / 4 = 50 a quarter, doubled to 100; cost per campaign-market 6.09M / 200 = $30,436, 8.51M / 400 = $21,276.
     'cm-base': '50', 'cm-scaled': '100', 'btl-base': '11.8 days', 'btl-scaled': '7.5 days',
-    'cpcm-base': '$12,943', 'cpcm-scaled': '$9,052', 'cpcm-change': '\u221230%',
+    'cpcm-base': '$30,436', 'cpcm-scaled': '$21,276', 'cpcm-change': '\u221230%',
     'concepts-scaled': '1,414',
-    'cpa-generation-scaled': '$22.06', 'cpa-review-scaled': '$9.68', 'cpa-rework-scaled': '$1.58',
+    'cpa-generation-scaled': '$80.39', 'cpa-review-scaled': '$12.11', 'cpa-rework-scaled': '$1.94',
     'cpa-tooling-scaled': '$7.50', 'cpa-rights-scaled': '$4.42', 'cpa-storage-scaled': '$0.02',
     'ai-spend-base': '$38,421', 'ai-spend-scaled': '$340,421', 'ai-spend-ratio': '8.9x',
     'break-even-auto-approval': '41%',
@@ -751,4 +753,28 @@ test('vendor sources are Modelled, vendor-claimed, https and dated; no Benchmark
   for (const c of Object.values(claims)) {
     if (/^src-(gradial|airops|profound)-/.test(c.ref)) assert.notEqual(c.grade, 'Benchmark', c.id);
   }
+});
+
+// ---- Plan 06-03: one price per hour, concept split, computed derived claims ----
+
+test('INV-2: one price per hour, both rates derived from the one loaded cost', () => {
+  const loaded = assumptions['asm-loaded-fte-cost'].value;
+  // 150,000 / 1,200 review hours = 125; 150,000 / 1,600 productive hours = 93.75.
+  assert.ok(Math.abs(assumptions['asm-reviewer-rate'].value - loaded / assumptions['asm-reviewer-hours'].value) < 1e-9);
+  assert.ok(Math.abs(assumptions['asm-marketer-rate'].value - loaded / assumptions['asm-productive-hours'].value) < 1e-9);
+  assert.equal(assumptions['asm-reviewer-rate'].value, 125);
+  assert.equal(assumptions['asm-marketer-rate'].value, 93.75);
+  assert.equal(assumptions['asm-concept-hours'].value, 35.2);
+  assert.equal(defaultAssumptions().concept_internal_hours, 35.2);
+  assert.equal(defaultAssumptions().marketer_rate_per_hour, 93.75);
+});
+
+test('corrected v1 derived pins (activity cost at the page defaults)', () => {
+  // Cash 1,794,484.21 + internal 4,292,631.58 = 6,087,115.79 base; 2x 8,510,272.32; per asset over 40,000 and 80,000.
+  const want = {
+    'cpa-base': '$152.18', 'cpa-scaled': '$106.38', 'cpa-change': '−30%',
+    'total-cost-base': '$6.09M', 'total-cost-scaled': '$8.51M', 'budget-share-delta': '3.1 points',
+    'cpcm-base': '$30,436', 'cpcm-scaled': '$21,276',
+  };
+  for (const [id, d] of Object.entries(want)) assert.equal(claims[id].display, d, id);
 });

@@ -70,13 +70,13 @@ test('source counts', () => {
 
 test('assumption counts and the hypothesis list', () => {
   const rows = Object.values(assumptions);
-  assert.equal(rows.length, 62);
+  assert.equal(rows.length, 65); // 62 + asm-marketer-rate, asm-concept-hours, asm-productive-hours
   assert.equal(HYPOTHESIS.length, 31);
   for (const id of HYPOTHESIS) assert.ok(assumptions[id], `stale id ${id}`);
   for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
   assert.equal(count(rows, 'hypothesis', 'Modelled'), 24);
   assert.equal(count(rows, 'hypothesis', 'Speculative'), 7);
-  assert.equal(count(rows, 'illustrative', 'Modelled'), 31);
+  assert.equal(count(rows, 'illustrative', 'Modelled'), 34);
   assert.equal(count(rows, 'illustrative', 'Speculative'), 0);
 });
 

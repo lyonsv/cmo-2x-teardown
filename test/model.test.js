@@ -71,7 +71,7 @@ test('identity: run(defaults) equals compute(defaultInputs(), defaultAssumptions
   assert.equal(r.ok, true);
   const direct = compute(defaultInputs(), defaultAssumptions());
   assert.deepEqual(r.result, direct);
-  assert.equal(r.result.scenario.cost_per_asset.toFixed(2), '45.26');
+  assert.equal(r.result.scenario.cost_per_asset.toFixed(2), '106.38'); // 8,510,272 / 80,000 approved assets
   assert.equal(r.result.scenario.utilisation.toFixed(3), '0.619');
 });
 
@@ -175,8 +175,8 @@ test('present(defaults): ten rows in order with golden texts', () => {
   assert.deepEqual(p.rows.map((r) => r.id), RESULT_ROWS.map((r) => r.id));
   assert.deepEqual(p.rows.map((r) => r.label), RESULT_ROWS.map((r) => r.label));
   const row = (id) => p.rows.find((r) => r.id === id);
-  assert.equal(row('cost_per_asset').base.text, '$64.71');
-  assert.equal(row('cost_per_asset').scaled.text, '$45.26');
+  assert.equal(row('cost_per_asset').base.text, '$152.18');
+  assert.equal(row('cost_per_asset').scaled.text, '$106.38');
   assert.equal(row('cost_per_asset').change.text, '−30%');
   assert.equal(row('campaign_markets').base.text, '50');
   assert.equal(row('campaign_markets').scaled.text, '100');
@@ -184,15 +184,15 @@ test('present(defaults): ten rows in order with golden texts', () => {
   assert.equal(row('brief_to_live').base.text, '11.8 days');
   assert.equal(row('brief_to_live').scaled.text, '7.5 days');
   assert.equal(row('brief_to_live').change.text, '−36%');
-  assert.equal(row('cost_per_campaign_market').base.text, '$12,943');
-  assert.equal(row('cost_per_campaign_market').scaled.text, '$9,052');
+  assert.equal(row('cost_per_campaign_market').base.text, '$30,436');
+  assert.equal(row('cost_per_campaign_market').scaled.text, '$21,276');
   assert.equal(row('cost_per_campaign_market').change.text, '−30%');
-  assert.equal(row('total_cost').base.text, '$2.59M');
-  assert.equal(row('total_cost').scaled.text, '$3.62M');
+  assert.equal(row('total_cost').base.text, '$6.09M');
+  assert.equal(row('total_cost').scaled.text, '$8.51M');
   assert.equal(row('total_cost').change.text, '+40%');
-  assert.equal(row('budget_share').base.text, '3.3%');
-  assert.equal(row('budget_share').scaled.text, '4.6%');
-  assert.equal(row('budget_share').change.text, '+1.3 points');
+  assert.equal(row('budget_share').base.text, '7.8%');
+  assert.equal(row('budget_share').scaled.text, '10.9%');
+  assert.equal(row('budget_share').change.text, '+3.1 points');
   assert.equal(row('utilisation').base.text, '55.1%');
   assert.deepEqual(p.rows.slice(0, 4).map((r) => r.id), ['campaign_markets', 'brief_to_live', 'cost_per_asset', 'cost_per_campaign_market']);
   assert.equal(p.rows.length, 10);
@@ -210,16 +210,16 @@ test('present(defaults): ten rows in order with golden texts', () => {
   for (const r of p.rows) {
     if (r.base.value !== undefined) assert.equal(r.base.text, formatValue(r.base.value, rr[r.id].format));
   }
-  assert.equal(p.summary, 'With more campaigns and more markets, at 2x you have 100 campaign-markets launched per quarter, brief to live in 7.5 days, at $45.26 per approved asset and $9,052 per campaign-market, with reviewers at 62% of capacity.');
+  assert.equal(p.summary, 'With more campaigns and more markets, at 2x you have 100 campaign-markets launched per quarter, brief to live in 7.5 days, at $106.38 per approved asset and $21,276 per campaign-market, with reviewers at 62% of capacity.');
   assert.ok(!/per head|cycle/i.test(p.summary));
 });
 
 test('route effect: markets cheapest, campaigns dearest, headline identical; summary names the route', () => {
   const at = (route) => present({ ...defaultValues(ctx), route }, ctx);
   const row = (p, id) => p.rows.find((r) => r.id === id);
-  assert.equal(row(at('markets'), 'cost_per_asset').scaled.text, '$37.75');
-  assert.equal(row(at('both'), 'cost_per_asset').scaled.text, '$45.26');
-  assert.equal(row(at('campaigns'), 'cost_per_asset').scaled.text, '$55.88');
+  assert.equal(row(at('markets'), 'cost_per_asset').scaled.text, '$81.78');
+  assert.equal(row(at('both'), 'cost_per_asset').scaled.text, '$106.38');
+  assert.equal(row(at('campaigns'), 'cost_per_asset').scaled.text, '$141.16');
   for (const route of ROUTES) assert.equal(row(at(route), 'campaign_markets').scaled.text, '100', route);
   assert.ok(at('campaigns').summary.startsWith('With more campaigns, at 2x you have 100'));
   assert.ok(at('markets').summary.startsWith('With more markets, at 2x you have 100'));
@@ -461,8 +461,8 @@ test('present().scenario and .sensitivity are finite and labelled', () => {
   assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
   assert.equal(p.scenario.rows[3].text, '$935,199');
   assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '$295,053');
-  assert.equal(p.sensitivity[0].cells.costDown.text, '+18.3%');
-  assert.equal(p.sensitivity[0].cells.costUp.text, '−12.2%');
+  assert.equal(p.sensitivity[0].cells.costDown.text, '+21.5%');
+  assert.equal(p.sensitivity[0].cells.costUp.text, '−14.3%');
   assert.equal(p.sensitivity.length, 5);
 });
 
