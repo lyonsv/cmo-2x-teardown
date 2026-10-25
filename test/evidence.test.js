@@ -232,3 +232,51 @@ test('per-side evidence: sides, display and the per-side trace', () => {
   assert.ok(claims['cpa-scaled'].inputs.includes('asm-variant-cost#scaled') && !claims['cpa-scaled'].inputs.includes('asm-variant-cost#baseline'));
   assert.ok(claims['cpa-base'].inputs.includes('asm-sampling-rate#baseline'));
 });
+
+// ---- Phase 6 plan 05: generated engine claims (econ-*) ----
+const econClaims = () => Object.values(claims).filter((c) => c.id.startsWith('econ-'));
+
+test('econ claims: evidence by family', () => {
+  const econ = econClaims();
+  assert.ok(econ.length >= 250, `only ${econ.length} econ claims`);
+  for (const c of econ) {
+    if (/^econ-wf-W\d+-current-/.test(c.id) || c.id === 'econ-bridge-slack_baseline') assert.equal(c.evidence, 'illustrative', c.id);
+    if (/^econ-wf-W\d+-agent-/.test(c.id) || /^econ-(scen|metric|sens|effects|funding|max|inv)-/.test(c.id)) assert.equal(c.evidence, 'hypothesis', c.id);
+  }
+});
+
+test('econ claims: every figure with a moving input traces to a register assumption', () => {
+  for (const c of econClaims()) {
+    if (c.value === 0) continue; // constants (no agency, no AI cost, no review) depend on nothing
+    assert.ok(c.inputs.some((id) => assumptions[id.split('#')[0]]), `${c.id}: no assumption among ${JSON.stringify(c.inputs)}`);
+  }
+  for (const id of ['econ-bridge-work_avoided', 'econ-bridge-max_multiple_at_target', 'econ-bridge-removable_same_output']) {
+    assert.ok(claims[id].inputs.some((i) => i === 'asm-reviewer-fte' || i === 'asm-review-minutes'), id);
+  }
+  // Engine rows are traced: moving the escape rate changes the escape cost line.
+  assert.ok(claims['econ-inv-escape'].inputs.includes('asm-escape-rate'));
+  assert.ok(claims['econ-scen-B-one_off'].inputs.includes('asm-severance-months'));
+  assert.ok(claims['econ-wf-W4-agent-total_hours'].inputs.includes('asm-wf-w4-agent'));
+});
+
+test('econ claims: none is graded stronger than the weakest grade among its inputs', () => {
+  const WEAK = { Benchmark: 2, Modelled: 1, Speculative: 0 };
+  for (const c of econClaims()) {
+    for (const id of c.inputs) {
+      const g = assumptions[id.split('#')[0]]?.grade;
+      if (g) assert.ok(WEAK[c.grade] <= WEAK[g], `${c.id} is ${c.grade} but depends on ${id} (${g})`);
+    }
+  }
+  for (const id of ['econ-scen-B-one_off', 'econ-scen-B-payback_simple', 'econ-scen-B-payback_ramped', 'econ-inv-severance_B', 'econ-inv-escape']) assert.equal(claims[id].grade, 'Speculative', id);
+  assert.equal(claims['econ-metric-org_after_platform'].grade, 'Modelled');
+});
+
+test('econ claims: no claim is stronger than its own ref', () => {
+  for (const c of econClaims()) assert.ok(RANK[c.evidence] <= RANK[classOf(c.ref)], `${c.id}: ${c.evidence} above ${c.ref}`);
+});
+
+test('econ claims: the trace stays lazy (evidence, inputs and grade are getters)', () => {
+  for (const c of econClaims()) {
+    for (const f of ['evidence', 'inputs', 'grade']) assert.equal(typeof Object.getOwnPropertyDescriptor(c, f).get, 'function', `${c.id}.${f}`);
+  }
+});

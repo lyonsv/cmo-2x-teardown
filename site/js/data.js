@@ -1,6 +1,6 @@
 // Single source of numbers, grades, sources and assumptions (CRED-06).
 // The page's data-fig spans, the register rows and compute() all read from here.
-import { variantMatrix, compute } from './calc.js';
+import { variantMatrix, compute, economics, sensitivity, WORKFLOW_IDS } from './calc.js';
 import { formatValue } from './format.js';
 import { present, defaultValues, RESULT_ROWS, ROUTE_SHARE } from './model.js';
 
@@ -1443,6 +1443,152 @@ function presenterClaims(ctx) {
 }
 Object.assign(claims, presenterClaims(modelContext()));
 
+// ---- Phase 6: generated engine claims (ECON-12) ----
+// Every engine output a later phase will show is a claim whose value is read from
+// economics() or compute(), never typed. `econ` is a dot path into the economics()
+// output plus `sensitivity` (array rows are addressed by index); `derived` is a path
+// into compute(). Display is rounded, value is not. Evidence is traced from the
+// engine and model inputs the figure actually depends on (see the trace below).
+function econBundle(ec) {
+  const e = economics(ec);
+  if (!e.ok) throw new Error(`engine claims: economics rejected its inputs (${(e.errors ?? []).map((x) => x.message ?? x).join('; ')})`);
+  let sens;
+  return Object.defineProperty({ ...e }, 'sensitivity', {
+    enumerable: false,
+    get: () => {
+      sens ??= sensitivity(ec);
+      if (!sens.ok) throw new Error('engine claims: sensitivity rejected its inputs');
+      return sens;
+    },
+  });
+}
+const pathIn = (obj, path) => path.split('.').reduce((x, k) => x?.[k], obj);
+
+function engineClaims(ec) {
+  const out = {};
+  const bundle = econBundle(ec);
+  const baseline = compute(ec.inputs, ec.assumptions);
+  if (!baseline.ok) throw new Error('engine claims: compute rejected its inputs');
+  const names = Object.fromEntries(ec.workflows.map((w) => [w.id, w.name]));
+  names.W5 = 'Review and approval';
+  const asmFor = (id) => (id === 'W5' ? 'asm-reviewer-fte' : `asm-wf-${id.toLowerCase()}`);
+  const add = (id, source, path, format, unit, ref, opts = {}) => {
+    const value = pathIn(source, path);
+    if (typeof value !== 'number' || !Number.isFinite(value)) return;
+    const full = `econ-${id}`;
+    out[full] = { id: full, value, unit, display: formatValue(value, format), format, grade: opts.grade ?? 'Modelled', flag: null, ref, [opts.derived ? 'derived' : 'econ']: path };
+    if (opts.side) out[full].side = opts.side;
+  };
+  const econ = (id, path, format, unit, ref, opts) => add(id, bundle, path, format, unit, ref, opts);
+  const derived = (id, path, format, unit, ref, opts) => add(id, baseline, path, format, unit, ref, { ...opts, derived: true });
+
+  // Per-workflow tables, current state and agent-enabled.
+  const FIELDS = [
+    ['units', 'int', 'units a year'], ['hours_per_unit', 'num1', 'human hours per unit'], ['review_hours', 'int', 'human review hours a year'],
+    ['total_hours', 'int', 'total human hours a year'], ['fte', 'num1', 'people (FTE)'], ['labour_cost', 'usd0', 'labour cost a year'],
+    ['agency_cost', 'usd0', 'agency cost a year'], ['ai_cost', 'usd0', 'AI inference cost a year'], ['cost_per_unit', 'usd0', 'cost per unit'],
+    ['cycle_days', 'days1', 'days elapsed from request to delivery'], ['autonomous_share', 'pct0', 'share of units completed with no human edit'],
+  ];
+  for (const id of WORKFLOW_IDS) {
+    for (const state of ['current', 'agent']) {
+      const ref = state === 'agent' && id !== 'W5' ? `${asmFor(id)}-agent` : asmFor(id);
+      for (const [field, format, what] of FIELDS) {
+        econ(`wf-${id}-${state}-${field}`, `workflows.${id}.${state}.${field}`, format,
+          `${id} ${names[id]}, ${state === 'agent' ? 'agent-enabled' : 'current state'}, ${what}`, ref, state === 'agent' ? { side: '2x' } : {});
+      }
+    }
+  }
+
+  // Reviewer capacity bridge and the scale-versus-programme split (compute() side).
+  for (const [key, format, what, side] of [
+    ['slack_baseline', 'num2', 'reviewer slack today, in FTE', 'baseline'],
+    ['programme_added_load', 'num2', 'reviewer load the programme adds, in FTE', '2x'],
+    ['work_avoided', 'num2', 'reviewer work avoided by the programme, in FTE', '2x'],
+    ['avoided_hires', 'num2', 'reviewer hires avoided against doing the same volume without the programme, in FTE', '2x'],
+    ['unused', 'num2', 'reviewer capacity left unused at 2x, in FTE', '2x'],
+    ['removable_same_output', 'num2', 'reviewers removable at the same output as today, in FTE', '2x'],
+    ['max_multiple_at_target', 'x2', 'largest output multiple the reviewers can carry at the target utilisation', '2x'],
+  ]) derived(`bridge-${key}`, `capacity_bridge.${key}`, format, `Reviewer bridge: ${what}`, 'asm-reviewer-fte', { side });
+  for (const [metric, label, format] of [['total_cost', 'total cost a year', 'usd0'], ['cost_per_asset', 'cost per approved asset', 'usd2']]) {
+    for (const [key, what, fmt] of [['scale_effect', 'change from scale alone', format], ['programme_effect', 'change from the programme', format], ['scale_share', 'share of the change that scale alone explains', 'pct0']]) {
+      derived(`effects-${metric}-${key}`, `effects.${metric}.${key}`, fmt, `Scale versus programme: ${label}, ${what}`, 'asm-variant-cost', { side: '2x' });
+    }
+  }
+
+  // Scenarios A (hold the people), B (remove the capacity), C (absorb the demand).
+  const SPEC = { grade: 'Speculative' };
+  const scen = (k, key, path, format, what, ref, opts = {}) => econ(`scen-${k}-${key}`, `scenarios.${k}.${path}`, format, `Scenario ${k}: ${what}`, ref, { side: '2x', ...opts });
+  scen('A', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
+  scen('A', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
+  scen('A', 'implied_agency_growth', 'agency.implied_growth', 'usd0', 'agency spend growth the output rise would imply', 'asm-adoption-rate');
+  scen('B', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
+  scen('B', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
+  scen('B', 'removable_fte', 'labour.removable_fte', 'num1', 'people removable at the same output (FTE)', 'asm-adoption-rate');
+  scen('B', 'labour_saving', 'labour.saving', 'usd0', 'labour saving a year', 'asm-adoption-rate');
+  scen('B', 'agency_saving', 'agency.saving', 'usd0', 'agency saving a year', 'asm-adoption-rate');
+  scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-adoption-rate');
+  scen('B', 'one_off', 'one_off.total', 'usd0', 'one-off cost including severance', 'asm-severance-months', SPEC);
+  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-severance-months', SPEC);
+  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-severance-months', SPEC);
+  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-demand-multiplier');
+  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-demand-multiplier');
+  scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', 'asm-demand-multiplier');
+  scen('C', 'hires_without', 'labour.hires_without', 'num1', 'hires needed without the programme (FTE)', 'asm-demand-multiplier');
+  scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided (FTE)', 'asm-demand-multiplier');
+  scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided a year', 'asm-demand-multiplier');
+  scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-demand-multiplier');
+  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-demand-multiplier');
+
+  // Investment: one-off and the run-cost lines (shown for scenario B).
+  const inv = (key, path, what, ref, opts) => econ(`inv-${key}`, path, 'usd0', `Investment: ${what}`, ref, { side: '2x', ...opts });
+  inv('build', 'investment.one_off.build', 'one-off build cost', 'asm-build-cost');
+  inv('change', 'investment.one_off.change', 'one-off change management cost', 'asm-change-mgmt');
+  inv('severance_B', 'investment.one_off.severance_B', 'severance if scenario B removes the capacity', 'asm-severance-months', SPEC);
+  inv('platform_team', 'investment.run.B.platform_team', 'platform team, a year', 'asm-platform-team');
+  inv('platform_tooling', 'investment.run.B.platform_tooling', 'platform tooling, a year', 'asm-tooling');
+  inv('autonomy_overhead', 'investment.run.B.autonomy_overhead', 'review overhead of autonomous workflows, a year', 'asm-autonomy-overhead');
+  inv('inference', 'investment.run.B.inference', 'model inference, a year', 'asm-token-price-frontier');
+  inv('variant_ai', 'investment.run.B.variant_ai', 'AI cost of derived variants, a year', 'asm-variant-cost');
+  inv('escape', 'investment.run.B.escape', 'cost of defects that escape review, a year', 'asm-escape-rate', SPEC);
+
+  // Primary metric and maximum multipliers.
+  const met = (key, path, what) => econ(`metric-${key}`, `metric.${path}`, 'x2', `Output multiple: ${what}`, 'asm-agency-fte-cost', { side: '2x' });
+  met('org_before_platform', 'A.org_before_platform', 'organisation-wide, before the platform team');
+  met('org_after_platform', 'A.org_after_platform', 'organisation-wide, after the platform team');
+  met('portfolio_before_platform', 'A.portfolio_before_platform', 'delegated workflows, before the platform team');
+  met('portfolio_after_platform', 'A.portfolio_after_platform', 'delegated workflows, after the platform team');
+  met('B_org', 'B.org', 'organisation-wide under scenario B');
+  met('C_org', 'C.org', 'organisation-wide under scenario C');
+  met('pooled_hours_multiple', 'pooled_hours_multiple', 'pooled hours across all workflows');
+  met('max_uniform_multiplier', 'max_uniform_multiplier', 'the multiple every workflow can carry at once');
+  for (const id of WORKFLOW_IDS) {
+    econ(`max-${id}`, `max_multipliers.per_pool.${id}.multiple`, 'x2', `Largest output multiple for ${id} ${names[id]}`, id === 'W5' ? 'asm-reviewer-fte' : `${asmFor(id)}-agent`, { side: '2x' });
+  }
+  econ('max-uniform', 'max_multipliers.uniform.value', 'x2', 'Largest output multiple every workflow can carry at once', 'asm-traffic-growth', { side: '2x' });
+  econ('max-uniform-excl-traffic', 'max_multipliers.uniform_excluding_traffic.value', 'x2', 'Largest output multiple every workflow can carry at once, excluding traffic-capped work', 'asm-traffic-growth', { side: '2x' });
+
+  // Sensitivity (each cell is a re-run of economics() with one input moved).
+  const SENS = { adoption: ['asm-adoption-rate', 'adoption', {}], escape: ['asm-escape-rate', 'escape rate', SPEC], inference: ['asm-token-price-frontier', 'inference price', {}], review_overhead: ['asm-sampling-rate', 'review overhead', {}] };
+  bundle.sensitivity.rows.forEach((row, i) => {
+    const [ref, label, opts] = SENS[row.id];
+    for (const end of ['low', 'high']) {
+      for (const [cellKey, format, what] of [['org_A_after', 'x2', 'organisation-wide output multiple'], ['net_B', 'usd0', 'scenario B net cash effect a year']]) {
+        econ(`sens-${row.id}-${end}-${cellKey}`, `sensitivity.rows.${i}.${end}.${cellKey}`, format, `Sensitivity, ${label} ${end}: ${what}`, ref, { side: '2x', ...opts });
+      }
+    }
+  });
+
+  // Funding check for the production cost rise.
+  const fund = (key, format, what) => econ(`funding-${key}`, `funding.${key}`, format, `Funding check: ${what}`, 'asm-reallocation', { side: '2x' });
+  fund('slice_cash_rise', 'usd0', 'rise in external production cash spend');
+  fund('reducible_agency', 'usd0', 'agency spend that could be cut');
+  fund('netted_inside_delta', 'usd0', 'cheaper-variant saving already inside the rise');
+  fund('coverage', 'x1', 'times the reducible agency spend covers the rise');
+  return out;
+}
+Object.assign(claims, engineClaims(engineContext()));
+// ---- end Phase 6: engine claims ----
+
 // ---- Phase 7: Intercom sources and claims (claims) ----
 // Company-reported results from Intercom's own posts, shown in #autonomy. Each is
 // Modelled with the company-reported flag (legend rule), observed evidence, and refs
@@ -1506,8 +1652,12 @@ for (const asm of Object.values(assumptions)) {
 // figure was built on the 2x side (`side`) or its compute() path is not a
 // `baseline.` path. Each claim exposes the ids it depends on as `inputs`.
 //
-// The trace re-runs the presenter about fifty times, so it runs on the first read
-// of a claim's `evidence` or `inputs` rather than on every page load.
+// The trace re-runs the presenter about fifty times and the economics engine (with
+// its sensitivity grid) about a hundred times, one variant per v1 input, model
+// assumption and engine row, so it runs on the first read of a claim's `evidence`,
+// `inputs` or (for generated econ-* claims) `grade`, never on page load. Engine rows
+// are moved whole: every numeric leaf is nudged at once (levels and step
+// counts step by one so they stay valid integers).
 {
   const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
   const MULTIPLIER = 'scenario-multiplier';
@@ -1516,6 +1666,13 @@ for (const asm of Object.values(assumptions)) {
     // Tier mixes must still sum to one: move two points from T0 to T2.
     if (Array.isArray(v)) return v.map((x, i) => (i === 0 ? x - 0.02 : i === 2 ? x + 0.02 : x));
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, nudge(x)]));
+  };
+  const STEPPED = new Set(['level', 'steps']);
+  const nudgeEngine = (v, key = '') => {
+    if (typeof v === 'number') return STEPPED.has(key) ? (v > 1 ? v - 1 : v + 1) : v === 0 ? 0.01 : v * 0.9;
+    if (Array.isArray(v)) return v.map((x) => nudgeEngine(x, key));
+    if (v !== null && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, nudgeEngine(x, k)]));
+    return v;
   };
   const derivedValue = (c, ctx) => {
     const o = c.override;
@@ -1530,8 +1687,15 @@ for (const asm of Object.values(assumptions)) {
   function trace() {
     const base = modelContext();
     const variants = [[MULTIPLIER, { ...base, inputs: { ...base.inputs, multiplier: base.inputs.multiplier * 1.25 } }]];
+    const engineVariants = [];
     for (const asm of Object.values(assumptions)) {
       if (asm.kind === 'input') variants.push([asm.id, { ...base, inputs: { ...base.inputs, [asm.key]: nudge(asm.value) } }]);
+      if (asm.kind === 'engine') {
+        const values = engineValues();
+        // The portfolio id list and the chain-success rule are structural; only numbers move.
+        values[asm.key] = nudgeEngine(values[asm.key]);
+        engineVariants.push([asm.id, base, values]);
+      }
       if (asm.kind === 'model' && asm.evidence_sides) {
         // Per-side evidence: move one side at a time so each side is attributed on its own.
         for (const side of ['baseline', 'scaled']) {
@@ -1552,14 +1716,25 @@ for (const asm of Object.values(assumptions)) {
     variants.push(['asm-change-mgmt', { ...base, fixed: { ...base.fixed, change_cost_per_fte: nudge(base.fixed.change_cost_per_fte) } }]);
 
     // Compare against the unmoved model output: derived claims store rounded values.
-    const modelled = Object.values(claims).filter((c) => c.derived || c.calc);
-    const valueIn = (c, ctx, presented) => (c.derived ? derivedValue(c, ctx) : presented[c.id]?.value);
+    const modelled = Object.values(claims).filter((c) => c.derived || c.calc || c.econ);
+    const valueIn = (c, ctx, presented, bundle) => {
+      if (c.econ) return pathIn(bundle, c.econ);
+      return c.derived ? derivedValue(c, ctx) : presented[c.id]?.value;
+    };
+    const bundleOf = (ctx, values) => econBundle(engineContext(ctx, values));
     const presentedBase = presenterClaims(base);
-    const unmoved = new Map(modelled.map((c) => [c.id, valueIn(c, base, presentedBase)]));
+    const bundleBase = bundleOf(base);
+    const unmoved = new Map(modelled.map((c) => [c.id, valueIn(c, base, presentedBase, bundleBase)]));
     const traced = new Map(modelled.map((c) => [c.id, []]));
-    for (const [id, ctx] of variants) {
-      const presented = presenterClaims(ctx);
-      for (const c of modelled) if (differs(valueIn(c, ctx, presented), unmoved.get(c.id))) traced.get(c.id).push(id);
+    // v1 variants move the presenter and, through engineContext(ctx), the engine;
+    // engine variants move one engine row and leave the v1 presenter alone.
+    for (const [id, ctx, values] of [...variants, ...engineVariants]) {
+      const presented = values ? presentedBase : presenterClaims(ctx);
+      const bundle = bundleOf(ctx, values);
+      for (const c of modelled) {
+        if (values && !c.econ) continue;
+        if (differs(valueIn(c, ctx, presented, bundle), unmoved.get(c.id))) traced.get(c.id).push(id);
+      }
     }
 
     const result = new Map();
@@ -1576,7 +1751,7 @@ for (const asm of Object.values(assumptions)) {
     function resolve(c) {
       if (result.has(c.id)) return result.get(c.id);
       const inputs = [...new Set([...(declared.get(c.id) ?? []), ...(traced.get(c.id) ?? [])])];
-      const twoX = c.side === '2x' || (c.derived !== undefined && !c.derived.startsWith('baseline.'));
+      const twoX = c.side === '2x' || (c.side !== 'baseline' && c.derived !== undefined && !c.derived.startsWith('baseline.'));
       // A per-side ref is read on the side the claim is built on: baseline unless 2x.
       const refAsm = assumptions[c.ref];
       let evidence = refAsm?.evidence_sides ? refAsm.evidence_sides[twoX ? 'scaled' : 'baseline'] : classOf(c.ref);
@@ -1603,5 +1778,18 @@ for (const asm of Object.values(assumptions)) {
     delete c.inputs;
     Object.defineProperty(c, 'evidence', { get: () => get(c, 'evidence'), enumerable: true, configurable: true });
     Object.defineProperty(c, 'inputs', { get: () => get(c, 'inputs'), enumerable: true, configurable: true });
+    if (c.econ || c.id.startsWith('econ-')) {
+      // A generated figure is no stronger than the weakest grade among the inputs it
+      // depends on (a Modelled total that moves with a Speculative escape rate is Speculative).
+      const own = c.grade;
+      const WEAK = { Benchmark: 2, Modelled: 1, Speculative: 0 };
+      Object.defineProperty(c, 'grade', {
+        get: () => get(c, 'inputs').reduce((g, id) => {
+          const x = assumptions[id.split('#')[0]]?.grade;
+          return x in WEAK && WEAK[x] < WEAK[g] ? x : g;
+        }, own),
+        enumerable: true, configurable: true,
+      });
+    }
   }
 }

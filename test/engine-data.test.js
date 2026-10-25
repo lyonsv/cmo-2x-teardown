@@ -93,3 +93,53 @@ test('the register carries generated rows and the generator is idempotent', asyn
   const { apply } = await import('../scripts/gen-register-rows.mjs');
   assert.equal(apply(html), html);
 });
+
+// ---- Phase 6 plan 05: generated engine claims ----
+import { claims } from '../site/js/data.js';
+import { formatValue } from '../site/js/format.js';
+import { compute, sensitivity } from '../site/js/calc.js';
+
+const econ = () => Object.values(claims).filter((c) => c.id.startsWith('econ-'));
+const at = (obj, path) => path.split('.').reduce((x, k) => x?.[k], obj);
+
+test('formats x2, num2, years1', () => {
+  assert.equal(formatValue(1.6, 'x2'), '1.60x');
+  assert.equal(formatValue(39.018, 'num2'), '39.02');
+  assert.equal(formatValue(1.2767, 'years1'), '1.3 years');
+  assert.equal(formatValue(-1.234, 'x2'), '−1.23x');
+  assert.equal(formatValue(-1.234, 'num2'), '−1.23');
+  assert.equal(formatValue(-2.5, 'years1'), '−2.5 years');
+});
+
+test('econ claims: at least 250, unique, every ref is a register assumption, values computed exactly', () => {
+  const list = econ();
+  assert.ok(list.length >= 250, `${list.length}`);
+  assert.equal(new Set(list.map((c) => c.id)).size, list.length);
+  const ec = engineContext();
+  const e = { ...economics(ec), sensitivity: sensitivity(ec) };
+  const r = compute(defaultInputs(), defaultAssumptions());
+  for (const c of list) {
+    assert.ok(assumptions[c.ref], `${c.id}: ref ${c.ref}`);
+    assert.ok(c.econ !== undefined || c.derived !== undefined, c.id);
+    assert.equal(c.value, at(c.econ !== undefined ? e : r, c.econ ?? c.derived), `${c.id} drifted`);
+    assert.equal(c.display, formatValue(c.value, c.format), c.id);
+    assert.ok(Number.isFinite(c.value), c.id);
+  }
+});
+
+test('econ claim goldens', () => {
+  near(claims['econ-scen-B-net'].value, 7451190, 2);
+  assert.equal(claims['econ-metric-org_after_platform'].display, '1.60x');
+  assert.equal(claims['econ-metric-portfolio_after_platform'].display, '1.99x');
+  assert.equal(claims['econ-bridge-slack_baseline'].display, '4.21');
+  assert.equal(claims['econ-funding-coverage'].display, '3.7x');
+  assert.equal(claims['econ-sens-adoption-high-net_B'], undefined, 'adoption has no high case');
+  assert.equal(claims['econ-scen-A-payback_simple'], undefined);
+});
+
+test('econ claims: values move when the engine inputs move (no stale constants)', () => {
+  const values = engineValues();
+  values.escape_rate *= 3;
+  const moved = { ...economics(engineContext(modelContext(), values)) };
+  assert.notEqual(moved.scenarios.B.net, claims['econ-scen-B-net'].value);
+});

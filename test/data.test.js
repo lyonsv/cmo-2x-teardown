@@ -42,7 +42,7 @@ test('derived claims equal compute() output on default inputs', () => {
   const r = compute(defaultInputs(), defaultAssumptions());
   assert.equal(r.ok, true);
   for (const c of Object.values(claims)) {
-    if (!c.derived || c.override) continue;
+    if (!c.derived || c.override || c.econ !== undefined || c.id.startsWith('econ-')) continue; // econ-* claims keep exact values; see 'no hand-typed model numbers'
     const v = c.derived.split('.').reduce((o, k) => o[k], r);
     assert.equal(Number(v.toFixed(c.decimals ?? 0)), c.value, `${c.id} drifted`);
   }

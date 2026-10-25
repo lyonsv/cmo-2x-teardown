@@ -13,6 +13,9 @@ export function formatValue(value, format) {
     pct0: (v) => `${n(v * 100, 0)}%`,
     pct1: (v) => `${n(v * 100, 1)}%`,
     num1: (v) => n(v, 1),
+    num2: (v) => n(v, 2),
+    x2: (v) => `${n(v, 2)}x`,
+    years1: (v) => `${n(v, 1)} years`,
     days1: (v) => `${n(v, 1)} days`,
   }[format];
   if (body) {
