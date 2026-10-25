@@ -17,6 +17,8 @@ Requires Node 22 or later. There are no dependencies to install.
 node --test
 ```
 
+Per-phase gate: run `scripts/gates.sh` before closing any phase. It runs the unit tests, the cross-check, and the browser checks (smoke, accessibility and print), and stops at the first failure. It needs Chrome, python3 and poppler (`pdftotext` and `pdfinfo`). If Chrome fails to start, it retries that check once. The CI deploy runs only `node --test`, so a Chrome hiccup can never block a deploy.
+
 ## Preview
 
 ```
