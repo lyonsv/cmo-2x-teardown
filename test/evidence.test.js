@@ -5,14 +5,14 @@ import { compute } from '../site/js/calc.js';
 
 const INDEPENDENT = new Set(['government', 'academic', 'press', 'tracker', 'secondary', 'law-firm commentary']);
 
-// The 29 assumptions that describe a programme effect or design to validate in a pilot.
+// The 31 assumptions that describe a programme effect or design to validate in a pilot.
 const HYPOTHESIS = [
   'asm-tier-mix', 'asm-auto-approval', 'asm-variant-cost', 'asm-tooling', 'asm-ai-share-variant', 'asm-ai-share-tooling', 'asm-build-days',
   'asm-tier-range-t0', 'asm-tier-range-t1', 'asm-tier-range-t2', 'asm-tier-range-t3', 'asm-reallocation', 'asm-flat-marketing-headcount',
   'asm-review-agent-design', 'asm-harness-design', 'asm-telemetry-metrics', 'asm-fatigue-controls', 'asm-adoption-design',
   'asm-risk-likelihood', 'asm-backlog0-days', 'asm-sampling-rate', 'asm-escalation-rate',
   'asm-lever-01-evidence', 'asm-lever-02-evidence', 'asm-lever-03-evidence', 'asm-lever-04-evidence', 'asm-lever-05-evidence', 'asm-lever-06-evidence',
-  'asm-growth-route',
+  'asm-growth-route', 'asm-change-mgmt', 'asm-incident-rate',
 ];
 
 const count = (rows, ev, grade) => rows.filter((r) => r.evidence === ev && r.grade === grade).length;
@@ -54,13 +54,13 @@ test('source counts', () => {
 test('assumption counts and the hypothesis list', () => {
   const rows = Object.values(assumptions);
   assert.equal(rows.length, 62);
-  assert.equal(HYPOTHESIS.length, 29);
+  assert.equal(HYPOTHESIS.length, 31);
   for (const id of HYPOTHESIS) assert.ok(assumptions[id], `stale id ${id}`);
   for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
-  assert.equal(count(rows, 'hypothesis', 'Modelled'), 23);
-  assert.equal(count(rows, 'hypothesis', 'Speculative'), 6);
-  assert.equal(count(rows, 'illustrative', 'Modelled'), 32);
-  assert.equal(count(rows, 'illustrative', 'Speculative'), 1);
+  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24);
+  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7);
+  assert.equal(count(rows, 'illustrative', 'Modelled'), 31);
+  assert.equal(count(rows, 'illustrative', 'Speculative'), 0);
 });
 
 const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };

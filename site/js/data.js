@@ -1143,6 +1143,9 @@ const HYPOTHESIS_ASSUMPTIONS = new Set([
   'asm-risk-likelihood', 'asm-backlog0-days', 'asm-sampling-rate', 'asm-escalation-rate',
   'asm-lever-01-evidence', 'asm-lever-02-evidence', 'asm-lever-03-evidence', 'asm-lever-04-evidence', 'asm-lever-05-evidence', 'asm-lever-06-evidence',
   'asm-growth-route',
+  // Code review WR-03: a cost that exists only because of the programme, and a rate
+  // used only to project incidents at 2x, describe programme effects.
+  'asm-change-mgmt', 'asm-incident-rate',
 ]);
 for (const asm of Object.values(assumptions)) {
   asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
