@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Autonomous Marketing Operations
-status: planning
+status: ready_to_plan
 last_updated: "2026-10-25T08:16:49.328Z"
 last_activity: 2026-10-25
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-24)
+See: .planning/PROJECT.md (updated 2026-10-25)
 
 **Core value:** A CMO and their CFO finish the page convinced, through transparent and graded reasoning plus their own numbers, that a 2x marketing programme is credible, governable, and improves business outcomes rather than just adding volume.
-**Current focus:** Milestone complete
+**Current focus:** v2.0 Autonomous Marketing Operations — Phase 5: Restructure Scaffold, Evidence Schema & Guards
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 5 of 10 (Restructure Scaffold, Evidence Schema & Guards) — v2.0 phases 5–10
 Plan: —
-Status: Defining requirements
-Last activity: 2026-10-25 — Milestone v2.0 started
+Status: Ready to plan
+Last activity: 2026-10-25 — v2.0 roadmap created (6 phases, 62/62 requirements mapped)
+
+Progress (v2.0): [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -80,6 +82,11 @@ Last activity: 2026-10-25 — Milestone v2.0 started
 
 ### Decisions
 
+- v2.0 Roadmap: 6 coarse phases (5–10): scaffold/evidence/guards → economics engine ∥ thesis/Intercom/build → supply chain + diagram → economics/outcomes/calculator presentation → expansion/roadmap/risks/comparison + publish
+- v2.0 Roadmap: Phase 7 depends only on Phase 5 and may run alongside Phase 6; Phase 8 worked-example hours need Phase 6; Phase 9 depends on Phase 6
+- v2.0 Roadmap: THESIS-04 (org-wide vs delegated-portfolio honesty) placed in Phase 9 with the honest-2x panel, because it needs engine numbers; STRUCT-07 (v1 depth preserved) placed in Phase 8 where s05–s08 move to appendices
+- v2.0 Roadmap: QA-05 owned by Phase 10 but every phase's success criteria require all gates green
+- v2.0 Research Decisions 1–8 in `.planning/research/SUMMARY.md` are settled (keep v1 company, explicit agency line, evidence field orthogonal to grades, primary metric, Scenario C default, vendor rule unchanged, semantic ids + legacy anchors, "stage" pilot ceiling)
 - Roadmap: 4 vertical-slice phases (coarse), each ending in a deployed page increment on GitHub Pages
 - Roadmap: CRED-02 (grade chip linked to register on every quantitative claim) is established in Phase 1 and must hold in every later phase; QA-04 in Phase 4 enforces it
 - Roadmap: CALC-08 (tested `calc.js`) lands in Phase 1, the calculator UI and remaining CALC requirements in Phase 3
@@ -130,4 +137,4 @@ Resume file: None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Plan Phase 5 with /gsd-plan-phase 5

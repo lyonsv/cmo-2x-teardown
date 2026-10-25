@@ -133,8 +133,76 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| STRUCT-01 | Phase 5 | Pending |
+| STRUCT-02 | Phase 5 | Pending |
+| STRUCT-03 | Phase 5 | Pending |
+| STRUCT-04 | Phase 5 | Pending |
+| STRUCT-05 | Phase 5 | Pending |
+| STRUCT-06 | Phase 5 | Pending |
+| EVID-01 | Phase 5 | Pending |
+| EVID-02 | Phase 5 | Pending |
+| EVID-03 | Phase 5 | Pending |
+| ECON-01 | Phase 6 | Pending |
+| ECON-02 | Phase 6 | Pending |
+| ECON-03 | Phase 6 | Pending |
+| ECON-04 | Phase 6 | Pending |
+| ECON-05 | Phase 6 | Pending |
+| ECON-06 | Phase 6 | Pending |
+| ECON-07 | Phase 6 | Pending |
+| ECON-08 | Phase 6 | Pending |
+| ECON-09 | Phase 6 | Pending |
+| ECON-10 | Phase 6 | Pending |
+| ECON-11 | Phase 6 | Pending |
+| ECON-12 | Phase 6 | Pending |
+| THESIS-01 | Phase 7 | Pending |
+| THESIS-02 | Phase 7 | Pending |
+| THESIS-03 | Phase 7 | Pending |
+| THESIS-04 | Phase 9 | Pending |
+| THESIS-05 | Phase 7 | Pending |
+| THESIS-06 | Phase 7 | Pending |
+| INTERCOM-01 | Phase 7 | Pending |
+| INTERCOM-02 | Phase 7 | Pending |
+| INTERCOM-03 | Phase 7 | Pending |
+| INTERCOM-04 | Phase 7 | Pending |
+| BUILD-01 | Phase 7 | Pending |
+| BUILD-02 | Phase 7 | Pending |
+| BUILD-03 | Phase 7 | Pending |
+| BUILD-04 | Phase 7 | Pending |
+| BUILD-05 | Phase 7 | Pending |
+| FLOW-01 | Phase 8 | Pending |
+| FLOW-02 | Phase 8 | Pending |
+| FLOW-03 | Phase 8 | Pending |
+| FLOW-04 | Phase 8 | Pending |
+| FLOW-05 | Phase 8 | Pending |
+| STRUCT-07 | Phase 8 | Pending |
+| ECONP-01 | Phase 9 | Pending |
+| ECONP-02 | Phase 9 | Pending |
+| ECONP-03 | Phase 9 | Pending |
+| ECONP-04 | Phase 9 | Pending |
+| ECONP-05 | Phase 9 | Pending |
+| ECONP-06 | Phase 9 | Pending |
+| OUT-01 | Phase 9 | Pending |
+| OUT-02 | Phase 9 | Pending |
+| OUT-03 | Phase 9 | Pending |
+| EXP-01 | Phase 10 | Pending |
+| EXP-02 | Phase 10 | Pending |
+| ROAD-01 | Phase 10 | Pending |
+| ROAD-02 | Phase 10 | Pending |
+| ROAD-03 | Phase 10 | Pending |
+| ROAD-04 | Phase 10 | Pending |
+| RISK-01 | Phase 10 | Pending |
+| COMP-01 | Phase 10 | Pending |
+| QA-05 | Phase 10 | Pending |
+| QA-06 | Phase 10 | Pending |
+| QA-07 | Phase 10 | Pending |
 
-**Coverage:** to be filled by the roadmapper.
+**Coverage:**
+- v2.0 requirements: 62 total
+- Mapped to phases: 62
+- Unmapped: 0
+
+Per phase: 5 → 9, 6 → 12, 7 → 14, 8 → 6, 9 → 10, 10 → 11.
 
 ---
 *Requirements defined: 2026-10-25*
+*Last updated: 2026-10-25 after v2.0 roadmap creation (traceability filled)*
