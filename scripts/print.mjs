@@ -13,7 +13,10 @@ import { withPage, startServer, sleep, runCleanups } from './cdp.mjs';
 // two-variant diagram, stage table and worked example): measured 137 pages on 2026-10-25, ceiling round(137 * 1.15) = 158. Raised again in plan 07-06 (section 05 economics: workflow and scenario
 // tables, eleven-measure per-workflow tables, reconciliation and sensitivity): measured 168 pages on 2026-10-25, ceiling round(168 * 1.15) = 193.
 // Raised again in plan 07-09 (platform sub-table, fourteen register rows, legend and appendix polish): measured 195 pages on 2026-10-25, ceiling round(195 * 1.15) = 224.
-const CEILING = 224;
+// Re-set once for the final v2.0 publish (code review WR-13, after the consolidated review fixes): measured 201 pages on
+// 2026-10-25, ceiling round(201 * 1.15) = 231. FROZEN: do not raise this ceiling again without recording the measured count
+// and the reason in the plan SUMMARY of the change that needs it; a jump past it is a regression to investigate first.
+const CEILING = 231;
 
 let failed = false;
 const pass = (n, d) => console.log(`PASS ${n}${d ? `: ${d}` : ''}`);
