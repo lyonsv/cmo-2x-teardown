@@ -361,22 +361,36 @@ test('scenarioOutcomes goldens at defaults (A, B, C on the cash view, change cos
   assert.equal(A.production_cost_change.toFixed(2), '935199.14');
   // One-off: $3,000 x 120 marketing FTE (the 12 reviewers are inside the 120) = 360,000.
   assert.equal(A.change_mgmt_one_off, 360000);
-  assert.equal(A.first_year_net.toFixed(2), '1295199.14'); // 935,199.14 + 360,000
+  // WR-10: the net has the portfolio engine's sign: positive is a saving, negative a rise in spend.
+  assert.equal(A.first_year_net.toFixed(2), '-1295199.14'); // -(935,199.14 + 360,000)
   const B = scenarioOutcomes(v, ctx, 'b');
   assert.equal(B.output_multiple, 1);
   assert.equal(B.production_cost_change.toFixed(2), '295052.63');
   assert.equal(B.removable_fte, cb.removable_same_output, 'attributable only: baseline slack excluded');
   assert.equal(B.people_cost_change, -cb.removable_same_output * ctx.fixed.loaded_fte_cost);
-  assert.equal(B.first_year_net.toFixed(2), '142359.13'); // -512,693.50 + 295,052.63 + 360,000
+  assert.equal(B.first_year_net.toFixed(2), '-142359.13'); // -(-512,693.50 + 295,052.63 + 360,000)
   const C = scenarioOutcomes(v, ctx, 'c');
   assert.equal(C.reviewer_fte_without, cb.required_without_programme);
   assert.equal(C.reviewer_fte_required, cb.required_programme);
   assert.equal(C.avoided_hires, cb.avoided_hires);
   assert.equal(C.avoided_hire_cost, cb.avoided_hires * ctx.fixed.loaded_fte_cost);
   assert.equal(C.people_cost_change, 0, 'no hires needed with the programme at the defaults');
-  assert.equal(C.first_year_net.toFixed(2), '1295199.14', 'avoided hire cost is against a no-programme plan and is not netted');
+  assert.equal(C.first_year_net.toFixed(2), '-1295199.14', 'avoided hire cost is against a no-programme plan and is not netted');
   assert.ok(B.removable_fte !== A.reviewer_fte_delta && B.first_year_net !== A.first_year_net && C.avoided_hires !== B.removable_fte, 'scenarios are distinct');
   for (const o of [A, B, C]) assert.equal(o.change_mgmt_one_off, 360000, 'change cost in every scenario');
+});
+
+test('WR-10: calculator B applies the smallest removable release, as the engine does', () => {
+  const v = defaultValues(ctx);
+  const gross = run(v, ctx).result.capacity_bridge.removable_same_output;
+  assert.ok(gross > 1);
+  const high = { ...ctx, fixed: { ...ctx.fixed, min_removable_fte: gross + 1 } };
+  const B = scenarioOutcomes(v, high, 'b');
+  assert.equal(B.removable_fte, 0);
+  assert.equal(B.people_cost_change, 0);
+  assert.equal(B.fragmented_fte, gross);
+  assert.equal(ctx.fixed.min_removable_fte, 1);
+  assert.equal(scenarioOutcomes(v, ctx, 'b').removable_fte, gross);
 });
 
 test('scenarioOutcomes: every field is finite for the defaults and for multiplier 1 (identity)', () => {

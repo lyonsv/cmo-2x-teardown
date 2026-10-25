@@ -1625,6 +1625,7 @@ export function modelContext() {
     fixed: {
       loaded_fte_cost: assumptions['asm-loaded-fte-cost'].value,
       change_cost_per_fte: assumptions['asm-change-mgmt'].value,
+      min_removable_fte: assumptions['asm-min-removable-fte'].value,
     },
   };
 }

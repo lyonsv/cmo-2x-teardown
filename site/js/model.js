@@ -249,18 +249,25 @@ export function scenarioOutcomes(values, ctx, mode) {
   }
   const required = side.reviewer_fte_required;
   const delta = values.reviewers - required;
-  const removable = Math.max(0, cb.removable_same_output);
+  // Code review WR-10: as in the portfolio engine, a release smaller than the smallest
+  // removable release (asm-min-removable-fte) is fragmented capacity, not a saving.
+  const gross = Math.max(0, cb.removable_same_output);
+  const thr = Number.isFinite(ctx.fixed.min_removable_fte) ? ctx.fixed.min_removable_fte : 0;
+  const removable = gross >= thr ? gross : 0;
   const hiresWith = Math.max(0, cb.required_programme - values.reviewers);
   const avoided = Math.max(0, cb.avoided_hires);
   let people = 0;
-  if (m === 'b') people = -removable * loaded;
+  if (m === 'b' && removable > 0) people = -removable * loaded;
   if (m === 'c') people = hiresWith * loaded;
   const oneOff = ctx.fixed.change_cost_per_fte * values.marketers;
-  const net = people + production + oneOff;
+  // WR-10: the same sign as the portfolio engine's net cash effect: positive is a saving,
+  // negative is a rise in spend against today.
+  const net = -(people + production + oneOff);
   const extra = {
     output_multiple: m === 'b' ? 1 : inputs.multiplier,
     max_multiple: cb.max_multiple_at_target === null ? Infinity : cb.max_multiple_at_target,
     removable_fte: removable,
+    fragmented_fte: gross - removable,
     reviewer_fte_without: cb.required_without_programme,
     avoided_hires: avoided,
     avoided_hire_cost: avoided * loaded,
@@ -352,7 +359,7 @@ function scenarioPresentation(values, ctx) {
     people_cost_change: ['Annual people cost change', people, (v) => formatValue(v, 'usd0')],
     production_cost_change: ['Change in external production spend (cash)', prod, (v) => formatValue(v, 'usd0')],
     change_mgmt_one_off: ['One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],
-    first_year_net: ['First-year net cost change versus today', net, (v) => formatValue(v, 'usd0')],
+    first_year_net: ['First-year net cash effect against today (negative: spend rises)', net, (v) => formatValue(v, 'usd0')],
   };
   const ids = {
     a: ['output_multiple', 'reviewer_fte_required', 'max_multiple', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net'],
