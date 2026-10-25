@@ -64,7 +64,7 @@ Plans:
 - [x] 06-01-PLAN.md — calc.js hardening (additive): concept split fields, cash/internal views, reviewer bridge, scale-vs-programme effects, pooled queue bound, rework_rate fix
 - [x] 06-02-PLAN.md — Portfolio engine workflows.js: W1-W10 states, pools and bridge, scenarios A/B/C, ledger and invariants, investment, primary metric, sensitivity, max multipliers
 - [x] 06-03-PLAN.md — Atomic v1 figure migration: cash-view legacy scenarios, 35.2 h concept split, one price per hour, computed derived claims, page figures and prose
-- [ ] 06-04-PLAN.md — Engine inputs in data.js (kind 'engine'), engineContext(), new sources, generated register rows, per-side evidence
+- [x] 06-04-PLAN.md — Engine inputs in data.js (kind 'engine'), engineContext(), new sources, generated register rows, per-side evidence
 - [ ] 06-05-PLAN.md — Generated econ-* claims, engine evidence trace, no-hand-typed guards, phase-end gates
 
 ### Phase 7: Content, Presentation & Publish
@@ -93,5 +93,5 @@ Plans:
 | 3.1 Headline Metric Reframe | v1.0 | 7/7 | Complete | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
 | 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete    | 2026-10-25 |
-| 6. Economics Engine | v2.0 | 3/5 | In Progress|  |
+| 6. Economics Engine | v2.0 | 4/5 | In Progress|  |
 | 7. Content, Presentation & Publish | v2.0 | 0/TBD | Not started | - |
