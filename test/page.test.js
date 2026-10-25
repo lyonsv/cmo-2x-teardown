@@ -251,8 +251,8 @@ test('grade key defines the four evidence classes and the pilot sentence', () =>
   const legend = html.slice(start, html.indexOf('</div>', start));
   for (const w of EVIDENCE) assert.ok(legend.includes(`<dt><span class="ev">${w}</span></dt>`), `legend missing ${w}`);
   for (const d of [
-    "Measured results reported by a named organisation, such as a company's own case data. The flag column says who reported it.",
-    'A published reference: an industry survey, statistic or study, or a primary legal or regulatory text.',
+    "What a named organisation reports about itself, or what is reported to have happened at a named organisation: results, incidents, or published product capabilities. It also covers studies published by a seller or as opinion, which are not independent. The publisher and flag columns say who reported it.",
+    'A published reference that is independent of what it describes: an industry survey, statistic or study, or a primary legal or regulatory text.',
     'A modelling input that describes the illustrative company, not a measured fact about yours.',
     'An effect of the programme that needs to be confirmed in a pilot.',
     'Nothing on this page is observed for your organisation. The twelve-week pilot is what produces observed data.',

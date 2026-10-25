@@ -6,8 +6,10 @@ import { present, defaultValues, RESULT_ROWS, ROUTE_SHARE } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
-// Evidence class is a second axis, orthogonal to grade (EVID-01). observed = measured
-// results reported by a named organisation; benchmark = a published reference;
+// Evidence class is a second axis, orthogonal to grade (EVID-01). observed = what a
+// named organisation reports about itself or what is reported to have happened at
+// one (results, incidents, published product capabilities), plus seller-published or
+// opinion studies; benchmark = an independent published reference;
 // illustrative = an input describing the illustrative company; hypothesis = an effect
 // of the programme that a pilot must validate.
 export const EVIDENCE = ['observed', 'benchmark', 'illustrative', 'hypothesis'];
