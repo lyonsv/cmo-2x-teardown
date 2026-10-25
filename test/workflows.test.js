@@ -383,6 +383,19 @@ test('scenario C goldens', () => {
   assert.equal(run().default_scenario, 'C');
 });
 
+test('WR-03: the counterfactual funded share applies to avoided agency growth as well as avoided hires', () => {
+  const ec = makeEc();
+  ec.engine.counterfactual_funded_share = 0;
+  const r = run(ec);
+  assert.equal(r.scenarios.C.avoided_cost, 0);
+  near(r.scenarios.C.net, -r.scenarios.C.run_cost.total, 1e-6);
+  assert.equal(r.ledger.filter((l) => l.scenario === 'C' && l.kind === 'avoided').length, 0);
+  ec.engine.counterfactual_funded_share = 0.5;
+  const half = run(ec).scenarios.C;
+  near(half.avoided_cost, 17635603.72 / 2, 3);
+  near(half.agency.avoided_funded, 7200000 / 2, 1e-6);
+});
+
 test('INV-1: slack0 + E = redeployed + removed + unused_remaining, scenarios A and B, every pool', () => {
   const r = run();
   for (const key of ['A', 'B']) {

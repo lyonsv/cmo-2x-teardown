@@ -611,7 +611,10 @@ function scenarioC(x) {
   const loaded = fixed.loaded_fte_cost;
   const today = totalAgency(rows);
   const run_cost = runCost(x, (r) => demand[r.w.id], d);
-  const avoided_cost = avoided * loaded * engine.counterfactual_funded_share + (agencyWithout - agencyWith);
+  // Code review WR-03: avoided hires and avoided agency growth are both savings only
+  // against a plan that would really have been funded, so the funded share applies to both.
+  const funded = engine.counterfactual_funded_share;
+  const avoided_cost = (avoided * loaded + (agencyWithout - agencyWith)) * funded;
   const net = avoided_cost - run_cost.total;
   const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
   const one_off_total = engine.build_one_off + change;
@@ -620,7 +623,7 @@ function scenarioC(x) {
     id: 'C', label: SCENARIO_LABELS.C,
     output: { per_workflow: demand, slice: d },
     labour: { cash_change: hiresWith * loaded, removable_fte: 0, hires_with: hiresWith, hires_without: hiresWithout, avoided_hires: avoided, unused, per_pool },
-    agency: { today, without: agencyWithout, scenario: agencyWith, avoided: agencyWithout - agencyWith },
+    agency: { today, without: agencyWithout, scenario: agencyWith, avoided: agencyWithout - agencyWith, avoided_funded: (agencyWithout - agencyWith) * funded },
     avoided_cost, run_cost, one_off: { build: engine.build_one_off, change, total: one_off_total },
     net, payback_simple: payback(one_off_total, net), payback_ramped: null, versus_today, bridge,
   };
@@ -665,7 +668,7 @@ function buildLedger(x, sc, funding) {
   for (const r of rows) {
     const dw = C.output.per_workflow[r.w.id];
     const without = r.w.agency * dw;
-    const amount = without - r.w.agency * dw * (1 - r.e.s_eff);
+    const amount = (without - r.w.agency * dw * (1 - r.e.s_eff)) * engine.counterfactual_funded_share;
     if (amount > 0) add({ id: `C-agency-${r.w.id}`, scenario: 'C', line: `agency:${r.w.id}`, counted_in: 'agency', kind: 'avoided', amount, source_line: `C-agency:${r.w.id}`, source_amount: without });
   }
   out.push({
