@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { compute, erlangC, waitMMc, waitMM1, chainSuccess } from '../site/js/calc.js';
+import { modelContext } from '../site/js/data.js';
+import { present, defaultValues } from '../site/js/model.js';
 
 const near = (actual, expected, tol = 1e-6) => assert.ok(Math.abs(actual - expected) <= tol, `expected ${actual} to be within ${tol} of ${expected}`);
 
@@ -185,4 +187,22 @@ test('chainSuccess goldens', () => {
   near(chainSuccess(0.95, 8, 8, 0), 0.66342, 1e-5);
   near(chainSuccess(0.95, 8, 4, 1), 0.93237, 1e-5);
   near(chainSuccess(0.98, 8, 8, 0), 0.85076, 1e-5);
+});
+
+test('ECON-12 rework rate differing by side stays finite and per-side', () => {
+  const ctx = modelContext();
+  const ctx2 = { ...ctx, assumptions: { ...ctx.assumptions, rework_rate: { baseline: 0.20, scaled: 0.10 } } };
+  const walk = (o, f) => {
+    if (typeof o === 'number') f(o);
+    else if (Array.isArray(o)) o.forEach((x) => walk(x, f));
+    else if (o && typeof o === 'object') Object.values(o).forEach((x) => walk(x, f));
+  };
+  const vals = defaultValues(ctx2);
+  assert.equal(vals.rework, 0.10);
+  const p = present(vals, ctx2);
+  assert.equal(p.ok, true);
+  walk(p, (v) => assert.ok(Number.isFinite(v), `non-finite ${v}`));
+  const r = compute(ctx2.inputs, ctx2.assumptions);
+  assert.equal(r.ok, true);
+  assert.notEqual(r.baseline.reviewer_fte_required, r.scenario.reviewer_fte_required);
 });

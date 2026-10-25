@@ -24,6 +24,8 @@ function defaultRoute(ctx) {
   return route;
 }
 
+const pickSide = (v, which) => (v && typeof v === 'object' && !Array.isArray(v) && 'baseline' in v ? v[which] : v);
+
 export function defaultValues(ctx) {
   const a = ctx.assumptions;
   return {
@@ -36,7 +38,7 @@ export function defaultValues(ctx) {
     vcost: a.variant_cost.scaled,
     mconcept: a.master_concept_cost,
     yield: a.approval_yield,
-    rework: a.rework_rate,
+    rework: pickSide(a.rework_rate, 'scaled'),
     auto1: a.auto_approval_share.baseline,
     auto2: a.auto_approval_share.scaled,
     route: defaultRoute(ctx),
@@ -59,7 +61,7 @@ export function toCompute(values, ctx) {
     variant_cost: { baseline: ctx.assumptions.variant_cost.baseline, scaled: values.vcost },
     master_concept_cost: values.mconcept,
     approval_yield: values.yield,
-    rework_rate: values.rework,
+    rework_rate: { baseline: pickSide(ctx.assumptions.rework_rate, 'baseline'), scaled: values.rework },
     auto_approval_share: { baseline: values.auto1, scaled: values.auto2 },
     campaign_growth_share: ROUTES.includes(values.route) ? ROUTE_SHARE[values.route] : ctx.assumptions.campaign_growth_share,
   };
@@ -214,10 +216,6 @@ function buildRows(r) {
 
 const finite = (v) => (Number.isFinite(v) ? v : 0);
 
-function requiredReviewerFte(side, a) {
-  return (side.review_hours * (1 + a.rework_rate)) / (a.reviewer_hours_per_fte_year * a.target_utilisation);
-}
-
 // Redeploy keeps the team and the 2x output. Hold keeps the team and today's volume
 // (multiplier 1 with the scaled assumptions). Reduce cuts reviewer headcount only,
 // to the capacity the 2x output needs. The change cost applies in every scenario.
@@ -235,7 +233,7 @@ export function scenarioOutcomes(values, ctx, mode) {
     side = held.scenario;
     production = held.scenario.cost.total - r.baseline.cost.total;
   }
-  const required = requiredReviewerFte(side, assumptions);
+  const required = side.reviewer_fte_required;
   const delta = values.reviewers - required;
   const people = m === 'reduce' && delta > 0 ? -delta * ctx.fixed.loaded_fte_cost : 0;
   const oneOff = ctx.fixed.change_cost_per_fte * (values.marketers + values.reviewers);
@@ -375,7 +373,7 @@ function mathsPresentation(values, ctx, r, rows) {
   const res = (v, fmt) => ({ value: v, text: formatValue(v, fmt) });
   const rowRes = (id) => ({ value: rows.find((x) => x.id === id).scaled.value, text: rows.find((x) => x.id === id).scaled.text });
   const q = sc(A.sampling_rate) + sc(A.escalation_rate);
-  const denom = s.generated_variants_per_year * (1 + A.rework_rate) * (A.review_minutes_per_variant / 60);
+  const denom = s.generated_variants_per_year * (1 + sc(A.rework_rate)) * (A.review_minutes_per_variant / 60);
   const hStar = (A.target_utilisation * s.review_capacity_hours) / denom;
   const c = s.cost;
   const S = (id, name, formula, list, result, deps) => stepOf(id, name, formula, list, result, deps, ctx);
@@ -389,7 +387,7 @@ function mathsPresentation(values, ctx, r, rows) {
     S('hours', 'Review hours a year (internal throughput, not the claim)', 'generated variants times human-touch share times minutes per review, divided by sixty',
       [int(s.generated_variants_per_year), ' × ', pct1(s.human_touch_share), ' × ', num(A.review_minutes_per_variant), ' ÷ sixty = '], res(s.review_hours, 'int'), 'utilisation'),
     S('utilisation', 'Review utilisation', 'review hours times (one plus rework rate), divided by reviewer capacity hours',
-      [int(s.review_hours), ' × (one plus ', pctT(A.rework_rate), ') ÷ ', int(s.review_capacity_hours), ' = '], rowRes('utilisation'), 'utilisation'),
+      [int(s.review_hours), ' × (one plus ', pctT(sc(A.rework_rate)), ') ÷ ', int(s.review_capacity_hours), ' = '], rowRes('utilisation'), 'utilisation'),
     S('cost', 'Cost per approved asset', 'generation, review, rework, tooling, rights and storage cost added up, divided by approved variants',
       [usd(c.generation), ' + ', usd(c.review), ' + ', usd(c.rework), ' + ', usd(c.tooling), ' + ', usd(c.rights), ' + ', usd(c.storage), ' = ', usd(c.total), ' ÷ ', int(s.variants_per_year), ' = '], rowRes('cost_per_asset'), 'cost_per_asset'),
     S('cost_campaign_market', 'Production cost per campaign-market', 'total production cost divided by campaign-markets a year',
