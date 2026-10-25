@@ -240,6 +240,10 @@ test('Figure 8 opts out of the Figure 1 phone minimum width', () => {
 });
 
 // Phase 4 Plan 1: Phase 3 UI-review fixes 1, 2 and 3.
+test('IN-05: folds that hold a wide table are not capped at the prose measure', () => {
+  assert.match(css, /details\.maths:has\(\.table-scroll\) \{ max-width: none; \}/);
+});
+
 test('details.maths summary keeps the native disclosure marker and a 48px target', () => {
   const r = rule('details.maths summary');
   assert.ok(r.includes('display: list-item'));

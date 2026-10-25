@@ -249,6 +249,8 @@ table.incidents { min-width: 840px; }
 .believe ul { margin: 0; padding-left: var(--s-lg); }
 .believe li + li { margin-top: var(--s-sm); }
 details.maths { margin: var(--s-lg) 0; max-width: 44em; }
+/* IN-05: a fold that holds a wide table uses the full column, not the prose measure. */
+details.maths:has(.table-scroll) { max-width: none; }
 details.maths summary { font: 600 12px/1.6 var(--mono); display: list-item; padding: var(--s-md) 0; min-height: 48px; box-sizing: border-box; cursor: pointer; }
 details.maths summary:hover { text-decoration: underline; }
 ol.maths-steps { padding-left: var(--s-lg); }
