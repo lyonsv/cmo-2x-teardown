@@ -13,10 +13,12 @@ test('elementById returns the whole s11 block (a div.subsection since Phase 5)',
   assert.equal(count(el, /<div\b/g), count(el, /<\/div>/g));
 });
 
-test('elementById slices every v1 section and the answer block', () => {
+test('elementById slices every v1 block and the answer block', () => {
   const ids = ['answer', ...Array.from({ length: 15 }, (_, i) => `s${String(i + 1).padStart(2, '0')}`)];
   for (const id of ids) {
     const el = elementById(html, id);
+    // v1 blocks are divs, so their div tags must balance (code review IN-04).
+    assert.equal(count(el, /<div\b/g), count(el, /<\/div>/g), id);
     assert.equal(count(el, /<section\b/g), count(el, /<\/section>/g), id);
   }
 });

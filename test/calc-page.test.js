@@ -229,7 +229,7 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
     assertGroupRule(g[1], members, note[1] + hintLinks);
   });
   assert.deepEqual(FIELDS.map((f) => f.group), ['volume', 'volume', 'volume', 'people', 'people', 'people', 'cost', 'cost', 'cost', 'cost', 'automation', 'automation']);
-  assert.ok(!/<h[23][^>]*tabindex/.test(s11), 'JS sets the h2 tabindex');
+  assert.ok(!/<h[234][^>]*tabindex/.test(s11), 'JS sets the s11-h heading tabindex, not the markup');
 });
 
 test('error summary and share panel markup', () => {
