@@ -73,15 +73,16 @@ test('assumption counts and the hypothesis list', () => {
   const rows = Object.values(assumptions);
   // 65 + 41 engine rows (06-04): 23 globals and 18 workflow rows (asm-productive-hours was already counted),
   // plus asm-prioritisation (07-06, the author's scoring judgement)
-  assert.equal(rows.length, 65 + 41 + 1);
+  assert.equal(rows.length, 65 + 41 + 1 + 4); // plus four pilot targets and acceptance criteria (07-08)
   assert.equal(HYPOTHESIS.length, 31);
   for (const id of HYPOTHESIS) assert.ok(assumptions[id], `stale id ${id}`);
   // Engine rows carry their own evidence, so the oracle is the list in engine-data.test.js's ENGINE_HYPOTHESIS.
   const ENGINE_HYP = ['asm-out-of-scope-uplift', 'asm-overhead-share', 'asm-autonomous-share', 'asm-adoption-rate', 'asm-year1-realisation', 'asm-escape-rate', 'asm-build-cost', 'asm-platform-team', 'asm-autonomy-overhead', 'asm-severance-months', 'asm-counterfactual-funded',
+    'asm-pilot-target-hours', 'asm-pilot-target-cycle', 'asm-pilot-escape-ceiling', 'asm-pilot-first-pass-floor',
     ...['w1', 'w2', 'w3', 'w4', 'w6', 'w7', 'w8', 'w9', 'w10'].map((w) => `asm-wf-${w}-agent`)];
   for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) || ENGINE_HYP.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
   assert.equal(count(rows, 'hypothesis', 'Modelled'), 24 + 18);
-  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2);
+  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2 + 4);
   assert.equal(count(rows, 'illustrative', 'Modelled'), 34 + 20);
   assert.equal(count(rows, 'illustrative', 'Speculative'), 2);
 });

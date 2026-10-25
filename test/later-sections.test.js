@@ -99,3 +99,67 @@ test('expansion: reusable and domain-specific table, the narrow-first sentence a
   assert.ok(expansion.includes('<div id="s09" class="subsection">'));
   assert.ok(expansion.includes('<h3 id="s09-h">'));
 });
+
+// ---- #roadmap ----
+const roadmap = elementById(html, 'roadmap');
+const PILOT_IDS = ['asm-pilot-target-hours', 'asm-pilot-target-cycle', 'asm-pilot-escape-ceiling', 'asm-pilot-first-pass-floor'];
+
+test('roadmap: the pilot table has the eight named rows', () => {
+  const t = tableByCaption(roadmap, 'The pilot at a glance');
+  assert.deepEqual(bodyRows(t).map(rowName), ['Workflow and why', 'Software built', 'Integrations', 'Baseline', 'Autonomy ceiling', 'Targets', 'Acceptance criteria', 'How success is shown']);
+  assert.ok(/weeks one to three/.test(strip(t)), 'baseline time study in weeks one to three');
+  assert.ok(/Stage:/.test(strip(t)), 'stage ceiling');
+});
+
+test('roadmap: every numeral in the pilot is a data-fig on a Speculative claim; pilot targets are hypotheses', () => {
+  const block = h3Block(roadmap, 'pilot');
+  const text = strip(block
+    .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
+    .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' '));
+  assert.ok(!/\d/.test(text), `digit outside a figure: ${text.match(/.{20}\d.{20}/)?.[0]}`);
+  for (const id of figsOf(block)) {
+    const e = claims[id] ?? assumptions[id];
+    assert.equal(e.grade, 'Speculative', id);
+  }
+  for (const id of PILOT_IDS) {
+    assert.ok(block.includes(`data-fig="${id}"`), id);
+    const a = assumptions[id];
+    assert.equal(a.kind, 'context');
+    assert.equal(a.grade, 'Speculative');
+    assert.equal(a.evidence, 'hypothesis');
+    assert.ok(block.includes(`<a class="chip c-s" href="#${id}">Speculative</a> <span class="ev">hypothesis</span>`), `${id} chip and hypothesis label`);
+    assert.ok(html.includes(`<tr id="${id}">`), `register row ${id}`);
+  }
+});
+
+test('roadmap: next two quarters has rows E1 to E3', () => {
+  const t = tableByCaption(roadmap, 'Next two quarters: raise autonomy and widen');
+  assert.deepEqual(headOf(t), ['Step', 'What gets built', 'Bottleneck removed', 'Interventions reduced', 'Expected measurable change']);
+  const rows = bodyRows(t);
+  assert.equal(rows.length, 3);
+  ['E1', 'E2', 'E3'].forEach((e, i) => assert.ok(rowName(rows[i]).startsWith(e), e));
+  for (const r of rows) assert.ok(/hypothesis/.test(r) && /class="chip c-s"/.test(r));
+});
+
+test('roadmap: the portfolio is from the engine, explains pooling and is separated from proven pilot results', () => {
+  const block = h3Block(roadmap, 'portfolio');
+  const figs = figsOf(block);
+  for (const id of ['econ-metric-org_after_platform', 'econ-metric-pooled_hours_multiple', 'econ-scen-C-avoided_hires']) assert.ok(figs.includes(id), id);
+  for (const id of figs) assert.match(id, /^econ-/);
+  assert.ok(/without double counting/.test(strip(block)) && block.includes('href="#reconciliation"'));
+  const t = tableByCaption(block, 'Proven by the pilot versus projected');
+  assert.deepEqual(headOf(t), ['What the pilot will have measured', 'What remains a projection']);
+  assert.ok(bodyRows(t).length >= 4);
+  assert.ok(block.indexOf('Proven by the pilot versus projected') > block.indexOf('data-fig="econ-metric-org_after_platform"'));
+  assert.equal(tableByCaption(block, 'Where each workflow could be at twelve months').match(/<th scope="row">/g).length, 10);
+  assert.ok(!/revenue (rise|gain|of)/.test(strip(block)), 'no revenue is computed from capacity');
+});
+
+test('roadmap: enablement names the redesigned roles and the platform team; v1 s13 stays', () => {
+  const block = h3Block(roadmap, 'enablement');
+  const t = strip(block);
+  for (const w of ['eval curator', 'workflow owner', 'platform team', 'works councils']) assert.ok(t.includes(w), w);
+  assert.ok(block.includes('data-fig="econ-inv-platform_team"'));
+  assert.ok(roadmap.includes('<div id="s13" class="subsection">'));
+  assert.ok(roadmap.includes('<h4>Backlog 0, defined</h4>'));
+});

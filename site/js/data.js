@@ -1364,6 +1364,21 @@ for (const [wid, sc] of Object.entries(PRIORITY_SCORES)) {
     claims[id] = { id, value: v, unit: `Prioritisation score for ${wid}, ${key}${key === 'total' ? ' (sum of the five scores)' : ' (1 to 5)'}`, display: String(v), grade: 'Speculative', flag: null, ref: 'asm-prioritisation' };
   }
 }
+// ---- Phase 7 plan 08: pilot targets and acceptance criteria (ROAD-01) ----
+// Targets for the twelve-week pilot. They are the author's hypotheses, set so a pilot can
+// pass or fail them; no model figure reads them (kind 'context'). Each is Speculative with
+// hypothesis evidence, and the page shows each beside a Speculative chip.
+const pilot = (id, label, value, unit, display, basis) => {
+  assumptions[id] = { ...a(id, label, 'context', null, value, unit, display, basis), grade: 'Speculative', evidence: 'hypothesis' };
+};
+pilot('asm-pilot-target-hours', 'Pilot target: fewer human hours per market launched', 0.4, 'share of baseline human hours per market launched', '40%',
+  "A target the author chose for the pilot, set below the fully ramped reduction the model uses for planning and briefing so that a first slice can pass it. Hypothesis: measure it against the baseline time study of weeks one to three and replace it with your own. No published benchmark.");
+pilot('asm-pilot-target-cycle', 'Pilot target: shorter objective-to-verified-live time', 0.5, 'share of baseline median objective-to-verified-live time', '50%',
+  "A target the author chose for the pilot, in line with the model's ramped elapsed-time assumption for planning and briefing. Hypothesis: the median is measured from workflow state against the baseline time study. No published benchmark.");
+pilot('asm-pilot-escape-ceiling', 'Pilot acceptance: ceiling on the escape rate in sampled outputs', 0.01, 'share of sampled outputs with an error that passed review', '1%',
+  "A ceiling the author chose, deliberately looser than the 0.3% escape rate the model assumes at scale because a pilot samples heavily and a pilot that exceeds this ceiling should stop. Hypothesis: replace it with the error tolerance your brand and legal owners set. No published benchmark.");
+pilot('asm-pilot-first-pass-floor', 'Pilot acceptance: floor on first-pass acceptance', 0.8, 'share of derived variants accepted by review at the first pass', '80%',
+  "A floor the author chose for the pilot, below the 95% approval yield the model assumes once the rules are encoded. Hypothesis: measured by the review tool against the baseline from weeks one to three. No published benchmark.");
 // ---- end Phase 7 plan 06: prioritisation ----
 
 // ---- Plan 03-03: operations lever, statutory-damages illustration ----

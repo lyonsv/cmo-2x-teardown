@@ -1815,6 +1815,92 @@
     </section>
     <section id="roadmap" aria-labelledby="roadmap-h">
       <div class="sec-head"><span class="sec-num">08</span><h2 id="roadmap-h">The roadmap</h2></div>
+      <p class="chain-pos"><b>Software built</b> → <b>Autonomy enabled</b> → <b>Human work reduced</b> → <b>Marketing capacity increased</b> → <b>Business outcomes improved</b></p>
+      <p>The roadmap walks the whole chain. It starts with one workflow and a pilot designed to be able to fail, then raises autonomy and widens the scope in steps, and ends with an organisation-wide ambition that is kept apart from anything the pilot has shown.</p>
+      <h3 id="pilot">First twelve weeks: prove one outcome</h3>
+      <p>The pilot proves one thing: that agents can take a real workflow from objective to a verified launch with fewer human hours, without more errors. The targets below are the author's hypotheses, set so that the pilot can pass or fail them. They are not results.</p>
+      <div class="table-scroll" role="region" aria-label="Pilot table" tabindex="0">
+        <table>
+          <caption>The pilot at a glance</caption>
+          <thead><tr><th scope="col">Item</th><th scope="col">What the pilot does</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Workflow and why</th><td>Launch an approved campaign in additional markets. It runs planning and briefing, adaptation and localisation, brand, legal and regulatory approval, and publishing and activation, whose prioritisation scores in <a href="#workflow-inventory">the economics section</a> are <span data-fig="prio-W2-total">18</span>, <span data-fig="prio-W4-total">20</span>, <span data-fig="prio-W5-total">18</span> and <span data-fig="prio-W6-total">20</span> <a class="chip c-s" href="#asm-prioritisation">Speculative</a>. It crosses many teams, has a clear unit of output (a market launched) and carries low creative risk, because the masters and claims are already approved.</td></tr>
+            <tr><th scope="row">Software built</th><td>The minimum version of each capability described in <a href="#smallest-slice">the smallest useful version</a>: an objective form, approved claims and market rules, one plan template, a few connectors, rule checks with a review agent and a seeded test set, and a run record.</td></tr>
+            <tr><th scope="row">Integrations</th><td>By category: the digital asset manager (read), the translation management system (draft), the content management system (draft and preview), the advertising platform (create paused, then read back), the work-management tool (approvals) and analytics (read).</td></tr>
+            <tr><th scope="row">Baseline</th><td>A time study in weeks one to three, measuring human hours, hand-offs, elapsed time and first-pass acceptance for the same kind of launch done the current way. Without it no target means anything.</td></tr>
+            <tr><th scope="row">Autonomy ceiling</th><td>Stage: agents prepare every launch and a person clicks go-live in each market. Automatic publishing is out of scope for the pilot.</td></tr>
+            <tr><th scope="row">Targets</th><td>Two, both measured against the baseline: human hours per market launched, and the median time from objective to verified live. Their values are in the list below the table.</td></tr>
+            <tr><th scope="row">Acceptance criteria</th><td>Two limits on quality, and a deployment check that every launch is live as intended. Their values are in the list below the table. A pilot that breaches the escape ceiling stops.</td></tr>
+            <tr><th scope="row">How success is shown</th><td>Launched markets are compared with comparable markets not yet launched, using a holdout or matched markets, and early performance is read at a fixed point. Hours come from the time study, not from the system's own logs alone.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="pilot-targets">
+        <li>Target: human hours per market launched fall by <span data-fig="asm-pilot-target-hours">40%</span> <a class="chip c-s" href="#asm-pilot-target-hours">Speculative</a> <span class="ev">hypothesis</span> against the baseline.</li>
+        <li>Target: the median time from objective to verified live falls by <span data-fig="asm-pilot-target-cycle">50%</span> <a class="chip c-s" href="#asm-pilot-target-cycle">Speculative</a> <span class="ev">hypothesis</span>.</li>
+        <li>Acceptance: the escape rate in sampled outputs stays at or under <span data-fig="asm-pilot-escape-ceiling">1%</span> <a class="chip c-s" href="#asm-pilot-escape-ceiling">Speculative</a> <span class="ev">hypothesis</span>.</li>
+        <li>Acceptance: first-pass acceptance stays at or above <span data-fig="asm-pilot-first-pass-floor">80%</span> <a class="chip c-s" href="#asm-pilot-first-pass-floor">Speculative</a> <span class="ev">hypothesis</span>.</li>
+      </ul>
+      <h3 id="next-two-quarters">The next two quarters: raise autonomy and widen</h3>
+      <p>Each step reuses the six parts and removes one bottleneck. The steps keep the expansion-path labels used in <a href="#expansion-path">the build section</a>. The expected changes are hypotheses, and each step is taken only if the one before it met its acceptance criteria.</p>
+      <div class="table-scroll" role="region" aria-label="Next two quarters table" tabindex="0">
+        <table>
+          <caption>Next two quarters: raise autonomy and widen</caption>
+          <thead><tr><th scope="col">Step</th><th scope="col">What gets built</th><th scope="col">Bottleneck removed</th><th scope="col">Interventions reduced</th><th scope="col">Expected measurable change</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">E1 · Widen</th><td>Connectors for new channels, rule sets for new markets and more campaign families.</td><td>Waiting for a market rule set or a hand-built channel cut.</td><td>Repeated manual set-up for each market and channel.</td><td>More launches a quarter from the same team, with elapsed time holding as volume rises. <span class="ev">hypothesis</span> <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td></tr>
+            <tr><th scope="row">E2 · Raise permission</th><td>Threshold rules, batch approvals and a sampled audit after publication.</td><td>A person clicking go-live on every low-risk variant.</td><td>Go-live clicks on T0 and T1 work in approved markets.</td><td>The share of eligible work finished without a click rises while the escape rate stays under the ceiling. <span class="ev">hypothesis</span> <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td></tr>
+            <tr><th scope="row">E3 · Close the loop</th><td>A monitoring template and a catalogue of permitted adjustments.</td><td>The delay between performance dropping and a person noticing.</td><td>Manual monitoring and requests for creative refresh.</td><td>Time from tired creative detected to replacement shortens. <span class="ev">hypothesis</span> <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 id="portfolio">Twelve months: the organisation-wide ambition</h3>
+      <p>Over twelve months the programme widens from one workflow to the portfolio of ten in <a href="#workflow-inventory">the economics section</a>, each at the autonomy level its own evidence supports. Creative production stays largely with people; the gains come from the derivative, repeatable and checkable work around it.</p>
+      <div class="table-scroll" role="region" aria-label="Portfolio autonomy table" tabindex="0">
+        <table>
+          <caption>Where each workflow could be at twelve months</caption>
+          <thead><tr><th scope="col">Workflow</th><th scope="col">Autonomy level that could be reached</th><th scope="col">What stays with people</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Market and customer research</th><td>Agentic execution for monitoring and synthesis. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Which questions matter, and interpretation.</td></tr>
+            <tr><th scope="row">Planning, briefing and campaign operations</th><td>Higher autonomy for tracking, drafting and chasing. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>The objective, the budget and the go or no-go.</td></tr>
+            <tr><th scope="row">Content and creative production</th><td>Assistance. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Direction, the big idea and taste.</td></tr>
+            <tr><th scope="row">Channel adaptation and localisation</th><td>Higher autonomy within approved markets. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Transcreation of headline creative and new-market decisions.</td></tr>
+            <tr><th scope="row">Brand, legal and regulatory approval</th><td>Higher autonomy on the lowest tiers only. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>The higher tiers, new claims and policy.</td></tr>
+            <tr><th scope="row">Publishing and activation</th><td>Higher autonomy within caps, after a staged pilot. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Spend above thresholds and incidents.</td></tr>
+            <tr><th scope="row">Search and answer-engine visibility</th><td>Higher autonomy for refreshing existing pages. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Content strategy and positioning.</td></tr>
+            <tr><th scope="row">Experimentation and conversion</th><td>Agentic execution, with people approving tests. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>The metric that matters and ambiguous ship decisions.</td></tr>
+            <tr><th scope="row">Performance measurement and reporting</th><td>Agentic execution for reports; assistance for interpretation. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Metric definitions and causal claims.</td></tr>
+            <tr><th scope="row">Campaign monitoring and iteration</th><td>Propose first, then apply inside budget bands. <a class="chip c-s" href="#asm-adoption-design">Speculative</a></td><td>Budget envelopes, channel mix and brand-safety calls.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Combined across the portfolio, the model gives an organisation-wide output multiple of <span data-fig="econ-metric-org_after_platform">1.60x</span> <a class="chip c-m" href="#asm-agency-fte-cost">Modelled</a> after the cost of the platform team, and pooled human hours across all workflows rise by <span data-fig="econ-metric-pooled_hours_multiple">1.47x</span>. Where demand grows and hiring is limited, it shows avoided future hires against the no-programme plan of <span data-fig="econ-scen-C-avoided_hires">69.6</span> <a class="chip c-m" href="#asm-demand-multiplier">Modelled</a> full-time equivalents. These are model results at the default inputs, not forecasts.</p>
+      <p>Contributions combine without double counting. The engine pools hours by role, so one person's hour freed in two workflows is counted once. Reviewers are one shared pool, not one pool per workflow. Every hour has one price. Released hours are reconciled in a ledger that splits them into redeployed, removed, unused and avoided, and the check line reads zero in every scenario; see <a href="#reconciliation">where the released hours go</a>.</p>
+      <p>The portfolio is a projection, and the pilot does not prove it. The table separates what the pilot will have measured from what stays a projection.</p>
+      <div class="table-scroll" role="region" aria-label="Proven versus projected table" tabindex="0">
+        <table>
+          <caption>Proven by the pilot versus projected</caption>
+          <thead><tr><th scope="col">What the pilot will have measured</th><th scope="col">What remains a projection</th></tr></thead>
+          <tbody>
+            <tr><td>Human hours, hand-offs and elapsed time per market launched, before and after, for one workflow.</td><td>The hours and elapsed time of the other nine workflows, which come from the model's assumptions.</td></tr>
+            <tr><td>First-pass acceptance and the escape rate in sampled outputs, for the pilot's work.</td><td>The escape rate at scale, where most output is not seen by a person.</td></tr>
+            <tr><td>Whether agents can stage launches that a person approves without rework.</td><td>Whether permission can be raised safely, which needs evidence for each class of action.</td></tr>
+            <tr><td>A holdout or matched-market read of early performance for the launched markets.</td><td>Any effect on pipeline or revenue across the programme.</td></tr>
+            <tr><td>The platform and inference costs actually incurred during the pilot.</td><td>The run cost of the platform team across the organisation, and any cash saving or avoided hire in any scenario.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 id="enablement">Making it work in the organisation</h3>
+      <p>Software does not change how a team works. These are the changes that have to come with it.</p>
+      <ul class="enablement">
+        <li><b>Training.</b> People learn to write a brief an agent can act on, read a review report and sample outputs without rubber-stamping them. Training happens on live work, with a named person beside the new user.</li>
+        <li><b>Trust.</b> Autonomy is raised only on evaluation evidence for that class of action, never on enthusiasm or on a count of runs.</li>
+        <li><b>Permissions.</b> Agents hold the narrowest permission that lets them do the work. Each increase is a decision with an owner and a date.</li>
+        <li><b>Accountability.</b> Every workflow has an owner and an approval boundary. When an agent acts, a named person answers for the result.</li>
+        <li><b>Role redesign.</b> The reviewer becomes an eval curator, who builds and maintains the human-judged sets that agents are tested against. The coordinator becomes a workflow owner, who sets objectives, handles exceptions and signs off launches. A small platform team runs the shared parts; the model prices it at <span data-fig="econ-inv-platform_team">$1,200,000</span> <a class="chip c-m" href="#asm-platform-team">Modelled</a> a year.</li>
+        <li><b>Labour relations.</b> Consult employee representatives and works councils before roles change, and let any reduction in headcount follow measured adoption instead of preceding it. Severance, if a scenario removed capacity, is priced on its own line at <span data-fig="econ-inv-severance_B">$2,926,347</span> <a class="chip c-s" href="#asm-severance-months">Speculative</a>, apart from the savings.</li>
+      </ul>
+      <p>The adoption stages, the list of what stays human and the Backlog 0 definition below are the first edition's detail for this enablement.</p>
     <div id="s13" class="subsection">
       <h3 id="s13-h">Adoption and Backlog 0</h3>
       <p>Adoption starts with the work that is safest to automate, and success is measured by how long approved demand waits.</p>
@@ -1858,6 +1944,7 @@
       </div>
       <p>This is where the programme leads: a queue that stays empty because capacity, not a wish list, sets the pace. Replace the service level with your own; the rest of your numbers go in <a href="#s11">section 05</a>.</p>
     </div>
+      <p class="evidence-stop"><b>Where the evidence stops.</b> Nothing in this roadmap is a pilot result yet. The targets, the acceptance criteria, the steps and the autonomy levels are the author's design and hypotheses, and the twelve-month portfolio is a model projection that only the pilot's measured baseline and results can begin to support.</p>
     </section>
     <section id="risks" aria-labelledby="risks-h">
       <div class="sec-head"><span class="sec-num">09</span><h2 id="risks-h">Risks and assumptions</h2></div>
@@ -3963,6 +4050,38 @@
               <td><span class="chip c-s">Speculative</span></td>
               <td><span class="ev">illustrative</span></td>
               <td>Scores from 1 to 5 for value (hours and agency spend in scope), feasibility (how reliable agents are today and how hard the integration is), repeatability (volume and standardisation), risk (brand, legal and spend exposure, where 5 is low risk) and measurable autonomy (whether success can be checked by a deterministic test), each summed without weighting. Judgements informed by the workflow inventory, not measurements; replace them with your own scoring. No published benchmark.</td>
+            </tr>
+            <tr id="asm-pilot-target-hours">
+              <th scope="row" class="id">asm-pilot-target-hours</th>
+              <td>Pilot target: fewer human hours per market launched</td>
+              <td><span data-fig="asm-pilot-target-hours">40%</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td><span class="ev">hypothesis</span></td>
+              <td>A target the author chose for the pilot, set below the fully ramped reduction the model uses for planning and briefing so that a first slice can pass it. Hypothesis: measure it against the baseline time study of weeks one to three and replace it with your own. No published benchmark.</td>
+            </tr>
+            <tr id="asm-pilot-target-cycle">
+              <th scope="row" class="id">asm-pilot-target-cycle</th>
+              <td>Pilot target: shorter objective-to-verified-live time</td>
+              <td><span data-fig="asm-pilot-target-cycle">50%</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td><span class="ev">hypothesis</span></td>
+              <td>A target the author chose for the pilot, in line with the model's ramped elapsed-time assumption for planning and briefing. Hypothesis: the median is measured from workflow state against the baseline time study. No published benchmark.</td>
+            </tr>
+            <tr id="asm-pilot-escape-ceiling">
+              <th scope="row" class="id">asm-pilot-escape-ceiling</th>
+              <td>Pilot acceptance: ceiling on the escape rate in sampled outputs</td>
+              <td><span data-fig="asm-pilot-escape-ceiling">1%</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td><span class="ev">hypothesis</span></td>
+              <td>A ceiling the author chose, deliberately looser than the 0.3% escape rate the model assumes at scale because a pilot samples heavily and a pilot that exceeds this ceiling should stop. Hypothesis: replace it with the error tolerance your brand and legal owners set. No published benchmark.</td>
+            </tr>
+            <tr id="asm-pilot-first-pass-floor">
+              <th scope="row" class="id">asm-pilot-first-pass-floor</th>
+              <td>Pilot acceptance: floor on first-pass acceptance</td>
+              <td><span data-fig="asm-pilot-first-pass-floor">80%</span></td>
+              <td><span class="chip c-s">Speculative</span></td>
+              <td><span class="ev">hypothesis</span></td>
+              <td>A floor the author chose for the pilot, below the 95% approval yield the model assumes once the rules are encoded. Hypothesis: measured by the review tool against the baseline from weeks one to three. No published benchmark.</td>
             </tr>
             </tbody>
           </table>
