@@ -6,6 +6,17 @@ import { present, defaultValues, RESULT_ROWS } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
+// Evidence class is a second axis, orthogonal to grade (EVID-01). observed = measured
+// results reported by a named organisation; benchmark = a published reference;
+// illustrative = an input describing the illustrative company; hypothesis = an effect
+// of the programme that a pilot must validate.
+export const EVIDENCE = ['observed', 'benchmark', 'illustrative', 'hypothesis'];
+export const ALLOWED_PAIRS = {
+  benchmark: ['Benchmark', 'Modelled'],
+  observed: ['Benchmark', 'Modelled'],
+  illustrative: ['Modelled', 'Speculative'],
+  hypothesis: ['Modelled', 'Speculative'],
+};
 export const PUBLISHER_TYPES = ['vendor', 'company', 'academic', 'law-firm commentary', 'press', 'tracker', 'government', 'author', 'secondary'];
 export const SCENARIO = { multiplier: 2 };
 
@@ -562,6 +573,12 @@ export const sources = {
   },
 };
 
+// Source evidence: a flag means a named organisation reports its own results (observed);
+// press incident reports are observed events; everything else is a published reference.
+for (const [key, src] of Object.entries(sources)) {
+  src.evidence = src.flag || key.startsWith('incident-') ? 'observed' : 'benchmark';
+}
+
 export { formatValue };
 
 function a(id, label, kind, key, value, unit, display, basis) {
@@ -1095,5 +1112,34 @@ export function modelContext() {
     for (const part of b.parts) {
       if (part.fig) figClaim(part.fig, part, `What you must believe: ${b.statement}`, b.grade, b.ref, `believe.${b.key}.${part.fig.endsWith('-swing') ? 'swing' : 'value'}`);
     }
+  }
+}
+
+// ---- Evidence classes for assumptions and claims (EVID-01) ----
+// Nothing is observed for the subject organisation, so no assumption is 'observed'.
+// Programme effects and designs to validate in a pilot are hypotheses; every other
+// assumption describes the illustrative company.
+const HYPOTHESIS_ASSUMPTIONS = new Set([
+  'asm-tier-mix', 'asm-auto-approval', 'asm-variant-cost', 'asm-tooling', 'asm-ai-share-variant', 'asm-ai-share-tooling', 'asm-build-days',
+  'asm-tier-range-t0', 'asm-tier-range-t1', 'asm-tier-range-t2', 'asm-tier-range-t3', 'asm-reallocation', 'asm-flat-marketing-headcount',
+  'asm-review-agent-design', 'asm-harness-design', 'asm-telemetry-metrics', 'asm-fatigue-controls', 'asm-adoption-design',
+  'asm-risk-likelihood', 'asm-backlog0-days', 'asm-sampling-rate', 'asm-escalation-rate',
+  'asm-lever-01-evidence', 'asm-lever-02-evidence', 'asm-lever-03-evidence', 'asm-lever-04-evidence', 'asm-lever-05-evidence', 'asm-lever-06-evidence',
+  'asm-growth-route',
+]);
+for (const asm of Object.values(assumptions)) {
+  asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
+}
+
+// A claim takes the weakest class of its inputs; anything on the 2x side of the model
+// is at most a hypothesis, even when its input is company-reported.
+{
+  const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
+  const weakest = (x, y) => (RANK[x] <= RANK[y] ? x : y);
+  const twoXSide = (c) => c.id.endsWith('-scaled') || (c.derived ?? '').startsWith('scenario.') ||
+    /scaled|change|scenario|sensitivity/.test(c.calc ?? '') || c.id.startsWith('calc-scen') || c.id.startsWith('calc-sens');
+  for (const c of Object.values(claims)) {
+    const base = c.ref.startsWith('src-') ? sources[c.ref.slice(4)].evidence : assumptions[c.ref].evidence;
+    c.evidence = twoXSide(c) ? weakest(base, 'hypothesis') : base;
   }
 }
