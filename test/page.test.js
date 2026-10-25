@@ -327,8 +327,10 @@ const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTE
 const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, bottleneck, principles
 const P7_H3_BUILD = 8; // plan 07-03: plain English, six parts, capabilities, own-integrate-platform, permissions, always-human, smallest-slice, expansion-path
 const P7_H3_OPPORTUNITY = 3; // plan 07-01: define-2x, capacity-efficiency-effectiveness, no-merged-pr
-const MEASURED_H3 = 23 + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
-const MEASURED_H4 = 24; // headings inside hosted body blocks
+const P7_H3_SUPPLY = 5; // plan 07-04: chain-stages, worked-example, handoffs, wedge, plus the appendix-factory heading
+const P7_H4_SUPPLY = 2; // plan 07-04: autonomous and not-autonomous lists
+const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const MEASURED_H4 = 24 + P7_H4_SUPPLY - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
 const ALLOWED_NUMERIC_TOKENS = [
@@ -494,7 +496,7 @@ test('cross-reference labels match the new section numbering', () => {
 
 // Deliberate change (07-CONTEXT, plan 07-02): #autonomy is now filled, so it leaves the stub set.
 // Later content plans remove their section from this list as they fill it.
-const STUBS = ['supply-chain', 'economics'];
+const STUBS = ['economics'];
 test('framing stubs carry the to-follow marker only in the stub sections', () => {
   assert.equal((html.match(/class="to-follow"/g) || []).length, STUBS.length);
   for (const id of STUBS) {
@@ -837,7 +839,8 @@ test('review-constraint copy separates the utilisation target from capacity (WR-
 
 // ---- Plan 02-02: s03 factory model and s04 platform ----
 
-const PROSE_BUDGET = { s03: [400, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [900, 1600] };
+// Plan 07-04: s03 shrinks to a condensed block (the factory figure and its prose moved to Appendix A), so its floor drops from 400 to 250.
+const PROSE_BUDGET = { s03: [250, 700], s04: [400, 700], s05: [400, 700], s06: [400, 700], s07: [400, 700], s08: [400, 700], s09: [1500, 2000], s10: [400, 600], s12: [700, 900], s13: [400, 700], s14: [900, 1600] };
 
 test('section prose budgets', () => {
   for (const [id, [lo, hi]] of Object.entries(PROSE_BUDGET)) {
@@ -1039,7 +1042,8 @@ function proseWords(id) {
 
 test('s03 to s08 total prose', () => {
   const total = ['s03', 's04', 's05', 's06', 's07', 's08'].reduce((n, id) => n + proseWords(id), 0);
-  assert.ok(total >= 2800 && total <= 4200, `total ${total}`);
+  // Plan 07-04: floor lowered from 2800 to 2600 because the factory model prose left s03 for Appendix A.
+  assert.ok(total >= 2600 && total <= 4200, `total ${total}`);
 });
 
 function tableByCaption(sec, caption) {

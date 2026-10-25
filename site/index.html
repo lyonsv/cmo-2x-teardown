@@ -704,8 +704,8 @@
     </section>
     <section id="supply-chain" aria-labelledby="supply-chain-h">
       <div class="sec-head"><span class="sec-num">04</span><h2 id="supply-chain-h">The first workflow</h2></div>
-      <p>What does one end-to-end content workflow look like when agents take on more of the stages? This section will show it from business objective to measured result.</p>
-      <p class="to-follow">Detail to follow</p>
+      <p class="chain-pos">Software built → Autonomy enabled → <b>Human work reduced</b> → Marketing capacity increased → Business outcomes improved</p>
+      <p>What does one end-to-end content workflow look like when agents carry more of the stages? Follow a business objective to a measured result. Content generation is one step among nine, and the model does not treat it as the main prize. The argument of this section is that most of the saving comes from removing the hand-offs between steps, and that is a hypothesis the pilot's baseline time study tests.</p>
       <figure>
       <svg class="fig-flow flow-wide" role="img" aria-labelledby="ff1w-t ff1w-d" viewBox="0 0 720 500">
         <title id="ff1w-t">The content supply chain, run by agents</title>
@@ -854,82 +854,88 @@
         </ol>
         <figcaption><b>Figure 3</b> The content supply chain run by agents: people set goals and decide exceptions, agents carry the work across stages, and a shared platform underneath is reused by later workflows. Illustrative.</figcaption>
       </figure>
+      <h3 id="chain-stages">Stage by stage</h3>
+      <p>The chain has nine steps. Generation sits inside two of them, source assets and adapt and localise. The other seven are planning, coordination, checking, publishing and learning, and that is where most of the hand-offs are.</p>
+      <div class="table-scroll" role="region" aria-label="Stage by stage table" tabindex="0">
+        <table>
+          <caption>Stage by stage: who does what</caption>
+          <thead><tr><th scope="col">Stage</th><th scope="col">Work today</th><th scope="col">Agent does in the pilot</th><th scope="col">People do in the pilot</th><th scope="col">Later</th><th scope="col">Hand-offs removed</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Objective</th><td>The request arrives as tickets or an email.</td><td>Drafts the objective record from the request.</td><td>The owner sets the goal, measures, limits and permission level.</td><td>Stays with people.</td><td>Turns many translation tickets into one objective.</td></tr>
+            <tr><th scope="row">Research and plan</th><td>A producer scopes the work, checks calendars and rules, and writes the task list.</td><td>Fills the market-launch template: markets, assets needed, rules, dates, risks and what it cannot do.</td><td>Approves the plan. This is one decision.</td><td>Approves plans automatically when they match a pre-approved pattern.</td><td>Scoping meetings and spreadsheet tracking.</td></tr>
+            <tr><th scope="row">Brief</th><td>Briefs are written separately for the agency, the localisation vendor and each region.</td><td>Writes task specs for each market and channel from the approved plan.</td><td>None. Plan approval covers it.</td><td>Same.</td><td>Briefing each supplier separately.</td></tr>
+            <tr><th scope="row">Source assets</th><td>Someone finds the right approved masters and checks rights.</td><td>Pulls masters and rights records from the asset manager and flags expiries.</td><td>The creative lead directs any new master concept.</td><td>Same. New concepts stay with people.</td><td>Asset hunting and rights chasing.</td></tr>
+            <tr><th scope="row">Adapt and localise</th><td>An agency resizes, a vendor translates and a designer re-lays out.</td><td>Derives variants (T0 and T1), localises with the glossary and re-lays out.</td><td>Linguists check a sample for each market.</td><td>The sample rate falls as quality scores prove out.</td><td>Agency and vendor round trips.</td></tr>
+            <tr><th scope="row">Review and approve</th><td>Brand, legal and regional teams review every asset, often more than once.</td><td>Runs rule checks and a review agent with a bounded fix loop, and batches similar items.</td><td>Decides exceptions and signs off each market.</td><td>Approves T0 and T1 automatically, with sampling.</td><td>Repeated whole-batch reviews and version ping-pong.</td></tr>
+            <tr><th scope="row">Publish and activate</th><td>A trafficker builds campaigns and pages, and QA checks them.</td><td>Stages ads paused, pages in preview and emails as tests, then reads them back and verifies.</td><td>Clicks go-live for each market.</td><td>Publishes automatically within caps for approved markets.</td><td>Trafficking tickets and manual QA.</td></tr>
+            <tr><th scope="row">Measure</th><td>An analyst pulls reports days or weeks later.</td><td>Verifies tracking, reads early results against the guardrails at a fixed point and writes a short report.</td><td>Reads the report.</td><td>Monitors continuously.</td><td>Report requests.</td></tr>
+            <tr><th scope="row">Optimise and refresh</th><td>The next brief is sometimes informed by results.</td><td>Proposes refreshes, pauses and tests.</td><td>Approves the proposals.</td><td>Applies T0 and T1 refreshes and pauses within caps.</td><td>Learning that reaches the next brief late or never.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">The pilot column is the first twelve weeks, with the permission level set to stage. The Later column follows the <a href="#expansion-path">expansion path</a> in the build section, and each step is earned by measured quality, not by the calendar.</p>
+      <h3 id="worked-example">Worked example: launch the approved campaign in three additional markets</h3>
+      <p>Take a campaign approved and running in one market. The owner wants it live in three more by a set date. This is the pilot slice described in <a href="#roadmap">the roadmap</a>. Each step below is marked <b>Agent</b> or <b>People</b>.</p>
+      <ol id="worked-steps">
+        <li><b>People</b> The owner sets the objective: launch in markets A, B and C by the date, on paid social and a landing page, within a budget cap for each market, using only claims approved for those markets. The measure is qualified visits or leads against the source market's first two weeks. Complaint and disapproval rates are the guardrails, and the permission level is stage. This is one decision.</li>
+        <li><b>Agent</b> drafts the plan from the market-launch template: the masters needed, the variants for each channel and market, the rules that apply, linguist sample sizes, dates, and what it cannot do. For example: "market C needs a disclosure that is not in the approved claims library, so one item needs legal." <b>People</b> then approve the plan.</li>
+        <li><b>Agent</b> pulls masters and rights records from the asset manager. One image's licence excludes market B, so it substitutes an approved alternative of the same risk tier and records why. This removes a rights chase that today costs several emails.</li>
+        <li><b>Agent</b> derives the sizes and channel cuts and localises the copy using the glossary and translation memory. Low-scoring segments go to a linguist. The rest go to a linguist sample.</li>
+        <li><b>Agent</b> runs rule checks on specs, links, tracking parameters and disclosures, and the review agent checks claims, brand and rights for each market, citing the rule it applied. Fix loops are bounded. Two kinds of item cross the approval boundary: the market C disclosure, and anything the agent could not check. Everything else is batched with its evidence attached.</li>
+        <li><b>People</b> decide. Legal approves or rewrites the disclosure, and the new wording enters the claims library for next time. Each regional lead approves their market as a batch from a sample view, not asset by asset.</li>
+        <li><b>Agent</b> builds ads in a paused state and pages in preview, then reads them back from each platform: correct targeting, correct asset identifiers, landing pages that resolve, tracking that fires, and a budget equal to the cap.</li>
+        <li><b>People</b> click go-live, once for each market. A later step on the <a href="#expansion-path">expansion path</a> makes this automatic for markets already approved.</li>
+        <li><b>Agent</b> compares each market with the source-market benchmark and the guardrails at the fixed early-read point, and writes a short report to the run record.</li>
+        <li><b>Agent</b> proposes what to do next. For example: "variant X is fatiguing in market B, so refresh it with the approved alternate headline; the market C landing page has a high bounce rate on mobile, so open a test." <b>People</b> decide. A later step applies the low-risk refresh automatically.</li>
+      </ol>
+      <h4>What is autonomous in the pilot</h4>
+      <ul>
+        <li>Drafting the plan, and all coordination between the steps.</li>
+        <li>Sourcing approved masters and checking their rights.</li>
+        <li>Adapting and localising, within the glossary and the sample rules.</li>
+        <li>Rule checks and the review agent, including bounded fix loops.</li>
+        <li>Staging in each platform and verifying the result by reading it back.</li>
+        <li>Measuring at the fixed point and writing the report.</li>
+      </ul>
+      <h4>What is not</h4>
+      <ul>
+        <li>The objective, and approval of the plan.</li>
+        <li>Any new claim, and any legal decision.</li>
+        <li>Regional sign-off, and go-live.</li>
+        <li>Any change in spend, and any new creative concept.</li>
+      </ul>
+      <p>The table below puts engine values on four of these workflows, so the hours and days a reader might quote are traceable.</p>
+      <div class="table-scroll" role="region" aria-label="Per unit of work table" tabindex="0">
+        <table>
+          <caption>What the slice changes, per unit of work</caption>
+          <thead><tr><th scope="col">Workflow</th><th scope="col">State</th><th scope="col">Human hours per unit</th><th scope="col">Days elapsed</th><th scope="col">Evidence</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" rowspan="2">Planning, briefing and operations, per campaign-market</th><td>Today</td><td class="num"><span data-fig="econ-wf-W2-current-hours_per_unit">96.0</span></td><td class="num"><span data-fig="econ-wf-W2-current-cycle_days">10.0 days</span></td><td><span class="ev">illustrative</span> <a class="chip c-m" href="#asm-wf-w2">Modelled</a></td></tr>
+            <tr><td>With agents</td><td class="num"><span data-fig="econ-wf-W2-agent-hours_per_unit">48.0</span></td><td class="num"><span data-fig="econ-wf-W2-agent-cycle_days">5.0 days</span></td><td><span class="ev">hypothesis</span> <a class="chip c-m" href="#asm-wf-w2-agent">Modelled</a></td></tr>
+            <tr><th scope="row" rowspan="2">Adaptation and localisation, per adaptation</th><td>Today</td><td class="num"><span data-fig="econ-wf-W4-current-hours_per_unit">80.0</span></td><td class="num"><span data-fig="econ-wf-W4-current-cycle_days">15.0 days</span></td><td><span class="ev">illustrative</span> <a class="chip c-m" href="#asm-wf-w4">Modelled</a></td></tr>
+            <tr><td>With agents</td><td class="num"><span data-fig="econ-wf-W4-agent-hours_per_unit">36.0</span></td><td class="num"><span data-fig="econ-wf-W4-agent-cycle_days">5.0 days</span></td><td><span class="ev">hypothesis</span> <a class="chip c-m" href="#asm-wf-w4-agent">Modelled</a></td></tr>
+            <tr><th scope="row" rowspan="2">Review and approval, per variant reviewed</th><td>Today</td><td class="num"><span data-fig="econ-wf-W5-current-hours_per_unit">0.2</span></td><td class="num"><span data-fig="econ-wf-W5-current-cycle_days">11.8 days</span></td><td><span class="ev">illustrative</span> <a class="chip c-m" href="#asm-reviewer-fte">Modelled</a></td></tr>
+            <tr><td>With agents</td><td class="num"><span data-fig="econ-wf-W5-agent-hours_per_unit">0.1</span></td><td class="num"><span data-fig="econ-wf-W5-agent-cycle_days">5.5 days</span></td><td><span class="ev">hypothesis</span> <a class="chip c-m" href="#asm-reviewer-fte">Modelled</a></td></tr>
+            <tr><th scope="row" rowspan="2">Publishing and activation, per publishing job</th><td>Today</td><td class="num"><span data-fig="econ-wf-W6-current-hours_per_unit">1.2</span></td><td class="num"><span data-fig="econ-wf-W6-current-cycle_days">3.0 days</span></td><td><span class="ev">illustrative</span> <a class="chip c-m" href="#asm-wf-w6">Modelled</a></td></tr>
+            <tr><td>With agents</td><td class="num"><span data-fig="econ-wf-W6-agent-hours_per_unit">0.5</span></td><td class="num"><span data-fig="econ-wf-W6-agent-cycle_days">0.5 days</span></td><td><span class="ev">hypothesis</span> <a class="chip c-m" href="#asm-wf-w6-agent">Modelled</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Values are the economics engine at default inputs, not measurements. Review is shown for each variant reviewed, so one decimal place rounds hard; the engine carries more. The <a href="#economics">economics section</a> turns these into organisation-wide hours and cost.</p>
+      <h3 id="handoffs">Why removing hand-offs beats faster generation</h3>
+      <p>Faster generation shortens one step. A hand-off is a wait, a ticket, a briefing and often a second review. In the worked example the agent does not mainly save time by writing faster. It removes the tickets, the separate briefings for each supplier, the agency and vendor round trips, the repeated whole-batch reviews, the trafficking requests and the report requests that sit between the steps.</p>
+      <p>One run with a few human decisions replaces a chain of them. That is why the model counts hand-offs and waiting time as well as production minutes, and why the days elapsed above move as well as the hours.</p>
+      <p>Generation alone also moves the bottleneck. More assets with the same reviews only build a longer queue in front of the same few people. The split between what scale delivers and what a redesigned programme delivers is in <a href="#economics">the economics</a>.</p>
+      <h3 id="wedge">The wedge, not the limit</h3>
+      <p>The first workflow is a wedge into a broader system, not the limit of the opportunity. The platform underneath the figure is built once: objectives and ledger, brand and claims, rights and context, workflow engine, permissions, checks and evaluations, approval inbox and outcome measures. Later workflows reuse it. What changes from one workflow to the next is the domain rules and the connections, not the platform.</p>
+      <p><a href="#expansion">How it expands beyond content</a> lists the adjacent workflows, and the <a href="#expansion-path">expansion path</a> in the build section sets the order.</p>
+      <p class="evidence-stop"><b>Where the evidence stops.</b> The stages and the split of work between agents and people are a design, drawn from how marketing teams run campaigns today. The hours and days elapsed are model hypotheses until the pilot's baseline time study measures the real ones.</p>
     <div id="s03" class="subsection">
       <h3 id="s03-h">The factory model</h3>
       <p>A marketing organisation scales by deriving variants from a few human-directed concepts, not by asking a model for ten thousand originals.</p>
-      <figure>
-        <div class="fig-grid">
-      <svg class="fig-d" role="img" aria-labelledby="fd2-t fd2-d" viewBox="0 0 300 300">
-        <title id="fd2-t">The factory model</title>
-        <desc id="fd2-d">Master concepts feed a derivation line, which passes through a review and gate stage before approved variants are published and measured.</desc>
-        <defs>
-        <marker id="fd2-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
-        <marker id="fd2-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
-        </defs>
-        <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd2-arrow)"/>
-        <line class="edge edge-review" x1="150" y1="128" x2="150" y2="152" marker-end="url(#fd2-arrow-review)"/>
-        <line class="edge edge-review" x1="150" y1="192" x2="150" y2="216" marker-end="url(#fd2-arrow-review)"/>
-        <text class="note" x="150" y="288" text-anchor="middle">Illustrative</text>
-        <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Master concepts</tspan><tspan x="150" dy="16">few, human-directed</tspan></text></g>
-        <g class="node"><rect x="30" y="72" width="240" height="56" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Derive</tspan><tspan x="150" dy="16">template, localise,</tspan><tspan x="150" dy="16">render feeds</tspan></text></g>
-        <g class="node node-review"><rect x="30" y="152" width="240" height="40" rx="2"/><text x="150" y="168" text-anchor="middle"><tspan class="node-t" x="150" y="168">Review and gate</tspan><tspan x="150" dy="16">agent checks, tier decides</tspan></text></g>
-        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Approved variants</tspan><tspan x="150" dy="16">published and measured</tspan></text></g>
-      </svg>
-          <div>
-          <h4 class="steps-h">Steps in Figure 2</h4>
-          <ol class="fig-steps">
-          <li>Master concepts: a few, directed by people.</li>
-          <li>Then Derive: templates, localisation and feed rendering produce the variants.</li>
-          <li>Then Review and gate: an agent checks each variant and its tier decides who approves.</li>
-          <li>Then Approved variants: published and measured.</li>
-          </ol>
-          </div>
-        </div>
-        <figcaption><b>Figure 2</b> The factory model: a few human-directed concepts in, derived variants out, with review as the gate. Illustrative.</figcaption>
-      </figure>
-      <p>Think of the marketing organisation as a factory rather than a studio. A factory has inputs, stages and queues, and it is judged on throughput, defect rate and cost per good unit. The inputs here are briefs and a small set of master concepts. The stages are derivation, review and publishing. Queues form wherever one stage produces faster than the next can absorb. Seen this way, doubling output is a question about the slowest stage, not about how quickly anyone can draft copy.</p>
-      <p>The principle is to derive, not generate. A few master concepts carry the creative risk: the idea, the claim, the look and the offer. People direct and approve them, and that is the slow, expensive part by design. Most of the variants that follow are mechanical derivations: a template applied, a locale swapped, a feed rendered at the sizes a channel demands. A derivation changes the form of an approved idea; it does not invent a new one. That is how variants multiply without multiplying risk.</p>
-      <p>The review stage is where the constraint moves. Generation and derivation are cheap and scale with compute. Review does not, because every variant needs a decision against the same rules. Once derivation is automated, reviewer capacity sets the pace, and a programme that ignores this only builds a longer queue in front of the same few people. That is why review is drawn as the gate, and why <a href="#s07">the auto-approval gate</a> is treated in detail later.</p>
-      <figure>
-        <div class="fig-grid">
-      <svg class="fig-d" role="img" aria-labelledby="fd3-t fd3-d" viewBox="0 0 300 400">
-        <title id="fd3-t">The content supply chain</title>
-        <desc id="fd3-d">A brief leads to a concept, then derivation, review, publishing and measurement. A dashed return path carries measurement back to the next brief.</desc>
-        <defs>
-        <marker id="fd3-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
-        <marker id="fd3-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
-        </defs>
-        <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd3-arrow)"/>
-        <line class="edge" x1="150" y1="112" x2="150" y2="136" marker-end="url(#fd3-arrow)"/>
-        <line class="edge edge-review" x1="150" y1="176" x2="150" y2="200" marker-end="url(#fd3-arrow-review)"/>
-        <line class="edge edge-review" x1="150" y1="240" x2="150" y2="264" marker-end="url(#fd3-arrow-review)"/>
-        <line class="edge" x1="150" y1="304" x2="150" y2="328" marker-end="url(#fd3-arrow)"/>
-        <path class="edge edge-soft" d="M270 348 H284 V28 H272" marker-end="url(#fd3-arrow)"/>
-        <text class="note" x="150" y="392" text-anchor="middle">feeds the next brief</text>
-        <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Brief</tspan><tspan x="150" dy="16">audience, offer, goal</tspan></text></g>
-        <g class="node"><rect x="30" y="72" width="240" height="40" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Concept</tspan><tspan x="150" dy="16">human-directed master idea</tspan></text></g>
-        <g class="node"><rect x="30" y="136" width="240" height="40" rx="2"/><text x="150" y="152" text-anchor="middle"><tspan class="node-t" x="150" y="152">Derive</tspan><tspan x="150" dy="16">variants, locales, feeds</tspan></text></g>
-        <g class="node node-review"><rect x="30" y="200" width="240" height="40" rx="2"/><text x="150" y="216" text-anchor="middle"><tspan class="node-t" x="150" y="216">Review</tspan><tspan x="150" dy="16">agent checks, gate decides</tspan></text></g>
-        <g class="node"><rect x="30" y="264" width="240" height="40" rx="2"/><text x="150" y="280" text-anchor="middle"><tspan class="node-t" x="150" y="280">Publish</tspan><tspan x="150" dy="16">approved variants go live</tspan></text></g>
-        <g class="node"><rect x="30" y="328" width="240" height="40" rx="2"/><text x="150" y="344" text-anchor="middle"><tspan class="node-t" x="150" y="344">Measure</tspan><tspan x="150" dy="16">performance by asset ID</tspan></text></g>
-      </svg>
-          <div>
-          <h4 class="steps-h">Steps in Figure 3</h4>
-          <ol class="fig-steps">
-          <li>Brief: audience, offer and goal.</li>
-          <li>Then Concept: a human-directed master idea.</li>
-          <li>Then Derive: variants, locales and feeds.</li>
-          <li>Then Review: an agent checks, and the gate decides.</li>
-          <li>Then Publish: approved variants go live.</li>
-          <li>Then Measure: performance joined to each asset.</li>
-          <li>Measure returns to Brief, so results shape the next campaign.</li>
-          </ol>
-          </div>
-        </div>
-        <figcaption><b>Figure 3</b> The content supply chain, with measurement feeding the next brief. Illustrative.</figcaption>
-      </figure>
-      <p>The content supply chain is the full path from brief to measurement and back. A brief states audience, offer and goal. A concept answers it. Derivation multiplies the concept into the variants a campaign needs, review checks each one against written policy, and publishing sends approved variants to channels.</p>
-      <p>The return path matters most. Measurement turns the line into a loop: what performed, in which market and for which audience, becomes input to the next brief. The thread that holds the stages together is the asset manifest, a record that gives every variant an identity and carries its concept, policy version, review findings and results. Without it the loop cannot close, because performance cannot be traced to the decision that produced it. <a href="#s04">The platform layers</a> show where the manifest sits.</p>
+      <p>The principle is to derive, not generate. A few master concepts carry the creative risk: the idea, the claim, the look and the offer. People direct and approve them. In the adapt stage, most variants are mechanical derivations: a template applied, a locale swapped, a feed rendered at the sizes a channel demands. A derivation changes the form of an approved idea; it does not invent a new one. That is how variants multiply without multiplying risk. <a href="#appendix-factory">The factory model in full</a> is in Appendix A.</p>
+      <p>The review stage is where the constraint moves. Generation and derivation are cheap and scale with compute. Review does not, because every variant needs a decision against the same rules. Once derivation is automated, reviewer capacity sets the pace, and a programme that ignores this only builds a longer queue. That is why review is a gate in the diagram, and why <a href="#s07">the auto-approval gate</a> is treated in detail later.</p>
+      <p>The return path matters most. Measurement turns the content supply chain into a loop: what performed, in which market and for which audience, becomes input to the next plan. The run record holds the stages together. It gives every variant an identity and carries its objective, policy version, review findings and results. Without it the loop cannot close, because performance cannot be traced to the decision that produced it. <a href="#s04">The platform layers</a> show where the run record sits.</p>
       <p>One caution, in general terms. Output counted before quality is measured can look like progress while outcomes dip, so measure quality before raising volume, and keep measuring after.</p>
     </div>
     </section>
@@ -1579,6 +1585,44 @@
     <section id="appendix-campaign" aria-labelledby="appendix-campaign-h">
       <div class="sec-head"><span class="sec-num">A</span><h2 id="appendix-campaign-h"><span id="s05-h">The 10,000-asset campaign</span></h2></div>
       <p class="table-note">Supports: <a href="#supply-chain">The first workflow</a></p>
+    <div id="appendix-factory" class="subsection">
+      <h3 id="appendix-factory-h">The factory model in full</h3>
+      <p>The first workflow section keeps the principle: derive, do not generate. This is the model behind it, drawn as a factory with inputs, stages and a gate.</p>
+      <figure>
+        <div class="fig-grid">
+      <svg class="fig-d" role="img" aria-labelledby="fd2-t fd2-d" viewBox="0 0 300 300">
+        <title id="fd2-t">The factory model</title>
+        <desc id="fd2-d">Master concepts feed a derivation line, which passes through a review and gate stage before approved variants are published and measured.</desc>
+        <defs>
+        <marker id="fd2-arrow" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head" d="M0 0 L6 3 L0 6 z"/></marker>
+        <marker id="fd2-arrow-review" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto"><path class="arrow-head-review" d="M0 0 L6 3 L0 6 z"/></marker>
+        </defs>
+        <line class="edge" x1="150" y1="48" x2="150" y2="72" marker-end="url(#fd2-arrow)"/>
+        <line class="edge edge-review" x1="150" y1="128" x2="150" y2="152" marker-end="url(#fd2-arrow-review)"/>
+        <line class="edge edge-review" x1="150" y1="192" x2="150" y2="216" marker-end="url(#fd2-arrow-review)"/>
+        <text class="note" x="150" y="288" text-anchor="middle">Illustrative</text>
+        <g class="node"><rect x="30" y="8" width="240" height="40" rx="2"/><text x="150" y="24" text-anchor="middle"><tspan class="node-t" x="150" y="24">Master concepts</tspan><tspan x="150" dy="16">few, human-directed</tspan></text></g>
+        <g class="node"><rect x="30" y="72" width="240" height="56" rx="2"/><text x="150" y="88" text-anchor="middle"><tspan class="node-t" x="150" y="88">Derive</tspan><tspan x="150" dy="16">template, localise,</tspan><tspan x="150" dy="16">render feeds</tspan></text></g>
+        <g class="node node-review"><rect x="30" y="152" width="240" height="40" rx="2"/><text x="150" y="168" text-anchor="middle"><tspan class="node-t" x="150" y="168">Review and gate</tspan><tspan x="150" dy="16">agent checks, tier decides</tspan></text></g>
+        <g class="node"><rect x="30" y="216" width="240" height="40" rx="2"/><text x="150" y="232" text-anchor="middle"><tspan class="node-t" x="150" y="232">Approved variants</tspan><tspan x="150" dy="16">published and measured</tspan></text></g>
+      </svg>
+          <div>
+          <h4 class="steps-h">Steps in Figure 2</h4>
+          <ol class="fig-steps">
+          <li>Master concepts: a few, directed by people.</li>
+          <li>Then Derive: templates, localisation and feed rendering produce the variants.</li>
+          <li>Then Review and gate: an agent checks each variant and its tier decides who approves.</li>
+          <li>Then Approved variants: published and measured.</li>
+          </ol>
+          </div>
+        </div>
+        <figcaption><b>Figure 2</b> The factory model: a few human-directed concepts in, derived variants out, with review as the gate. Illustrative.</figcaption>
+      </figure>
+
+      <p>Think of the marketing organisation as a factory rather than a studio. A factory has inputs, stages and queues, and it is judged on throughput, defect rate and cost per good unit. The inputs here are briefs and a small set of master concepts. The stages are derivation, review and publishing. Queues form wherever one stage produces faster than the next can absorb. Seen this way, doubling output is a question about the slowest stage, not about how quickly anyone can draft copy.</p>
+      <p>The principle is to derive, not generate. A few master concepts carry the creative risk: the idea, the claim, the look and the offer. People direct and approve them, and that is the slow, expensive part by design. Most of the variants that follow are mechanical derivations: a template applied, a locale swapped, a feed rendered at the sizes a channel demands. A derivation changes the form of an approved idea; it does not invent a new one. That is how variants multiply without multiplying risk.</p>
+      <p>The review stage is where the constraint moves. Generation and derivation are cheap and scale with compute. Review does not, because every variant needs a decision against the same rules. Once derivation is automated, reviewer capacity sets the pace, and a programme that ignores this only builds a longer queue in front of the same few people. That is why review is drawn as the gate, and why <a href="#s07">the auto-approval gate</a> is treated in detail later.</p>
+    </div>
     <div id="s05" class="subsection">
       <p>Derive, do not generate: four master concepts become about <span data-fig="matrix-total">12,000</span> <a class="chip c-m" href="#asm-matrix-independence">Modelled</a> variants through templating, localisation and feed rendering, and most land in low-risk tiers.</p>
       <figure>

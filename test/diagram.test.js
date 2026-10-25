@@ -9,7 +9,9 @@ const decode = (s) => s.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&
 const strip = (s) => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 
 // Figure number -> section. 02-03 adds 4: 's05', 02-05 adds 5: 's06' and 6: 's07', 02-06 adds 7: 's08'.
-const EXPECTED_FIGURES = { 2: 's03', 3: 's03', 4: 's05', 5: 's06', 6: 's07', 7: 's08' };
+// Plan 07-04: v1 Figure 3 (six-box supply chain) is superseded by the fig-flow diagram (test/flow.test.js, section 04),
+// and Figure 2 (factory model) moved to Appendix A, so it is no longer inside a v1 block.
+const EXPECTED_FIGURES = { 2: 'appendix-campaign', 4: 's05', 5: 's06', 6: 's07', 7: 's08' };
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`\\s${name}="([^"]*)"`));
@@ -23,7 +25,13 @@ const V1_SPANS = Array.from({ length: 15 }, (_, i) => `s${String(i + 1).padStart
   const at = html.indexOf(el);
   return { id, start: at, end: at + el.length };
 });
-const containingV1 = (pos) => (V1_SPANS.filter((x) => pos >= x.start && pos < x.end).sort((a, b) => b.start - a.start)[0] || { id: null }).id;
+// The innermost v1 block that contains the position; else the enclosing top-level <section id> (plan 07-04).
+const containingV1 = (pos) => {
+  const v1 = V1_SPANS.filter((x) => pos >= x.start && pos < x.end).sort((a, b) => b.start - a.start)[0];
+  if (v1) return v1.id;
+  const sections = [...html.slice(0, pos).matchAll(/<section id="([a-z-]+)"/g)];
+  return sections.length ? sections[sections.length - 1][1] : null;
+};
 
 function figures() {
   const out = [];
@@ -164,7 +172,7 @@ function figure6MatchesTierTable(f) {
   });
 }
 
-const STEPS_LEVEL = { 2: 4, 3: 4, 4: 3, 5: 3, 7: 3 };
+const STEPS_LEVEL = { 2: 4, 4: 3, 5: 3, 7: 3 };
 
 test('visible text equivalent', () => {
   for (const f of figures()) {
@@ -256,8 +264,8 @@ test('Figure 6 ladder', () => {
   assert.ok(/see the table/i.test(strip(f.html.match(/<figcaption>[\s\S]*?<\/figcaption>/)[0])));
 });
 
-test('all six diagrams present', () => {
-  assert.deepEqual(figures().map((f) => f.n), [2, 3, 4, 5, 6, 7]);
+test('all five fig-d diagrams present (Figure 3 is the fig-flow diagram, see flow.test.js)', () => {
+  assert.deepEqual(figures().map((f) => f.n), [2, 4, 5, 6, 7]);
 });
 
 test('Figure 7 is a loop', () => {

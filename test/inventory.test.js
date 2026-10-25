@@ -50,7 +50,7 @@ test('RETIRED entries carry a reason, exist in the fixture and are really gone',
 });
 
 test('mutation: removing items makes missingFrom report them', () => {
-  assert.deepEqual(missingFrom(html, inv), []);
+  assert.deepEqual(missingFrom(html, inv).filter((k) => !RETIRED[k]), []);
   assert.ok(missingFrom(html.replace('id="s07"', 'id="zz"'), inv).includes('id:s07'));
   const df = Object.keys(inv.dataFig)[0];
   assert.ok(missingFrom(html.replaceAll(`data-fig="${df}"`, 'data-x="1"'), inv).includes(`data-fig:${df}`));

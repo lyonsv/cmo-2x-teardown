@@ -1,1 +1,6 @@
-{}
+{
+  "id:fd3-t": "v1 Figure 3 (six-box content supply chain) is superseded by the two-variant supply chain diagram (ff1w/ff1n ids) in section 04; the new diagram carries the Figure 3 number (plan 07-04).",
+  "id:fd3-d": "Description of the superseded v1 Figure 3 svg; the new diagram has its own title and description ids (plan 07-04).",
+  "id:fd3-arrow": "Marker of the superseded v1 Figure 3 svg (plan 07-04).",
+  "id:fd3-arrow-review": "Review marker of the superseded v1 Figure 3 svg (plan 07-04)."
+}

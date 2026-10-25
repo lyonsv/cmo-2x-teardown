@@ -11,6 +11,7 @@ export const SPINE = [
   'opportunity',
   'autonomy',
   'build',
+  'supply-chain',
 ];
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
