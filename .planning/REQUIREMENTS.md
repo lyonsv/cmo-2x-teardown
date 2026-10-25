@@ -29,7 +29,7 @@
 - [ ] **ECON-01**: `calc.js` models workflows W1–W10 with, per workflow and per state (current vs agent-enabled): annual workload, human hours per unit, review and exception hours, total human hours, productive FTE, fully loaded labour cost, agency/vendor cost, AI and software cost, cost per equivalent output, cycle time and autonomously completed share.
 - [ ] **ECON-02**: Released hours reconcile exactly into hours eliminated, capacity redeployed, avoided hires, reducible external spend, removable headcount and capacity already unused at baseline (a test enforces conservation).
 - [x] **ECON-03**: The reviewer model reports baseline slack, programme-added review load and work avoided as separate figures, so "spare capacity" never includes pre-existing slack.
-- [ ] **ECON-04**: Each hour has one price; labour is counted once (cash view: payroll by FTE, external spend by line); savings cannot exceed their source line (tests enforce INV-1–INV-11).
+- [x] **ECON-04**: Each hour has one price; labour is counted once (cash view: payroll by FTE, external spend by line); savings cannot exceed their source line (tests enforce INV-1–INV-11).
 - [x] **ECON-05**: Master-concept cost is split into internal hours and agency fee, and the agency line is modelled explicitly.
 - [x] **ECON-06**: Cost and speed changes are decomposed into scale effects (doubling volume without the programme) and programme effects.
 - [ ] **ECON-07**: Scenarios A (same team, more output), B (same output, lower cost) and C (growing demand, limited hiring; default) are computed as distinct outputs.
@@ -145,7 +145,7 @@
 | ECON-01 | Phase 6 | Pending |
 | ECON-02 | Phase 6 | Pending |
 | ECON-03 | Phase 6 | Complete |
-| ECON-04 | Phase 6 | Pending |
+| ECON-04 | Phase 6 | Complete |
 | ECON-05 | Phase 6 | Complete |
 | ECON-06 | Phase 6 | Complete |
 | ECON-07 | Phase 6 | Pending |
