@@ -330,3 +330,12 @@ dl.vendor-dl dd { margin: 0 0 8px; }
 dl.def-list { margin: 0 0 var(--s-lg); max-width: 44em; }
 dl.def-list dt { font-weight: 600; }
 dl.def-list dd { margin: 0 0 var(--s-sm); }
+
+/* Phase 7 outcomes: causal chain with an evidence boundary (plan 07-08). A text label and a ruled line, never colour alone. */
+.chain.causal { flex-direction: column; flex-wrap: nowrap; gap: var(--s-xs); }
+.chain.causal li:last-child { font-weight: 400; }
+.chain.causal li + li::before { content: "↓ "; }
+.chain li.evidence-boundary { font-weight: 600; color: var(--ink); border-top: 2px dashed var(--muted); border-bottom: 2px dashed var(--muted); padding: var(--s-xs) 0; }
+.chain.causal li.evidence-boundary::before { content: "■ "; }
+.mechanisms dt { font-weight: 600; margin-top: var(--s-sm); }
+.mechanisms dd { margin: 0 0 var(--s-sm); }

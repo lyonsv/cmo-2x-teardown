@@ -13,6 +13,8 @@ export const SPINE = [
   'build',
   'supply-chain',
   'economics',
+  'outcomes',
+  'expansion',
 ];
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');

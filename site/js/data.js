@@ -63,6 +63,30 @@ export const sources = {
     grade: 'Benchmark',
     flag: null,
   },
+  'shapiro-hitsch-tuchman-2021': {
+    title: 'TV Advertising Effectiveness and Profitability: Generalizable Results from 288 Brands',
+    publisher: 'Econometrica 89(4) (Shapiro, Hitsch, Tuchman)',
+    publisherType: 'academic',
+    published: '2021-07',
+    accessed: '2026-10-25',
+    url: 'https://doi.org/10.3982/ECTA17674',
+    bias: 'Peer-reviewed; television advertising for consumer packaged goods brands, not digital or B2B marketing, so it bounds how far the result carries over',
+    read_via: 'Abstract on the Econometric Society page fetched 2026-10-25 (the full text was not read); issue month taken from the volume and issue number, day not confirmed',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'lewis-rao-2015': {
+    title: 'The Unfavorable Economics of Measuring the Returns to Advertising',
+    publisher: 'The Quarterly Journal of Economics 130(4) (Lewis and Rao)',
+    publisherType: 'academic',
+    published: '2015-07-06',
+    accessed: '2026-10-25',
+    url: 'https://doi.org/10.1093/qje/qjv023',
+    bias: 'Peer-reviewed; 25 field experiments with large retailers and brokerages in digital display advertising; shows how hard the return is to measure, not that it is low',
+    read_via: 'Abstract via the Crossref record fetched 2026-10-25 (the journal page returned 403 to automation and the full text was not read); date is the online publication date in that record',
+    grade: 'Benchmark',
+    flag: null,
+  },
   'usco-copyright-ai-part2': {
     title: 'Copyright and Artificial Intelligence, Part 2: Copyrightability',
     publisher: 'U.S. Copyright Office',
@@ -1134,6 +1158,14 @@ export const claims = {
   'winrate-paper': {
     id: 'winrate-paper', value: 0.33, unit: 'share of ideas that improved the metric they were designed to improve, one large software company', display: '33%', format: 'pct0',
     grade: 'Modelled', flag: 'company-reported', ref: 'src-kohavi-2013',
+  },
+  'shapiro-negative-margin': {
+    id: 'shapiro-negative-margin', value: 0.8, unit: 'lower bound on the share of 288 brands with a negative return on investment at the margin of television advertising', display: '80%', format: 'pct0',
+    grade: 'Benchmark', flag: null, ref: 'src-shapiro-hitsch-tuchman-2021',
+  },
+  'lewis-rao-ci-width': {
+    id: 'lewis-rao-ci-width', value: 100, unit: 'lower bound on the median width of the confidence interval on return on investment, in percentage points, across 25 field experiments', display: '100 percentage points',
+    grade: 'Benchmark', flag: null, ref: 'src-lewis-rao-2015',
   },
   'winrate-second-hand': {
     id: 'winrate-second-hand', value: 0.10, unit: 'share of experiments that led to a business change, second company quoted second-hand', display: '10%', format: 'pct0',

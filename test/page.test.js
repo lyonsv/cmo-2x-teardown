@@ -307,7 +307,7 @@ const HOSTED = {
   s06: { host: 'appendix-review', title: 'The review agent' },
   s07: { host: 'appendix-gate', title: 'The auto-approval gate' },
   s08: { host: 'appendix-evals', title: 'Eval harness and telemetry' },
-  s09: { host: 'expansion', title: 'The other five levers' },
+  s09: { host: 'expansion', title: "The first edition's levers, now adjacent workflows" },
   s10: { host: 'outcomes', title: 'The outcome case' },
   s11: { host: 'economics', title: 'Your numbers' },
   s12: { host: 'compare', title: 'How this compares' },
@@ -329,9 +329,11 @@ const P7_H3_BUILD = 8; // plan 07-03: plain English, six parts, capabilities, ow
 const P7_H3_OPPORTUNITY = 3; // plan 07-01: define-2x, capacity-efficiency-effectiveness, no-merged-pr
 const P7_H3_SUPPLY = 5; // plan 07-04: chain-stages, worked-example, handoffs, wedge, plus the appendix-factory heading
 const P7_H3_ECON = 7; // plan 07-06: honest-2x, workflow-inventory, per-workflow, scenarios, reconciliation, scale-programme, sensitivity
+const P7_H3_OUTCOMES = 3; // plan 07-08: causal-chain, scorecard, diminishing-returns
+const P7_H3_EXPANSION = 2; // plan 07-08: adjacent, reusable
 const P7_H4_ECON = 4; // plan 07-06: where to start, the other workflows, what the programme costs, reviewer capacity
 const P7_H4_SUPPLY = 2; // plan 07-04: autonomous and not-autonomous lists
-const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON + P7_H3_OUTCOMES + P7_H3_EXPANSION; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24 + P7_H4_SUPPLY + P7_H4_ECON - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
