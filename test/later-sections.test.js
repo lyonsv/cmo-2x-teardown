@@ -145,8 +145,12 @@ test('roadmap: the portfolio is from the engine, explains pooling and is separat
   const block = h3Block(roadmap, 'portfolio');
   const figs = figsOf(block);
   for (const id of ['econ-metric-org_after_platform', 'econ-metric-pooled_hours_multiple', 'econ-scen-C-avoided_hires']) assert.ok(figs.includes(id), id);
-  for (const id of figs) assert.match(id, /^econ-/);
+  // Code review CR-04: the two hourly prices and the loaded cost are register assumptions.
+  for (const id of figs) assert.match(id, /^(econ-|asm-(marketer-rate|reviewer-rate|loaded-fte-cost)$)/);
   assert.ok(/without double counting/.test(strip(block)) && block.includes('href="#reconciliation"'));
+  const text = strip(block);
+  assert.ok(!/pools hours by role|Every hour has one price|human hours across all workflows rise/.test(text), 'no claim the engine does not implement');
+  assert.ok(/one pool for each workflow/.test(text) && /two rates, one for each role/.test(text) && /arithmetic consistency check/.test(text));
   const t = tableByCaption(block, 'Proven by the pilot versus projected');
   assert.deepEqual(headOf(t), ['What the pilot will have measured', 'What remains a projection']);
   assert.ok(bodyRows(t).length >= 4);

@@ -1880,8 +1880,10 @@
           </tbody>
         </table>
       </div>
-      <p>Combined across the portfolio, the model gives an organisation-wide output multiple of <span data-fig="econ-metric-org_after_platform">1.42x</span> <a class="chip c-s" href="#asm-adoption-rate">Speculative</a> after the cost of the platform team, and pooled human hours across all workflows rise by <span data-fig="econ-metric-pooled_hours_multiple">1.47x</span>. Where demand grows and hiring is limited, it shows avoided future hires against the no-programme plan of <span data-fig="econ-scen-C-avoided_hires">69.6</span> full-time equivalents. These are model results at the default inputs, not forecasts.</p>
-      <p>Contributions combine without double counting. The engine pools hours by role, so one person's hour freed in two workflows is counted once. Reviewers are one shared pool, not one pool per workflow. Every hour has one price. Released hours are reconciled in a ledger that splits them into redeployed, removed, unused and avoided, and the check line reads zero in every scenario; see <a href="#reconciliation">where the released hours go</a>.</p>
+      <p>Combined across the portfolio, the model gives an organisation-wide output multiple of <span data-fig="econ-metric-org_after_platform">1.42x</span> <a class="chip c-s" href="#asm-adoption-rate">Speculative</a> after the extra agency spend and the cost of the platform team, and the capacity multiple from pooling the hours the programme releases across all marketing staff is <span data-fig="econ-metric-pooled_hours_multiple">1.47x</span>; human hours on existing work fall, they do not rise. Where demand grows and hiring is limited, it shows avoided future hires against the no-programme plan of <span data-fig="econ-scen-C-avoided_hires">69.6</span> full-time equivalents. These are model results at the default inputs, not forecasts.</p>
+      <p>Contributions combine without double counting because the pools cannot overlap. The engine keeps one pool for each workflow, made up of that workflow's own people, and one shared pool for the reviewers. No person sits in two pools, so an hour freed in one workflow cannot be counted again in another; the engine does not pool hours across roles or merge people between workflows.</p>
+      <p>Hours are priced at two rates, one for each role, each the loaded cost of a person divided by that role's productive hours: <span data-fig="asm-marketer-rate">$93.75</span> <a class="chip c-m" href="#asm-marketer-rate">Modelled</a> for a marketer hour and <span data-fig="asm-reviewer-rate">$125</span> <a class="chip c-m" href="#asm-reviewer-rate">Modelled</a> for a reviewer hour. The review overhead that autonomous workflows create (sampling, evaluation curation and judge calibration) is review work, so it is priced at the reviewer rate. A removed person is valued at the loaded cost of one person, <span data-fig="asm-loaded-fte-cost">$150,000</span> <a class="chip c-m" href="#asm-loaded-fte-cost">Modelled</a> a year. Reviewers are staffed to a target utilisation below their productive hours, so a removed reviewer stands for fewer review hours than a full reviewer year; that is the same price per person, not a third price per hour.</p>
+      <p>The reconciliation of released hours is an arithmetic consistency check, not an independent test: every destination is computed from the same pool totals, so its check row is zero by construction. It shows that the accounting closes; it cannot catch a wrong input. See <a href="#reconciliation">where the released hours go</a>.</p>
       <p>The portfolio is a projection, and the pilot does not prove it. The table separates what the pilot will have measured from what stays a projection.</p>
       <div class="table-scroll" role="region" aria-label="Proven versus projected table" tabindex="0">
         <table>
@@ -3674,7 +3676,7 @@
               <td><span data-fig="asm-reviewer-rate">$125</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td><span class="ev">illustrative</span></td>
-              <td>One price per hour: loaded annual cost per FTE divided by the 1,200 productive review hours (asm-loaded-fte-cost / asm-reviewer-hours). Derived, not an independent input.</td>
+              <td>The price of a reviewer hour: loaded annual cost per FTE divided by the 1,200 productive review hours (asm-loaded-fte-cost / asm-reviewer-hours). One of two hourly prices, one per role; the review overhead of autonomous workflows is priced at this rate because it is review work. Derived, not an independent input.</td>
             </tr>
             <tr id="asm-marketer-rate">
               <th scope="row" class="id">asm-marketer-rate</th>
@@ -3682,7 +3684,7 @@
               <td><span data-fig="asm-marketer-rate">$93.75</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td><span class="ev">illustrative</span></td>
-              <td>One price per hour: loaded annual cost per FTE divided by the 1,600 productive hours of a marketer (asm-loaded-fte-cost / asm-productive-hours). Derived, not an independent input.</td>
+              <td>The price of a marketer hour: loaded annual cost per FTE divided by the 1,600 productive hours of a marketer (asm-loaded-fte-cost / asm-productive-hours). One of two hourly prices, one per role. Derived, not an independent input.</td>
             </tr>
             <tr id="asm-concept-hours">
               <th scope="row" class="id">asm-concept-hours</th>
@@ -3915,7 +3917,7 @@
               <td><span data-fig="asm-autonomy-overhead">24 h per workflow, 16 h calibration</span></td>
               <td><span class="chip c-s">Speculative</span></td>
               <td><span class="ev">hypothesis</span></td>
-              <td>Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions.</td>
+              <td>Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions. It is review work, so it is priced at the reviewer hourly rate.</td>
             </tr>
             <tr id="asm-severance-months">
               <th scope="row" class="id">asm-severance-months</th>

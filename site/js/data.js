@@ -991,9 +991,9 @@ m('asm-rework-rate', 'Rework rate', 'rework_rate', 0.15, 'share of variants', '1
 m('asm-reviewer-hours', 'Review hours per reviewer per year', 'reviewer_hours_per_fte_year', REVIEWER_HOURS, 'hours', '1,200',
   'A fatigue cap on productive review time, not the 2,080 contract hours; no published benchmark.');
 m('asm-reviewer-rate', 'Reviewer cost per hour', 'reviewer_rate_per_hour', LOADED_FTE_COST / REVIEWER_HOURS, 'USD per hour', '$125',
-  'One price per hour: loaded annual cost per FTE divided by the 1,200 productive review hours (asm-loaded-fte-cost / asm-reviewer-hours). Derived, not an independent input.');
+  'The price of a reviewer hour: loaded annual cost per FTE divided by the 1,200 productive review hours (asm-loaded-fte-cost / asm-reviewer-hours). One of two hourly prices, one per role; the review overhead of autonomous workflows is priced at this rate because it is review work. Derived, not an independent input.');
 m('asm-marketer-rate', 'Marketer cost per hour', 'marketer_rate_per_hour', LOADED_FTE_COST / PRODUCTIVE_HOURS, 'USD per hour', '$93.75',
-  'One price per hour: loaded annual cost per FTE divided by the 1,600 productive hours of a marketer (asm-loaded-fte-cost / asm-productive-hours). Derived, not an independent input.');
+  'The price of a marketer hour: loaded annual cost per FTE divided by the 1,600 productive hours of a marketer (asm-loaded-fte-cost / asm-productive-hours). One of two hourly prices, one per role. Derived, not an independent input.');
 m('asm-concept-hours', 'Internal hours per master concept', 'concept_internal_hours', 35.2, 'hours per master concept', '35.2 hours',
   'Internal creative direction and production hours per master concept, priced at the marketer rate. Set to the average of the creative-production workflow, 35.2 hours (35,200 hours over 1,000 concepts a year) so one quantity has one number; no published benchmark.');
 m('asm-master-concept-cost', 'Agency fee per master concept', 'master_concept_cost', 1200, 'USD per concept', '$1,200',
@@ -1074,7 +1074,7 @@ const engineRows = [
   eng('asm-platform-team', 'Platform team', 'platform_team', { fte: 6, cost_per_fte: 200000 }, 'FTE and USD per FTE per year', '6 FTE at $200,000',
     'Two platform engineers, two workflow owners, one evaluation curator and one security and governance lead (range 4 to 10 FTE); a government median wage for software developers of $135,980 divided by 0.70 gives about $194,000 loaded.', 'hypothesis', undefined, ['bls-software-developers-2025']),
   eng('asm-autonomy-overhead', 'Autonomy review overhead', 'autonomy_overhead_hours', { per_workflow_month: 24, calibration_month: 16 }, 'hours per month', '24 h per workflow, 16 h calibration',
-    'Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions.', 'hypothesis'),
+    'Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions. It is review work, so it is priced at the reviewer hourly rate.', 'hypothesis'),
   eng('asm-severance-months', 'Severance and exit cost', 'severance_months', 6, 'months of loaded cost per removed FTE', '6 months',
     'Months of loaded cost charged for each removed FTE, in scenario B only (range 0 to 12); it varies by jurisdiction, and works-council duties were not researched.', 'hypothesis', 'Speculative'),
   eng('asm-min-removable-fte', 'Smallest removable release', 'min_removable_fte', 1.0, 'FTE', '1.0 FTE',
