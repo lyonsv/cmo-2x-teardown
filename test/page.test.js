@@ -674,13 +674,15 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
       part
         .replace(/<span class="statute">17 U\.S\.C\. (?:504\(c\)|412)<\/span>/g, ' ') // statute citations, span text pinned below
         .replace(/<span class="legal-ref">([^<]*)<\/span>/g, (all, t) => (LEGAL_REFS.includes(t) ? ' ' : all)) // pinned legal references, see test below
-        .replace(new RegExp(`<a href="#(?:s\\d\\d|${SECTION_RE})">[^<]*</a>`, 'g'), ' ') // in-page section cross-links
+        // In-page section cross-links, only in the label forms the cross-reference test pins (WR-06).
+        .replace(new RegExp(`<a href="#(?:s\\d\\d|${SECTION_RE})">(?:[Ss]ection (?:\\d{1,2}|[a-z]+)|Appendix [A-F])</a>`, 'g'), ' ')
         .replace(/<a(?: class="cite")? href="#((?:src|asm)-[^"]+)">([^<]*)<\/a>/g, (all, id, text) => (text === `#${id}`.slice(1) && isRegisterId(id) ? ' ' : all)) // register-id links, see test below
         .replace(/<time datetime="\d{4}-\d{2}(?:-\d{2})?">[^<]*<\/time>/g, ' ') // dates, text validated by timeIssue above
         .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
         .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
         .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
-        .replace(/<h[23] id="[a-z0-9-]+-h">[^<]*<\/h[23]>/g, ' ') // section titles are locked by the SECTIONS and HOSTED tests
+        // Only the locked section and v1 titles are exempt (SECTIONS and HOSTED tests); WR-06.
+        .replace(new RegExp(`<h[23] id="(?:${[...SECTION_IDS, ...V1_IDS].join('|')})-h">(?:<span id="s\\d\\d-h">)?[^<]*(?:</span>)?</h[23]>`, 'g'), ' ')
         .replace(/<svg[\s\S]*?<\/svg>/g, ' ')
         .replace(/Figure \d+/g, ' '),
     ).replace(/\bT[0-3]\b/g, ' ').replace(/\bBacklog 0\b/g, ' '); // tier names and the programme end-state name
@@ -1706,14 +1708,29 @@ test('03.1 reframe guards: definition appears once, in s01', () => {
   assert.ok(guardText(sectionHtml('s01')).toLowerCase().includes(phrase));
 });
 
-test('03.1 reframe guards: variant-count figures stay in s05, s07, s15', () => {
-  const body = html.replace(/<script\b[\s\S]*?<\/script>/g, '');
+// Code review WR-06: scan the whole page, not only the v1 blocks, so a variant-count
+// figure in #answer, a framing stub or new section content is caught. Each hit is
+// attributed to the innermost v1 block that contains it, else to its top-level section,
+// else to 'outside'.
+function variantFigHits(doc) {
+  const body = doc.replace(/<script\b[\s\S]*?<\/script>/g, (m) => ' '.repeat(m.length));
+  const span = (id) => { const el = elementById(body, id); const at = body.indexOf(el); return [id, at, at + el.length]; };
+  const v1Spans = V1_IDS.map(span);
+  const sectionSpans = ['answer', ...SECTION_IDS].map(span);
+  const where = (pos) => (v1Spans.find(([, a, b]) => pos >= a && pos < b) || sectionSpans.find(([, a, b]) => pos >= a && pos < b) || ['outside'])[0];
   const hits = {};
-  for (const v1 of V1_IDS) {
-    for (const id of guardFigIds(elementById(body, v1))) if (guardVariantFig.test(id)) (hits[v1] ||= []).push(id);
-  }
+  for (const m of body.matchAll(/data-fig="([^"]+)"/g)) if (guardVariantFig.test(m[1])) (hits[where(m.index)] ||= []).push(m[1]);
+  return hits;
+}
+
+test('03.1 reframe guards: variant-count figures stay in s05, s07, s15', () => {
+  const hits = variantFigHits(html);
   assert.ok(hits.s05 && hits.s07, 'figures present in s05 and s07');
   for (const sec of Object.keys(hits)) assert.ok(['s05', 's07', 's15'].includes(sec), `${hits[sec][0]} appears in ${sec}`);
+  // The scan reaches outside the v1 blocks: figures planted in #answer and in a stub are caught.
+  const plant = (marker) => { assert.ok(html.includes(marker), marker); return html.replace(marker, `${marker}<span data-fig="matrix-total">x</span>`); };
+  assert.ok(variantFigHits(plant('<section id="answer" class="answer" aria-label="Summary">')).answer);
+  assert.ok(variantFigHits(plant('<section id="autonomy" aria-labelledby="autonomy-h">')).autonomy);
 });
 
 test('03.1 reframe guards: s11 variant maths is labelled internal throughput', () => {
