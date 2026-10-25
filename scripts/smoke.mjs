@@ -190,7 +190,7 @@ async function cases(base) {
     await evalJs("(() => { const i = document.getElementById('in-campaigns'); i.value = '50'; i.dispatchEvent(new Event('change', { bubbles: true })); })()");
     await sleep(300);
     const back = await evalJs("[document.getElementById('share-link').value, document.getElementById('copy-link').disabled, document.querySelector('.share-status').textContent]");
-    check('share restored', back[0].endsWith('#s11?campaigns=50') && back[1] === false && back[2] === '', `share ${JSON.stringify(back)}`);
+    check('share restored', back[0].endsWith('#s11?campaigns=50&scenario=c') && back[1] === false && back[2] === '', `share ${JSON.stringify(back)}`);
   }));
 
   await run('l error summary is not rebuilt while the errors stay the same', () => withPage(async ({ send, evalJs }) => {
@@ -300,7 +300,8 @@ const hashchange = (base) => withPage(async ({ send, evalJs }) => {
   await send('Page.navigate', { url: base });
   for (let i = 0; i < 50 && (await evalJs("document.documentElement.classList.contains('js')")) !== true; i++) await sleep(100);
   check('loaded', await evalJs("document.documentElement.classList.contains('js')"), 'module did not load');
-  await send('Page.navigate', { url: `${base}#s11?markets=7` });
+  // A link written by this edition names its scenario (WR-09), so only markets differs.
+  await send('Page.navigate', { url: `${base}#s11?markets=7&scenario=c` });
   await sleep(1000);
   const st = await evalJs("document.querySelector('.calc-status').textContent");
   const val = await evalJs("document.getElementById('in-markets').value");
