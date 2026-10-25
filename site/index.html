@@ -55,7 +55,7 @@
     </div>
     <nav class="toc" aria-label="Sections">
       <a href="#opportunity"><span class="n">01</span><span>What 2x means</span></a>
-      <a href="#autonomy"><span class="n">02</span><span>Why autonomy is the lever</span></a>
+      <a href="#autonomy"><span class="n">02</span><span>Why hand agents whole workflows?</span></a>
       <a href="#build"><span class="n">03</span><span>What needs to be built</span></a>
       <a href="#supply-chain"><span class="n">04</span><span>The first workflow</span></a>
       <a href="#economics"><span class="n">05</span><span>The economics</span></a>
@@ -252,8 +252,55 @@
     </div>
     </section>
     <section id="autonomy" aria-labelledby="autonomy-h">
-      <div class="sec-head"><span class="sec-num">02</span><h2 id="autonomy-h">Why autonomy is the lever</h2></div>
-      <p>Would giving agents responsibility for whole workflows, rather than asking them for more content, raise what a marketing team can complete? This section will set out the evidence from a published engineering programme that did this, what it measured, and where that evidence stops.</p>
+      <div class="sec-head"><span class="sec-num">02</span><h2 id="autonomy-h">Why hand agents whole workflows?</h2></div>
+      <p class="chain-pos">Software built → <b>Autonomy enabled</b> → Human work reduced → Marketing capacity increased → Business outcomes improved</p>
+      <p>Would giving agents responsibility for whole workflows, rather than asking them for more content, raise what a marketing team can complete? This section argues that it would, sets out the one published programme that did something like this, and says where that evidence stops.</p>
+      <p>The argument is short. More generated content does not double what a team finishes if the constraint sits in review, publishing and measurement. Faster drafting only moves the queue. The gain comes from removing handoffs, and that means agents taking responsibility for whole stages of the work, inside limits that people set and can inspect.</p>
+      <h3 id="autonomy-ladder">The autonomy ladder</h3>
+      <p>Autonomy comes in steps. Each step hands the agent more of the work and gives people a different job.</p>
+      <div class="table-scroll" role="region" aria-label="Autonomy ladder table" tabindex="0">
+        <table>
+          <caption>Four levels of autonomy</caption>
+          <thead><tr><th scope="col">Level</th><th scope="col">What the agent does</th><th scope="col">What people do</th><th scope="col">Justified when</th><th scope="col">Not justified when</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">Assistance</th>
+              <td>Suggests, drafts or answers when asked, one step at a time.</td>
+              <td>Decide, direct and do the work. The agent speeds up single tasks.</td>
+              <td>The task is new, unclear or judged case by case, or no checks exist yet.</td>
+              <td>The work is repeatable and checkable. Staying here leaves the waiting and handoffs between steps untouched.</td>
+            </tr>
+            <tr>
+              <th scope="row">Agentic execution</th>
+              <td>Carries out a defined task of several steps, using tools, and hands the result back.</td>
+              <td>Set the task and review the result.</td>
+              <td>Inputs are clear, a good result is known, and checks run automatically.</td>
+              <td>The result cannot be checked cheaply, or a mistake would reach customers before anyone looks.</td>
+            </tr>
+            <tr>
+              <th scope="row">Higher autonomy</th>
+              <td>Runs a whole workflow across its stages, acts within set permissions and stops where a rule says to.</td>
+              <td>Set the rules and limits, handle exceptions and sample the output.</td>
+              <td>The work is low risk or can be withdrawn, the checks have been tested against human decisions, and every action is logged.</td>
+              <td>A wrong output cannot be withdrawn, or reviewers themselves disagree about what is correct.</td>
+            </tr>
+            <tr>
+              <th scope="row">Outcome-directed autonomy</th>
+              <td>Is given a business objective, plans the work, runs it, measures the result and proposes changes.</td>
+              <td>Own the objective, the limits and the spend, and approve changes of direction.</td>
+              <td>Only after the lower levels have measured results, and the outcome can be tied to the work.</td>
+              <td>Outcomes arrive late and credit is shared, so an agent could optimise the wrong signal at speed.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Higher autonomy is not automatically better. A step up is justified by reliability, economic value, risk and measured outcomes, in that order of proof, and every step has a place where people can pull the cord. The software described in <a href="#build">section 03</a> is what makes each step inspectable, and the first workflow in <a href="#supply-chain">section 04</a> is where this page proposes starting.</p>
+      <h3 id="intercom-measured">What Intercom measured, and why</h3>
+      <p>Intercom, a software company, told its research and development staff in public that it wanted to double output in a year. It measured progress as merged pull requests divided by the number of people in R&amp;D. A pull request is a proposed code change, and merged means accepted into the product. <a class="cite" href="#src-fin-2x-2025">src-fin-2x-2025</a></p>
+      <p>The chief technology officer gave three reasons for dividing by everyone, managers and designers included. That is where all the cost sits, everyone can affect the number directly or indirectly, and it puts pressure on how the organisation is designed. He also used the number to find bottlenecks. Raising the expectation exposed whatever slowed the whole system down, and the team then fixed it. <a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a></p>
+      <p>He was open about the weak points. Pull requests differ in size and value, the measure is easy to criticise, and it does not translate directly into business impact: in his words, it is &quot;required, but not sufficient&quot;. The definition also drifted, from pull requests per engineer in the first post to pull requests per person in R&amp;D in the later ones. This page uses the later one. <a class="cite" href="#src-fin-webinar-qa">src-fin-webinar-qa</a></p>
+      <h3 id="intercom-results">What Intercom reported</h3>
+      <p>Every figure below is company-reported: Intercom published it about itself, and nobody outside the company can check it. The page grades each one Modelled, never Benchmark, and shows the date and a caveat beside it. None of them is a marketing result.</p>
       <div class="table-scroll" role="region" aria-label="Intercom results table" tabindex="0">
         <table>
           <caption>Intercom's company-reported results</caption>
@@ -316,7 +363,103 @@
           </tbody>
         </table>
       </div>
-      <p class="table-note">Also read for this section: <a class="cite" href="#src-fin-2x-2025">src-fin-2x-2025</a> <a class="cite" href="#src-intercom-ai-approving-prs">src-intercom-ai-approving-prs</a> <a class="cite" href="#src-fin-webinar-qa">src-fin-webinar-qa</a></p>
+      <p class="table-note">Also read for this section: <a class="cite" href="#src-intercom-ai-approving-prs">src-intercom-ai-approving-prs</a>, which describes the AI reviewer and its risk-gated approval path.</p>
+      <h3 id="intercom-uncertain">Demonstrated and uncertain</h3>
+      <p><b>Demonstrated, with the caveat that all of it is self-reported</b></p>
+      <ul>
+        <li>A large and fast change in behaviour. Most pull requests became agent-driven within a few months.</li>
+        <li>Output per person rose by about a factor of two on Intercom's own definition. Several indicators moved together: pull requests, deployments, features shipped and time from idea to release. None of them is independent of Intercom.</li>
+        <li>No visible collapse in quality on the measures Intercom tracks. The defect backlog and attributable downtime both fell.</li>
+        <li>Review automation worked for a narrow, low-risk class of change: mostly small ones, merged faster, with no reverts in a pilot of around a hundred changes. <a class="cite" href="#src-intercom-ai-approving-prs">src-intercom-ai-approving-prs</a></li>
+        <li>The constraint moved from writing code to testing to review.</li>
+      </ul>
+      <p><b>Uncertain or not demonstrated</b></p>
+      <ul>
+        <li>Nothing is audited. Absolute counts, the baseline month and cost per change are not published.</li>
+        <li>There is no counterfactual: no control group and no comparison with other companies.</li>
+        <li>Better underlying models arrived during the same months, and the data cannot separate that from the programme's own changes.</li>
+        <li>The longer threefold claim covers a window that starts before the goal was announced.</li>
+        <li>Business outcomes are asserted, not measured. The company says revenue is a lagging indicator and publishes no revenue figure tied to the programme. <a class="cite" href="#src-fin-webinar-qa">src-fin-webinar-qa</a></li>
+        <li>The pull-request count can be raised by making changes smaller, and the approval rule rewards small changes.</li>
+        <li>The average hides a long tail: a few heavy users produce several times the median. <a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a></li>
+        <li>Intercom says its culture and systems are hard to copy. <a class="cite" href="#src-fin-webinar-qa">src-fin-webinar-qa</a></li>
+      </ul>
+      <h3 id="bottleneck-moved">The bottleneck moved</h3>
+      <p>Intercom's account runs in a sequence. Writing code became fast, which strained the build and test pipeline. Once that was fixed, human review of pull requests became the queue, so the team built an AI reviewer with a risk-gated approval path. Next in line, by its own account, is diagnosing problems in production, which is still unsolved. <a class="cite" href="#src-fin-2x-nine-months">src-fin-2x-nine-months</a></p>
+      <p>The same thing would happen in marketing. This is our reasoning, not Intercom's evidence.</p>
+      <div class="table-scroll" role="region" aria-label="Bottleneck table" tabindex="0">
+        <table>
+          <caption>Where the bottleneck moves, in engineering and in marketing</caption>
+          <thead><tr><th scope="col">Order</th><th scope="col">Engineering at Intercom</th><th scope="col">Marketing, by the same logic</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">First</th><td>Writing code, until agents took it on.</td><td>Producing assets, until generation took it on.</td></tr>
+            <tr><th scope="row">Then</th><td>Testing and build capacity.</td><td>Preflight checks: specifications, claims, links, accessibility and rights.</td></tr>
+            <tr><th scope="row">Then</th><td>Human review of changes, relieved by an AI reviewer for low-risk work.</td><td>Brand, legal and regional review, relieved by a review agent for low-risk assets.</td></tr>
+            <tr><th scope="row">Next</th><td>Diagnosing problems in production, still unsolved.</td><td>Trafficking, publishing, and then measurement of what worked.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A programme that only makes more content therefore queues it up in front of reviewers. Handing agents whole workflows moves the constraint at every stage, not one stage at a time.</p>
+      <h3 id="transferable-principles">What transfers, and what does not</h3>
+      <p>Each row names something Intercom did, the marketing version we propose, and where the comparison breaks. The first column is sourced to the posts above. The other two are this page's design, not evidence.</p>
+      <div class="table-scroll" role="region" aria-label="Transferable principles table" tabindex="0">
+        <table>
+          <caption>What transfers to marketing, and what does not</caption>
+          <thead><tr><th scope="col">Intercom mechanism</th><th scope="col">Marketing translation</th><th scope="col">What does not transfer</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">One standard platform for agents, with a team whose job is to build and run it.</th>
+              <td>One agent runtime for marketing workflows. Skills and policies are written once, not once per tool.</td>
+              <td>Marketing work runs inside many tools with uneven interfaces, so integration is a real cost. Most marketing teams have no engineers of their own.</td>
+            </tr>
+            <tr>
+              <th scope="row">A shared skills library with owners, tests, rules for promotion and pruning of unused skills.</th>
+              <td>Brand, claims, channel and locale skills, each owned, versioned and tested.</td>
+              <td>Engineers already use version control and code review for this. Marketers need a way to govern skills that does not assume that habit.</td>
+            </tr>
+            <tr>
+              <th scope="row">Expert judgment encoded in the environment and measured with and without it.</th>
+              <td>A brand knowledge layer of approved components, claims and rights rules, tested by comparing agent output with and without it.</td>
+              <td>Brand taste is harder to encode than code conventions. Expect partial coverage, and keep people for the rest.</td>
+            </tr>
+            <tr>
+              <th scope="row">Whole stages handed to agents, not dashboards handed to people.</th>
+              <td>Agents own stages from start to finish: adapt, localise, check, traffic and confirm live.</td>
+              <td>Positioning, spend allocation and new claims are judgment-heavy and stay with people by design.</td>
+            </tr>
+            <tr>
+              <th scope="row">A review agent split into independent checks, behind a gate that combines an eligibility rule with a quality verdict.</th>
+              <td>A review agent with checks for brand, claims, legal text, rights, accessibility and channel specifications, and a gate by asset risk tier.</td>
+              <td>No test can say whether an advertisement persuades or is on brand. A published advertisement cannot be taken back the way a code change can be reverted.</td>
+            </tr>
+            <tr>
+              <th scope="row">The reviewer measured against a human-curated set, and every change treated as a hypothesis.</th>
+              <td>A curated set of past approve and reject decisions with reasons. Every prompt, model or policy change is tested against it before release.</td>
+              <td>Building that set is the hardest part. Marketing has fewer labelled decisions, and reviewers often disagree, so they must be calibrated first.</td>
+            </tr>
+            <tr>
+              <th scope="row">Every AI approval labelled, logged and queryable, with auditors engaged early.</th>
+              <td>Every agent approval recorded with the same evidence as a human approval, and legal and privacy teams involved before scale.</td>
+              <td>Advertising rules differ by market, so the policy source has to hold them per jurisdiction.</td>
+            </tr>
+            <tr>
+              <th scope="row">Management change: a stated expectation, protected time to learn, and leaders working alongside teams.</th>
+              <td>The chief marketing officer sets a capacity expectation, protects learning time and credits agent-completed work to the person who started it.</td>
+              <td>Reporting on individuals may conflict with works councils and monitoring law. Report in aggregate by default.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>What does not transfer</b></p>
+      <ul>
+        <li>Publication cannot be reversed. A revert is cheap in software and an advertisement cannot be unseen, so the risk tiers must be more conservative and monitoring after launch stands in for revert.</li>
+        <li>Ground truth is contested. Reviewers disagree about what is on brand or compliant, so there is no clean answer key against which to measure an agent.</li>
+        <li>There is no merge event and no single system of record, so the unit of work has to be constructed and instrumented.</li>
+        <li>Outcomes arrive late and credit is shared with sales and product, so early proof rests on capacity, speed and quality, with outcome tests designed in from the start.</li>
+        <li>Labour is a minority of marketing spend, so a gain per person moves the total budget less than it did in engineering. Agencies sit outside headcount and can make per-head figures look better without any change in output.</li>
+        <li>Intercom already had a shipping culture and automated testing and release. Most marketing organisations lack the equivalent: preflight validation and verified publishing. It is a build item, and it is the main reason a marketing 2x would take longer.</li>
+      </ul>
+      <p class="evidence-stop"><b>Where the evidence stops.</b> Intercom's evidence is self-reported engineering data. Nothing in this section is observed for marketing; the marketing translations are this page's design proposals, to be tested in a pilot.</p>
     </section>
     <section id="build" aria-labelledby="build-h">
       <div class="sec-head"><span class="sec-num">03</span><h2 id="build-h">What needs to be built</h2></div>

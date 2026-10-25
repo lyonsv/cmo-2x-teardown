@@ -61,6 +61,11 @@ figcaption b { text-transform: uppercase; font-weight: 600; }
 section { scroll-margin-top: 16px; }
 .subsection { scroll-margin-top: 16px; }
 .subsection + .subsection { margin-top: var(--s-xl); }
+/* Phase 7 spine: chain position and evidence stop (plan 07-02; same rules as the 07-01 spec) */
+.chain-pos { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0 0 var(--s-lg); max-width: none; }
+.chain-pos b { font-weight: 600; color: var(--ink); }
+.evidence-stop { border-left: 2px solid var(--rule); padding: var(--s-xs) 0 var(--s-xs) var(--s-md); margin: var(--s-xl) 0 var(--s-md); }
+/* end Phase 7 spine */
 section + section { border-top: 1px solid var(--rule); padding-top: var(--s-xl); margin-top: var(--s-xl); }
 .sec-head { display: grid; grid-template-columns: 64px 1fr; column-gap: var(--s-md); align-items: baseline; margin-bottom: var(--s-lg); }
 .sec-num { font: 400 12px/1.6 var(--mono); color: var(--muted); }

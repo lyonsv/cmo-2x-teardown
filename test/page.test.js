@@ -283,7 +283,7 @@ test('static page guards', () => {
 // New executive-question order (Phase 5). Each v1 section survives as a div.subsection with its v1 id.
 const SECTIONS = [
   { id: 'opportunity', num: '01', title: 'What 2x means' },
-  { id: 'autonomy', num: '02', title: 'Why autonomy is the lever' },
+  { id: 'autonomy', num: '02', title: 'Why hand agents whole workflows?' },
   { id: 'build', num: '03', title: 'What needs to be built' },
   { id: 'supply-chain', num: '04', title: 'The first workflow' },
   { id: 'economics', num: '05', title: 'The economics' },
@@ -323,7 +323,9 @@ const SECTION_RE = SECTION_IDS.join('|');
 // inner headings stay h3. In body sections the v1 heading is an h3 and the headings
 // inside the block are h4, so the outline nests.
 const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTED[id].host).title === HOSTED[id].title);
-const MEASURED_H3 = 23; // 9 hosted v1 headings plus 14 h3s inside appendix blocks
+// Phase 7 body h3s, one line per content plan so concurrent plans do not collide.
+const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, bottleneck, principles
+const MEASURED_H3 = 23 + P7_H3_AUTONOMY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24; // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
@@ -409,7 +411,8 @@ test('table of contents lists nine rows, an Appendices label and six appendix ro
     assert.equal(decode(title), SECTIONS[i].title);
     assert.ok(html.includes(`id="${id}"`), `${id} resolves`);
   });
-  assert.ok(!nav[1].includes('?'), 'no query in TOC hrefs');
+  // Titles may now be questions (plan 07-02), so only the href values are checked for a query.
+  for (const [, href] of nav[1].matchAll(/href="([^"]*)"/g)) assert.ok(!href.includes('?'), `no query in TOC href ${href}`);
 });
 
 test('fifteen new top-level sections with the fixed snippet', () => {
