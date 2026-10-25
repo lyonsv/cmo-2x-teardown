@@ -71,8 +71,9 @@ test('source counts', () => {
 
 test('assumption counts and the hypothesis list', () => {
   const rows = Object.values(assumptions);
-  // 65 + 41 engine rows (06-04): 23 globals and 18 workflow rows (asm-productive-hours was already counted)
-  assert.equal(rows.length, 65 + 41);
+  // 65 + 41 engine rows (06-04): 23 globals and 18 workflow rows (asm-productive-hours was already counted),
+  // plus asm-prioritisation (07-06, the author's scoring judgement)
+  assert.equal(rows.length, 65 + 41 + 1);
   assert.equal(HYPOTHESIS.length, 31);
   for (const id of HYPOTHESIS) assert.ok(assumptions[id], `stale id ${id}`);
   // Engine rows carry their own evidence, so the oracle is the list in engine-data.test.js's ENGINE_HYPOTHESIS.
@@ -82,7 +83,7 @@ test('assumption counts and the hypothesis list', () => {
   assert.equal(count(rows, 'hypothesis', 'Modelled'), 24 + 18);
   assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2);
   assert.equal(count(rows, 'illustrative', 'Modelled'), 34 + 20);
-  assert.equal(count(rows, 'illustrative', 'Speculative'), 1);
+  assert.equal(count(rows, 'illustrative', 'Speculative'), 2);
 });
 
 const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };

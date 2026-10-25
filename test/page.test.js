@@ -328,9 +328,11 @@ const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, b
 const P7_H3_BUILD = 8; // plan 07-03: plain English, six parts, capabilities, own-integrate-platform, permissions, always-human, smallest-slice, expansion-path
 const P7_H3_OPPORTUNITY = 3; // plan 07-01: define-2x, capacity-efficiency-effectiveness, no-merged-pr
 const P7_H3_SUPPLY = 5; // plan 07-04: chain-stages, worked-example, handoffs, wedge, plus the appendix-factory heading
+const P7_H3_ECON = 3; // plan 07-06 task 1: honest-2x, workflow-inventory, per-workflow
+const P7_H4_ECON = 2; // plan 07-06 task 1: where to start, the other workflows
 const P7_H4_SUPPLY = 2; // plan 07-04: autonomous and not-autonomous lists
-const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
-const MEASURED_H4 = 24 + P7_H4_SUPPLY - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
+const MEASURED_H3 = 23 + P7_H3_SUPPLY + P7_H3_AUTONOMY + P7_H3_BUILD + P7_H3_OPPORTUNITY + P7_H3_ECON; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const MEASURED_H4 = 24 + P7_H4_SUPPLY + P7_H4_ECON - 1; // minus one: the old Figure 3 steps heading left s03; Figure 2's steps heading moved to Appendix A unchanged // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
 const ALLOWED_NUMERIC_TOKENS = [
@@ -496,8 +498,9 @@ test('cross-reference labels match the new section numbering', () => {
 
 // Deliberate change (07-CONTEXT, plan 07-02): #autonomy is now filled, so it leaves the stub set.
 // Later content plans remove their section from this list as they fill it.
-const STUBS = ['economics'];
-test('framing stubs carry the to-follow marker only in the stub sections', () => {
+// Plan 07-06 fills the last stub (#economics): the page now carries no to-follow marker.
+const STUBS = [];
+test('framing stubs carry the to-follow marker only in the stub sections (none remain)', () => {
   assert.equal((html.match(/class="to-follow"/g) || []).length, STUBS.length);
   for (const id of STUBS) {
     const el = elementById(html, id);

@@ -704,6 +704,32 @@ function buildMetric(x, sc, rollup, maxMult) {
   };
 }
 
+// ---------------------------------------------------------------- reconciliation
+
+// One portfolio-level reading of INV-1 for each scenario: the pool identities summed.
+// Capacity already unused at baseline (slack0) is reported on its own line and never
+// credited to the programme; capacity released by the programme (E) is what the other
+// three destinations (redeployed, removed, left unused) share with it, plus any hires a
+// pool needs when its extra work outruns its own capacity. Units are FTE.
+function buildReconciliation(scenarios) {
+  const out = {};
+  for (const k of ['A', 'B', 'C']) {
+    const t = { slack0: 0, released: 0, hires: 0, redeployed: 0, removed: 0, unused: 0, gap: 0 };
+    for (const b of Object.values(scenarios[k].bridge)) {
+      t.slack0 += b.slack0;
+      t.released += b.E;
+      t.redeployed += b.redeployed;
+      t.removed += b.removed;
+      // A pool whose extra work outruns its own capacity hires the shortfall (scenario C).
+      t.hires += Math.max(0, -b.unused_remaining);
+      t.unused += Math.max(0, b.unused_remaining);
+      t.gap += Math.abs(b.slack0 + b.E + Math.max(0, -b.unused_remaining) - (b.redeployed + b.removed + Math.max(0, b.unused_remaining)));
+    }
+    out[k] = t;
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- entry point
 
 export function economics(ec, levers) {
@@ -729,6 +755,7 @@ export function economics(ec, levers) {
     const check = checkLedger(ledger);
     if (!check.ok) return { ok: false, errors: check.errors };
     out.scenarios = scenarios;
+    out.reconciliation = buildReconciliation(scenarios);
     out.default_scenario = 'C';
     out.investment = {
       one_off: { build: x.engine.build_one_off, change: scenarios.B.one_off.change, severance_B: scenarios.B.one_off.severance },

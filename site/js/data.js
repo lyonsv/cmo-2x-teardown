@@ -1307,6 +1307,33 @@ assumptions['asm-adoption-design'] = { ...a('asm-adoption-design', 'Adoption sta
 assumptions['asm-risk-likelihood'] = { ...a('asm-risk-likelihood', 'Risk likelihood words', 'context', null, null, null, "Author's judgement",
   "The likelihood words in the risk register are the author's judgement from the incidents and sources cited in section 09, not measured rates."), grade: 'Speculative' };
 
+// ---- Phase 7 plan 06: workflow prioritisation (ECONP-06) ----
+// The five scores per workflow are the author's judgements (1 to 5, 5 is best; risk 5 is
+// low risk), recorded once as a judgement table. They are not model output, and no model
+// figure reads them. Each score and each total is a claim on one Speculative context row.
+assumptions['asm-prioritisation'] = { ...a('asm-prioritisation', 'Workflow prioritisation scores', 'context', null, null, null, "Author's judgement",
+  'Scores from 1 to 5 for value (hours and agency spend in scope), feasibility (how reliable agents are today and how hard the integration is), repeatability (volume and standardisation), risk (brand, legal and spend exposure, where 5 is low risk) and measurable autonomy (whether success can be checked by a deterministic test), each summed without weighting. Judgements informed by the workflow inventory, not measurements; replace them with your own scoring. No published benchmark.'), grade: 'Speculative' };
+export const PRIORITY_SCORES = {
+  W1: { value: 2, feasibility: 4, repeatability: 3, risk: 4, autonomy: 2 },
+  W2: { value: 4, feasibility: 3, repeatability: 4, risk: 4, autonomy: 3 },
+  W3: { value: 5, feasibility: 2, repeatability: 2, risk: 2, autonomy: 2 },
+  W4: { value: 4, feasibility: 4, repeatability: 5, risk: 3, autonomy: 4 },
+  W5: { value: 3, feasibility: 4, repeatability: 5, risk: 2, autonomy: 4 },
+  W6: { value: 3, feasibility: 4, repeatability: 5, risk: 3, autonomy: 5 },
+  W7: { value: 2, feasibility: 4, repeatability: 4, risk: 3, autonomy: 3 },
+  W8: { value: 2, feasibility: 3, repeatability: 3, risk: 3, autonomy: 4 },
+  W9: { value: 3, feasibility: 4, repeatability: 4, risk: 4, autonomy: 3 },
+  W10: { value: 3, feasibility: 3, repeatability: 4, risk: 2, autonomy: 4 },
+};
+for (const [wid, sc] of Object.entries(PRIORITY_SCORES)) {
+  const total = Object.values(sc).reduce((x, y) => x + y, 0);
+  for (const [key, v] of [...Object.entries(sc), ['total', total]]) {
+    const id = `prio-${wid}-${key}`;
+    claims[id] = { id, value: v, unit: `Prioritisation score for ${wid}, ${key}${key === 'total' ? ' (sum of the five scores)' : ' (1 to 5)'}`, display: String(v), grade: 'Speculative', flag: null, ref: 'asm-prioritisation' };
+  }
+}
+// ---- end Phase 7 plan 06: prioritisation ----
+
 // ---- Plan 03-03: operations lever, statutory-damages illustration ----
 // The statute ranges are Benchmark (primary law). The incident rate is an invented,
 // reader-owned assumption (Speculative). Rights attach to master concepts and all
@@ -1528,16 +1555,30 @@ function engineClaims(ec) {
   scen('B', 'agency_saving', 'agency.saving', 'usd0', 'agency saving a year', 'asm-adoption-rate');
   scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-adoption-rate');
   scen('B', 'one_off', 'one_off.total', 'usd0', 'one-off cost including severance', 'asm-severance-months', SPEC);
-  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-severance-months', SPEC);
-  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-severance-months', SPEC);
-  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-demand-multiplier');
-  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-demand-multiplier');
+  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-adoption-rate', SPEC);
+  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-adoption-rate', SPEC);
+  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
+  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
   scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'hires_without', 'labour.hires_without', 'num1', 'hires needed without the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided (FTE)', 'asm-demand-multiplier');
   scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided a year', 'asm-demand-multiplier');
   scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-demand-multiplier');
-  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-demand-multiplier');
+  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-adoption-rate');
+  scen('C', 'agency_avoided', 'agency.avoided', 'usd0', 'agency spend avoided against the no-programme plan', 'asm-adoption-rate');
+
+  // Released-capacity reconciliation (ECON-02), portfolio scope, in FTE. Slack at baseline
+  // and the capacity the programme releases are the same under every scenario, so they are
+  // read once; where the capacity goes differs by scenario. The hours figure is the same
+  // release in hours a year. All share one register row so a table row can carry one chip.
+  econ('recon-slack0', 'reconciliation.B.slack0', 'num1', 'Reconciliation: capacity already unused at baseline, in FTE', 'asm-reviewer-fte', { side: 'baseline' });
+  econ('recon-released', 'reconciliation.B.released', 'num1', 'Reconciliation: capacity the programme releases from existing work, in FTE', 'asm-adoption-rate', { side: '2x' });
+  econ('recon-released_hours', 'pool_totals.total_released_hours', 'int', 'Reconciliation: hours of existing work the programme eliminates a year', 'asm-adoption-rate', { side: '2x' });
+  for (const k of ['A', 'B', 'C']) {
+    for (const [key, what] of [['redeployed', 'capacity redeployed into additional work'], ['removed', 'capacity removed as headcount'], ['hires', 'hires needed for the extra work'], ['unused', 'capacity left unused'], ['gap', 'unreconciled difference']]) {
+      econ(`recon-${k}-${key}`, `reconciliation.${k}.${key}`, 'num1', `Reconciliation, scenario ${k}: ${what}, in FTE`, 'asm-adoption-rate', { side: '2x' });
+    }
+  }
 
   // Investment: one-off and the run-cost lines (shown for scenario B).
   const inv = (key, path, what, ref, opts) => econ(`inv-${key}`, path, 'usd0', `Investment: ${what}`, ref, { side: '2x', ...opts });
