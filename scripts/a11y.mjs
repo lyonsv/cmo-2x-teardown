@@ -47,10 +47,12 @@ async function domChecks(evalJs) {
     let skips = 0; for (let i = 1; i < hs.length; i++) if (hs[i] - hs[i - 1] > 1) skips++;
     const secs = [...document.querySelectorAll('main section')];
     const bad = secs.filter((s) => { const l = s.getAttribute('aria-labelledby'); if (l) { const e = document.getElementById(l); return !(e && /^H2$/.test(e.tagName) && s.contains(e)); } return !s.getAttribute('aria-label'); }).map((s) => s.id);
-    return { h1: hs.filter((x) => x === 1).length, skips, bad, lang: document.documentElement.lang, secs: secs.length };
+    const generic = [...document.querySelectorAll('div[aria-labelledby]:not([role]), span[aria-labelledby]:not([role]), div[aria-label]:not([role]), span[aria-label]:not([role])')].map((e) => e.id || e.tagName);
+    return { h1: hs.filter((x) => x === 1).length, skips, bad, generic, lang: document.documentElement.lang, secs: secs.length };
   })()`);
   test('heading order', r.h1 === 1 && r.skips === 0, `h1 ${r.h1}, level skips ${r.skips}`);
   test('section names', r.bad.length === 0, `${r.secs} sections named`, `unlabelled sections: ${r.bad.join(', ')}`);
+  test('no named generic elements', r.generic.length === 0, 'none', `aria name on a role-less div or span: ${r.generic.join(', ')}`);
   test('lang', r.lang === 'en-GB', r.lang);
 }
 

@@ -418,7 +418,9 @@ test('every v1 block is one div.subsection with its v1 title, inside its host', 
     const { host, title } = HOSTED[id];
     assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, `${id} id unique`);
     const hostHtml = elementById(html, host);
-    const open = `<div id="${id}" class="subsection" aria-labelledby="${id}-h">`;
+    // Code review WR-05: a plain div has the generic role, which ARIA forbids naming,
+    // so the subsection carries no aria-labelledby; its h3 names the content.
+    const open = `<div id="${id}" class="subsection">`;
     assert.ok(hostHtml.includes(open), `${id} inside ${host}`);
     const el = elementById(html, id);
     assert.ok(el.startsWith(open), id);

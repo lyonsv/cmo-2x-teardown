@@ -41,6 +41,15 @@ test('every h4 has a preceding h3 in the same section', () => {
   }
 });
 
+// Code review WR-05: ARIA 1.2 prohibits naming the generic role, so a div or span
+// with aria-labelledby or aria-label must carry an explicit role.
+test('no role-less div or span is given an accessible name', () => {
+  const bad = [...html.matchAll(/<(div|span)\b([^>]*)>/g)]
+    .filter(([, , attrs]) => /\baria-label(?:ledby)?=/.test(attrs) && !/\brole="/.test(attrs))
+    .map(([tag]) => tag);
+  assert.deepEqual(bad, []);
+});
+
 test('every section is labelled by its h2; lang en-GB; one title', () => {
   const secs = [...html.matchAll(/<section id="([^"]+)"([^>]*)>/g)];
   assert.ok(secs.length >= 15);
