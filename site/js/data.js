@@ -1960,7 +1960,8 @@ for (const asm of Object.values(assumptions)) {
     if (Array.isArray(v)) return v.map((x, i) => (i === 0 ? x - 0.02 : i === 2 ? x + 0.02 : x));
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, nudge(x)]));
   };
-  const STEPPED = new Set(['level', 'steps']);
+  // Whole-number fields step by one so the moved row stays valid (IN-03 validates the chain).
+  const STEPPED = new Set(['level', 'steps', 'steps_between_gates', 'retries']);
   const nudgeEngine = (v, key = '') => {
     if (typeof v === 'number') return STEPPED.has(key) ? (v > 1 ? v - 1 : v + 1) : v === 0 ? 0.01 : v * 0.9;
     if (Array.isArray(v)) return v.map((x) => nudgeEngine(x, key));

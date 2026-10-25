@@ -52,7 +52,7 @@ function effective(w, engine, a, k) {
 const ENGINE_FIELDS = [
   ['productive_hours', isPos], ['out_of_scope_fte', isNonNeg], ['out_of_scope_uplift', isShare],
   ['autonomous_share_l3', isShare], ['adoption', isShare], ['year1_realisation', isShare],
-  ['escape_rate', isNonNeg], ['cost_per_escape', isNonNeg], ['demand_multiplier', isPos],
+  ['escape_rate', isShare], ['cost_per_escape', isNonNeg], ['demand_multiplier', isPos],
   ['traffic_growth', isPos], ['agency_cost_per_fte_equiv', isPos], ['build_one_off', isNonNeg],
   ['severance_months', isNonNeg], ['min_removable_fte', isNonNeg], ['counterfactual_funded_share', isShare],
 ];
@@ -94,6 +94,13 @@ export function validateEngine(ec, levers) {
   const jc = engine.judge_call;
   if (!jc || !isNonNeg(jc.tin) || !isNonNeg(jc.tout) || !tp || !tp[jc.tier]) bad('engine.judge_call', 'judge_call needs tin, tout and a known tier');
   if (!Array.isArray(engine.portfolio)) bad('engine.portfolio', 'portfolio must be an array of workflow ids');
+  // Code review IN-03: the switch and the chain diagnostic are validated too.
+  if (typeof engine.agency_scales_with_output !== 'boolean') bad('engine.agency_scales_with_output', 'agency_scales_with_output must be true or false');
+  const ch = engine.chain;
+  if (ch !== undefined && (!ch || typeof ch !== 'object' || !isShare(ch.p) || !Number.isInteger(ch.steps) || ch.steps < 1
+    || !Number.isInteger(ch.steps_between_gates) || ch.steps_between_gates < 1 || !Number.isInteger(ch.retries) || ch.retries < 0)) {
+    bad('engine.chain', 'chain needs p as a share and whole numbers of steps (at least 1), steps between gates (at least 1) and retries (at least 0)');
+  }
 
   const k = fullLevers(levers);
   for (const name of LEVERS) {

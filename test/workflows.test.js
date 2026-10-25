@@ -111,6 +111,23 @@ test('IN-01: the roll-up range is adjusted for adoption and overhead like the ce
   }
 });
 
+test('IN-03: the agency switch, the chain diagnostic and the escape rate are validated', () => {
+  const bad = (mutate, field) => {
+    const ec = makeEc();
+    mutate(ec.engine);
+    const r = economics(ec);
+    assert.equal(r.ok, false);
+    assert.ok(r.errors.some((e) => e.field === field), `${field}: ${JSON.stringify(r.errors)}`);
+  };
+  bad((e) => { e.agency_scales_with_output = 'yes'; }, 'engine.agency_scales_with_output');
+  bad((e) => { delete e.agency_scales_with_output; }, 'engine.agency_scales_with_output');
+  bad((e) => { e.escape_rate = 1.5; }, 'engine.escape_rate');
+  bad((e) => { e.chain = { p: 1.2, steps: 8, steps_between_gates: 8, retries: 0 }; }, 'engine.chain');
+  bad((e) => { e.chain = { p: 0.95, steps: 2.5, steps_between_gates: 8, retries: 0 }; }, 'engine.chain');
+  bad((e) => { e.pilot = ['W99']; }, 'engine.pilot');
+  assert.equal(economics(makeEc()).ok, true);
+});
+
 test('agent state at baseline volume: W1 goldens', () => {
   const w = run().workflows.W1;
   near(w.agent.total_hours, 4800, 1e-6);
