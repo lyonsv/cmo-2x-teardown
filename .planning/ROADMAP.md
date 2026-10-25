@@ -62,7 +62,13 @@ Plans:
   3. Scenarios A, B and C (C default) are distinct outputs with investment (build, run incl. platform team, inference, autonomy review overhead, escape cost), annual net effect, scale-vs-programme decomposition, sensitivity to adoption, escape rate, inference cost and review overhead, and the maximum sustainable multiplier per constrained role.
   4. Master-concept cost is split into internal hours and an explicit agency fee; the `rework_rate` read path cannot return NaN when baseline and 2x values differ (regression test).
   5. No page figure that comes from the model is hand-typed (crosscheck enforced), and all existing gates remain green.
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 06-01-PLAN.md — calc.js hardening (additive): concept split fields, cash/internal views, reviewer bridge, scale-vs-programme effects, pooled queue bound, rework_rate fix
+- [ ] 06-02-PLAN.md — Portfolio engine workflows.js: W1-W10 states, pools and bridge, scenarios A/B/C, ledger and invariants, investment, primary metric, sensitivity, max multipliers
+- [ ] 06-03-PLAN.md — Atomic v1 figure migration: cash-view legacy scenarios, 35.2 h concept split, one price per hour, computed derived claims, page figures and prose
+- [ ] 06-04-PLAN.md — Engine inputs in data.js (kind 'engine'), engineContext(), new sources, generated register rows, per-side evidence
+- [ ] 06-05-PLAN.md — Generated econ-* claims, engine evidence trace, no-hand-typed guards, phase-end gates
 
 ### Phase 7: Thesis, Intercom Evidence & What Needs to Be Built
 **Goal**: A reader of the opening sections can say what is being built, why autonomy (not more content) is the lever, what 2x means, and what Intercom actually showed.
