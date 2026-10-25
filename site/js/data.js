@@ -1545,26 +1545,26 @@ function engineClaims(ec) {
   // Scenarios A (hold the people), B (remove the capacity), C (absorb the demand).
   const SPEC = { grade: 'Speculative' };
   const scen = (k, key, path, format, what, ref, opts = {}) => econ(`scen-${k}-${key}`, `scenarios.${k}.${path}`, format, `Scenario ${k}: ${what}`, ref, { side: '2x', ...opts });
-  scen('A', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
-  scen('A', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
+  scen('A', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
+  scen('A', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
   scen('A', 'implied_agency_growth', 'agency.implied_growth', 'usd0', 'agency spend growth the output rise would imply', 'asm-adoption-rate');
-  scen('B', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
-  scen('B', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
+  scen('B', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
+  scen('B', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
   scen('B', 'removable_fte', 'labour.removable_fte', 'num1', 'people removable at the same output (FTE)', 'asm-adoption-rate');
   scen('B', 'labour_saving', 'labour.saving', 'usd0', 'labour saving a year', 'asm-adoption-rate');
   scen('B', 'agency_saving', 'agency.saving', 'usd0', 'agency saving a year', 'asm-adoption-rate');
-  scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-adoption-rate');
+  scen('B', 'year1_net', 'year1_net', 'usd0', 'net cash effect in year one', 'asm-escape-rate', SPEC);
   scen('B', 'one_off', 'one_off.total', 'usd0', 'one-off cost including severance', 'asm-severance-months', SPEC);
-  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-adoption-rate', SPEC);
-  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-adoption-rate', SPEC);
-  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-adoption-rate');
-  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-adoption-rate');
+  scen('B', 'payback_simple', 'payback_simple', 'years1', 'simple payback', 'asm-escape-rate', SPEC);
+  scen('B', 'payback_ramped', 'payback_ramped', 'years1', 'payback with the year-one ramp', 'asm-escape-rate', SPEC);
+  scen('C', 'net', 'net', 'usd0', 'net cash effect a year', 'asm-escape-rate', SPEC);
+  scen('C', 'run_cost', 'run_cost.total', 'usd0', 'run cost a year', 'asm-escape-rate', SPEC);
   scen('C', 'hires_with', 'labour.hires_with', 'num1', 'hires needed with the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'hires_without', 'labour.hires_without', 'num1', 'hires needed without the programme (FTE)', 'asm-demand-multiplier');
   scen('C', 'avoided_hires', 'labour.avoided_hires', 'num1', 'hires avoided (FTE)', 'asm-demand-multiplier');
   scen('C', 'avoided_cost', 'avoided_cost', 'usd0', 'cost avoided a year', 'asm-demand-multiplier');
-  scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-demand-multiplier');
-  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-adoption-rate');
+  scen('C', 'versus_today', 'versus_today', 'usd0', 'spend versus today after absorbing the demand', 'asm-escape-rate', SPEC);
+  scen('C', 'payback', 'payback_simple', 'years1', 'simple payback', 'asm-escape-rate', SPEC);
   scen('C', 'agency_avoided', 'agency.avoided', 'usd0', 'agency spend avoided against the no-programme plan', 'asm-adoption-rate');
 
   // Released-capacity reconciliation (ECON-02), portfolio scope, in FTE. Slack at baseline
@@ -1614,7 +1614,10 @@ function engineClaims(ec) {
     const [ref, label, opts] = SENS[row.id];
     for (const end of ['low', 'high']) {
       for (const [cellKey, format, what] of [['org_A_after', 'x2', 'organisation-wide output multiple'], ['net_B', 'usd0', 'scenario B net cash effect a year']]) {
-        econ(`sens-${row.id}-${end}-${cellKey}`, `sensitivity.rows.${i}.${end}.${cellKey}`, format, `Sensitivity, ${label} ${end}: ${what}`, ref, { side: '2x', ...opts });
+        // A net cash effect is Speculative whichever input moved (it carries the escape rate and
+        // severance), so it links the Speculative escape-rate row; the multiple links its own input.
+        const isNet = cellKey === 'net_B';
+        econ(`sens-${row.id}-${end}-${cellKey}`, `sensitivity.rows.${i}.${end}.${cellKey}`, format, `Sensitivity, ${label} ${end}: ${what}`, isNet ? 'asm-escape-rate' : ref, { side: '2x', ...(isNet ? SPEC : opts) });
       }
     }
   });

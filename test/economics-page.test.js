@@ -124,3 +124,117 @@ test('roll-up table: the six other workflows, two states each, with evidence lab
     for (const id of figsOf(r)) assert.match(id, /^econ-wf-W(1|3|7|8|9|10)-(current|agent)-(total_hours|fte|autonomous_share)$/);
   }
 });
+
+// ---- Task 2: scenarios, investment, reconciliation, reviewer bridge, scale vs programme, sensitivity ----
+
+test('scenarios table: three scenario columns with C marked default, honest net, payback and null handling', () => {
+  const t = tableByCaption('Scenarios A, B and C side by side');
+  const head = headOf(t);
+  assert.equal(head.length, 5);
+  assert.deepEqual(head.slice(1, 4), ['A: same team, more output', 'B: same output, lower cost', 'C: growing demand, limited hiring (default)']);
+  assert.ok(head[3].endsWith('(default)') && !head[1].includes('default') && !head[2].includes('default'));
+  const rows = bodyRows(t);
+  const label = (r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]);
+  const byLabel = Object.fromEntries(rows.map((r) => [label(r), r]));
+  const net = byLabel['Annual net cash effect'];
+  assert.deepEqual(figsOf(net), ['econ-scen-A-net', 'econ-scen-B-net', 'econ-scen-C-net']);
+  assert.deepEqual(figsOf(byLabel['Annual run cost of the programme']), ['econ-scen-A-run_cost', 'econ-scen-B-run_cost', 'econ-scen-C-run_cost']);
+  // A has no cash saving and no payback; the engine returns no figure, so the cell says so in words
+  assert.ok(claims['econ-scen-A-net'].value < 0, 'scenario A has no cash saving');
+  assert.equal(claims['econ-scen-A-payback_simple'], undefined);
+  assert.match(strip(byLabel['Simple payback on the one-off cost']), /Not applicable/);
+  assert.deepEqual(figsOf(byLabel['Simple payback on the one-off cost']), ['econ-scen-B-payback_simple', 'econ-scen-C-payback']);
+  for (const id of ['econ-scen-A-net', 'econ-scen-B-net', 'econ-scen-C-net']) assert.equal(claims[id].grade, 'Speculative', id);
+  // scenario-specific rows
+  for (const id of ['econ-scen-A-implied_agency_growth', 'econ-scen-B-removable_fte', 'econ-scen-B-labour_saving', 'econ-scen-B-agency_saving', 'econ-scen-B-year1_net',
+    'econ-scen-B-one_off', 'econ-scen-C-hires_with', 'econ-scen-C-hires_without', 'econ-scen-C-avoided_hires', 'econ-scen-C-avoided_cost', 'econ-scen-C-versus_today']) {
+    assert.ok(figsOf(t).includes(id), id);
+  }
+  for (const r of rows) assert.ok(strip(r).length > 0);
+  const text = strip(section);
+  assert.ok(/There is no cash saving/.test(text), 'A: no cash saving');
+  assert.ok(/not a recommendation to remove anyone/.test(text), 'B: removable FTE is capacity, not a recommendation');
+  assert.ok(/Scenario C still costs more than today/.test(text), 'C: spend still rises against today');
+  assert.ok(claims['econ-scen-C-versus_today'].value > 0);
+});
+
+test('investment table: build, change, run lines, an escape-cost row and a Speculative severance row', () => {
+  const t = tableByCaption('What the programme costs to build and run');
+  const rows = bodyRows(t);
+  assert.equal(rows.length, 9);
+  const ids = rows.flatMap(figsOf);
+  for (const k of ['build', 'change', 'severance_B', 'platform_team', 'platform_tooling', 'autonomy_overhead', 'inference', 'variant_ai', 'escape']) assert.ok(ids.includes(`econ-inv-${k}`), k);
+  const sev = rows.find((r) => r.includes('econ-inv-severance_B'));
+  const esc = rows.find((r) => r.includes('econ-inv-escape'));
+  assert.match(sev, /class="chip c-s"[^>]*>Speculative</);
+  assert.match(esc, /class="chip c-s"[^>]*>Speculative</);
+  assert.match(strip(section), /Inference is small; the people who run the platform dominate the run cost/);
+  assert.ok(claims['econ-inv-inference'].value < claims['econ-inv-platform_team'].value / 10);
+});
+
+test('reconciliation: the six destinations plus a check row, and baseline slack shown on its own', () => {
+  const t = tableByCaption('Released hours, reconciled');
+  const rows = bodyRows(t);
+  const labels = rows.map((r) => strip(r.match(/<th scope="row">([\s\S]*?)<\/th>/)[1]));
+  const want = ['Hours of existing work eliminated', 'Redeployed into additional work', 'Avoided future hires', 'Reducible external spend', 'Removable headcount', 'Capacity already unused at baseline', 'Check:'];
+  for (const w of want) assert.ok(labels.some((l) => l.startsWith(w)), w);
+  const slack = rows.find((r) => r.includes('econ-recon-slack0'));
+  assert.ok(/not a programme gain/.test(strip(slack)));
+  assert.equal((slack.match(/colspan="3"/g) || []).length, 1, 'baseline slack is one separate figure, not split across scenarios');
+  const check = rows.find((r) => strip(r).startsWith('Check:'));
+  assert.deepEqual(figsOf(check), ['econ-recon-A-gap', 'econ-recon-B-gap', 'econ-recon-C-gap']);
+  for (const k of ['A', 'B', 'C']) assert.ok(Math.abs(claims[`econ-recon-${k}-gap`].value) < 1e-9, `scenario ${k} reconciles`);
+  assert.ok(figsOf(t).includes('econ-scen-C-avoided_hires'));
+  assert.ok(figsOf(t).includes('econ-recon-released_hours'));
+});
+
+test('reviewer bridge keeps baseline slack separate and links Appendix C and back', () => {
+  const t = tableByCaption('Reviewer capacity, reconciled');
+  const rows = bodyRows(t);
+  const ids = rows.flatMap(figsOf);
+  assert.deepEqual(ids, ['econ-bridge-slack_baseline', 'econ-bridge-programme_added_load', 'econ-bridge-work_avoided', 'econ-bridge-avoided_hires', 'econ-bridge-unused', 'econ-bridge-removable_same_output', 'econ-bridge-max_multiple_at_target']);
+  assert.ok(/Spare reviewer capacity before the programme, not a programme gain/.test(strip(rows[0])));
+  assert.ok(section.includes('<a href="#s07">Appendix C</a>'));
+  const s07 = elementById(html, 's07');
+  assert.ok(s07.includes('href="#reconciliation"'), 'Appendix C points back to the reconciliation');
+  assert.ok(html.includes('id="reconciliation"'));
+});
+
+test('scale versus programme: slice scope labelled, every effect an econ claim', () => {
+  const start = section.indexOf('<h3 id="scale-programme">');
+  const block = section.slice(start, section.indexOf('<h3 id="sensitivity">'));
+  assert.ok(/Scope: the production slice/.test(strip(block)));
+  const ids = figsOf(block);
+  assert.deepEqual(ids, ['econ-effects-total_cost-scale_effect', 'econ-effects-total_cost-programme_effect', 'econ-effects-total_cost-scale_share', 'econ-effects-cost_per_asset-scale_effect', 'econ-effects-cost_per_asset-programme_effect', 'econ-effects-cost_per_asset-scale_share']);
+});
+
+test('sensitivity table: four inputs, engine cells, nulls written as Not applicable; largest multiples for ten workflows', () => {
+  const t = tableByCaption('Sensitivity of the result');
+  const text = strip(t);
+  for (const input of ['Adoption', 'Escape rate', 'Inference price', 'Review overhead']) assert.ok(text.includes(input), input);
+  assert.equal(bodyRows(t).length, 8);
+  for (const id of figsOf(t)) assert.match(id, /^econ-sens-(adoption|escape|inference|review_overhead)-(low|high)-(org_A_after|net_B)$/);
+  assert.equal(claims['econ-sens-adoption-high-org_A_after'], undefined);
+  assert.match(text, /Not applicable/);
+  const m = tableByCaption('Largest multiple each team can carry');
+  const ids = bodyRows(m).flatMap(figsOf);
+  assert.deepEqual(ids, Array.from({ length: 10 }, (_, i) => `econ-max-W${i + 1}`));
+  assert.ok(/Traffic, not labour/.test(strip(m)));
+});
+
+test('every numeral in #economics outside the calculator sits inside a data-fig span', () => {
+  const prose = strip(section
+    .replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' ')
+    .replace(/<span class="sec-num">[^<]*<\/span>/g, ' ')
+    .replace(/<a class="chip[^"]*"[^>]*>[^<]*<\/a>/g, ' ')
+    .replace(/<a href="#s07">Appendix C<\/a>/g, ' '))
+    .replace(/\bT[0-3]\b/g, ' ').replace(/\bW(?:10|[1-9])\b/g, ' ');
+  const left = prose.replace(/\b2x\b/g, ' ');
+  assert.ok(!/\d/.test(left), `digit outside a figure: ${left.match(/.{25}\d.{25}/)?.[0]}`);
+});
+
+test('no vendor name and no hand-typed money in #economics', () => {
+  const text = strip(section);
+  assert.ok(!/gradial|airops|profound|intercom/i.test(text));
+  assert.ok(!/\$\s?\d/.test(strip(section.replace(/<span data-fig="[^"]+">[^<]*<\/span>/g, ' '))));
+});

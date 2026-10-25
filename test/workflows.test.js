@@ -364,6 +364,21 @@ test('INV-1: slack0 + E = redeployed + removed + unused_remaining, scenarios A a
   assert.equal(Object.keys(r.scenarios.A.bridge).length, 10);
 });
 
+test('reconciliation summary (07-06): available capacity equals where it went, baseline slack separate, hires tie to scenario C', () => {
+  const r = run();
+  for (const k of ['A', 'B', 'C']) {
+    const t = r.reconciliation[k];
+    near(t.slack0 + t.released + t.hires, t.redeployed + t.removed + t.unused, 1e-9);
+    near(t.gap, 0, 1e-9);
+    near(t.slack0, r.bridge.slack_baseline, 1e-9);
+    near(t.released, r.scenarios.B.labour.removable_fte, 1e-9);
+  }
+  near(r.reconciliation.C.hires, r.scenarios.C.labour.hires_with, 1e-9);
+  near(r.reconciliation.C.unused, r.scenarios.C.labour.unused, 1e-9);
+  near(r.reconciliation.B.removed, r.scenarios.B.labour.removable_fte, 1e-9);
+  assert.equal(r.reconciliation.A.removed, 0);
+});
+
 test('INV-1 general form for C: F + hires_with = requirement + unused, per pool', () => {
   const C = run().scenarios.C;
   for (const p of Object.values(C.labour.per_pool)) near(p.identity_gap, 0, 1e-9);

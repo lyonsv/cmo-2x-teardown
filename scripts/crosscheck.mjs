@@ -12,7 +12,6 @@ import { formatValue } from '../site/js/format.js';
 // Computed from data.js: any kind 'engine' assumption without a page link is justified.
 const ENGINE_UNREFERENCED = 'An economics-engine input shown only in the register until the economics section presents it.';
 export const JUSTIFIED_UNREFERENCED = {
-  'asm-sampling-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-escalation-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-reviewer-rate': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
   'asm-marketer-rate': 'Derived hourly price shown only in the register.',

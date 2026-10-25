@@ -77,7 +77,7 @@ async function focusChecks(send, evalJs) {
     }
     if (!e.getClientRects().length) fixed = false;
     return { tag: e.tagName.toLowerCase(), id: e.id || '', href: e.getAttribute('href') || '', os: cs.outlineStyle, ow: cs.outlineWidth, bs: cs.boxShadow, covered: !!fixed, coverTag: top ? top.tagName + '.' + top.className : '', scroll: !!e.closest('.table-scroll,.fig-scroll'), tabindex: e.tabIndex }; })()`;
-  for (let i = 0; i < 600; i++) {
+  for (let i = 0; i < 1200; i++) {
     await key('rawKeyDown'); await key('keyUp');
     const d = await evalJs(describe);
     if (!d) break;
@@ -100,7 +100,7 @@ async function orderCheck(send, evalJs) {
   const all = '[...document.querySelectorAll("*")]';
   const idxs = [];
   const key = (type) => send('Input.dispatchKeyEvent', { type, key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
-  for (let i = 0; i < 600; i++) {
+  for (let i = 0; i < 1200; i++) {
     await key('rawKeyDown'); await key('keyUp');
     // IN-02: stop on wrap-around to the first stop, as focusChecks does.
     const idx = await evalJs(`(() => { const e = document.activeElement; if (!e || e === document.body || window.__orderFirst === e) return -1;
