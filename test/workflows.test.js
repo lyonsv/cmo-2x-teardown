@@ -65,7 +65,7 @@ export const makeEc = () => structuredClone({
     build_one_off: 1500000, platform_team: { fte: 6, cost_per_fte: 200000 },
     autonomy_overhead_hours: { per_workflow_month: 24, calibration_month: 16 },
     severance_months: 6, min_removable_fte: 1.0, counterfactual_funded_share: 1.0,
-    agency_scales_with_output: false,
+    agency_scales_with_output: true,
     chain: { p: 0.95, steps: 8, steps_between_gates: 8, retries: 0 },
     portfolio: ['W2', 'W4', 'W6', 'W9'],
   },
@@ -266,14 +266,15 @@ test('economics does not mutate its input', () => {
 
 const M_A = { W1: 1.6667, W2: 2.0, W3: 1.5385, W4: 2.2222, W6: 2.5, W7: 1.6667, W8: 1.0, W9: 2.0, W10: 1.6667 };
 
-test('scenario A: output bounded by the binding role, no cash saving, agency held', () => {
+test('scenario A: output bounded by the binding role, no labour cash change, agency grows with the output', () => {
   const A = run().scenarios.A;
   for (const [id, v] of Object.entries(M_A)) near(A.output.per_workflow[id], v, 1e-4);
   near(A.output.slice, 2.2222, 1e-4);
   assert.equal(A.labour.cash_change, 0);
   near(A.run_cost.total, 2133647.05, 1);
-  near(A.net, -2133647.05, 1);
   near(A.agency.implied_growth, 5347435.9, 1);
+  near(A.net, -2133647.05 - 5347435.9, 1);
+  near(A.agency.scenario, A.agency.today + A.agency.implied_growth, 1e-6);
   const binds = A.agency.budget_binds;
   for (const id of ['W2', 'W3', 'W4', 'W6', 'W9']) assert.equal(binds[id], true, id);
   for (const id of ['W1', 'W7', 'W8', 'W10']) assert.equal(binds[id], false, id);
@@ -290,12 +291,41 @@ test('INV-3: scenario A has zero cash labour change at any adoption', () => {
   }
 });
 
-test('scenario A with agency_scales_with_output charges the implied growth', () => {
-  const base = run().scenarios.A;
+test('scenario A with agency held at today\'s budget caps output where the budget binds (CR-01)', () => {
+  const grows = run();
   const ec = makeEc();
-  ec.engine.agency_scales_with_output = true;
-  const A = run(ec).scenarios.A;
-  near(A.net, base.net - base.agency.implied_growth, 1e-6);
+  ec.engine.agency_scales_with_output = false;
+  const held = run(ec);
+  const A = held.scenarios.A;
+  // No growth is implied, so the net is the run cost alone.
+  assert.equal(A.agency.implied_growth, 0);
+  assert.ok(A.net > grows.scenarios.A.net);
+  // W2 and W3 have no agency reduction, so their output cannot grow on a flat budget;
+  // W4, W6 and W9 are capped at 1 / (1 - 0.4).
+  near(A.output.per_workflow.W2, 1, 1e-9);
+  near(A.output.per_workflow.W3, 1, 1e-9);
+  for (const id of ['W4', 'W6', 'W9']) near(A.output.per_workflow[id], 1 / 0.6, 1e-9);
+  for (const id of ['W1', 'W7', 'W8', 'W10']) near(A.output.per_workflow[id], M_A[id], 1e-4);
+  // The largest multiple each team can carry is a labour limit and does not move.
+  for (const [id, v] of Object.entries(M_A)) near(held.max_multipliers.per_pool[id].multiple, v, 1e-4);
+});
+
+test('CR-01: toggling agency_scales_with_output changes the headline metric when the budget binds', () => {
+  const grows = run().metric.A;
+  const ec = makeEc();
+  ec.engine.agency_scales_with_output = false;
+  const held = run(ec).metric.A;
+  assert.ok(Math.abs(grows.org_after_platform - held.org_after_platform) > 0.05, `${grows.org_after_platform} vs ${held.org_after_platform}`);
+  near(grows.org_after_platform, 1.4164, 1e-4);
+  near(held.org_after_platform, 1.2505, 1e-4);
+  near(grows.agency_growth_fte_equiv, 5347435.9 / 200000, 1e-5);
+  assert.equal(held.agency_growth_fte_equiv, 0);
+  // Without any binding budget (every workflow has headroom), the switch changes nothing.
+  const free = makeEc();
+  for (const w of free.workflows) w.agency = 0;
+  const f1 = run(free).metric.A.org_after_platform;
+  free.engine.agency_scales_with_output = false;
+  near(run(free).metric.A.org_after_platform, f1, 1e-12);
 });
 
 test('scenario B goldens: removable FTE, savings, run lines, one-off, payback', () => {
@@ -446,10 +476,12 @@ test('primary metric at defaults: org-wide, portfolio, B, C, pooled hours', () =
   const m = run().metric;
   near(m.I0, 172800, 1e-6);
   near(m.D0, 200, 1e-9);
-  near(m.A.org_before_platform, 1.648, 1e-3);
-  near(m.A.org_after_platform, 1.6, 1e-3);
-  near(m.A.portfolio_before_platform, 2.182, 1e-3);
-  near(m.A.portfolio_after_platform, 1.989, 1e-3);
+  // CR-01: the agency growth the extra output needs (26.7 FTE-equivalents org-wide)
+  // is in the denominator.
+  near(m.A.org_before_platform, 1.4539, 1e-3);
+  near(m.A.org_after_platform, 1.4164, 1e-3);
+  near(m.A.portfolio_before_platform, 1.8636, 1e-3);
+  near(m.A.portfolio_after_platform, 1.7208, 1e-3);
   near(m.B.org, 1.342, 1e-3);
   near(m.B.D, 148.98, 0.01);
   near(m.C.org, 1.323, 1e-3);
@@ -468,13 +500,13 @@ test('W5 is not in the numerator: reviewer headcount leaves I0 unchanged', () =>
 });
 
 const SENS = {
-  base: { org: 1.6, A: -2133647, B: 7451190, C: 15523156, rem: 39.02 },
-  adoption: { low: { org: 1.187, A: -1996000, B: 2549000, C: 7228000, rem: 18.11 } },
-  escape: { low: { A: -2058000, B: 7485000, C: 15591000 }, high: { A: -2437000, B: 7315000, C: 15250000 } },
-  inference: { low: { A: -2125000, B: 7456000, C: 15532000 }, high: { A: -2203000, B: 7413000, C: 15449000 } },
+  base: { org: 1.416, A: -7481083, B: 7451190, C: 15523156, rem: 39.02 },
+  adoption: { low: { org: 1.134, A: -3923000, B: 2549000, C: 7228000, rem: 18.11 } },
+  escape: { low: { A: -7405000, B: 7485000, C: 15591000 }, high: { A: -7784000, B: 7315000, C: 15250000 } },
+  inference: { low: { A: -7472000, B: 7456000, C: 15532000 }, high: { A: -7550000, B: 7413000, C: 15449000 } },
   review_overhead: {
-    low: { org: 1.761, A: -2047000, B: 8391000, C: 16633000, rem: 44.51 },
-    high: { org: 1.372, A: -2322000, B: 5392000, C: 12781000, rem: 26.84 },
+    low: { org: 1.462, A: -10482000, B: 8391000, C: 16633000, rem: 44.51 },
+    high: { org: 1.306, A: -4416000, B: 5392000, C: 12781000, rem: 26.84 },
   },
 };
 

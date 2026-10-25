@@ -26,9 +26,10 @@ test('economics(engineContext()) reproduces the 06-02 goldens', () => {
   assert.equal(e.ok, true);
   near(e.scenarios.B.net, 7451190, 2);
   near(e.scenarios.C.net, 15523156, 2);
-  near(e.scenarios.A.net, -2133647, 2);
-  near(e.metric.A.org_after_platform, 1.600, 1e-3);
-  near(e.metric.A.portfolio_after_platform, 1.989, 1e-3);
+  // CR-01: scenario A charges the agency growth the output needs ($5,347,436).
+  near(e.scenarios.A.net, -7481083, 2);
+  near(e.metric.A.org_after_platform, 1.416, 1e-3);
+  near(e.metric.A.portfolio_after_platform, 1.721, 1e-3);
   near(e.funding.coverage, 3.725, 1e-3);
 });
 
@@ -129,8 +130,8 @@ test('econ claims: at least 250, unique, every ref is a register assumption, val
 
 test('econ claim goldens', () => {
   near(claims['econ-scen-B-net'].value, 7451190, 2);
-  assert.equal(claims['econ-metric-org_after_platform'].display, '1.60x');
-  assert.equal(claims['econ-metric-portfolio_after_platform'].display, '1.99x');
+  assert.equal(claims['econ-metric-org_after_platform'].display, '1.42x');
+  assert.equal(claims['econ-metric-portfolio_after_platform'].display, '1.72x');
   assert.equal(claims['econ-bridge-slack_baseline'].display, '4.21');
   assert.equal(claims['econ-funding-coverage'].display, '3.7x');
   assert.equal(claims['econ-sens-adoption-high-net_B'], undefined, 'adoption has no high case');

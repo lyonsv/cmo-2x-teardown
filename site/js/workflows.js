@@ -259,11 +259,20 @@ function prepare(ec, levers) {
   const rows = ec.workflows.map((w) => {
     const e = effective(w, engine, a, k.review_overhead);
     const cap = 1 / (1 - e.r_eff);
-    let m_A = cap;
+    let m_max = cap;
     let binding = 'pool';
-    if (w.constraint === 'traffic' && engine.traffic_growth < m_A) { m_A = engine.traffic_growth; binding = 'traffic'; }
-    if (w.constraint === 'review_gate' && revMax < m_A) { m_A = revMax; binding = 'review_gate'; }
-    return { w, e, cap, m_A, binding, H0: w.units * w.h };
+    if (w.constraint === 'traffic' && engine.traffic_growth < m_max) { m_max = engine.traffic_growth; binding = 'traffic'; }
+    if (w.constraint === 'review_gate' && revMax < m_max) { m_max = revMax; binding = 'review_gate'; }
+    // Scenario A output. Each unit needs agency input as well as in-house hours. When
+    // agency spend grows with output (agency_scales_with_output, the default), the
+    // output is what the people can carry and the extra agency spend is charged in
+    // the net and counted in the metric's denominator. When it is held at today's
+    // budget, output is capped at what that budget can support, 1 / (1 - s_eff).
+    const headroom = e.s_eff < 1 ? 1 / (1 - e.s_eff) : Infinity;
+    let m_A = m_max;
+    let bindingA = binding;
+    if (!engine.agency_scales_with_output && w.agency > 0 && headroom < m_A) { m_A = Math.max(1, headroom); bindingA = 'agency_budget'; }
+    return { w, e, cap, m_max, m_A, binding, bindingA, headroom, H0: w.units * w.h };
   });
   const w4 = rows.find((r) => r.w.id === 'W4');
   const sliceA = w4 ? Math.min(w4.m_A, revMax) : 1;
@@ -283,7 +292,7 @@ function buildWorkflows(x) {
       current: currentState(r.w, engine, fixed),
       agent: workflowState(r.w, engine, fixed, 1, a, k),
       agent_at_A: workflowState(r.w, engine, fixed, r.m_A, a, k),
-      cap: r.cap, m_A: r.m_A, binding: r.binding, level: r.w.level,
+      cap: r.cap, m_A: r.m_A, m_max: r.m_max, binding: r.binding, binding_A: r.bindingA, level: r.w.level,
       r_eff: r.e.r_eff, overhead_eff: r.e.ov_eff, s_eff: r.e.s_eff,
     };
   }
@@ -337,7 +346,7 @@ function buildMaxMultipliers(x) {
   const { rows, c1, revMax } = x;
   const cb = c1.capacity_bridge;
   const per_pool = {};
-  for (const r of rows) per_pool[r.w.id] = { multiple: r.m_A, binding: r.binding };
+  for (const r of rows) per_pool[r.w.id] = { multiple: r.m_max, binding: r.binding };
   per_pool.W5 = { multiple: revMax, binding: 'pool' };
   const entries = Object.entries(per_pool);
   const lowest = (list) => {
@@ -480,24 +489,29 @@ function scenarioA(x) {
   const agency_budget_binds = {};
   let implied = 0;
   const bridge = {};
+  const implied_by_workflow = {};
   for (const r of rows) {
     per_workflow[r.w.id] = r.m_A;
-    const headroom = 1 / (1 - r.e.s_eff);
-    agency_budget_binds[r.w.id] = r.m_A > headroom + 1e-9;
-    implied += Math.max(0, r.w.agency * (r.m_A * (1 - r.e.s_eff) - 1));
+    // The budget binds where the output people can carry needs more agency input than
+    // today's budget buys; reported on the labour-limited output under either setting.
+    agency_budget_binds[r.w.id] = r.m_max > r.headroom + 1e-9 && r.w.agency > 0;
+    const g = Math.max(0, r.w.agency * (r.m_A * (1 - r.e.s_eff) - 1));
+    implied_by_workflow[r.w.id] = g;
+    implied += g;
     bridge[r.w.id] = bridgePool(r.w.fte, r.w.fte, r.w.fte * (1 - r.e.r_eff), r.m_A, 0);
   }
   bridge.W5 = bridgePool(F, req0, reqP1, x.sliceA, 0);
   per_workflow.W5 = x.sliceA;
   const run_cost = runCost(x, (r) => r.m_A, x.sliceA);
   const today = totalAgency(rows);
-  const net = -run_cost.total - (engine.agency_scales_with_output ? implied : 0);
+  // With agency held at today's budget the output is capped, so no growth is implied.
+  const net = -run_cost.total - implied;
   const change = fixed.change_cost_per_fte * x.ec.inputs.marketing_fte;
   return {
     id: 'A', label: SCENARIO_LABELS.A,
     output: { per_workflow, slice: x.sliceA },
     labour: { cash_change: 0, removable_fte: 0, hires_with: 0, hires_without: 0, avoided_hires: 0, unused: null },
-    agency: { today, scenario: today, saving: 0, implied_growth: implied, scales_with_output: !!engine.agency_scales_with_output, budget_binds: agency_budget_binds },
+    agency: { today, scenario: today + implied, saving: 0, implied_growth: implied, implied_by_workflow, scales_with_output: !!engine.agency_scales_with_output, budget_binds: agency_budget_binds },
     run_cost, one_off: { build: engine.build_one_off, change, total: engine.build_one_off + change },
     net, payback_simple: null, payback_ramped: null, bridge,
   };
@@ -663,7 +677,7 @@ function buildLedger(x, sc, funding) {
 
 // ---------------------------------------------------------------- primary metric
 
-const METRIC_DEFINITION = 'useful work = completed units x frozen baseline in-house standard hours; W5 review excluded as a gate; denominator = in-house FTE + agency FTE-equivalents (+ platform team in agent-enabled states)';
+const METRIC_DEFINITION = 'useful work = completed units x frozen baseline in-house standard hours; W5 review excluded as a gate; denominator = in-house FTE + agency FTE-equivalents, including the agency growth the extra output needs (+ platform team in agent-enabled states)';
 
 function buildMetric(x, sc, rollup, maxMult) {
   const { rows, engine, ec, a } = x;
@@ -679,6 +693,12 @@ function buildMetric(x, sc, rollup, maxMult) {
   const I0p = portfolio.reduce((t, r) => t + r.H0, 0);
   const IAp = portfolio.reduce((t, r) => t + r.H0 * r.m_A, 0);
   const Dp = portfolio.reduce((t, r) => t + r.w.fte + r.w.agency / eq, 0);
+  // Code review CR-01: the agency input the extra output needs is counted in the
+  // denominator, so units that need agency work cannot be counted while that work is
+  // held flat. Zero when agency spend is held at today's budget (output is capped).
+  const growthBy = sc.A.agency.implied_by_workflow;
+  const gA = rows.reduce((t, r) => t + growthBy[r.w.id], 0) / eq;
+  const gAp = portfolio.reduce((t, r) => t + growthBy[r.w.id], 0) / eq;
   const ratio = (n, d) => (d > 0 ? n / d : null);
   const B = sc.B;
   const D_B = D0 - B.labour.removable_fte - B.agency.saving / eq + pf;
@@ -690,10 +710,12 @@ function buildMetric(x, sc, rollup, maxMult) {
   return {
     I0, D0,
     A: {
-      org_before_platform: ratio(IA, I0),
-      org_after_platform: ratio(IA / (D0 + pf), I0 / D0),
-      portfolio_before_platform: ratio(IAp, I0p),
-      portfolio_after_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + pf)) / (I0p / Dp) : null,
+      org_before_platform: ratio(IA / (D0 + gA), I0 / D0),
+      org_after_platform: ratio(IA / (D0 + gA + pf), I0 / D0),
+      portfolio_before_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + gAp)) / (I0p / Dp) : null,
+      portfolio_after_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + gAp + pf)) / (I0p / Dp) : null,
+      agency_growth_fte_equiv: gA,
+      agency_growth_fte_equiv_portfolio: gAp,
       per_workflow: Object.fromEntries(rows.map((r) => [r.w.id, r.m_A])),
     },
     B: { org: ratio(D0, D_B), D: D_B },
