@@ -572,7 +572,7 @@ test('Plan 03-02 insight source', () => {
   assert.ok(s);
   for (const f of ['title', 'publisher', 'published', 'accessed', 'url', 'bias', 'read_via']) assert.ok(s[f] && s[f].length > 0, f);
   assert.equal(s.url, 'https://developers.google.com/meridian/geox');
-  assert.equal(s.grade, 'Modelled'); assert.equal(s.flag, null); assert.equal(s.accessed, '2026-10-24');
+  assert.equal(s.grade, 'Modelled'); assert.equal(s.flag, 'vendor-claimed'); assert.equal(s.accessed, '2026-10-24');
   assert.ok(/calibration guide/.test(s.read_via) && /not opened/.test(s.read_via));
 });
 

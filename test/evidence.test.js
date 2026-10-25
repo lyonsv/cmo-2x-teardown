@@ -33,10 +33,27 @@ test('every source, assumption and claim has a valid (evidence, grade) pair', ()
   }
 });
 
-test('observed sources that are not independent carry a flag', () => {
+// Sell-side studies of other organisations' sites: not claims about the publisher's
+// own results, so 'vendor-claimed' would mislabel them and the body would have to call
+// them vendor claims. The register's publisher column names the seller instead.
+const UNFLAGGED_OBSERVED = {
+  'haynes-2026': 'SEO consultancy analysing 100 sites; publisher column says it sells SEO services',
+  'seoworks-2026': 'agency benchmark of 95 sites; publisher column says it sells GEO services',
+};
+
+test('observed sources that are not independent carry a flag, or a reasoned exception', () => {
   for (const [k, s] of Object.entries(sources)) {
-    if (s.evidence === 'observed' && !INDEPENDENT.has(s.publisherType)) assert.ok(s.flag, `${k}: observed needs a flag`);
+    if (s.evidence === 'observed' && !INDEPENDENT.has(s.publisherType) && !UNFLAGGED_OBSERVED[k]) assert.ok(s.flag, `${k}: observed needs a flag`);
   }
+  for (const k of Object.keys(UNFLAGGED_OBSERVED)) assert.equal(sources[k].flag, null, `${k}: stale exception`);
+});
+
+// Code review WR-02: a benchmark must be independent of what it describes.
+test('benchmark sources are never vendor-published', () => {
+  for (const [k, s] of Object.entries(sources)) {
+    if (s.evidence === 'benchmark') assert.notEqual(s.publisherType, 'vendor', `${k}: vendor source classed benchmark`);
+  }
+  assert.equal(sources['haynes-2026'].evidence, 'observed');
 });
 
 test('no assumption is observed (nothing is observed for the subject organisation)', () => {
@@ -47,8 +64,8 @@ test('source counts', () => {
   const rows = Object.values(sources);
   assert.equal(rows.length, 45);
   assert.equal(count(rows, 'benchmark', 'Benchmark'), 12);
-  assert.equal(count(rows, 'benchmark', 'Modelled'), 7);
-  assert.equal(count(rows, 'observed', 'Modelled'), 26);
+  assert.equal(count(rows, 'benchmark', 'Modelled'), 4);
+  assert.equal(count(rows, 'observed', 'Modelled'), 29);
 });
 
 test('assumption counts and the hypothesis list', () => {

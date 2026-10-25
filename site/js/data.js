@@ -143,7 +143,7 @@ export const sources = {
     bias: 'Vendor documentation of its own open-source tool; describes a method, reports no outcomes',
     read_via: 'Search summary and the page banner read 2026-10-24; the calibration guide was not opened',
     grade: 'Modelled',
-    flag: null,
+    flag: 'vendor-claimed',
   },
   'haynes-2026': {
     title: 'GEO is a distraction',
@@ -574,9 +574,13 @@ export const sources = {
 };
 
 // Source evidence: a flag means a named organisation reports its own results (observed);
-// press incident reports are observed events; everything else is a published reference.
+// press incident reports are observed events. A source is a benchmark only if it is
+// independent of what it describes (code review WR-02): anything a vendor publishes,
+// and any opinion post, is observed, and its publisher column says who reported it.
+const OPINION_SOURCES = new Set(['haynes-2026']); // "GEO is a distraction": an argued post with figures
 for (const [key, src] of Object.entries(sources)) {
-  src.evidence = src.flag || key.startsWith('incident-') ? 'observed' : 'benchmark';
+  const independent = src.publisherType !== 'vendor' && !OPINION_SOURCES.has(key);
+  src.evidence = src.flag || key.startsWith('incident-') || !independent ? 'observed' : 'benchmark';
 }
 
 export { formatValue };
