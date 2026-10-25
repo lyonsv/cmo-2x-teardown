@@ -121,6 +121,11 @@ export function run({ html, data } = {}) {
     if (!d.PUBLISHER_TYPES.includes(s.publisherType) || tds[2] !== s.publisherType) failures.push(`${id} publisher type: data.js "${s.publisherType}", register "${tds[2] ?? 'row missing'}"`);
   }
 
+  // 6b. evidence cells
+  const evOf = (id) => { const b = rows.get(id); const m = b && b.match(/<td><span class="chip c-[mbs]">[A-Za-z]+<\/span><\/td>\s*<td><span class="ev">([^<]*)<\/span><\/td>/); return m ? m[1] : 'row missing'; };
+  for (const [k, s] of Object.entries(d.sources)) if (evOf(`src-${k}`) !== s.evidence) failures.push(`src-${k} evidence: data.js "${s.evidence}", register "${evOf(`src-${k}`)}"`);
+  for (const [id, a] of Object.entries(d.assumptions)) if (evOf(id) !== a.evidence) failures.push(`${id} evidence: data.js "${a.evidence}", register "${evOf(id)}"`);
+
   // 7. McKinsey note iff no other mention
   const hasNote = html.includes(MCK_NOTE);
   const elsewhere = /mckinsey/i.test(html.replace(MCK_NOTE, '')) || /mckinsey/i.test(d.dataText);

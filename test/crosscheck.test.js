@@ -64,6 +64,13 @@ test('mutation: a blank publisher type cell is named', () => {
   assert.ok(failures.some((f) => f.includes('src-gartner-2025-cmo-spend publisher type')), failures.join('\n'));
 });
 
+test('mutation: a drifted evidence cell is named', () => {
+  const mutated = html.replace(/(<tr id="asm-markets">[\s\S]*?<span class="ev">)[a-z]+(<\/span>)/, '$1hypothesis$2');
+  assert.notEqual(mutated, html);
+  const { failures } = run({ html: mutated });
+  assert.ok(failures.some((f) => f.includes('asm-markets evidence')), failures.join('\n'));
+});
+
 test('mutation: a McKinsey mention without the note flips the McKinsey check', () => {
   const mutated = html.replace('<p class="nd">McKinsey: no figure is used on this page.</p>', '');
   const { failures } = run({ html: mutated });

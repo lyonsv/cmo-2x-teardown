@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { claims, assumptions, sources, PUBLISHER_TYPES } from '../site/js/data.js';
+import { claims, assumptions, sources, PUBLISHER_TYPES, EVIDENCE } from '../site/js/data.js';
 import { SENSITIVITY_STEP } from '../site/js/model.js';
 import { formatValue } from '../site/js/format.js';
 import { decode, strip, sectionHtml as sectionHtmlOf, elementById } from './helpers/html.js';
@@ -186,12 +186,15 @@ test('registers cover every source and assumption', () => {
 
 // Code review WR-06: register text is duplicated by hand from data.js, so every
 // field a reader relies on (who, when, where, why) is compared with data.js.
-test('source register header is the eight pinned columns', () => {
+test('source register header is the nine pinned columns', () => {
   const i = html.indexOf('<th scope="col">Publisher</th>');
   assert.ok(i > 0);
   const thead = html.slice(html.lastIndexOf('<thead>', i), html.indexOf('</thead>', i));
   const cols = [...thead.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]);
-  assert.deepEqual(cols, ['ID', 'Claim', 'Publisher', 'Publisher type', 'Date accessed', 'Grade', 'Flag', 'URL']);
+  assert.deepEqual(cols, ['ID', 'Claim', 'Publisher', 'Publisher type', 'Date accessed', 'Grade', 'Evidence', 'Flag', 'URL']);
+  const ai = html.indexOf('<th scope="col">Assumption</th>');
+  const athead = html.slice(html.lastIndexOf('<thead>', ai), html.indexOf('</thead>', ai));
+  assert.deepEqual([...athead.matchAll(/<th scope="col">([^<]*)<\/th>/g)].map((m) => m[1]), ['ID', 'Assumption', 'Value', 'Grade', 'Evidence', 'Basis']);
   assert.ok(html.includes("Publisher type says who published the source. It never changes a grade. Author marks this page author's own earlier work; secondary marks an unofficial republication of a primary text."));
 });
 
@@ -207,13 +210,14 @@ test('source register rows match data.js field by field', () => {
     assert.ok(!row.includes('<a class="chip'), `src-${k}: register chip must not link`);
     // WR-07: Grade and Flag cells come from data.js, not from a test-local table.
     const tds = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => m[1]);
-    // Columns: td0 Claim, td1 Publisher, td2 Publisher type, td3 Date accessed, td4 Grade, td5 Flag, td6 URL.
+    // Columns: td0 Claim, td1 Publisher, td2 Publisher type, td3 Date accessed, td4 Grade, td5 Evidence, td6 Flag, td7 URL.
     assert.equal(decode(tds[1]), src.publisher, `src-${k}: publisher cell`);
     assert.ok(PUBLISHER_TYPES.includes(src.publisherType), `src-${k}: publisherType not in the fixed list`);
     assert.equal(tds[2], src.publisherType, `src-${k}: publisher type cell`);
     assert.equal(tds[3], `<time datetime="${src.accessed}">${src.accessed}</time>`, `src-${k}: accessed cell`);
     assert.equal(tds[4], `<span class="chip ${CHIP_CLASS[src.grade]}">${src.grade}</span>`, `src-${k}: grade cell`);
-    assert.equal(tds[5], src.flag ?? 'none', `src-${k}: flag cell`);
+    assert.equal(tds[5], '<span class="ev">' + src.evidence + '</span>', `src-${k}: evidence cell`);
+    assert.equal(tds[6], src.flag ?? 'none', `src-${k}: flag cell`);
     if (src.event) assert.ok(tds[0].includes(`Event dated ${src.event}.`), `src-${k}: event date missing from the claim cell`);
   }
 });
@@ -226,6 +230,7 @@ test('assumption register rows match data.js label, display, grade and basis', (
     assert.ok(text.includes(e.basis), `${id}: basis drifted`);
     assert.ok(row.includes(`<span data-fig="${id}">`), `${id}: value is not a data-fig span`);
     assert.ok(row.includes(`<td><span class="chip ${CHIP_CLASS[e.grade]}">${e.grade}</span></td>`), `${id}: grade cell`);
+    assert.ok(row.includes('<td><span class="ev">' + e.evidence + '</span></td>'), `${id}: evidence cell`);
     const value = row.match(new RegExp(`<td><span data-fig="${id}">([^<]*)</span></td>`));
     assert.ok(value, `${id}: value cell must be exactly the data-fig span`);
     assert.equal(decode(value[1]), e.display, `${id}: value cell`);
@@ -237,8 +242,14 @@ test('lever evidence rows do not repeat one sentence in Value and Basis', () => 
   for (let n = 1; n <= 6; n++) {
     const id = `asm-lever-0${n}-evidence`;
     const cells = [...registerRow(id).matchAll(/<td>([\s\S]*?)<\/td>/g)].map((m) => strip(m[1]));
-    assert.notEqual(cells[1], cells[3], `${id}: Value equals Basis`);
+    assert.notEqual(cells[1], cells[4], `${id}: Value equals Basis`);
   }
+});
+
+test('every .ev span in the page is one of EVIDENCE', () => {
+  const spans = [...html.matchAll(/<span class="ev">([^<]*)<\/span>/g)].map((m) => m[1]);
+  assert.ok(spans.length >= 107);
+  for (const w of spans) assert.ok(EVIDENCE.includes(w), `unknown evidence label ${w}`);
 });
 
 test('static page guards', () => {
