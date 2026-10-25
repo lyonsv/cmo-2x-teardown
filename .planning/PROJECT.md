@@ -10,32 +10,11 @@ A CMO and their CFO finish the page convinced, through transparent and graded re
 
 ## Current State
 
-v1.0 shipped 2026-10-24 and is live at https://lyonsv.github.io/cmo-2x-teardown/. All five phases (1, 2, 3, 3.1, 4) are complete, verified and code-reviewed; 54 active v1 requirements satisfied (QA-01/QA-02 on automated evidence only; QA-03 amended by author decision). Archive: `.planning/milestones/v1.0-ROADMAP.md`, `v1.0-REQUIREMENTS.md`, `v1.0-MILESTONE-AUDIT.md`.
+v2.0 Autonomous Marketing Operations shipped 2026-10-25 and is live at https://lyonsv.github.io/cmo-2x-teardown/. The page now argues for progressively delegating whole marketing workflows to agents, with a tested portfolio engine (W1–W10, scenarios A/B/C, reconciliation, sensitivity), evidence classes on every figure, the content supply chain as the first workflow, and an honest headline (1.42x organisation-wide, 1.72x on the delegated portfolio at defaults, Speculative). Archive: `.planning/milestones/v2.0-ROADMAP.md`, `v2.0-REQUIREMENTS.md`, `v2.0-BRIEF.md`, `v2.0-research/`, `v2.0-phases/` (incl. `07-COMPLETION.md`).
 
-## Current Milestone: v2.0 Autonomous Marketing Operations
+## Next Milestone Goals
 
-**Goal:** Rework the live report from "AI content production" into a case for progressively delegating whole marketing workflows to agents, with a concrete account of what must be built, what it is worth in human hours, FTEs and cost, and how a 12-week pilot proves it. Source brief (verbatim): `.planning/v2.0-BRIEF.md`.
-
-**Central argument:** software built → autonomy enabled → human work reduced → marketing capacity increased → business outcomes improved. Every section supports that chain and says where the evidence stops and hypothesis begins.
-
-**Target features:**
-- Research Intercom's 2x (what was measured, what changed, what was shown vs uncertain) and extract transferable operating principles, including why marketing productivity is harder to measure than merged PRs
-- New thesis: an autonomy ladder (assistance → agentic execution → higher autonomy → outcome-directed autonomy), justified per workflow by reliability, value and risk
-- Explicit 2x definition separating capacity, efficiency and effectiveness, with one primary metric plus outcome and quality guardrails
-- Workflow inventory across the CMO's recurring work, prioritised by value, feasibility, repeatability, risk and measurable autonomy
-- An early, prominent "What needs to be built" section: plain-English system description, capability-by-capability architecture (build/own vs integrate vs existing platforms), smallest useful end-to-end slice
-- The content supply chain as the first workflow (objective → plan → brief → create → adapt/localise → review → publish → measure → optimise), with a substantial responsive SVG diagram of human vs agent responsibilities, shared platform, approval/exception boundaries and the feedback loop
-- Labour and financial model per workflow (hours, review/exception hours, FTE, labour, agency, AI/software, cost per output, cycle time, autonomous share), three scenarios (same team more output; same output lower cost; growing demand limited hiring), no double counting, sensitivity, review-capacity reconciliation
-- Outcome causality chain and a three-tier scorecard (business outcomes, operating economics, autonomy and quality)
-- Expansion beyond content on shared infrastructure, reusable vs domain-specific
-- Delivery roadmap: 12-week pilot, next two quarters, 12-month organisation-wide ambition, with org enablement
-- Restructured, executive-question-led page with appendices; first screen states thesis, system and ambition
-
-**Key constraints carried over:** every number graded and its assumptions visible (grades now also map to the brief's four evidence classes: observed, sourced benchmark, illustrative assumption, hypothesis needing customer validation); static GitHub Pages; vendor neutrality outside the comparison section; existing tests, crosscheck, smoke, a11y and print gates stay green.
-
-## Next Milestone Goals (superseded)
-
-Superseded by v2.0 above. Earlier candidates: Candidates from the v1.0 audit debt: run the browser checks (smoke, a11y, print) in CI; dated, labelled cite links; real-device and assistive-technology checks if the author re-opens them; trim the s14 Regulation block. Start with `/gsd-new-milestone`.
+Not yet defined. Candidates from v2.0 debt: human confirmation of six logic-changing review fixes (CR-01, CR-02, WR-03, WR-04, WR-09, WR-10); re-verify three vendor sources that failed automated re-check; renumber figures into page order; confirm the evidence key prints; shorten the ~200-page print; browser gates in CI; replace illustrative/hypothesis values with observed pilot data. Start with `/gsd-new-milestone`.
 
 ## Requirements
 
@@ -132,4 +111,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-25 at start of milestone v2.0 Autonomous Marketing Operations*
+*Last updated: 2026-10-25 after v2.0 milestone (live at https://lyonsv.github.io/cmo-2x-teardown/)*
