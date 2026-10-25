@@ -482,12 +482,19 @@ export function checkLedger(rows) {
   return { ok: errors.length === 0, errors };
 }
 
-// Sums one scope only; rows from two scopes never add up to one total.
-export function sumLedger(rows, scope) {
+// Sums one scope and one scenario only: rows from two scopes, or from alternative
+// scenarios (A, B and C are alternatives, not parts of one plan), never add up to one
+// total (code review IN-04). Pass a scenario to sum that scenario's rows of the full ledger.
+export function sumLedger(rows, scope, scenario) {
   if (!Array.isArray(rows)) return { ok: false, errors: [{ field: 'rows', message: 'ledger must be an array of rows' }] };
+  if (scenario !== undefined) rows = rows.filter((r) => r && r.scenario === scenario && (scope === undefined || r.scope === scope));
   const scopes = new Set(rows.map((r) => r && r.scope));
   if (scopes.size > 1 || (scope !== undefined && scopes.size === 1 && !scopes.has(scope))) {
     return { ok: false, errors: [{ field: 'scope', message: 'rows of different scopes (slice and portfolio) cannot be summed' }] };
+  }
+  const scenarios = new Set(rows.map((r) => r && r.scenario).filter((s) => s !== undefined));
+  if (scenarios.size > 1) {
+    return { ok: false, errors: [{ field: 'scenario', message: 'rows of different scenarios are alternatives and cannot be summed' }] };
   }
   const by_counted_in = {};
   let savings = 0;

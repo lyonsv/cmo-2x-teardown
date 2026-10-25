@@ -535,7 +535,12 @@ test('ledger: counted_in values, paid media and scope mixing', () => {
   assert.deepEqual(slice.map((l) => l.id), ['funding-netted-variants']);
   for (const l of r.ledger) if (l.scope !== 'slice') assert.equal(l.scope, 'portfolio');
   assert.equal(sumLedger(r.ledger).ok, false);
-  assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'portfolio'), 'portfolio').ok, true);
+  // IN-04: the portfolio rows of A, B and C are alternatives, so they only sum one scenario at a time.
+  assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'portfolio'), 'portfolio').ok, false);
+  const B = sumLedger(r.ledger, 'portfolio', 'B');
+  assert.equal(B.ok, true);
+  near(B.net, r.scenarios.B.net, 1e-6);
+  assert.equal(sumLedger(r.ledger, 'portfolio', 'C').ok, true);
   assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'slice'), 'portfolio').ok, false);
 });
 
