@@ -48,6 +48,8 @@ p { margin: 0 0 var(--s-md); }
 .metric-trio > * { border-top: 1px solid var(--ink); padding-top: var(--s-sm); font-weight: 600; }
 .metric-trio .lbl { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); margin-bottom: var(--s-sm); }
 .later { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
+.appendix-divider { border-top: 2px solid var(--ink); margin-top: var(--s-2xl); padding-top: var(--s-lg); }
+.appendix-divider p { margin: 0 0 var(--s-md); }
 .to-follow { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
 td.num { font: 400 17px/1.6 var(--mono); }
 td.na { font: 400 17px/1.6 var(--mono); color: var(--muted); }
@@ -242,6 +244,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   section { break-inside: auto; }
   .later { background: none; }
   .to-follow { background: none; }
+  .appendix-divider { border-color: #ccc; break-after: avoid; }
   .table-scroll, .fig-scroll { overflow: visible; }
   .matrix tbody th[scope=row] { position: static; }
   .cite { color: inherit; }

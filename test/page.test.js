@@ -441,6 +441,20 @@ test('framing stubs carry the to-follow marker only in the four stub sections', 
   }
 });
 
+test('appendix divider ends the body and each appendix carries one Supports pointer', () => {
+  const d = html.indexOf('<div class="appendix-divider">');
+  assert.ok(d > html.indexOf(elementById(html, 'risks')) && d < html.indexOf('<section id="appendix-campaign"'));
+  assert.ok(!/<h[1-6]/.test(regionHtml('<div class="appendix-divider">', '</div>')));
+  const bodyIds = ['answer', 'autonomy', 'build', 'supply-chain', 'economics', 'risks'];
+  for (const id of ['appendix-campaign', 'appendix-review', 'appendix-gate', 'appendix-evals', 'compare', 'register']) {
+    const el = elementById(html, id);
+    const notes = el.match(/<p class="table-note">Supports:[^\n]*<\/p>/g) || [];
+    assert.equal(notes.length, 1, id);
+    const href = notes[0].match(/href="#([^"]+)"/);
+    if (href) assert.ok(bodyIds.includes(href[1]) || html.includes(`<section id="${href[1]}"`), `${id} href`);
+  }
+});
+
 // Every section is now filled; the later note must not appear anywhere.
 test('no section carries the later note', () => {
   assert.ok(!html.includes('class="later"'));
@@ -598,6 +612,7 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
       .replace(/<p class="hint" id="hint-[a-z0-9]+">Default \$?[\d.,]+%?/g, ' ')
       .replace(`Change-management cost: ${assumptions['asm-change-mgmt'].display}, included`, ' ')
       .replace(/<tr id="(?:src|asm)-[^"]+">[\s\S]*?<\/tr>/g, ' ')),
+    regionHtml('<div class="appendix-divider">', '</div>'),
     regionHtml('<footer>', '</footer>'),
   ];
   for (const part of parts) {
