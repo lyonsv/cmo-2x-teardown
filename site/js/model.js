@@ -81,9 +81,14 @@ function keyFor(error) {
 // here and keys the error to the field (WR-03).
 function marketerErrors(values) {
   const m = values.marketers;
-  return typeof m === 'number' && Number.isFinite(m) && m > 0
-    ? []
-    : [{ key: 'marketers', message: 'Marketing FTE: enter a number above 0.' }];
+  if (!(typeof m === 'number' && Number.isFinite(m) && m > 0)) {
+    return [{ key: 'marketers', message: 'Marketing FTE: enter a number above 0.' }];
+  }
+  // Reviewers sit inside the marketing team (the change cost counts each person once).
+  if (typeof values.reviewers === 'number' && values.reviewers > m) {
+    return [{ key: 'reviewers', message: 'Reviewers are part of the marketing team, so they cannot outnumber it.' }];
+  }
+  return [];
 }
 
 export function run(values, ctx) {
@@ -218,7 +223,8 @@ const finite = (v) => (Number.isFinite(v) ? v : 0);
 
 // Redeploy keeps the team and the 2x output. Hold keeps the team and today's volume
 // (multiplier 1 with the scaled assumptions). Reduce cuts reviewer headcount only,
-// to the capacity the 2x output needs. The change cost applies in every scenario.
+// to the capacity the 2x output needs. The change cost applies in every scenario, on the marketing team (reviewers are inside it).
+// Production change is the external cash view (concept fee, variants, tooling, rights, storage).
 export function scenarioOutcomes(values, ctx, mode) {
   const out = run(values, ctx);
   if (!out.ok) return { ok: false, errors: out.errors };
@@ -226,17 +232,17 @@ export function scenarioOutcomes(values, ctx, mode) {
   const { inputs, assumptions } = toCompute(values, ctx);
   const r = out.result;
   let side = r.scenario;
-  let production = r.scenario.cost.total - r.baseline.cost.total;
+  let production = r.scenario.cost_cash.total - r.baseline.cost_cash.total;
   if (m === 'hold') {
     const held = compute({ ...inputs, multiplier: 1 }, assumptions);
     if (!held.ok) return { ok: false, errors: held.errors.map((e) => ({ key: keyFor(e), message: e.message })) };
     side = held.scenario;
-    production = held.scenario.cost.total - r.baseline.cost.total;
+    production = held.scenario.cost_cash.total - r.baseline.cost_cash.total;
   }
   const required = side.reviewer_fte_required;
   const delta = values.reviewers - required;
   const people = m === 'reduce' && delta > 0 ? -delta * ctx.fixed.loaded_fte_cost : 0;
-  const oneOff = ctx.fixed.change_cost_per_fte * (values.marketers + values.reviewers);
+  const oneOff = ctx.fixed.change_cost_per_fte * values.marketers;
   const net = people + production + oneOff;
   if (![required, delta, people, production, oneOff, net].every(Number.isFinite)) return { ok: false, errors: [{ key: null, message: 'These inputs are too large to calculate.' }] };
   return {
@@ -311,7 +317,7 @@ function scenarioPresentation(values, ctx) {
     ['reviewer_fte_required', 'Reviewer FTE required at target utilisation', util, (v) => formatValue(v, 'num1')],
     ['reviewer_fte_delta', 'Reviewer FTE freed (or needed)', util, (v) => (v >= 0 ? `${formatValue(v, 'num1')} freed` : `needs ${formatValue(-v, 'num1')} more reviewers`)],
     ['people_cost_change', 'Annual people cost change', people, (v) => formatValue(v, 'usd0')],
-    ['production_cost_change', 'Annual production cost change', prod, (v) => formatValue(v, 'usd0')],
+    ['production_cost_change', 'Change in external production spend (cash)', prod, (v) => formatValue(v, 'usd0')],
     ['change_mgmt_one_off', 'One-off change cost (year one)', oneOff, (v) => formatValue(v, 'usd0')],
     ['first_year_net', 'First-year net cost change', net, (v) => formatValue(v, 'usd0')],
   ];

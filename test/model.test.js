@@ -348,24 +348,33 @@ test('auto-approval errors map to their field by side, not by message text (IN-0
   assert.equal(run({ ...d, auto1: -1 }, ctx).errors[0].key, 'auto1', 'a share error without a side suffix still maps to auto1');
 });
 
-test('scenarioOutcomes goldens at defaults', () => {
+test('scenarioOutcomes goldens at defaults (cash view, change cost on 120 marketing FTE)', () => {
   const v = defaultValues(ctx);
   const red = scenarioOutcomes(v, ctx, 'redeploy');
   assert.equal(red.reviewer_fte_required.toFixed(2), '8.73');
   assert.equal(red.reviewer_fte_delta.toFixed(2), '3.27');
   assert.equal(red.people_cost_change, 0);
-  assert.equal(Math.round(red.production_cost_change), 1032041);
-  assert.equal(red.change_mgmt_one_off, 396000);
-  assert.equal(Math.round(red.first_year_net), 1428041);
+  // Cash view: 2x cash total 2,729,683.35 less baseline 1,794,484.21 = 935,199.14.
+  assert.equal(red.production_cost_change.toFixed(2), '935199.14');
+  // One-off: $3,000 x 120 marketing FTE (the 12 reviewers are inside the 120) = 360,000.
+  assert.equal(red.change_mgmt_one_off, 360000);
+  assert.equal(red.first_year_net.toFixed(2), '1295199.14'); // 935,199.14 + 360,000
   const hold = scenarioOutcomes(v, ctx, 'hold');
-  assert.equal(Math.round(hold.production_cost_change), -53579);
+  assert.equal(hold.production_cost_change.toFixed(2), '295052.63');
   assert.equal(hold.people_cost_change, 0);
-  assert.equal(Math.round(hold.first_year_net), 342421);
-  assert.ok(Math.abs(hold.production_cost_change) < 60000, 'Hold saving stays small');
+  assert.equal(hold.first_year_net.toFixed(2), '655052.63'); // 295,052.63 + 360,000
+  assert.ok(hold.production_cost_change > 0, 'Hold raises external spend at the defaults: it is not a saving');
   const cut = scenarioOutcomes(v, ctx, 'reduce');
   assert.equal(Math.round(cut.people_cost_change), -489783);
-  assert.equal(Math.round(cut.first_year_net), 938258);
-  for (const o of [red, hold, cut]) assert.equal(o.change_mgmt_one_off, 396000, 'change cost in every scenario');
+  assert.equal(cut.first_year_net.toFixed(2), '805415.86'); // -489,783.28 + 935,199.14 + 360,000
+  for (const o of [red, hold, cut]) assert.equal(o.change_mgmt_one_off, 360000, 'change cost in every scenario');
+});
+
+test('run: reviewers cannot outnumber the marketing team', () => {
+  const bad = run({ ...defaultValues(ctx), marketers: 12, reviewers: 13 }, ctx);
+  assert.equal(bad.ok, false);
+  assert.deepEqual(bad.errors.map((e) => e.key), ['reviewers']);
+  assert.equal(run({ ...defaultValues(ctx), marketers: 12, reviewers: 12 }, ctx).ok, true);
 });
 
 test('scenarioOutcomes: too few reviewers needs more, reduce cuts nothing; failures return errors', () => {
@@ -450,8 +459,8 @@ test('present().scenario and .sensitivity are finite and labelled', () => {
   const p = present(defaultValues(ctx), ctx);
   assert.equal(p.scenario.name, 'Redeploy');
   assert.deepEqual(p.scenario.rows.map((r) => r.id), ['reviewer_fte_required', 'reviewer_fte_delta', 'people_cost_change', 'production_cost_change', 'change_mgmt_one_off', 'first_year_net']);
-  assert.equal(p.scenario.rows[3].text, '$1,032,041');
-  assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '−$53,579');
+  assert.equal(p.scenario.rows[3].text, '$935,199');
+  assert.equal(present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows[3].text, '$295,053');
   assert.equal(p.sensitivity[0].cells.costDown.text, '+18.3%');
   assert.equal(p.sensitivity[0].cells.costUp.text, '−12.2%');
   assert.equal(p.sensitivity.length, 5);

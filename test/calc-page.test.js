@@ -328,9 +328,9 @@ test('scenario table: six rows equal present(defaults).scenario; one grade note,
   // WR-03: the Hold sentence is scoped to the page defaults and its figure is the presenter's Hold row.
   const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario.rows.find((r) => r.id === 'production_cost_change');
   const word = hold.value < 0 ? 'a saving' : 'an increase';
-  assert.ok(s11.includes(`At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a> (${word}), because higher tooling cost offsets cheaper variants; choose Hold above to see the figure for your inputs.`));
+  assert.ok(s11.includes(`At the page defaults, Hold's change in annual production cost is <span data-fig="calc-scen-hold-production_cost_change">${hold.text}</span> <a class="chip ${CHIP_CLASS[hold.grade]}" href="#${hold.ref}">${hold.grade}</a> (${word}), because the tooling rise outweighs the cheaper variants; choose Hold above to see the figure for your inputs.`));
   assert.ok(!/Hold changes annual production cost by only/.test(s11), 'the confusing "only" wording is gone');
-  assert.ok(Math.abs(hold.value) < 60000, 'Hold change stays small at the defaults');
+  assert.ok(hold.value > 0 && !/\(a saving\)/.test(s11), 'Hold raises external spend at the defaults and is not called a saving');
   assert.ok(!/Hold saves little/.test(s11), 'no unscoped Hold claim');
   const { note } = regionOf('Headcount scenario');
   assert.ok(note, 'scenario table is followed by its grade note');

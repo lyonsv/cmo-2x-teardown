@@ -68,7 +68,7 @@ test('chartSpec: over capacity marks the 2x campaign-markets bar as not achievab
 });
 
 test('chartSpec: every label line fits between x=200 and the viewBox edge', () => {
-  for (const v of [{}, { reviewers: 4 }, { campaigns: 1e6 }, { campaigns: 1e9, concepts: 1e6, marketers: 0.001 }]) {
+  for (const v of [{}, { reviewers: 4 }, { campaigns: 1e6 }, { campaigns: 1e9, concepts: 1e6, marketers: 0.001, reviewers: 0.001 }]) {
     const spec = specFor(v);
     assert.ok(spec, JSON.stringify(v));
     for (const panel of spec.panels) {

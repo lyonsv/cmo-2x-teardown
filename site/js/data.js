@@ -1122,7 +1122,7 @@ for (const [id, value, unit, display, ref] of [
 assumptions['asm-loaded-fte-cost'] = a('asm-loaded-fte-cost', 'Loaded annual cost per FTE', 'calc', null, 150000, 'USD per FTE per year', '$150,000',
   'A round figure for salary plus on-costs, used only by the headcount scenarios; replace it with your own. No published benchmark.');
 assumptions['asm-change-mgmt'] = a('asm-change-mgmt', 'One-off change cost per affected FTE', 'calc', null, 3000, 'USD per affected FTE', '$3,000 per affected FTE',
-  'About one week of loaded time per person in the marketing and review teams for training and process change; it excludes severance and exit costs. No published benchmark.');
+  'About one week of loaded time per person in the marketing team, reviewers included (they are inside the 120), for training and process change; it excludes severance and exit costs. No published benchmark.');
 
 // The context model.js needs, so model.js itself never imports this file.
 export function modelContext() {
