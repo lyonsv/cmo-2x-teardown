@@ -1,7 +1,8 @@
 ---
 phase: 5
 slug: restructure-scaffold-evidence-schema-guards
-status: draft
+status: approved
+reviewed_at: 2026-10-25
 shadcn_initialized: false
 preset: none
 created: 2026-10-25
