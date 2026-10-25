@@ -42,7 +42,7 @@ async function main(base) {
       if ((await evalJs("document.documentElement.classList.contains('js')")) !== true) throw new Error('module did not load');
       await sleep(500);
       await send('Emulation.setEmulatedMedia', { media: 'print' });
-      // ui.js opens details.maths on beforeprint only; printToPDF fires it, but the computed-style
+      // print.js opens details.maths on beforeprint only; printToPDF fires it, but the computed-style
       // check below fires it explicitly so the state can be measured.
       await evalJs("window.dispatchEvent(new Event('beforeprint'))");
       await sleep(300);
@@ -56,7 +56,7 @@ async function main(base) {
           sw: document.documentElement.scrollWidth, iw: innerWidth, over, cells: rows.length };
       })()`);
       test('legal flag absent (dropped by author)', st.legal.length === 0, 'no .legal-flag element');
-      test('details.maths open (via beforeprint, as ui.js does)', st.maths.length > 0 && st.maths.every(Boolean), `${st.maths.length} element(s)`);
+      test('details.maths open (via beforeprint, as print.js does)', st.maths.length > 0 && st.maths.every(Boolean), `${st.maths.length} element(s)`);
       for (const [sel, ds] of st.hidden) test(`${sel} hidden in print`, ds.every((d) => d === 'none'), `${ds.length} element(s)`, `display ${ds.join(',')}`);
       test('no horizontal overflow at 700px', st.sw <= st.iw, `scrollWidth ${st.sw}, width ${st.iw}`);
       test('no table cell clipped at the right edge', st.over === 0, `${st.cells} cells checked`, `${st.over} cells beyond the right edge`);
@@ -75,6 +75,25 @@ async function main(base) {
       test('no blank pages', blank.length === 0, `${pages.length} pages read, all over 20 characters`, `blank/near-blank pages: ${blank.map(([i]) => i).join(', ')}`);
       const p1 = pages[0].replace(/\s+/g, ' ');
       test('page 1 has no legal-review flag', !p1.includes('has not yet been reviewed by counsel'), 'absent');
+    });
+    // Code review WR-11: with the calculator module blocked, the independent print helper
+    // still opens every fold, including the evidence key.
+    await withPage(async ({ send, evalJs }) => {
+      await send('Page.enable');
+      await send('Network.enable');
+      await send('Network.setBlockedURLs', { urls: ['*js/ui.js'] });
+      await send('Page.navigate', { url: base });
+      for (let i = 0; i < 80 && (await evalJs("document.readyState")) !== 'complete'; i++) await sleep(100);
+      await sleep(800);
+      const live = await evalJs("document.documentElement.classList.contains('js')");
+      test('ui.js blocked for the fallback check', live !== true, 'calculator module did not run');
+      await send('Emulation.setEmulatedMedia', { media: 'print' });
+      await evalJs("window.dispatchEvent(new Event('beforeprint'))");
+      await sleep(300);
+      const maths = await evalJs("[...document.querySelectorAll('details.maths')].map((d) => d.open)");
+      test('details.maths open for print without ui.js (print.js)', maths.length > 0 && maths.every(Boolean), `${maths.length} element(s)`);
+      const key = await evalJs("(() => { const d = document.querySelector('.legend details.maths'); return !!d && d.open; })()");
+      test('evidence key open for print without ui.js', key === true, 'open');
     });
   } finally {
     rmSync(dir, { recursive: true, force: true });

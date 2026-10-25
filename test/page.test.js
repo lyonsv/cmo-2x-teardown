@@ -269,8 +269,9 @@ test('every .ev span in the page is one of EVIDENCE', () => {
 
 test('static page guards', () => {
   const scripts = html.match(/<script\b[^>]*>[\s\S]*?<\/script>/g) || [];
-  assert.deepEqual(scripts, ['<script type="module" src="js/ui.js"></script>'], 'exactly one same-origin module script');
-  assert.equal((html.match(/<script/g) || []).length, 1);
+  // WR-11: the print helper loads on its own, before the calculator, so a ui.js failure cannot stop folds opening for print.
+  assert.deepEqual(scripts, ['<script type="module" src="js/print.js"></script>', '<script type="module" src="js/ui.js"></script>'], 'two same-origin module scripts: print helper, then calculator');
+  assert.equal((html.match(/<script/g) || []).length, 2);
   assert.ok(html.indexOf('</footer>') < html.indexOf('<script') && html.indexOf('<script') < html.indexOf('</body>'), 'script sits between footer and body end');
   assert.ok(!/\son[a-z]+\s*=/i.test(html), 'inline event handler present');
   assert.ok(!html.includes('data:image'), 'data:image present');

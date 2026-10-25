@@ -330,6 +330,8 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   th, td { overflow-wrap: anywhere; }
   thead { display: table-header-group; }
   .believe, details.maths { break-inside: avoid; }
+  /* WR-11: without JavaScript, browsers that support ::details-content still print closed folds. */
+  details.maths::details-content { content-visibility: visible; display: block; }
   .ref-line { stroke: #555; }
 }
 

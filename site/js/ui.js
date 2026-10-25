@@ -283,10 +283,7 @@ $('reset-calc').addEventListener('click', () => {
   inputs.campaigns.focus();
 });
 
-// Every details.maths fold (the calculator's maths and the content folds) opens for printing; folds closed before are reset.
-let openedForPrint = [];
-window.addEventListener('beforeprint', () => { openedForPrint = [...document.querySelectorAll('details.maths')].filter((d) => !d.open); openedForPrint.forEach((d) => { d.open = true; }); });
-window.addEventListener('afterprint', () => { openedForPrint.forEach((d) => { d.open = false; }); openedForPrint = []; });
+// Folds open for print from js/print.js, loaded independently of this module (WR-11).
 
 window.addEventListener('hashchange', () => {
   if (location.hash.startsWith('#s11?')) restore();

@@ -67,7 +67,7 @@ test('mutation: the jargon guard fires on banned phrases', () => {
 
 // Text the scripts put on the page: every string literal in the browser modules
 // (comments removed), and the reader-facing fields of data.js except source titles.
-const JS = ['model.js', 'ui.js', 'fields.js', 'panels.js', 'format.js', 'state.js', 'svg.js', 'calc.js'];
+const JS = ['model.js', 'ui.js', 'print.js', 'fields.js', 'panels.js', 'format.js', 'state.js', 'svg.js', 'calc.js'];
 const literals = (src) => src
   .replace(/\/\*[\s\S]*?\*\//g, '')
   .replace(/(^|[^:\\'"`])\/\/.*$/gm, '$1')

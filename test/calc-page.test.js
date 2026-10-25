@@ -249,7 +249,7 @@ test('site/js sources avoid HTML injection, storage, network and dynamic code', 
   const dir = new URL('../site/js/', import.meta.url);
   const FORBIDDEN = ['innerHTML', 'insertAdjacentHTML', 'outerHTML', 'document.write', '.style.', "setAttribute('style'",
     'localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'XMLHttpRequest', 'eval(', 'new Function'];
-  for (const file of ['ui.js', 'model.js', 'state.js', 'fields.js', 'format.js']) {
+  for (const file of ['ui.js', 'print.js', 'model.js', 'state.js', 'fields.js', 'format.js']) {
     const src = readFileSync(new URL(file, dir), 'utf8');
     for (const bad of FORBIDDEN) assert.ok(!src.includes(bad), `${file} contains ${bad}`);
   }
@@ -488,10 +488,15 @@ test('Figure 8, maths and believe sit outside every .calc-live wrapper', () => {
   }
 });
 
-test('ui.js has an invalid state for the chart and prints with the maths open', () => {
+test('ui.js has an invalid state for the chart; print.js, not ui.js, opens the maths for print (WR-11)', () => {
   const ui = readFileSync(new URL('../site/js/ui.js', import.meta.url), 'utf8');
+  const pr = readFileSync(new URL('../site/js/print.js', import.meta.url), 'utf8');
   assert.ok(ui.includes('renderChart('));
-  assert.ok(ui.includes('beforeprint') && ui.includes('afterprint'));
+  assert.ok(!ui.includes('beforeprint'), 'the print handler must not depend on the calculator module');
+  assert.ok(pr.includes('beforeprint') && pr.includes('afterprint') && pr.includes('details.maths'));
+  assert.ok(!/\bimport\b/.test(pr), 'print.js imports nothing');
+  const css = readFileSync(new URL('../site/assets/style.css', import.meta.url), 'utf8');
+  assert.match(css, /details\.maths::details-content \{ content-visibility: visible; display: block; \}/);
   assert.match(s11, /<p class="later chart-empty" hidden>Fix the highlighted inputs to see the chart\.<\/p>/);
 });
 
