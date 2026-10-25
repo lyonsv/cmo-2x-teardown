@@ -41,12 +41,12 @@
 
 ### Thesis and 2x definition (THESIS)
 
-- [ ] **THESIS-01**: The first screen states the thesis, the system being proposed and the measurable ambition, with grade chips.
-- [ ] **THESIS-02**: The reader sees an explicit 2x definition: one primary metric, a speed measure, quality guardrails and outcome metrics, with trade-offs explained.
-- [ ] **THESIS-03**: Capacity, efficiency and effectiveness are defined and kept separate, and the page states that doubled capacity does not establish doubled revenue.
-- [ ] **THESIS-04**: The page states honestly what the default model gives organisation-wide versus on the delegated portfolio.
+- [x] **THESIS-01**: The first screen states the thesis, the system being proposed and the measurable ambition, with grade chips.
+- [x] **THESIS-02**: The reader sees an explicit 2x definition: one primary metric, a speed measure, quality guardrails and outcome metrics, with trade-offs explained.
+- [x] **THESIS-03**: Capacity, efficiency and effectiveness are defined and kept separate, and the page states that doubled capacity does not establish doubled revenue.
+- [x] **THESIS-04**: The page states honestly what the default model gives organisation-wide versus on the delegated portfolio.
 - [ ] **THESIS-05**: The reader sees the autonomy ladder (assistance, agentic execution, higher autonomy, outcome-directed autonomy) and when higher autonomy is and is not justified.
-- [ ] **THESIS-06**: The page explains why marketing has no merged-PR equivalent and how the constructed unit of completed work avoids that trap.
+- [x] **THESIS-06**: The page explains why marketing has no merged-PR equivalent and how the constructed unit of completed work avoids that trap.
 
 ### Intercom evidence (INTERCOM)
 
@@ -154,12 +154,12 @@
 | ECON-10 | Phase 6 | Complete |
 | ECON-11 | Phase 6 | Complete |
 | ECON-12 | Phase 6 | Complete |
-| THESIS-01 | Phase 7 | Pending |
-| THESIS-02 | Phase 7 | Pending |
-| THESIS-03 | Phase 7 | Pending |
-| THESIS-04 | Phase 7 | Pending |
+| THESIS-01 | Phase 7 | Complete |
+| THESIS-02 | Phase 7 | Complete |
+| THESIS-03 | Phase 7 | Complete |
+| THESIS-04 | Phase 7 | Complete |
 | THESIS-05 | Phase 7 | Pending |
-| THESIS-06 | Phase 7 | Pending |
+| THESIS-06 | Phase 7 | Complete |
 | INTERCOM-01 | Phase 7 | Pending |
 | INTERCOM-02 | Phase 7 | Pending |
 | INTERCOM-03 | Phase 7 | Pending |
