@@ -102,6 +102,15 @@ test('roll-up: 128,000 h, 56,960 h released (35.6 FTE), lo and hi, multiple on t
   near(r.multiple_hi, 2.4691, 1e-4);
 });
 
+test('IN-01: the roll-up range is adjusted for adoption and overhead like the central value', () => {
+  for (const [adoption, levers] of [[0.5], [1, { review_overhead: 2 }], [0.3, { review_overhead: 0.5 }]]) {
+    const ec = makeEc();
+    ec.engine.adoption = adoption;
+    const r = run(ec, levers).rollup;
+    assert.ok(r.multiple_lo <= r.multiple + 1e-12 && r.multiple <= r.multiple_hi + 1e-12, `${adoption}: ${r.multiple_lo} ${r.multiple} ${r.multiple_hi}`);
+  }
+});
+
 test('agent state at baseline volume: W1 goldens', () => {
   const w = run().workflows.W1;
   near(w.agent.total_hours, 4800, 1e-6);

@@ -334,13 +334,15 @@ function buildPools(x) {
 }
 
 function buildRollup(x) {
-  const { engine, rows } = x;
+  const { engine, rows, a, k } = x;
   let hours = 0, released = 0, lo = 0, hi = 0;
   for (const r of rows) {
     hours += r.H0;
     released += r.H0 * r.e.r_eff;
-    lo += r.H0 * r.w.lo;
-    hi += r.H0 * r.w.hi;
+    // Code review IN-01: the range ends get the same adoption and overhead adjustment
+    // as the central reduction, so the central multiple always sits inside the range.
+    lo += r.H0 * effective({ ...r.w, r: r.w.lo }, engine, a, k.review_overhead).r_eff;
+    hi += r.H0 * effective({ ...r.w, r: r.w.hi }, engine, a, k.review_overhead).r_eff;
   }
   const mult = (rel) => (hours - rel > 0 ? hours / (hours - rel) : null);
   return {
