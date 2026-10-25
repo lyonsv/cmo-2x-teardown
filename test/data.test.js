@@ -152,8 +152,10 @@ test('new format kinds', () => {
   assert.equal(formatValue(0.2, 'pctchg0'), '+20%');
 });
 
-test('every model assumption is Modelled', () => {
-  for (const e of Object.values(assumptions)) if (e.kind === 'model') assert.equal(e.grade, 'Modelled', e.id);
+test('every model assumption is Modelled, except the three unsourced first-edition programme hypotheses', () => {
+  // Regraded Speculative before publish (consistent with CR-03): no checkable source for the value.
+  const SPEC = ['asm-auto-approval', 'asm-variant-cost', 'asm-tooling'];
+  for (const e of Object.values(assumptions)) if (e.kind === 'model') assert.equal(e.grade, SPEC.includes(e.id) ? 'Speculative' : 'Modelled', e.id);
 });
 
 test('negative values put a true minus sign before the currency symbol', () => {
@@ -374,7 +376,7 @@ test('eligibility arithmetic', () => {
   for (const c of [e, a]) {
     assert.equal(c.display, formatValue(c.value, 'pct0'));
     assert.equal(c.ref, 'asm-auto-approval');
-    assert.equal(c.grade, 'Modelled');
+    assert.equal(c.grade, 'Speculative');
   }
   assert.equal(e.display, '85%');
   assert.equal(a.display, '71%');
@@ -422,7 +424,7 @@ test('capacity claims recompute under their own scenario', () => {
     const v = c.derived.split('.').reduce((o, k) => o[k], r);
     assert.equal(Number(v.toFixed(c.decimals)), c.value, `${c.id} drifted`);
     assert.equal(c.display, formatValue(c.value, c.format), `${c.id} display`);
-    assert.equal(c.grade, 'Modelled');
+    if (assumptions[c.ref]) assert.equal(c.grade, assumptions[c.ref].grade, `${c.id} grade follows its row`);
     assert.equal(c.flag, flag, `${c.id} flag`);
     assert.equal(c.ref, ref, `${c.id} ref`);
   }

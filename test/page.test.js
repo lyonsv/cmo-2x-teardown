@@ -76,6 +76,7 @@ function groupedRows() {
   return out;
 }
 
+const GRADE_RANK = ['Speculative', 'Modelled', 'Benchmark'];
 test('governing chip rule (UI-SPEC chip density)', () => {
   const { units, total } = collectUnits();
   const grouped = groupedRows();
@@ -113,8 +114,9 @@ test('governing chip rule (UI-SPEC chip density)', () => {
       for (const m of figs) {
         const e = figEntry(m[1]);
         assert.ok(listed.has(e.ref), `${m[1]}: ref ${e.ref} is not listed in the grade note`);
-        assert.equal(noteChip[2], e.grade, `${m[1]}: grade note word`);
-        assert.equal(noteChip[1], CHIP_CLASS[e.grade], `${m[1]}: grade note class`);
+        // The note carries the weakest grade of the group, so no figure is weaker than it.
+        assert.ok(GRADE_RANK.indexOf(noteChip[2]) <= GRADE_RANK.indexOf(e.grade), `${m[1]}: grade note word ${noteChip[2]} is stronger than the figure (${e.grade})`);
+        assert.equal(noteChip[1], CHIP_CLASS[noteChip[2]], `${m[1]}: grade note class`);
       }
     } else if (u.kind === 'row') {
       const linked = [...u.html.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
@@ -124,12 +126,14 @@ test('governing chip rule (UI-SPEC chip density)', () => {
         assert.equal(linked.length, 1, `row with data-figs needs exactly one chip: ${strip(u.html).slice(0, 60)}`);
         const lastTd = [...u.html.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
         assert.ok(lastTd.includes('class="chip '), 'row chip must be in the last cell');
-        for (const m of figs) {
-          const e = figEntry(m[1]);
-          assert.equal(linked[0][2], e.ref, `${m[1]}: row chip href`);
-          assert.equal(linked[0][3], e.grade, `${m[1]}: row chip word`);
-          assert.equal(linked[0][1], CHIP_CLASS[e.grade], `${m[1]}: row chip class`);
-        }
+        // A row's one chip carries the weakest grade among its figures and links the first
+        // figure's row at that grade (rows can mix grades once the unsourced first-edition
+        // hypotheses are Speculative); every figure is at least as strong as the chip.
+        const entries = figs.map((m) => figEntry(m[1]));
+        const weakest = entries.reduce((w, e) => (GRADE_RANK.indexOf(e.grade) < GRADE_RANK.indexOf(w.grade) ? e : w), entries[0]);
+        assert.equal(linked[0][2], weakest.ref, `${figs[0][1]}: row chip href`);
+        assert.equal(linked[0][3], weakest.grade, `${figs[0][1]}: row chip word`);
+        assert.equal(linked[0][1], CHIP_CLASS[weakest.grade], `${figs[0][1]}: row chip class`);
       } else {
         assert.ok(linked.length <= 1, 'row without data-figs has at most one chip');
       }
@@ -1152,7 +1156,7 @@ test('s05 and s07 state the human-touch share from the model, not a "small chanc
     assert.ok(sectionHtml(id).includes('data-fig="human-touch-share-scaled"'), `${id} shows the human-touch share`);
   }
   const p = (sectionHtml('s05').match(/<p\b[^>]*>[\s\S]*?<\/p>/g) || []).find((x) => x.includes('data-fig="human-touch-share-scaled"'));
-  assert.match(p, /<span data-fig="human-touch-share-scaled">[^<]*<\/span>\s*<a class="chip c-m" href="#asm-auto-approval">Modelled<\/a>/);
+  assert.match(p, /<span data-fig="human-touch-share-scaled">[^<]*<\/span>\s*<a class="chip c-s" href="#asm-auto-approval">Speculative<\/a>/);
   assert.ok(/still reach a person/.test(strip(p)));
   assert.ok(/sampled or escalated share/.test(assumptions['asm-auto-approval'].basis));
 });

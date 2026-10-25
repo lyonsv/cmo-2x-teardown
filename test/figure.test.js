@@ -106,7 +106,7 @@ test('always-visible data table with all 20 figure ids and one governing chip pe
     assert.match(row, /<th scope="row"/);
     const figs = [...row.matchAll(/<span data-fig="([^"]+)">([^<]*)<\/span>/g)];
     assert.equal(figs.length, 2);
-    const chips = [...row.matchAll(/<a class="chip c-m" href="#([^"]+)">Modelled<\/a>/g)];
+    const chips = [...row.matchAll(/<a class="chip (c-[ms])" href="#([^"]+)">(Modelled|Speculative)<\/a>/g)].map((c) => [c[0], c[2], c[1], c[3]]);
     assert.equal(chips.length, 1, 'one chip per row');
     assert.equal((row.match(/class="chip /g) || []).length, 1);
     const lastTd = [...row.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].pop()[1];
@@ -115,6 +115,7 @@ test('always-visible data table with all 20 figure ids and one governing chip pe
     for (const [, id, text] of figs) {
       assert.equal(text, claims[id].display, id);
       assert.equal(claims[id].ref, chips[0][1], `${id}: row chip ref`);
+      assert.equal(claims[id].grade, chips[0][3], `${id}: row chip grade`);
       all.push(id);
     }
   }

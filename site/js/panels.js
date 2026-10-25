@@ -56,7 +56,7 @@ export function writeSensitivityNote(target, note) {
   const chip = node('a', `chip ${CHIP[note.grade]}`, note.grade);
   chip.setAttribute('href', `#${note.ref}`);
   target.textContent = '';
-  target.append('Every figure in this table is ', chip, '. Register rows: ');
+  target.append('The weakest figure in this table is ', chip, '. Register rows: ');
   note.refs.forEach((ref, i) => {
     const link = node('a', '', ref);
     link.setAttribute('href', `#${ref}`);

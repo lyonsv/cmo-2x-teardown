@@ -28,15 +28,18 @@ const GROUPED = {
 };
 
 function assertGroupRule(name, members, noteHtml) {
-  const grades = new Set(members.map((m) => m.grade));
-  assert.equal(grades.size, 1, `${name}: group members no longer share one grade: restore per-member chips`);
-  const [grade] = grades;
+  // Pre-publish decision: once the first-edition programme hypotheses were regraded
+  // Speculative, group members no longer share one grade. The note now carries the weakest
+  // grade in the group and links the first member row at that grade (weakestGrade's rule).
+  const ORDER = ['Speculative', 'Modelled', 'Benchmark'];
+  const weakest = members.reduce((w, m) => (w === null || ORDER.indexOf(m.grade) < ORDER.indexOf(w.grade) ? m : w), null);
+  const grade = weakest.grade;
   const refs = [...new Set(members.map((m) => m.ref))];
   const chips = [...noteHtml.matchAll(/<a class="chip (c-[bms])" href="#([^"]+)">([^<]+)<\/a>/g)];
   assert.equal(chips.length, 1, `${name}: the note carries exactly one chip`);
   assert.equal(chips[0][3], grade, `${name}: note chip word`);
   assert.equal(chips[0][1], CHIP_CLASS[grade], `${name}: note chip class`);
-  assert.equal(chips[0][2], refs[0], `${name}: note chip links the first member ref`);
+  assert.equal(chips[0][2], weakest.ref, `${name}: note chip links the first member row at the weakest grade`);
   const links = [...noteHtml.matchAll(/<a href="#([^"]+)">([^<]+)<\/a>/g)];
   for (const [, href, text] of links) assert.equal(text, href, `${name}: register link text`);
   assert.deepEqual([...new Set(links.map((l) => l[1]))].sort(), [...refs].sort(), `${name}: register links equal the member refs`);
@@ -124,7 +127,7 @@ test('break-even and capacity floor are rows of their own', () => {
 
 test('table note and fixed-assumptions sentence follow the table', () => {
   const tableEnd = s11.indexOf('</table>');
-  const note = s11.indexOf('<p class="table-note">Each output carries the weakest grade of the inputs it uses. Cost per campaign-market is the same cost as cost per approved asset, expressed per campaign-market, so its change always matches; it is not separate evidence.</p>');
+  const note = s11.indexOf('<p class="table-note">Each output carries the weakest grade of the inputs it uses. Cost per campaign-market is the same cost as cost per approved asset, expressed per campaign-market, so its change always matches; it is not separate evidence. Brief-to-live time also depends on the review turnaround per touch, register row <a href="#asm-review-service-days">asm-review-service-days</a>.</p>');
   const fixed = s11.indexOf('<p class="fixed-note">Fixed assumptions that are not inputs here (tier mix, reviewer rate, tooling, rights, storage and today\'s variant cost) are listed with their grades in the <a href="#assumptions-register">assumptions register</a>.</p>');
   assert.ok(tableEnd > 0 && note > tableEnd && fixed > note, `order ${tableEnd} ${note} ${fixed}`);
   assert.match(html, /<div class="table-scroll" id="assumptions-register" role="region"/);
@@ -212,14 +215,14 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
   // Group grade rule: each of the four field groups opens with one note and one chip.
   const fieldGroups = groups.filter((g) => g[1] !== 'How you get to 2x').slice(0, 4);
   const routeGroup = groups[1];
-  assert.equal(routeGroup[2].match(/^\s*<p class="grade-note">Defaults in this group are <a class="chip c-m" href="#asm-growth-route">Modelled<\/a>\.<\/p>/) !== null, true);
+  assert.equal(routeGroup[2].match(/^\s*<p class="grade-note">The weakest default in this group is <a class="chip c-m" href="#asm-growth-route">Modelled<\/a>\.<\/p>/) !== null, true);
   assert.equal((routeGroup[2].match(/class="chip /g) || []).length, 1, 'route group has one chip');
   fieldGroups.forEach((g, i) => {
     assert.equal(g[1], Object.values(GROUPED.fieldsets)[i]);
     const key = Object.keys(GROUPED.fieldsets)[i];
     const note = g[2].match(/^\s*(<p class="grade-note">[\s\S]*?<\/p>)/);
     assert.ok(note, `${g[1]}: first element after the legend is the grade note`);
-    assert.ok(note[1].startsWith('<p class="grade-note">Defaults in this group are <a class="chip'), g[1]);
+    assert.ok(note[1].startsWith('<p class="grade-note">The weakest default in this group is <a class="chip'), g[1]);
     const members = FIELDS.filter((f) => f.group === key).map((f) => ({ ref: f.asm, grade: assumptions[f.asm].grade }));
     const chips = note[1].match(/class="chip /g) || [];
     assert.equal(chips.length, 1);
@@ -377,7 +380,7 @@ test('sensitivity table: header, five ranked rows equal present(defaults), cappe
 // WR-01: ui.js rewrites the sensitivity grade note from present().sensitivityNote,
 // so the static note must equal the presenter's note at defaults, and after a
 // re-ranking the note must link every row actually shown at the weakest grade.
-const sensNoteHtml = (n) => `Every figure in this table is <a class="chip ${CHIP_CLASS[n.grade]}" href="#${n.ref}">${n.grade}</a>. Register rows: `
+const sensNoteHtml = (n) => `The weakest figure in this table is <a class="chip ${CHIP_CLASS[n.grade]}" href="#${n.ref}">${n.grade}</a>. Register rows: `
   + `${n.refs.map((r) => `<a href="#${r}">${r}</a>`).join(', ')}.`;
 
 test('sensitivity grade note equals the presenter note at defaults and follows a re-ranking (WR-01)', () => {
@@ -426,7 +429,7 @@ test('s11 order: results, fixed note, scenario, Figure 8, maths, believe, sensit
   ];
   assert.deepEqual([...order].sort((a, b) => a - b), order);
   assert.match(s11, /<p class="fixed-note">[^<]*<a href="#assumptions-register">assumptions register<\/a>/);
-  assert.ok(s11.indexOf('<p class="fixed-note">') - s11.indexOf('Each output carries') < 280, 'fixed note sits under the results table');
+  assert.ok(s11.indexOf('<p class="fixed-note">') - s11.indexOf('Each output carries') < 480, 'fixed note sits under the results table');
   // IN-02: cost per campaign-market is disclosed as a unit translation of cost per approved asset, in the results note and Figure 1.
   for (const where of [s11.slice(s11.indexOf('<p class="table-note">Each output carries')), html.slice(html.indexOf('<b>Figure 1</b>'))]) {
     assert.match(where.slice(0, 600), /expressed per campaign-market, so its change always matches; it is not separate evidence\./);

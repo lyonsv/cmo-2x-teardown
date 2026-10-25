@@ -10,6 +10,9 @@ import {
 import { modelContext, assumptions, defaultInputs, defaultAssumptions } from '../site/js/data.js';
 
 const ctx = modelContext();
+// The three first-edition programme hypotheses are Speculative at the shipped grades (regraded before
+// publish). Tests that inject one weak input restore them to Modelled so the injected input alone decides.
+const ISOLATED = { 'asm-auto-approval': 'Modelled', 'asm-variant-cost': 'Modelled', 'asm-tooling': 'Modelled' };
 const read = (p) => readFileSync(new URL(`../site/js/${p}`, import.meta.url), 'utf8');
 
 test('format.js: new kinds days1 and pctchg1', () => {
@@ -161,7 +164,7 @@ test('weakestGrade: order Speculative < Modelled < Benchmark, ref is first id wi
 });
 
 test('weakest grade flows into present(): injected Speculative input', () => {
-  const grades = { ...ctx.grades, 'asm-review-minutes': 'Speculative' };
+  const grades = { ...ctx.grades, ...ISOLATED, 'asm-review-minutes': 'Speculative' };
   const p = present(defaultValues(ctx), { ...ctx, grades });
   const row = (id) => p.rows.find((r) => r.id === id);
   assert.deepEqual([row('cost_per_asset').grade, row('cost_per_asset').ref], ['Speculative', 'asm-review-minutes']);
@@ -204,8 +207,10 @@ test('present(defaults): ten rows in order with golden texts', () => {
   assert.equal(row('break_even').base.text, 'Not applicable');
   assert.equal(row('break_even').change.text, 'Not applicable');
   for (const r of p.rows) {
-    assert.equal(r.grade, 'Modelled');
-    assert.equal(r.ref, OUTPUT_DEPS[r.id][0]);
+    // Shipped grades: each row carries the weakest grade of its inputs and links the first input at that grade.
+    const w = weakestGrade(OUTPUT_DEPS[r.id], ctx.grades);
+    assert.equal(r.grade, w.grade);
+    assert.equal(r.ref, w.ref);
   }
   const rr = Object.fromEntries(RESULT_ROWS.map((x) => [x.id, x]));
   for (const r of p.rows) {
@@ -480,17 +485,17 @@ test('scenario rows carry the weakest grade of their inputs (WR-01)', () => {
     const p = present({ ...defaultValues(ctx), scenario: 'b' }, { ...ctx, grades });
     return Object.fromEntries(p.scenario.rows.map((r) => [r.id, [r.grade, r.ref]]));
   };
-  const cost = at({ ...ctx.grades, 'asm-master-concept-cost': 'Speculative' });
+  const cost = at({ ...ctx.grades, ...ISOLATED, 'asm-master-concept-cost': 'Speculative' });
   assert.deepEqual(cost.first_year_net, ['Speculative', 'asm-master-concept-cost']);
   assert.deepEqual(cost.production_cost_change, ['Speculative', 'asm-master-concept-cost']);
   assert.equal(cost.people_cost_change[0], 'Modelled', 'master concept cost does not feed people cost');
-  const util = at({ ...ctx.grades, 'asm-review-minutes': 'Speculative' });
+  const util = at({ ...ctx.grades, ...ISOLATED, 'asm-review-minutes': 'Speculative' });
   assert.deepEqual(util.people_cost_change, ['Speculative', 'asm-review-minutes']);
   assert.deepEqual(util.first_year_net, ['Speculative', 'asm-review-minutes']);
-  const fte = at({ ...ctx.grades, 'asm-marketing-fte': 'Speculative' });
+  const fte = at({ ...ctx.grades, ...ISOLATED, 'asm-marketing-fte': 'Speculative' });
   assert.deepEqual(fte.change_mgmt_one_off, ['Speculative', 'asm-marketing-fte']);
   assert.deepEqual(fte.first_year_net, ['Speculative', 'asm-marketing-fte']);
-  const d = at(ctx.grades);
+  const d = at({ ...ctx.grades, ...ISOLATED });
   assert.equal(d.people_cost_change[1], 'asm-loaded-fte-cost', 'ref unchanged at the shipped grades');
   assert.equal(d.first_year_net[1], 'asm-change-mgmt', 'ref unchanged at the shipped grades');
 });

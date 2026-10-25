@@ -83,8 +83,8 @@ test('assumption counts and the hypothesis list', () => {
   for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) || ENGINE_HYP.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
   // Code review CR-03: the 18 unsourced engine programme hypotheses (nine globals and the
   // nine workflow-effect rows) are Speculative, like the escape rate; none stays Modelled.
-  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24);
-  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2 + 4 + 18);
+  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24 - 3); // minus the three first-edition rows regraded before publish
+  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2 + 4 + 18 + 3); // plus asm-auto-approval, asm-variant-cost, asm-tooling
   for (const a of rows) if (a.kind === 'engine' && a.evidence === 'hypothesis') assert.equal(a.grade, 'Speculative', `${a.id}: an unsourced programme hypothesis`);
   assert.equal(count(rows, 'illustrative', 'Modelled'), 34 + 20 + 1);
   assert.equal(count(rows, 'illustrative', 'Speculative'), 2);
