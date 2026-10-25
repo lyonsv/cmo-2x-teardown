@@ -117,6 +117,8 @@ Progress (v2.0): [░░░░░░░░░░] 0%
 
 ### Pending Todos
 
+- Phase 5 UI review (18/24, advisory; see 05-UI-REVIEW.md): fold into Phase 7 — retitle legend and label the evidence key, say grade and evidence are independent, rename six 'Evidence grade' table headers to 'Grade', replace 'Detail to follow' stubs as sections fill, visual weight of hosted h3 vs h4, divider spacing, appendix h2s say 'Appendix', legend height on mobile; fold into Phase 9/10 — source register width (URL column) so the Evidence column is visible at 1440px.
+
 - Phase 3 UI review (17/24, advisory): 'Show the maths' disclosure marker; scenario radios 24px; table number/label size mismatch (12px mono vs 17px serif, 'Not applicable' cells); Hold sentence 'only −$53,579' wording; 49 identical Modelled chips in s11 (density rule); 'over capacity at 186% of capacity'; matrix cell cite density; s10/s12 word budgets; hint units/separators; Change column sign convention; re-check invalid-field→hashchange path. See 03-UI-REVIEW.md. Fold into Phase 4 Plan 1.
 - Phase 3 HUMAN-UAT deferred (user away): vendor fairness/tone, legal wording, s09/s10 tone, hands-on calculator. See 03-HUMAN-UAT.md.
 
