@@ -65,11 +65,11 @@
 
 ### Content supply chain (FLOW)
 
-- [ ] **FLOW-01**: The reader sees the full content supply chain from business objective to optimisation and refresh, with content generation shown as one step.
-- [ ] **FLOW-02**: A responsive inline-SVG diagram shows stages, human vs agent responsibilities, multi-stage agent runs, the shared platform underneath, approval/exception boundaries and the measure→act loop, legible at 320px and in print.
-- [ ] **FLOW-03**: The diagram has a text equivalent and does not rely on colour alone.
-- [ ] **FLOW-04**: A worked example ("launch an approved campaign in additional markets") states step by step what is autonomous and what is not, with hours and handoffs bound to the model.
-- [ ] **FLOW-05**: The page shows why removing handoffs, coordination and repeated review is worth more than faster asset generation, and that the wedge leads into a broader system.
+- [x] **FLOW-01**: The reader sees the full content supply chain from business objective to optimisation and refresh, with content generation shown as one step.
+- [x] **FLOW-02**: A responsive inline-SVG diagram shows stages, human vs agent responsibilities, multi-stage agent runs, the shared platform underneath, approval/exception boundaries and the measure→act loop, legible at 320px and in print.
+- [x] **FLOW-03**: The diagram has a text equivalent and does not rely on colour alone.
+- [x] **FLOW-04**: A worked example ("launch an approved campaign in additional markets") states step by step what is autonomous and what is not, with hours and handoffs bound to the model.
+- [x] **FLOW-05**: The page shows why removing handoffs, coordination and repeated review is worth more than faster asset generation, and that the wedge leads into a broader system.
 
 ### Economics presentation (ECONP)
 
@@ -169,11 +169,11 @@
 | BUILD-03 | Phase 7 | Pending |
 | BUILD-04 | Phase 7 | Pending |
 | BUILD-05 | Phase 7 | Pending |
-| FLOW-01 | Phase 7 | Pending |
-| FLOW-02 | Phase 7 | Pending |
-| FLOW-03 | Phase 7 | Pending |
-| FLOW-04 | Phase 7 | Pending |
-| FLOW-05 | Phase 7 | Pending |
+| FLOW-01 | Phase 7 | Complete |
+| FLOW-02 | Phase 7 | Complete |
+| FLOW-03 | Phase 7 | Complete |
+| FLOW-04 | Phase 7 | Complete |
+| FLOW-05 | Phase 7 | Complete |
 | STRUCT-07 | Phase 7 | Pending |
 | ECONP-01 | Phase 7 | Pending |
 | ECONP-02 | Phase 7 | Pending |
