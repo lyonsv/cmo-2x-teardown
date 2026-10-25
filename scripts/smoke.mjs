@@ -42,7 +42,8 @@ async function cases(base) {
 
   await run('b hash restores inputs', () => {
     const dom = dump(`${base}#s11?markets=6&auto2=70`);
-    check('status', statusOf(dom).includes('(2 changed)'), `status "${statusOf(dom)}"`);
+    // A first-edition link without scenario= opens in A (code review WR-09), so three values differ.
+    check('status', statusOf(dom).includes('(3 changed)'), `status "${statusOf(dom)}"`);
     const v = { ...d, markets: 6, auto2: 0.7 };
     check('cost', span(dom, 'calc-cost_per_asset-scaled') === expected(v, 'cost_per_asset', 'scaled'), `cost span ${span(dom, 'calc-cost_per_asset-scaled')} vs ${expected(v, 'cost_per_asset', 'scaled')}`);
     return statusOf(dom);
