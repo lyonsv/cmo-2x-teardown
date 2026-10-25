@@ -782,9 +782,9 @@ function m(id, label, key, value, unit, display, basis) {
 }
 m('asm-auto-approval', 'Auto-approval share', 'auto_approval_share', { baseline: 0.20, scaled: 0.60 }, 'share of variants', '20% today, 60% at 2x',
   'Share of variants cleared by the gate without a full human review; a sampled or escalated share of them is still seen by a person. The assumption the whole cost claim leans on; no published benchmark.');
-m('asm-sampling-rate', 'Sampling audit rate', 'sampling_rate', 0.05, 'share of auto-approved', '5%',
+m('asm-sampling-rate', 'Sampling audit rate', 'sampling_rate', { baseline: 0.05, scaled: 0.05 }, 'share of auto-approved', '5%',
   'Share of auto-approved variants audited by a human sample; no published benchmark.');
-m('asm-escalation-rate', 'Escalation rate', 'escalation_rate', 0.05, 'share of auto-approved', '5%',
+m('asm-escalation-rate', 'Escalation rate', 'escalation_rate', { baseline: 0.05, scaled: 0.05 }, 'share of auto-approved', '5%',
   'Share of auto-approved variants escalated to a human by the gate; no published benchmark.');
 m('asm-review-minutes', 'Review time per reviewed variant', 'review_minutes_per_variant', 12, 'minutes', '12 min',
   'Human review time for each variant a person touches; no published benchmark.');
@@ -1486,6 +1486,13 @@ for (const asm of Object.values(assumptions)) {
   // Engine rows carry their own evidence (set where they are defined).
   if (asm.evidence === undefined) asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
 }
+// Per-side evidence (ECON-12): an assumption's baseline value describes the company today
+// (illustrative); its 2x value is the programme effect (hypothesis). The register cell
+// shows the weakest class, so `evidence` stays 'hypothesis'.
+const isPerSide = (v) => v !== null && typeof v === 'object' && !Array.isArray(v) && 'baseline' in v && 'scaled' in v;
+for (const asm of Object.values(assumptions)) {
+  if (asm.kind === 'model' && asm.evidence === 'hypothesis' && isPerSide(asm.value)) asm.evidence_sides = { baseline: 'illustrative', scaled: 'hypothesis' };
+}
 
 // A claim takes the weakest class of everything it depends on (CONTEXT: derived
 // claims inherit the weakest class of their inputs), and anything computed at the
@@ -1525,7 +1532,12 @@ for (const asm of Object.values(assumptions)) {
     const variants = [[MULTIPLIER, { ...base, inputs: { ...base.inputs, multiplier: base.inputs.multiplier * 1.25 } }]];
     for (const asm of Object.values(assumptions)) {
       if (asm.kind === 'input') variants.push([asm.id, { ...base, inputs: { ...base.inputs, [asm.key]: nudge(asm.value) } }]);
-      if (asm.kind === 'model') {
+      if (asm.kind === 'model' && asm.evidence_sides) {
+        // Per-side evidence: move one side at a time so each side is attributed on its own.
+        for (const side of ['baseline', 'scaled']) {
+          variants.push([`${asm.id}#${side}`, { ...base, assumptions: { ...base.assumptions, [asm.key]: { ...asm.value, [side]: nudge(asm.value[side]) } } }]);
+        }
+      } else if (asm.kind === 'model') {
         // The route share must stay one of the route radios.
         const moved = asm.key === 'campaign_growth_share' ? Object.values(ROUTE_SHARE).find((x) => x !== asm.value) : nudge(asm.value);
         variants.push([asm.id, { ...base, assumptions: { ...base.assumptions, [asm.key]: moved } }]);
@@ -1554,6 +1566,10 @@ for (const asm of Object.values(assumptions)) {
     const classOf = (id) => {
       if (id === MULTIPLIER) return 'hypothesis';
       if (id.startsWith('src-')) return sources[id.slice(4)].evidence;
+      if (id.includes('#')) {
+        const [base, side] = id.split('#');
+        return assumptions[base].evidence_sides[side];
+      }
       if (assumptions[id]) return assumptions[id].evidence;
       return resolve(claims[id]).evidence;
     };
@@ -1561,7 +1577,9 @@ for (const asm of Object.values(assumptions)) {
       if (result.has(c.id)) return result.get(c.id);
       const inputs = [...new Set([...(declared.get(c.id) ?? []), ...(traced.get(c.id) ?? [])])];
       const twoX = c.side === '2x' || (c.derived !== undefined && !c.derived.startsWith('baseline.'));
-      let evidence = classOf(c.ref);
+      // A per-side ref is read on the side the claim is built on: baseline unless 2x.
+      const refAsm = assumptions[c.ref];
+      let evidence = refAsm?.evidence_sides ? refAsm.evidence_sides[twoX ? 'scaled' : 'baseline'] : classOf(c.ref);
       for (const id of [...inputs, ...(twoX ? [MULTIPLIER] : [])]) {
         const e = classOf(id);
         if (RANK[e] < RANK[evidence]) evidence = e;

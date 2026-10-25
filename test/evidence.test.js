@@ -86,7 +86,13 @@ test('assumption counts and the hypothesis list', () => {
 });
 
 const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
-const classOf = (ref) => (ref.startsWith('src-') ? sources[ref.slice(4)].evidence : assumptions[ref].evidence);
+// A per-side ref can be no weaker than its baseline side for a baseline-only claim, so the
+// ceiling for a claim is the strongest side of its ref.
+const classOf = (ref) => {
+  if (ref.startsWith('src-')) return sources[ref.slice(4)].evidence;
+  const a = assumptions[ref];
+  return a.evidence_sides ? Object.values(a.evidence_sides).sort((x, y) => RANK[y] - RANK[x])[0] : a.evidence;
+};
 
 // Code review CR-01: an oracle written independently of data.js. The claim families
 // below are computed at the 2x scenario, or state a change from baseline to 2x, so
@@ -110,10 +116,20 @@ const EXPECTED = {
   'cpa-storage-base': 'illustrative', // storage per variant only
   'matrix-approved': 'illustrative',
   'tests-winners-hi': 'illustrative', // illustrative cadence x a company-reported rate
-  'cpa-review-base': 'hypothesis', // the human-touch share uses the auto-approval share
-  'calc-utilisation-base': 'hypothesis',
-  'cpcm-base': 'hypothesis', // variant cost and tooling feed it
-  'cpa-base': 'hypothesis',
+  // Per-side evidence (06-04): the baseline side of a per-side assumption is illustrative, so
+  // baseline-only figures are illustrative; the 2x side and every change stay hypotheses.
+  'cpa-review-base': 'illustrative', // the human-touch share uses the baseline auto-approval share
+  'calc-utilisation-base': 'illustrative',
+  'cpcm-base': 'illustrative', // baseline variant cost and tooling feed it
+  'cpa-base': 'illustrative',
+  'total-cost-base': 'illustrative',
+  'budget-share-base': 'illustrative',
+  'cpa-generation-base': 'illustrative',
+  'calc-cost_per_asset-base': 'illustrative',
+  'calc-total_cost-base': 'illustrative',
+  'calc-brief_to_live-base': 'illustrative',
+  'cpa-scaled': 'hypothesis',
+  'calc-cost_per_asset-scaled': 'hypothesis',
   'stat-ordinary-min': 'benchmark',
   'ref-auto-approved-share': 'observed',
   'cap-2x-ref-low-util': 'hypothesis', // company-reported input, computed at 2x
@@ -163,9 +179,18 @@ test('derived claims that move with the multiplier or a hypothesis input are hyp
   const A = defaultAssumptions();
   const moves = [['multiplier', { ...I, multiplier: 3 }, A]];
   const shrink = (v) => (typeof v === 'number' ? v * 0.9 : { baseline: v.baseline * 0.9, scaled: v.scaled * 0.9 });
+  const baselineOnly = [];
   for (const asm of Object.values(assumptions)) {
     if (asm.evidence !== 'hypothesis') continue;
     if (asm.kind === 'input') moves.push([asm.id, { ...I, [asm.key]: shrink(asm.value) }, A]);
+    // Per-side assumptions move one side at a time: the scaled side is a hypothesis move, the
+    // baseline side is recorded and checked separately below.
+    if (asm.kind === 'model' && asm.evidence_sides && asm.key !== 'tier_mix') {
+      assert.deepEqual(asm.evidence_sides, { baseline: 'illustrative', scaled: 'hypothesis' }, asm.id);
+      moves.push([`${asm.id}#scaled`, I, { ...A, [asm.key]: { ...asm.value, scaled: asm.value.scaled * 0.9 } }]);
+      baselineOnly.push([`${asm.id}#baseline`, I, { ...A, [asm.key]: { ...asm.value, baseline: asm.value.baseline * 0.9 } }]);
+      continue;
+    }
     // The tier mix is skipped (its shares must sum to one); the route moves to a valid radio.
     if (asm.kind === 'model' && asm.key === 'campaign_growth_share') moves.push([asm.id, I, { ...A, campaign_growth_share: 1 }]);
     else if (asm.kind === 'model' && asm.key !== 'tier_mix') moves.push([asm.id, I, { ...A, [asm.key]: shrink(asm.value) }]);
@@ -177,4 +202,33 @@ test('derived claims that move with the multiplier or a hypothesis input are hyp
       if (Math.abs(at(inputs, a, c) - was) > 1e-9 * Math.max(1, Math.abs(was))) assert.equal(c.evidence, 'hypothesis', `${c.id} moves with ${name}`);
     }
   }
+  // Moving only a baseline side may change claims, but a claim that no hypothesis move
+  // touches must then be at most illustrative: baseline-only claims are not hypotheses by
+  // inheritance, and none is stronger than illustrative.
+  assert.ok(baselineOnly.length >= 6, `only ${baselineOnly.length} baseline moves`);
+  let illustrative = 0; // claims moved only by baseline sides
+  for (const c of derived) {
+    const was = at(I, A, c);
+    const hypMoves = moves.some(([, inputs, a]) => Math.abs(at(inputs, a, c) - was) > 1e-9 * Math.max(1, Math.abs(was)));
+    const baseMoves = baselineOnly.some(([, inputs, a]) => Math.abs(at(inputs, a, c) - was) > 1e-9 * Math.max(1, Math.abs(was)));
+    if (baseMoves) assert.ok(RANK[c.evidence] <= RANK.illustrative, `${c.id} moves with a baseline side but is ${c.evidence}`);
+    if (baseMoves && !hypMoves) { assert.equal(c.evidence, 'illustrative', c.id); illustrative += 1; }
+  }
+});
+
+test('per-side evidence: sides, display and the per-side trace', () => {
+  for (const id of ['asm-auto-approval', 'asm-variant-cost', 'asm-tooling', 'asm-ai-share-variant', 'asm-ai-share-tooling', 'asm-build-days', 'asm-tier-mix', 'asm-sampling-rate', 'asm-escalation-rate']) {
+    assert.deepEqual(assumptions[id].evidence_sides, { baseline: 'illustrative', scaled: 'hypothesis' }, id);
+    assert.equal(assumptions[id].evidence, 'hypothesis', `${id}: the register cell shows the weakest class`);
+  }
+  assert.deepEqual(assumptions['asm-sampling-rate'].value, { baseline: 0.05, scaled: 0.05 });
+  assert.deepEqual(assumptions['asm-escalation-rate'].value, { baseline: 0.05, scaled: 0.05 });
+  assert.equal(assumptions['asm-sampling-rate'].display, '5%');
+  assert.equal(assumptions['asm-escalation-rate'].display, '5%');
+  assert.equal(assumptions['asm-rework-rate'].evidence_sides, undefined);
+  // The trace attributes each side on its own.
+  const ins = claims['cpa-base'].inputs;
+  assert.ok(ins.includes('asm-variant-cost#baseline') && !ins.includes('asm-variant-cost#scaled'));
+  assert.ok(claims['cpa-scaled'].inputs.includes('asm-variant-cost#scaled') && !claims['cpa-scaled'].inputs.includes('asm-variant-cost#baseline'));
+  assert.ok(claims['cpa-base'].inputs.includes('asm-sampling-rate#baseline'));
 });
