@@ -2,7 +2,7 @@
 // The page's data-fig spans, the register rows and compute() all read from here.
 import { variantMatrix, compute } from './calc.js';
 import { formatValue } from './format.js';
-import { present, defaultValues, RESULT_ROWS } from './model.js';
+import { present, defaultValues, RESULT_ROWS, ROUTE_SHARE } from './model.js';
 
 export const GRADES = ['Benchmark', 'Modelled', 'Speculative'];
 export const FLAGS = ['vendor-claimed', 'company-reported'];
@@ -854,7 +854,7 @@ export const claims = {
     ['tests-winners-hi', 'winrate-paper', 'winners a quarter at the highest reported rate'],
   ]) {
     const value = Math.round(cadence * claims[rateId].value);
-    claims[id] = { id, value, unit, display: String(value), grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter' };
+    claims[id] = { id, value, unit, display: String(value), grade: 'Modelled', flag: null, ref: 'asm-tests-per-quarter', inputs: [rateId] };
   }
 }
 
@@ -884,11 +884,16 @@ export function defaultAssumptions() {
   }
   add('matrix-total', r.total, 'derived variants entering review in the worked campaign, before the gate', 'int', 'asm-matrix-independence', null, 'total');
   add('matrix-per-concept', r.per_concept, 'derived variants per master concept, before the gate', 'int', 'asm-matrix-independence', null, 'per_concept');
+  // Evidence inputs: the totals multiply every factor; each factor's running count multiplies the ones before it.
+  const matrixInputs = ['asm-matrix-concepts', ...r.rows.map((row) => `asm-matrix-${row.id}`)];
+  claims['matrix-total'].inputs = matrixInputs;
+  claims['matrix-per-concept'].inputs = matrixInputs;
+  r.rows.forEach((row, i) => { claims[`matrix-${row.id}-variants`].inputs = matrixInputs.slice(0, i + 2); });
   // CR-02: the matrix counts derived variants before the gate. Approved is
   // that count at the approval yield, the same yield s01 uses for the headline.
   const approved = r.total * assumptions['asm-approval-yield'].value;
   claims['matrix-approved'] = { id: 'matrix-approved', value: approved, unit: 'approved variants in the worked campaign, at the approval yield',
-    display: formatValue(approved, 'int'), grade: 'Modelled', flag: null, ref: 'asm-approval-yield', format: 'int' };
+    display: formatValue(approved, 'int'), grade: 'Modelled', flag: null, ref: 'asm-approval-yield', format: 'int', inputs: ['matrix-total'] };
   claims['avg-campaign-variants'] = {
     id: 'avg-campaign-variants', value: 1000, unit: 'derived variants per campaign in the model: internal throughput, not the claim', display: '1,000',
     grade: 'Modelled', flag: null, ref: 'asm-campaigns',
@@ -913,15 +918,15 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
   scaled.forEach((v, i) => {
     const id = `tier-default-t${i}`;
     claims[id] = { id, value: v, unit: 'model default share of variants at 2x', display: formatValue(v, 'pct0'),
-      grade: 'Modelled', flag: null, ref: `asm-tier-range-t${i}`, format: 'pct0' };
+      grade: 'Modelled', flag: null, ref: `asm-tier-range-t${i}`, format: 'pct0', inputs: ['asm-tier-mix'], side: '2x' };
   });
   const eligible = scaled[0] + scaled[1];
   const auto = assumptions['asm-auto-approval'].value.scaled;
   const autoOfEligible = Number((auto / eligible).toFixed(2));
   claims['tier-eligible-share-scaled'] = { id: 'tier-eligible-share-scaled', value: eligible, unit: 'share of variants in tiers T0 and T1 at 2x',
-    display: formatValue(eligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
+    display: formatValue(eligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0', inputs: ['asm-tier-mix'], side: '2x' };
   claims['auto-share-of-eligible'] = { id: 'auto-share-of-eligible', value: autoOfEligible, unit: 'share of tier-eligible variants the agent must clear without a full human review',
-    display: formatValue(autoOfEligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0' };
+    display: formatValue(autoOfEligible, 'pct0'), grade: 'Modelled', flag: null, ref: 'asm-auto-approval', format: 'pct0', inputs: ['asm-tier-mix'], side: '2x' };
   claims['ref-auto-approved-share'] = { id: 'ref-auto-approved-share', value: 0.192, unit: 'share of merged code changes approved with no human, reference organisation',
     display: '19.2%', grade: 'Modelled', flag: 'company-reported', ref: 'src-intercom-2x-teardown' };
   claims['ref-bot-approval-rate'] = { id: 'ref-bot-approval-rate', value: 0.284, unit: 'rolling bot approval rate, reference organisation',
@@ -958,8 +963,10 @@ assumptions['asm-review-agent-design'] = { id: 'asm-review-agent-design', label:
   // figure flows through (data.test then flags the stale utilisation literal).
   put('cap-2x-ref-low-util', 1.113, '2x utilisation at the reference low clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
     { multiplier: 2, auto_approval_share: claims['ref-auto-approved-share'].value }, 'src-intercom-2x-teardown', 'company-reported');
+  claims['cap-2x-ref-low-util'].inputs = ['ref-auto-approved-share'];
   put('cap-2x-ref-high-util', 1.001, '2x utilisation at the reference high clearance rate (company-reported input)', 'scenario.utilisation', 3, 'pct1',
     { multiplier: 2, auto_approval_share: claims['ref-bot-approval-rate'].value }, 'src-intercom-2x-teardown', 'company-reported');
+  claims['cap-2x-ref-high-util'].inputs = ['ref-bot-approval-rate'];
 }
 
 function evidence(id, label, grade, display, basis) {
@@ -1009,13 +1016,14 @@ assumptions['asm-incident-rate'] = { id: 'asm-incident-rate', label: 'Rights inc
   stat('stat-wilful-max', 150000, 'USD per work infringed, ceiling where the court finds wilful infringement');
   const rate = assumptions['asm-incident-rate'].value;
   const incidents = claims['concepts-scaled'].value * rate;
-  const ops = (id, value, unit, format) => {
-    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Speculative', flag: null, ref: 'asm-incident-rate', format };
+  const ops = (id, value, unit, format, statId) => {
+    claims[id] = { id, value, unit, display: formatValue(value, format), grade: 'Speculative', flag: null, ref: 'asm-incident-rate', format,
+      inputs: ['concepts-scaled', ...(statId ? [statId] : [])], side: '2x' };
   };
   ops('ops-incidents', incidents, 'illustrative rights incidents a year at 2x master concepts', 'num1');
-  ops('ops-exposure-lo', incidents * claims['stat-ordinary-min'].value, 'USD illustrative statutory exposure a year, ordinary minimum', 'usd0');
-  ops('ops-exposure-hi', incidents * claims['stat-ordinary-max'].value, 'USD illustrative statutory exposure a year, ordinary maximum', 'usd0');
-  ops('ops-exposure-wilful', incidents * claims['stat-wilful-max'].value, 'USD illustrative statutory exposure a year, wilful ceiling', 'usd0');
+  ops('ops-exposure-lo', incidents * claims['stat-ordinary-min'].value, 'USD illustrative statutory exposure a year, ordinary minimum', 'usd0', 'stat-ordinary-min');
+  ops('ops-exposure-hi', incidents * claims['stat-ordinary-max'].value, 'USD illustrative statutory exposure a year, ordinary maximum', 'usd0', 'stat-ordinary-max');
+  ops('ops-exposure-wilful', incidents * claims['stat-wilful-max'].value, 'USD illustrative statutory exposure a year, wilful ceiling', 'usd0', 'stat-wilful-max');
 }
 
 // ---- Plan 03-03: answer-engine visibility claims (non-vendor traffic studies, one benchmark) ----
@@ -1056,10 +1064,16 @@ export function modelContext() {
 
 // Every static number in the s11 results table is generated from the same
 // presenter the live calculator uses; `calc` is a path into
-// present(defaultValues(ctx), ctx) that data.test re-resolves.
-{
-  const ctx = modelContext();
+// present(defaultValues(ctx), ctx) that data.test re-resolves. The builder takes
+// any context, so the evidence trace below can re-run it with one input moved.
+// `side: '2x'` marks figures computed at the 2x scenario or stating a change from
+// baseline to 2x: the scaled and change cells, the headcount scenarios, the
+// sensitivity cells (each measured at 2x) and every Show the maths step (each step
+// works through the 2x numbers).
+function presenterClaims(ctx) {
+  const out = {};
   const p = present(defaultValues(ctx), ctx);
+  if (!p.ok) throw new Error(`presenter claims: the model rejected its inputs (${p.errors.map((e) => e.message).join('; ')})`);
   for (const row of p.rows) {
     const def = RESULT_ROWS.find((d) => d.id === row.id);
     for (const [cellName, node, format] of [['base', row.base, def.format], ['scaled', row.scaled, def.format], ['change', row.change, def.changeFormat]]) {
@@ -1070,13 +1084,14 @@ export function modelContext() {
         display: node.text, grade: row.grade, flag: null, ref: row.ref, calc: `rows.${row.id}.${cellName}`,
       };
       if (format !== 'none' && formatValue(node.value, format) === node.text) claim.format = format;
-      claims[id] = claim;
+      if (cellName !== 'base') claim.side = '2x';
+      out[id] = claim;
     }
   }
   // Headcount scenario (default: Redeploy) and sensitivity cells, from the same presenter.
   for (const row of p.scenario.rows) {
     const id = `calc-scen-${row.id}`;
-    claims[id] = { id, value: row.value, unit: `Headcount scenario ${p.scenario.name}: ${row.label}`, display: row.text, grade: row.grade, flag: null, ref: row.ref, calc: `scenario.rows.${row.id}` };
+    out[id] = { id, value: row.value, unit: `Headcount scenario ${p.scenario.name}: ${row.label}`, display: row.text, grade: row.grade, flag: null, ref: row.ref, calc: `scenario.rows.${row.id}`, side: '2x' };
   }
   // The s11 note quotes Hold's production cost change at the page defaults, so the
   // sentence is scoped to the defaults and its number comes from the presenter.
@@ -1084,28 +1099,28 @@ export function modelContext() {
     const hold = present({ ...defaultValues(ctx), scenario: 'hold' }, ctx).scenario;
     const row = hold.rows.find((r) => r.id === 'production_cost_change');
     const id = 'calc-scen-hold-production_cost_change';
-    claims[id] = {
+    out[id] = {
       id, value: row.value, unit: `Headcount scenario ${hold.name} at the page defaults: ${row.label}`, display: row.text, grade: row.grade, flag: null,
-      ref: row.ref, calc: 'scenarioHold.rows.production_cost_change',
+      ref: row.ref, calc: 'scenarioHold.rows.production_cost_change', side: '2x',
     };
   }
   for (const row of p.sensitivity) {
     for (const [cellName, node] of Object.entries(row.cells)) {
       if (node.value === undefined) continue;
       const id = `calc-sens-${row.key}-${cellName}`;
-      claims[id] = {
+      out[id] = {
         id, value: node.value, unit: `Sensitivity of ${row.label}, ${cellName}`, display: node.text, grade: row.grade, flag: null, ref: row.ref,
-        calc: `sensitivity.${row.key}.${cellName}`,
+        calc: `sensitivity.${row.key}.${cellName}`, side: '2x',
       };
     }
   }
   // Show the maths and What you must believe: every figure shares its item's grade and register row.
-  const figClaim = (fig, node, unit, grade, ref, calc) => {
-    if (node.value !== undefined) claims[fig] = { id: fig, value: node.value, unit, display: node.text, grade, flag: null, ref, calc };
+  const figClaim = (fig, node, unit, grade, ref, calc, side) => {
+    if (node.value !== undefined) out[fig] = { id: fig, value: node.value, unit, display: node.text, grade, flag: null, ref, calc, ...(side ? { side } : {}) };
   };
   for (const m of p.maths) {
     for (const part of [...m.parts, m.result]) {
-      if (part.fig) figClaim(part.fig, part, `Show the maths, ${m.name}`, m.grade, m.ref, `maths.${m.id}.${part.fig.split('-').pop()}`);
+      if (part.fig) figClaim(part.fig, part, `Show the maths, ${m.name}`, m.grade, m.ref, `maths.${m.id}.${part.fig.split('-').pop()}`, '2x');
     }
   }
   for (const b of p.believe) {
@@ -1113,7 +1128,9 @@ export function modelContext() {
       if (part.fig) figClaim(part.fig, part, `What you must believe: ${b.statement}`, b.grade, b.ref, `believe.${b.key}.${part.fig.endsWith('-swing') ? 'swing' : 'value'}`);
     }
   }
+  return out;
 }
+Object.assign(claims, presenterClaims(modelContext()));
 
 // ---- Evidence classes for assumptions and claims (EVID-01) ----
 // Nothing is observed for the subject organisation, so no assumption is 'observed'.
@@ -1131,15 +1148,98 @@ for (const asm of Object.values(assumptions)) {
   asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
 }
 
-// A claim takes the weakest class of its inputs; anything on the 2x side of the model
-// is at most a hypothesis, even when its input is company-reported.
+// A claim takes the weakest class of everything it depends on (CONTEXT: derived
+// claims inherit the weakest class of their inputs), and anything computed at the
+// 2x scenario or stating a change from baseline to 2x is at most a hypothesis.
+//
+// Inputs are traced, not guessed from ids: each compute() input, model assumption
+// and fixed calculator figure is moved in turn, the model is re-run, and every
+// figure that changes depends on it. The 2x multiplier is traced the same way and
+// counts as a hypothesis, because doubling is itself the programme effect. Figures
+// built outside the model list their inputs in `inputs`; the side is '2x' when the
+// figure was built on the 2x side (`side`) or its compute() path is not a
+// `baseline.` path. Each claim exposes the ids it depends on as `inputs`.
+//
+// The trace re-runs the presenter about fifty times, so it runs on the first read
+// of a claim's `evidence` or `inputs` rather than on every page load.
 {
   const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
-  const weakest = (x, y) => (RANK[x] <= RANK[y] ? x : y);
-  const twoXSide = (c) => c.id.endsWith('-scaled') || (c.derived ?? '').startsWith('scenario.') ||
-    /scaled|change|scenario|sensitivity/.test(c.calc ?? '') || c.id.startsWith('calc-scen') || c.id.startsWith('calc-sens');
+  const MULTIPLIER = 'scenario-multiplier';
+  const nudge = (v) => {
+    if (typeof v === 'number') return v === 0 ? 0.01 : v * 0.9;
+    // Tier mixes must still sum to one: move two points from T0 to T2.
+    if (Array.isArray(v)) return v.map((x, i) => (i === 0 ? x - 0.02 : i === 2 ? x + 0.02 : x));
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, nudge(x)]));
+  };
+  const derivedValue = (c, ctx) => {
+    const o = c.override;
+    const inputs = o ? { ...ctx.inputs, multiplier: o.multiplier } : ctx.inputs;
+    const a = o ? { ...ctx.assumptions, auto_approval_share: { baseline: o.auto_approval_share, scaled: o.auto_approval_share } } : ctx.assumptions;
+    const r = compute(inputs, a);
+    if (!r.ok) throw new Error(`evidence trace: ${c.id} has no value under a moved input`);
+    return c.derived.split('.').reduce((x, k) => x[k], r);
+  };
+  const differs = (x, y) => (typeof x === 'number' && typeof y === 'number' ? Math.abs(x - y) > 1e-9 * Math.max(1, Math.abs(x)) : x !== y);
+
+  function trace() {
+    const base = modelContext();
+    const variants = [[MULTIPLIER, { ...base, inputs: { ...base.inputs, multiplier: base.inputs.multiplier * 1.25 } }]];
+    for (const asm of Object.values(assumptions)) {
+      if (asm.kind === 'input') variants.push([asm.id, { ...base, inputs: { ...base.inputs, [asm.key]: nudge(asm.value) } }]);
+      if (asm.kind === 'model') {
+        // The route share must stay one of the route radios.
+        const moved = asm.key === 'campaign_growth_share' ? Object.values(ROUTE_SHARE).find((x) => x !== asm.value) : nudge(asm.value);
+        variants.push([asm.id, { ...base, assumptions: { ...base.assumptions, [asm.key]: moved } }]);
+      }
+    }
+    variants.push(['asm-loaded-fte-cost', { ...base, fixed: { ...base.fixed, loaded_fte_cost: nudge(base.fixed.loaded_fte_cost) } }]);
+    variants.push(['asm-change-mgmt', { ...base, fixed: { ...base.fixed, change_cost_per_fte: nudge(base.fixed.change_cost_per_fte) } }]);
+
+    // Compare against the unmoved model output: derived claims store rounded values.
+    const modelled = Object.values(claims).filter((c) => c.derived || c.calc);
+    const valueIn = (c, ctx, presented) => (c.derived ? derivedValue(c, ctx) : presented[c.id]?.value);
+    const presentedBase = presenterClaims(base);
+    const unmoved = new Map(modelled.map((c) => [c.id, valueIn(c, base, presentedBase)]));
+    const traced = new Map(modelled.map((c) => [c.id, []]));
+    for (const [id, ctx] of variants) {
+      const presented = presenterClaims(ctx);
+      for (const c of modelled) if (differs(valueIn(c, ctx, presented), unmoved.get(c.id))) traced.get(c.id).push(id);
+    }
+
+    const result = new Map();
+    const classOf = (id) => {
+      if (id === MULTIPLIER) return 'hypothesis';
+      if (id.startsWith('src-')) return sources[id.slice(4)].evidence;
+      if (assumptions[id]) return assumptions[id].evidence;
+      return resolve(claims[id]).evidence;
+    };
+    function resolve(c) {
+      if (result.has(c.id)) return result.get(c.id);
+      const inputs = [...new Set([...(declared.get(c.id) ?? []), ...(traced.get(c.id) ?? [])])];
+      const twoX = c.side === '2x' || (c.derived !== undefined && !c.derived.startsWith('baseline.'));
+      let evidence = classOf(c.ref);
+      for (const id of [...inputs, ...(twoX ? [MULTIPLIER] : [])]) {
+        const e = classOf(id);
+        if (RANK[e] < RANK[evidence]) evidence = e;
+      }
+      const out = { evidence, inputs };
+      result.set(c.id, out);
+      return out;
+    }
+    for (const c of Object.values(claims)) resolve(c);
+    return result;
+  }
+
+  let traced = null;
+  const get = (c, field) => {
+    if (traced === null) traced = trace();
+    return traced.get(c.id)[field];
+  };
+  const declared = new Map();
   for (const c of Object.values(claims)) {
-    const base = c.ref.startsWith('src-') ? sources[c.ref.slice(4)].evidence : assumptions[c.ref].evidence;
-    c.evidence = twoXSide(c) ? weakest(base, 'hypothesis') : base;
+    declared.set(c.id, c.inputs ?? []);
+    delete c.inputs;
+    Object.defineProperty(c, 'evidence', { get: () => get(c, 'evidence'), enumerable: true, configurable: true });
+    Object.defineProperty(c, 'inputs', { get: () => get(c, 'inputs'), enumerable: true, configurable: true });
   }
 }

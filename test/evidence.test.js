@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EVIDENCE, ALLOWED_PAIRS, sources, assumptions, claims } from '../site/js/data.js';
+import { EVIDENCE, ALLOWED_PAIRS, sources, assumptions, claims, defaultInputs, defaultAssumptions } from '../site/js/data.js';
+import { compute } from '../site/js/calc.js';
 
 const INDEPENDENT = new Set(['government', 'academic', 'press', 'tracker', 'secondary', 'law-firm commentary']);
 
@@ -63,16 +64,95 @@ test('assumption counts and the hypothesis list', () => {
 });
 
 const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
-const weakest = (a, b) => (RANK[a] <= RANK[b] ? a : b);
-const twoXSide = (c) => c.id.endsWith('-scaled') || (c.derived ?? '').startsWith('scenario.') ||
-  /scaled|change|scenario|sensitivity/.test(c.calc ?? '') || c.id.startsWith('calc-scen') || c.id.startsWith('calc-sens');
-function expectedClaimEvidence(c) {
-  const base = c.ref.startsWith('src-') ? sources[c.ref.slice(4)].evidence : assumptions[c.ref].evidence;
-  return twoXSide(c) ? weakest(base, 'hypothesis') : base;
-}
+const classOf = (ref) => (ref.startsWith('src-') ? sources[ref.slice(4)].evidence : assumptions[ref].evidence);
 
-test('claim evidence is the weakest of its ref and the 2x-side rule', () => {
-  assert.equal(claims['cap-2x-ref-low-util'].evidence, 'hypothesis');
-  assert.equal(claims['cap-2x-ref-high-util'].evidence, 'hypothesis');
-  for (const c of Object.values(claims)) assert.equal(c.evidence, expectedClaimEvidence(c), c.id);
+// Code review CR-01: an oracle written independently of data.js. The claim families
+// below are computed at the 2x scenario, or state a change from baseline to 2x, so
+// each must be a hypothesis whatever its nominal ref says.
+const TWO_X_FAMILIES = [
+  /^calc-maths-/, /^calc-scen-/, /^calc-sens-/, /^ops-/, /^cap-2x-/, /^tier-default-t\d$/,
+  /-scaled$/, /-change$/, /-delta$/,
+  /^ai-spend-ratio$/, /^break-even-auto-approval$/, /^capacity-auto-approval$/, /^auto-share-of-eligible$/,
+  /^calc-believe-(auto2|tooling|vcost|vcost-swing)$/,
+];
+
+// Hand-checked expectations, both ways: what must stay better than a hypothesis,
+// and baseline figures that are hypotheses only because a hypothesis input feeds them.
+const EXPECTED = {
+  'concepts-base': 'illustrative', // campaigns x concepts per campaign
+  'cm-base': 'illustrative', // campaigns x markets
+  'calc-campaign_markets-base': 'illustrative',
+  'calc-believe-markets': 'illustrative',
+  'cap-capacity-hours': 'illustrative', // reviewer FTE x review hours
+  'cap-1x-variants': 'illustrative',
+  'cpa-storage-base': 'illustrative', // storage per variant only
+  'matrix-approved': 'illustrative',
+  'tests-winners-hi': 'illustrative', // illustrative cadence x a company-reported rate
+  'cpa-review-base': 'hypothesis', // the human-touch share uses the auto-approval share
+  'calc-utilisation-base': 'hypothesis',
+  'cpcm-base': 'hypothesis', // variant cost and tooling feed it
+  'cpa-base': 'hypothesis',
+  'stat-ordinary-min': 'benchmark',
+  'ref-auto-approved-share': 'observed',
+  'cap-2x-ref-low-util': 'hypothesis', // company-reported input, computed at 2x
+  'cap-2x-ref-high-util': 'hypothesis',
+  'ops-exposure-lo': 'hypothesis', // statute range x incidents at 2x master concepts
+};
+
+test('claims computed at 2x, or stating a change to 2x, are hypotheses', () => {
+  let n = 0;
+  for (const c of Object.values(claims)) {
+    if (!TWO_X_FAMILIES.some((re) => re.test(c.id))) continue;
+    n += 1;
+    assert.equal(c.evidence, 'hypothesis', c.id);
+  }
+  assert.ok(n >= 120, `only ${n} claims matched a 2x family`);
+  for (const id of ['cpcm-change', 'budget-share-delta', 'calc-maths-touch-1', 'ops-incidents', 'calc-maths-campaign_markets-1']) {
+    assert.equal(claims[id].evidence, 'hypothesis', id);
+  }
+  // Unit wording is a second, independent signal.
+  for (const c of Object.values(claims)) {
+    if (/\bat 2x\b|2x minus/.test(c.unit)) assert.equal(c.evidence, 'hypothesis', `${c.id}: unit "${c.unit}"`);
+    if ((c.derived || c.calc) && /\bchange\b/i.test(c.unit)) assert.equal(c.evidence, 'hypothesis', `${c.id}: unit "${c.unit}"`);
+  }
+});
+
+test('hand-checked claim evidence', () => {
+  for (const [id, ev] of Object.entries(EXPECTED)) assert.equal(claims[id].evidence, ev, id);
+});
+
+test('no claim is stronger than its own ref', () => {
+  for (const c of Object.values(claims)) assert.ok(RANK[c.evidence] <= RANK[classOf(c.ref)], `${c.id}: ${c.evidence} above ${c.ref}`);
+});
+
+// Behavioural check on the compute() path: move the multiplier, or any hypothesis
+// assumption the model reads, and every derived claim that changes must be a hypothesis.
+test('derived claims that move with the multiplier or a hypothesis input are hypotheses', () => {
+  const at = (inputs, a, c) => {
+    const o = c.override;
+    const r = compute(o ? { ...inputs, multiplier: o.multiplier } : inputs,
+      o ? { ...a, auto_approval_share: { baseline: o.auto_approval_share, scaled: o.auto_approval_share } } : a);
+    assert.equal(r.ok, true, c.id);
+    return c.derived.split('.').reduce((x, k) => x[k], r);
+  };
+  const derived = Object.values(claims).filter((c) => c.derived);
+  assert.ok(derived.length >= 40);
+  const I = defaultInputs();
+  const A = defaultAssumptions();
+  const moves = [['multiplier', { ...I, multiplier: 3 }, A]];
+  const shrink = (v) => (typeof v === 'number' ? v * 0.9 : { baseline: v.baseline * 0.9, scaled: v.scaled * 0.9 });
+  for (const asm of Object.values(assumptions)) {
+    if (asm.evidence !== 'hypothesis') continue;
+    if (asm.kind === 'input') moves.push([asm.id, { ...I, [asm.key]: shrink(asm.value) }, A]);
+    // The tier mix is skipped (its shares must sum to one); the route moves to a valid radio.
+    if (asm.kind === 'model' && asm.key === 'campaign_growth_share') moves.push([asm.id, I, { ...A, campaign_growth_share: 1 }]);
+    else if (asm.kind === 'model' && asm.key !== 'tier_mix') moves.push([asm.id, I, { ...A, [asm.key]: shrink(asm.value) }]);
+  }
+  assert.ok(moves.length >= 8, `only ${moves.length} moves`);
+  for (const c of derived) {
+    const was = at(I, A, c);
+    for (const [name, inputs, a] of moves) {
+      if (Math.abs(at(inputs, a, c) - was) > 1e-9 * Math.max(1, Math.abs(was))) assert.equal(c.evidence, 'hypothesis', `${c.id} moves with ${name}`);
+    }
+  }
 });
