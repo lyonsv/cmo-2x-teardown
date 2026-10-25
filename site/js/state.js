@@ -71,7 +71,7 @@ export function toText(field, value) {
 export function parseHash(hash, ctx) {
   const values = defaultValues(ctx);
   const notices = [];
-  if (typeof hash !== 'string' || !hash.startsWith(HASH_PREFIX)) return { values, notices, restored: false };
+  if (typeof hash !== 'string' || !hash.startsWith(HASH_PREFIX)) return { values, notices, info: [], restored: false };
   const params = new URLSearchParams(hash.slice(HASH_PREFIX.length));
   for (const field of FIELDS) {
     const raw = params.get(field.key);
@@ -87,13 +87,18 @@ export function parseHash(hash, ctx) {
     else notices.push(ROUTE_LABEL);
   }
   // Recorded v1 links (redeploy, hold, reduce) map through LEGACY_SCENARIOS, then the allow-list applies.
+  // Code review WR-09: links written by this edition always carry scenario=, so a link
+  // without one is a first-edition link, whose default was redeploy: it opens in A, the
+  // same as an explicit scenario=redeploy. Mappings that change what the link showed say so.
+  const info = [];
   const rawSc = params.get('scenario');
-  const sc = rawSc !== null && Object.hasOwn(LEGACY_SCENARIOS, rawSc) ? LEGACY_SCENARIOS[rawSc] : rawSc;
-  if (sc !== null) {
-    if (SCENARIOS.includes(sc)) values.scenario = sc;
-    else notices.push(SCENARIO_LABEL);
-  }
-  return { values, notices, restored: true };
+  const legacy = rawSc === null || Object.hasOwn(LEGACY_SCENARIOS, rawSc);
+  const sc = rawSc === null ? LEGACY_SCENARIOS.redeploy : Object.hasOwn(LEGACY_SCENARIOS, rawSc) ? LEGACY_SCENARIOS[rawSc] : rawSc;
+  if (SCENARIOS.includes(sc)) values.scenario = sc;
+  else notices.push(SCENARIO_LABEL);
+  if (rawSc === 'reduce') info.push('This link used the first edition\'s Reduce scenario, which has no exact equivalent here, so it shows B: same output, lower cost.');
+  if (legacy && params.get('rework') !== null) info.push('This first-edition link sets the rework rate, which then applied to today and to 2x; it now changes only the 2x side, so today\'s figures are not moved.');
+  return { values, notices, info, restored: true };
 }
 
 export function serialiseHash(values, ctx) {
@@ -104,7 +109,10 @@ export function serialiseHash(values, ctx) {
   }
   // Only allow-listed values are written: a missing route or scenario is not a change (IN-01).
   if (ROUTES.includes(values.route) && values.route !== defaults.route) parts.push(`route=${values.route}`);
-  if (SCENARIOS.includes(values.scenario) && values.scenario !== defaults.scenario) parts.push(`scenario=${values.scenario}`);
+  // WR-09: any written link names its scenario, even the default, so a link without one
+  // can only be a first-edition link.
+  const sc = SCENARIOS.includes(values.scenario) ? values.scenario : defaults.scenario;
+  if (parts.length > 0 || sc !== defaults.scenario) parts.push(`scenario=${sc}`);
   return parts.length === 0 ? '' : HASH_PREFIX + parts.join('&');
 }
 

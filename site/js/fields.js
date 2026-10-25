@@ -18,7 +18,7 @@ export const FIELDS = [
   f('vcost', 'Variant generation cost at 2x', '$ per variant', 'usd', 'cost', 'asm-variant-cost', false, ABOVE0, '0.80', 'usd2'),
   f('mconcept', 'Agency fee per master concept', '$ per concept', 'usd', 'cost', 'asm-master-concept-cost', false, ABOVE0, '1,200', 'usd0'),
   f('yield', 'Approval yield', '%', 'pct', 'cost', 'asm-approval-yield', false, 'a percentage above 0 and up to 100', '95'),
-  f('rework', 'Rework rate', '%', 'pct', 'cost', 'asm-rework-rate', true, 'a percentage from 0 to 100', '15'),
+  f('rework', 'Rework rate at 2x', '%', 'pct', 'cost', 'asm-rework-rate', true, 'a percentage from 0 to 100', '15'),
   f('auto1', 'Auto-approval share today', '%', 'pct', 'automation', 'asm-auto-approval', true, 'a percentage from 0 to 100', '20'),
   f('auto2', 'Auto-approval share at 2x', '%', 'pct', 'automation', 'asm-auto-approval', true, 'a percentage from 0 to 100', '60'),
 ];

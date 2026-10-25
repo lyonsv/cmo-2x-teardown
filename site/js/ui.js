@@ -235,8 +235,8 @@ function restore() {
   const parsed = parseHash(location.hash, ctx);
   fillInputs(parsed.values);
   touched.clear();
-  pendingNotice = parsed.notices.length > 0
-    ? `Some values in the link were not valid, so defaults were used for: ${parsed.notices.join(', ')}.` : '';
+  const invalid = parsed.notices.length > 0 ? `Some values in the link were not valid, so defaults were used for: ${parsed.notices.join(', ')}.` : '';
+  pendingNotice = [invalid, ...(parsed.info || [])].filter(Boolean).join(' '); // WR-09: legacy-link notices
   update(false, true);
   pendingNotice = '';
   if (!parsed.restored) return;

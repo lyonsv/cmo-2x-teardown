@@ -31,27 +31,33 @@
     "hash": "#s11?markets=6&auto2=70",
     "expect": {
       "markets": 6,
-      "auto2": 0.7
+      "auto2": 0.7,
+      "scenario": "a"
     },
     "notices": [],
-    "note": "v1 link without scenario= now opens in the default C (documented in 07-07)"
+    "note": "v1 link without scenario= opens in A, the first edition's default (redeploy), the same as scenario=redeploy (code review WR-09); rewritten with scenario=a on serialise",
+    "acceptOnly": true
   },
   {
     "hash": "#s11?reviewers=4",
     "expect": {
-      "reviewers": 4
+      "reviewers": 4,
+      "scenario": "a"
     },
     "notices": [],
-    "note": "v1 link without scenario= now opens in the default C (documented in 07-07)"
+    "note": "v1 link without scenario= opens in A, the first edition's default (redeploy), the same as scenario=redeploy (code review WR-09); rewritten with scenario=a on serialise",
+    "acceptOnly": true
   },
   {
     "hash": "#s11?vcost=20&mconcept=10",
     "expect": {
       "vcost": 20,
-      "mconcept": 10
+      "mconcept": 10,
+      "scenario": "a"
     },
     "notices": [],
-    "note": "v1 link without scenario= now opens in the default C (documented in 07-07)"
+    "note": "v1 link without scenario= opens in A, the first edition's default (redeploy), the same as scenario=redeploy (code review WR-09); rewritten with scenario=a on serialise",
+    "acceptOnly": true
   },
   {
     "hash": "#s11?campaigns=50&concepts=30&markets=8&marketers=150&reviewers=14&minutes=10&vcost=0.6&mconcept=1500&yield=90&rework=10&auto1=25&auto2=65&route=markets&scenario=hold",
@@ -77,20 +83,24 @@
   },
   {
     "hash": "#s11?markets=abc",
-    "expect": {},
+    "expect": {
+      "scenario": "a"
+    },
     "notices": [
       "Markets per campaign"
     ],
     "acceptOnly": true,
-    "note": "v1 link without scenario= now opens in the default C (documented in 07-07)"
+    "note": "v1 link without scenario= opens in A, the first edition's default (redeploy), the same as scenario=redeploy (code review WR-09); rewritten with scenario=a on serialise"
   },
   {
     "hash": "#s11?route=__proto__",
-    "expect": {},
+    "expect": {
+      "scenario": "a"
+    },
     "notices": [
       "How you get to 2x"
     ],
     "acceptOnly": true,
-    "note": "v1 link without scenario= now opens in the default C (documented in 07-07)"
+    "note": "v1 link without scenario= opens in A, the first edition's default (redeploy), the same as scenario=redeploy (code review WR-09); rewritten with scenario=a on serialise"
   }
 ]

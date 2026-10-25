@@ -30,7 +30,21 @@ test('legacy scenario values map to A, B and B, and the writer never emits a leg
     assert.equal(v.scenario, mapped);
     assert.equal(serialiseHash(v, ctx), `#s11?scenario=${mapped}`);
   }
-  assert.equal(parseHash('#s11?markets=6', ctx).values.scenario, 'c', 'a v1 link without scenario= opens in the default C');
+  // WR-09: a v1 link without scenario= used v1's default (redeploy), so it opens in A, the same
+  // as an explicit scenario=redeploy; links this edition writes always name their scenario.
+  assert.equal(parseHash('#s11?markets=6', ctx).values.scenario, 'a', 'a v1 link without scenario= opens in A, like redeploy');
+  assert.equal(serialiseHash({ ...DEFAULTS, markets: 6 }, ctx), '#s11?markets=6&scenario=c');
+  assert.equal(parseHash(serialiseHash({ ...DEFAULTS, markets: 6 }, ctx), ctx).values.scenario, 'c');
+});
+
+test('WR-09: legacy mappings that change what the link showed carry a visible notice', () => {
+  assert.deepEqual(parseHash('#s11?scenario=redeploy', ctx).info, []);
+  assert.deepEqual(parseHash('#s11?markets=6', ctx).info, []);
+  assert.match(parseHash('#s11?scenario=reduce', ctx).info.join(' '), /Reduce scenario, which has no exact equivalent here, so it shows B/);
+  assert.match(parseHash('#s11?rework=10', ctx).info.join(' '), /now changes only the 2x side/);
+  assert.match(parseHash('#s11?rework=10&scenario=hold', ctx).info.join(' '), /now changes only the 2x side/);
+  assert.deepEqual(parseHash('#s11?rework=10&scenario=b', ctx).info, [], 'a link written by this edition is not legacy');
+  assert.deepEqual(parseHash('', ctx).info, []);
 });
 
 for (const l of links) {

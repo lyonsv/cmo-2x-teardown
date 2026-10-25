@@ -124,7 +124,8 @@ test('parseHash: route restores only from the allow-list (T-03.1-04, T-03.1-05)'
 test('parseHash: hostile keys cannot pollute prototypes', () => {
   const before = Object.getOwnPropertyNames(Object.prototype).sort();
   const r = parseHash('#s11?__proto__=1&constructor=2&prototype=3&toString=4', ctx);
-  assert.deepEqual(r.values, defaults);
+  // No scenario= means a first-edition link, which opens in A (WR-09).
+  assert.deepEqual(r.values, { ...defaults, scenario: 'a' });
   assert.deepEqual(Object.getOwnPropertyNames(Object.prototype).sort(), before);
   assert.equal({}.polluted, undefined);
   const r2 = parseHash('#s11?__proto__[polluted]=1&markets=4', ctx);
@@ -134,9 +135,9 @@ test('parseHash: hostile keys cannot pollute prototypes', () => {
 
 test('serialiseHash: defaults give an empty string, order follows FIELDS', () => {
   assert.equal(serialiseHash(defaults, ctx), '');
-  assert.equal(serialiseHash({ ...defaults, auto2: 0.7, markets: 6 }, ctx), '#s11?markets=6&auto2=70');
+  assert.equal(serialiseHash({ ...defaults, auto2: 0.7, markets: 6 }, ctx), '#s11?markets=6&auto2=70&scenario=c');
   assert.equal(serialiseHash({ ...defaults, scenario: 'b', markets: 6 }, ctx), '#s11?markets=6&scenario=b');
-  assert.equal(serialiseHash({ ...defaults, route: 'campaigns' }, ctx), '#s11?route=campaigns');
+  assert.equal(serialiseHash({ ...defaults, route: 'campaigns' }, ctx), '#s11?route=campaigns&scenario=c');
   assert.equal(serialiseHash({ ...defaults, scenario: 'b', markets: 6, route: 'markets' }, ctx), '#s11?markets=6&route=markets&scenario=b');
   assert.equal(changedCount(defaults, ctx), 0);
   assert.equal(changedCount({ ...defaults, auto2: 0.7, markets: 6 }, ctx), 2);
@@ -153,7 +154,8 @@ test('serialiseHash and changedCount never write or count a missing or unknown r
     assert.equal(serialiseHash(v, ctx), '', JSON.stringify(v));
     assert.equal(changedCount(v, ctx), 0);
   }
-  assert.equal(serialiseHash({ ...bare, markets: 6 }, ctx), '#s11?markets=6');
+  // WR-09: a written link always names its scenario (the default when none is given).
+  assert.equal(serialiseHash({ ...bare, markets: 6 }, ctx), '#s11?markets=6&scenario=c');
   assert.ok(!/undefined/.test(serialiseHash({ ...bare, markets: 6 }, ctx)));
 });
 
