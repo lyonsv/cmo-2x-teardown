@@ -149,8 +149,13 @@ test('autonomous share: 0 at L2, 0.6 x adoption at L3', () => {
 test('W5 states come from compute()', () => {
   const r = run();
   const w5 = r.workflows.W5;
-  near(w5.current.fte, 6.6175, 1e-4);
+  // WR-06: the W5 row uses the bridge's required FTE, so its FTE and labour cost match
+  // the reviewer bridge and scenario B's removable reviewers.
+  near(w5.current.fte, 7.785346, 1e-6);
   near(w5.current.required_fte, 7.785346, 1e-6);
+  near(w5.current.labour_cost, 7.785346 * 150000, 1);
+  near(w5.current.labour_cost - w5.agent.labour_cost, r.scenarios.B.labour.removable_by_pool.W5 * 150000, 1e-6);
+  near(w5.current.fte - w5.agent.fte, r.pools.W5.E, 1e-9);
   near(w5.current.autonomous_share, 0.19, 1e-9);
   near(w5.agent.autonomous_share, 0.57, 1e-9);
   near(w5.current.review_hours, 193.68, 0.01);

@@ -196,15 +196,19 @@ function reviewerState(side, a, which, fixed) {
   const rework = S('rework_rate');
   const total_hours = side.review_hours * (1 + rework);
   const exception = (units * S('auto_approval_share') * (S('sampling_rate') + S('escalation_rate')) * S('review_minutes_per_variant') / 60) * (1 + rework);
-  const labour = (total_hours / a.reviewer_hours_per_fte_year) * fixed.loaded_fte_cost;
+  // Code review WR-06: reviewers are staffed to the target utilisation, so the people
+  // the review work needs (and their cost) are the bridge's required FTE, the same
+  // figure scenario B removes, not the hours divided by a full reviewer year.
+  const fte = side.reviewer_fte_required;
+  const labour = fte * fixed.loaded_fte_cost;
   return {
     units,
     hours_per_unit: total_hours / units,
     review_hours: exception,
     execution_hours: total_hours - exception,
     total_hours,
-    fte: total_hours / a.reviewer_hours_per_fte_year,
-    required_fte: side.reviewer_fte_required,
+    fte,
+    required_fte: fte,
     labour_cost: labour,
     agency_cost: 0,
     ai_cost: 0,
