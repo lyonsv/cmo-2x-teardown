@@ -9,6 +9,7 @@ import { elementById, strip } from './helpers/html.js';
 
 export const SPINE = [
   'autonomy',
+  'build',
 ];
 
 const html = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');

@@ -325,7 +325,8 @@ const SECTION_RE = SECTION_IDS.join('|');
 const APPENDIX_SPANS = V1_IDS.filter((id) => SECTIONS.find((x) => x.id === HOSTED[id].host).title === HOSTED[id].title);
 // Phase 7 body h3s, one line per content plan so concurrent plans do not collide.
 const P7_H3_AUTONOMY = 6; // plan 07-02: ladder, measured, results, uncertain, bottleneck, principles
-const MEASURED_H3 = 23 + P7_H3_AUTONOMY; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
+const P7_H3_BUILD = 4; // plan 07-03 task 1: plain English, six parts, capabilities, own-integrate-platform
+const MEASURED_H3 = 23 + P7_H3_AUTONOMY + P7_H3_BUILD; // 9 hosted v1 headings plus 14 h3s inside appendix blocks, plus Phase 7 body h3s
 const MEASURED_H4 = 24; // headings inside hosted body blocks
 
 // Structural tokens only. A number that is a claim must be a data-fig span with a chip (CRED-02).
@@ -492,7 +493,7 @@ test('cross-reference labels match the new section numbering', () => {
 
 // Deliberate change (07-CONTEXT, plan 07-02): #autonomy is now filled, so it leaves the stub set.
 // Later content plans remove their section from this list as they fill it.
-const STUBS = ['build', 'supply-chain', 'economics'];
+const STUBS = ['supply-chain', 'economics'];
 test('framing stubs carry the to-follow marker only in the stub sections', () => {
   assert.equal((html.match(/class="to-follow"/g) || []).length, STUBS.length);
   for (const id of STUBS) {
