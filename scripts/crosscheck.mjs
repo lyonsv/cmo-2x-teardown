@@ -9,12 +9,13 @@ import { toText } from '../site/js/state.js';
 import { formatValue } from '../site/js/format.js';
 
 // Register rows that no page link points at, each with the reason. Each entry was inspected.
+// Computed from data.js: any kind 'engine' assumption without a page link is justified.
+const ENGINE_UNREFERENCED = 'An economics-engine input shown only in the register until the economics section presents it.';
 export const JUSTIFIED_UNREFERENCED = {
   'asm-sampling-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-escalation-rate': 'A review-model assumption shown only in the register because the calculator does not expose it.',
   'asm-reviewer-rate': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
   'asm-marketer-rate': 'Derived hourly price shown only in the register.',
-  'asm-productive-hours': 'An economics-engine input shown only in the register until the economics section presents it.',
   'asm-ai-share-variant': 'A cost-model assumption shown only in the register because the calculator does not expose it.',
 };
 
@@ -107,7 +108,7 @@ export function run({ html, data } = {}) {
     const referenced = outside.includes(`href="#${id}"`);
     if (!referenced) {
       unreferenced.push(id);
-      const why = JUSTIFIED_UNREFERENCED[id];
+      const why = JUSTIFIED_UNREFERENCED[id] ?? (d.assumptions[id]?.kind === 'engine' ? ENGINE_UNREFERENCED : undefined);
       if (!(typeof why === 'string' && why.trim())) failures.push(`unreferenced register row ${id}`);
     }
   }

@@ -644,6 +644,85 @@ Object.assign(sources, {
 });
 // ---- end Phase 7: Intercom sources ----
 
+// ---- Phase 6: economics-engine sources (plan 06-04) ----
+// Anchors for the engine inputs registered below. They are cited from the engine
+// register rows; the page body names tiers and roles, never these publishers.
+Object.assign(sources, {
+  'anthropic-pricing-2026': {
+    title: 'Claude API pricing: model tiers and per-million-token prices',
+    publisher: 'Anthropic (vendor)',
+    publisherType: 'vendor',
+    published: 'undated on the page',
+    accessed: '2026-10-25',
+    url: 'https://platform.claude.com/docs/en/about-claude/pricing',
+    bias: 'Vendor-authored price list; list prices are what the seller charges, they change often, and caching and batch discounts are not used here',
+    read_via: 'Primary page fetched 2026-10-25; the top tier lists $4 in and $20 out and the small tier $0.10 in and $0.50 out per million tokens (prompts up to 100k)',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
+  'openai-pricing-2026': {
+    title: 'API pricing: model tiers and per-million-token prices',
+    publisher: 'OpenAI (vendor)',
+    publisherType: 'vendor',
+    published: 'undated on the page',
+    accessed: '2026-10-25',
+    url: 'https://developers.openai.com/api/docs/pricing',
+    bias: 'Vendor-authored price list; list prices are what the seller charges and they change often',
+    read_via: 'Primary page fetched 2026-10-25; a top-tier model lists $4 in and $20 out and a small-tier model $0.10 in and $0.50 out per million tokens',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
+  'bls-software-developers-2025': {
+    title: 'Occupational Outlook Handbook: Software Developers, Quality Assurance Analysts, and Testers',
+    publisher: 'U.S. Bureau of Labor Statistics',
+    publisherType: 'government',
+    published: 'median pay for May 2025',
+    accessed: '2026-10-25',
+    url: 'https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm',
+    bias: 'Government statistics for the United States; a median wage, not a loaded cost, and it describes software roles rather than marketing platform teams',
+    read_via: 'Primary page fetched 2026-10-25; median annual wage $135,980',
+    grade: 'Benchmark',
+    flag: null,
+  },
+  'tau-bench-2024': {
+    title: 'tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains',
+    publisher: 'arXiv preprint 2406.12045',
+    publisherType: 'academic',
+    published: '2024-06',
+    accessed: '2026-10-25',
+    url: 'https://arxiv.org/abs/2406.12045',
+    bias: 'Preprint, not peer reviewed here; customer-service tasks in retail and airline settings, so transfer to marketing workflows is distant',
+    read_via: 'Abstract fetched 2026-10-25; reports repeated-trial reliability (pass^8) below 25 percent in retail for function-calling agents tested at the time',
+    grade: 'Modelled',
+    flag: null,
+  },
+  'multi-agent-token-note-2025': {
+    title: 'How we built our multi-agent research system',
+    publisher: 'Anthropic engineering blog (vendor)',
+    publisherType: 'vendor',
+    published: '2025-06',
+    accessed: '2026-10-25',
+    url: 'https://www.anthropic.com/engineering/multi-agent-research-system',
+    bias: 'Vendor engineering post about its own product; a single origin, reporting that agents use about four times and multi-agent systems about fifteen times the tokens of a chat',
+    read_via: 'Located through search results on 2026-10-25 that trace to this post; read as a secondary summary, not in full',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
+  'agency-billing-survey-2026': {
+    title: 'Agency pricing statistics: a billing-rate survey quoted by an agency blog',
+    publisher: 'Webtonic (agency vendor blog)',
+    publisherType: 'vendor',
+    published: 'undated on the page',
+    accessed: '2026-10-25',
+    url: 'https://www.webtonic.io/blog/pricing-statistics',
+    bias: 'A seller blog quoting a founder survey; method and sample not seen, low confidence, used only to show the default is conservative',
+    read_via: 'Search result 2026-10-25; the quoted median billing rate is near $185 an hour',
+    grade: 'Modelled',
+    flag: 'vendor-claimed',
+  },
+});
+// ---- end Phase 6: economics-engine sources ----
+
 // Source evidence: a flag means a named organisation reports its own results (observed);
 // press incident reports are observed events. A source is a benchmark only if it is
 // independent of what it describes (code review WR-02): anything a vendor publishes,
@@ -742,6 +821,134 @@ m('asm-target-utilisation', 'Target reviewer utilisation', 'target_utilisation',
 
 assumptions['asm-productive-hours'] = { ...a('asm-productive-hours', 'Productive hours per marketer per year', 'engine', 'productive_hours', PRODUCTIVE_HOURS, 'hours per marketer FTE per year', '1,600',
   'About 2,080 contract hours less about 200 for leave and about 280 not attributable to production work. No published benchmark.') };
+
+// ---- Phase 6: economics-engine inputs (plan 06-04) ----
+// Every input of workflows.js economics() is an assumption here, under kind 'engine',
+// so defaultInputs() and defaultAssumptions() (kinds 'input' and 'model') are unchanged.
+// Each row carries its own evidence (illustrative describes the company today,
+// hypothesis is a programme effect a pilot must validate) and an optional `cites` list
+// of source keys that the generated register row links. The W5 review pool is not a
+// row: its states come from compute() at the v1 slice.
+function eng(id, label, key, value, unit, display, basis, evidence, grade = 'Modelled', cites = []) {
+  return { ...a(id, label, 'engine', key, value, unit, display, basis), grade, evidence, cites };
+}
+const pct0 = (x) => `${Math.round(x * 1000) / 10}%`;
+const num0 = (x) => x.toLocaleString('en-US');
+const usd0 = (x) => `$${x.toLocaleString('en-US')}`;
+const engineRows = [
+  eng('asm-out-of-scope-fte', 'Marketing FTE outside the nine workflows', 'out_of_scope_fte', 28, 'FTE', '28',
+    'The 120 marketing FTE less the 92 in scope (80 marketers in nine workflows plus 12 reviewers); they get only an assistance-level uplift. No published benchmark.', 'illustrative'),
+  eng('asm-out-of-scope-uplift', 'Assistance uplift for out-of-scope staff', 'out_of_scope_uplift', 0.10, 'share of hours', '10%',
+    'Task-level assistance gains of 25 to 40 percent discounted to about 10 percent (range 0 to 15) for staff whose work is not redesigned; a hypothesis for a pilot to test.', 'hypothesis'),
+  eng('asm-overhead-share', 'Review and exception hours the agents create', 'overhead_share', { L1: 0, L2: 0.20, L3: 0.08, L4: 0.08 }, 'share of baseline hours',
+    'L1 0%, L2 20%, L3 8%, L4 8%',
+    'Human review and exception hours that agent work creates, as a share of baseline hours: none at L1 because assistance output is checked inside the task, 20 percent at L2 and 8 percent at L3 and L4. No published benchmark.', 'hypothesis'),
+  eng('asm-autonomous-share', 'Autonomous share at levels 3 and 4', 'autonomous_share_l3', 0.60, 'share of units', '60%',
+    'Share of units completed with no human touch beyond sampling once a workflow reaches autonomy level 3 or 4; the same 60 percent hypothesis as the auto-approval gate (range 40 to 85).', 'hypothesis'),
+  eng('asm-adoption-rate', 'Adoption at steady state', 'adoption', 1.0, 'share of modelled effect', '100%',
+    'Share of the modelled effect that is realised once the programme has settled; 100 percent is full adoption (range 50 to 100). No adoption rates were found, so this is a hypothesis.', 'hypothesis'),
+  eng('asm-year1-realisation', 'First-year realisation of savings', 'year1_realisation', 0.5, 'share of savings', '50%',
+    'Share of scenario B savings realised in the first year while adoption ramps; run costs are charged in full from day one. A hypothesis.', 'hypothesis'),
+  eng('asm-escape-rate', 'Escape rate for unseen auto-approved variants', 'escape_rate', 0.003, 'share of unseen auto-approved variants', '0.3%',
+    'Share of auto-approved variants that nobody sees and that carry a defect reaching the market; 0.3 percent is an invented point in a 0.1 to 2 percent range, to be measured by sampling audits in the pilot.', 'hypothesis', 'Speculative'),
+  eng('asm-cost-per-escape', 'Cost per escaped defect', 'cost_per_escape', 1500, 'USD per escape', '$1,500',
+    'A blend of 90 percent minor escapes (about three labour hours and a re-issue, near $300) and 10 percent serious ones (about $12,000 for a pull, re-buy and triage), near $1,500; a judgement, not a measured cost.', 'illustrative', 'Speculative'),
+  eng('asm-token-price-frontier', 'Model price, top tier', 'token_price.frontier', { in: 4, out: 20 }, 'USD per million tokens', '$4 in, $20 out',
+    'List price per million tokens for the top model tier, as published in two model developers\' price lists; uncached and unbatched, so it errs high (range x0.5 to x5).', 'illustrative', 'Modelled', ['anthropic-pricing-2026', 'openai-pricing-2026']),
+  eng('asm-token-price-small', 'Model price, small tier', 'token_price.small', { in: 0.10, out: 0.50 }, 'USD per million tokens', '$0.10 in, $0.50 out',
+    'List price per million tokens for the small model tier, as published in two model developers\' price lists, for prompts up to 100k tokens (range x0.5 to x5).', 'illustrative', 'Modelled', ['anthropic-pricing-2026', 'openai-pricing-2026']),
+  eng('asm-judge-call', 'Judge check per run', 'judge_call', { tin: 15000, tout: 1000, tier: 'frontier' }, 'tokens per judge call', '15,000 in, 1,000 out, top tier',
+    'Each judge check reads about 15,000 tokens and writes about 1,000 on the top tier; an assumption, and judge reliability is itself unproven. Agents use several times the tokens of a chat, and multi-agent systems far more.', 'illustrative', 'Modelled', ['multi-agent-token-note-2025']),
+  eng('asm-demand-multiplier', 'Demand growth in scenario C', 'demand_multiplier', 2.0, 'multiple of today', '2.0x',
+    'Growth in demand for in-scope work in the growing-demand scenario (range 1.5 to 3); a survey published by a software seller reports that most marketers expect far more content demand, an interested party, so this is an assumption.', 'illustrative'),
+  eng('asm-traffic-growth', 'Traffic growth for experimentation', 'traffic_growth', 1.0, 'multiple of today', '1.0x',
+    'Growth in experiment traffic; 1.0 caps experimentation at baseline statistical power, because doubling the number of tests without more traffic halves the power of each (range 1.0 to 2.0).', 'illustrative'),
+  eng('asm-agency-fte-cost', 'Cost of one agency FTE-equivalent', 'agency_cost_per_fte_equiv', 200000, 'USD per FTE-equivalent per year', '$200,000',
+    'Blended annual cost of one agency FTE-equivalent, about $125 an hour, used to put agency spend and in-house staff in one denominator; a billing survey quoted by an agency blog points nearer $185 an hour, a weak source, so the lower, more conservative figure is used.', 'illustrative', 'Modelled', ['agency-billing-survey-2026']),
+  eng('asm-build-cost', 'One-off build and integration', 'build_one_off', 1500000, 'USD one-off', '$1.5M',
+    'About six platform FTE-years ($1.2M) plus $0.3M for integration, evaluation-set labelling and security review (range $0.75M to $3M); no published benchmark.', 'hypothesis'),
+  eng('asm-platform-team', 'Platform team', 'platform_team', { fte: 6, cost_per_fte: 200000 }, 'FTE and USD per FTE per year', '6 FTE at $200,000',
+    'Two platform engineers, two workflow owners, one evaluation curator and one security and governance lead (range 4 to 10 FTE); a government median wage for software developers of $135,980 divided by 0.70 gives about $194,000 loaded.', 'hypothesis', 'Modelled', ['bls-software-developers-2025']),
+  eng('asm-autonomy-overhead', 'Autonomy review overhead', 'autonomy_overhead_hours', { per_workflow_month: 24, calibration_month: 16 }, 'hours per month', '24 h per workflow, 16 h calibration',
+    'Recurring human work the programme creates: 24 hours a month per autonomous workflow for evaluation curation and sampling, plus 16 hours a month of judge calibration (range x0.5 to x2); the hours are assumptions.', 'hypothesis'),
+  eng('asm-severance-months', 'Severance and exit cost', 'severance_months', 6, 'months of loaded cost per removed FTE', '6 months',
+    'Months of loaded cost charged for each removed FTE, in scenario B only (range 0 to 12); it varies by jurisdiction, and works-council duties were not researched.', 'hypothesis', 'Speculative'),
+  eng('asm-min-removable-fte', 'Smallest removable release', 'min_removable_fte', 1.0, 'FTE', '1.0 FTE',
+    'A pool must free at least one FTE before any headcount counts as removable; smaller releases are reported as fragmented capacity, not as savings.', 'illustrative'),
+  eng('asm-counterfactual-funded', 'Share of avoided hires that were funded', 'counterfactual_funded_share', 1.0, 'share of avoided hires', '100%',
+    'Avoided hires are real savings only if those hires were planned and funded; 100 percent counts all of them and lower values shrink the growing-demand saving. A hypothesis.', 'hypothesis'),
+  eng('asm-agency-scales', 'Agency spend grows with output in scenario A', 'agency_scales_with_output', false, 'switch', 'No, held at baseline',
+    'Whether agency spend must grow with output in the same-team scenario; no holds it at baseline by definition, and the engine reports separately the growth that would be implied.', 'illustrative'),
+  eng('asm-chain-success', 'Per-step success of an agent chain', 'chain', { p: 0.95, steps: 8, steps_between_gates: 8, retries: 0 }, 'probability and steps', '95% a step, 8 steps, no gates',
+    'A diagnostic shown beside the 60 percent autonomous share, not an input that moves hours: success compounds as the per-step rate to the number of steps (range 90 to 99 percent), and a published benchmark of tool-using agents reports repeated-trial reliability below 25 percent in retail tasks.', 'illustrative', 'Modelled', ['tau-bench-2024']),
+  eng('asm-portfolio-workflows', 'Delegated portfolio', 'portfolio', ['W2', 'W4', 'W6', 'W9'], 'workflow ids', 'W2, W4, W6, W9',
+    'The workflows the programme hands to agents first, used for the portfolio version of the headline metric: planning and operations, adaptation and localisation, publishing and activation, and measurement and reporting.', 'illustrative'),
+];
+for (const row of engineRows) assumptions[row.id] = row;
+
+// The nine workflows (W5 review is not a row): one illustrative row describing the
+// company today, one hypothesis row for the programme effects.
+const WF = [
+  ['W1', 'Research and insight', 5, 160, 50, 1500000, 0.40, 0.25, 0.55, 2, 0.40, 15, 8, null, [30, 30000, 2000, 'frontier', 0.25, 3]],
+  ['W2', 'Planning, briefing and ops', 12, 200, 96, 500000, 0.50, 0.30, 0.65, 3, 0, 10, 5, null, [25, 25000, 1500, 'frontier', 0.20, 2]],
+  ['W3', 'Creative production (masters)', 22, 1000, 35.2, 6000000, 0.35, 0.20, 0.50, 2, 0, 12, 9, null, [12, 15000, 2000, 'frontier', 0.30, 2]],
+  ['W4', 'Adaptation and localisation', 10, 200, 80, 2000000, 0.55, 0.40, 0.70, 3, 0.40, 15, 5, 'review_gate', [60, 20000, 2000, 'small', 0.15, 8]],
+  ['W6', 'Publishing and activation', 9, 12000, 1.2, 1500000, 0.60, 0.40, 0.75, 3, 0.40, 3, 0.5, 'review_gate', [8, 8000, 500, 'small', 0.10, 1]],
+  ['W7', 'SEO and answer-engine content', 4, 1600, 4, 1500000, 0.40, 0.25, 0.55, 2, 0.40, 14, 6, null, [10, 20000, 2000, 'frontier', 0.25, 1]],
+  ['W8', 'Experimentation', 4, 80, 80, 500000, 0.30, 0.20, 0.45, 2, 0, 21, 18, 'traffic', [30, 30000, 3000, 'frontier', 0.25, 3]],
+  ['W9', 'Measurement and reporting', 6, 600, 16, 1000000, 0.50, 0.35, 0.65, 3, 0.40, 5, 1, null, [15, 25000, 2000, 'frontier', 0.20, 2]],
+  ['W10', 'Monitoring and optimisation', 8, 1600, 8, 1500000, 0.40, 0.25, 0.55, 3, 0.40, 7, 2, null, [6, 10000, 800, 'small', 0.10, 1]],
+];
+export const WORKFLOW_ROW_IDS = WF.map((w) => w[0]);
+for (const [id, name, fte, units, h, agency, r, lo, hi, level, s, cycleNow, cycleAgent, constraint, p] of WF) {
+  const lower = id.toLowerCase();
+  const hours = fte * PRODUCTIVE_HOURS;
+  const extra = id === 'W3'
+    ? ' The hours per master concept are 35.2 so that 22 FTE at 1,600 hours matches 1,000 concepts at 35.2 hours (35,200 hours); this is the same quantity as asm-concept-hours.'
+    : '';
+  assumptions[`asm-wf-${lower}`] = eng(`asm-wf-${lower}`, `${id} ${name}: the company today`, `workflow:${id}`,
+    { name, fte, units, h, agency, cycle_now: cycleNow, constraint }, 'FTE, units, hours per unit, USD, days',
+    `${fte} FTE, ${num0(units)} units at ${h} h, ${usd0(agency)} agency`,
+    `${fte} FTE at ${num0(PRODUCTIVE_HOURS)} productive hours is ${num0(hours)} hours a year, equal to ${num0(units)} units at ${h} hours each; ${usd0(agency)} of agency spend and ${cycleNow} days elapsed from request to delivery today. An illustrative description of the company, not a benchmark.${extra}`,
+    'illustrative');
+  assumptions[`asm-wf-${lower}-agent`] = eng(`asm-wf-${lower}-agent`, `${id} ${name}: programme effects`, `workflow:${id}:agent`,
+    { r, lo, hi, level, s, cycle_agent: cycleAgent, profile: { steps: p[0], tin: p[1], tout: p[2], tier: p[3], retry: p[4], judge: p[5] } },
+    'share of hours, level, days',
+    `${pct0(r)} net hours saved (${pct0(lo)} to ${pct0(hi)}), L${level}, ${cycleAgent} days`,
+    `Net hour reduction of ${pct0(r)} (range ${pct0(lo)} to ${pct0(hi)}) at autonomy level ${level}, agency spend reduced by ${pct0(s)} and ${cycleAgent} days elapsed from request to delivery; the agent run is ${p[0]} steps of ${num0(p[1])} tokens in and ${num0(p[2])} out on the ${p[3]} tier, with ${pct0(p[4])} retries and ${p[5]} judge checks. Programme effects that a pilot must validate; no published benchmark.`,
+    'hypothesis', 'Modelled', ['multi-agent-token-note-2025']);
+}
+
+// Engine values by key, as plain data: nested keys are written 'token_price.frontier'.
+// Copies are returned, so a caller can move one input without touching data.js.
+export function engineValues() {
+  const out = {};
+  for (const e of Object.values(assumptions)) if (e.kind === 'engine') out[e.key] = structuredClone(e.value);
+  return out;
+}
+
+// The context workflows.js economics() takes (the 06-02 contract): the v1 slice
+// context plus the engine globals and the nine workflow rows. Both arguments can be
+// overridden (the evidence trace moves one input at a time); neither is mutated.
+export function engineContext(ctx = modelContext(), values = engineValues()) {
+  const engine = {};
+  for (const [key, value] of Object.entries(values)) {
+    if (key.startsWith('workflow:')) continue;
+    const path = key.split('.');
+    let node = engine;
+    for (const k of path.slice(0, -1)) node = node[k] ??= {};
+    node[path.at(-1)] = structuredClone(value);
+  }
+  const workflows = WORKFLOW_ROW_IDS.map((id) => ({ id, ...structuredClone(values[`workflow:${id}`]), ...structuredClone(values[`workflow:${id}:agent`]) }));
+  return {
+    inputs: structuredClone(ctx.inputs),
+    assumptions: structuredClone(ctx.assumptions),
+    fixed: { ...ctx.fixed },
+    engine,
+    workflows,
+  };
+}
+// ---- end Phase 6: economics-engine inputs ----
 
 assumptions['asm-reallocation'] = a('asm-reallocation', 'Funding for the production cost rise', 'context', null, null, null,
   'assumed to come from other marketing lines; agency spend is modelled as its own line',
@@ -1276,7 +1483,8 @@ const HYPOTHESIS_ASSUMPTIONS = new Set([
   'asm-change-mgmt', 'asm-incident-rate',
 ]);
 for (const asm of Object.values(assumptions)) {
-  asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
+  // Engine rows carry their own evidence (set where they are defined).
+  if (asm.evidence === undefined) asm.evidence = HYPOTHESIS_ASSUMPTIONS.has(asm.id) ? 'hypothesis' : 'illustrative';
 }
 
 // A claim takes the weakest class of everything it depends on (CONTEXT: derived

@@ -62,22 +62,27 @@ test('no assumption is observed (nothing is observed for the subject organisatio
 
 test('source counts', () => {
   const rows = Object.values(sources);
-  assert.equal(rows.length, 45 + 5); // plus five Intercom primary posts (Phase 7, plan 07-02)
-  assert.equal(count(rows, 'benchmark', 'Benchmark'), 12);
-  assert.equal(count(rows, 'benchmark', 'Modelled'), 4);
-  assert.equal(count(rows, 'observed', 'Modelled'), 29 + 5);
+  assert.equal(rows.length, 45 + 5 + 6); // plus five Intercom primary posts (Phase 7, plan 07-02) and six engine sources (06-04)
+  // 06-04 adds: two model price lists, a multi-agent token note, an agency billing survey (observed), BLS (benchmark/Benchmark), tau-bench (benchmark/Modelled)
+  assert.equal(count(rows, 'benchmark', 'Benchmark'), 12 + 1);
+  assert.equal(count(rows, 'benchmark', 'Modelled'), 4 + 1);
+  assert.equal(count(rows, 'observed', 'Modelled'), 29 + 5 + 4);
 });
 
 test('assumption counts and the hypothesis list', () => {
   const rows = Object.values(assumptions);
-  assert.equal(rows.length, 65); // 62 + asm-marketer-rate, asm-concept-hours, asm-productive-hours
+  // 65 + 41 engine rows (06-04): 23 globals and 18 workflow rows (asm-productive-hours was already counted)
+  assert.equal(rows.length, 65 + 41);
   assert.equal(HYPOTHESIS.length, 31);
   for (const id of HYPOTHESIS) assert.ok(assumptions[id], `stale id ${id}`);
-  for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
-  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24);
-  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7);
-  assert.equal(count(rows, 'illustrative', 'Modelled'), 34);
-  assert.equal(count(rows, 'illustrative', 'Speculative'), 0);
+  // Engine rows carry their own evidence, so the oracle is the list in engine-data.test.js's ENGINE_HYPOTHESIS.
+  const ENGINE_HYP = ['asm-out-of-scope-uplift', 'asm-overhead-share', 'asm-autonomous-share', 'asm-adoption-rate', 'asm-year1-realisation', 'asm-escape-rate', 'asm-build-cost', 'asm-platform-team', 'asm-autonomy-overhead', 'asm-severance-months', 'asm-counterfactual-funded',
+    ...['w1', 'w2', 'w3', 'w4', 'w6', 'w7', 'w8', 'w9', 'w10'].map((w) => `asm-wf-${w}-agent`)];
+  for (const a of rows) assert.equal(a.evidence, HYPOTHESIS.includes(a.id) || ENGINE_HYP.includes(a.id) ? 'hypothesis' : 'illustrative', a.id);
+  assert.equal(count(rows, 'hypothesis', 'Modelled'), 24 + 18);
+  assert.equal(count(rows, 'hypothesis', 'Speculative'), 7 + 2);
+  assert.equal(count(rows, 'illustrative', 'Modelled'), 34 + 20);
+  assert.equal(count(rows, 'illustrative', 'Speculative'), 1);
 });
 
 const RANK = { hypothesis: 0, illustrative: 1, observed: 2, benchmark: 3 };
