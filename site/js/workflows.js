@@ -418,6 +418,8 @@ function runCost(x, volumeOf, mSlice) {
   const ao = engine.autonomy_overhead_hours;
   const overhead_hours = (ao.per_workflow_month * 12 * n + ao.calibration_month * 12) * k.review_overhead;
   const overhead_rate = fixed.loaded_fte_cost / asm.reviewer_hours_per_fte_year;
+  // Code review IN-06: inference is charged on every unit whatever the adoption, a
+  // conservative choice documented in asm-adoption-rate (adoption scales the savings only).
   let inference = 0;
   for (const r of rows) inference += r.w.units * volumeOf(r) * inferencePerUnit(r.w.profile, engine, k.inference);
   const G = c1.scenario.generated_variants_per_year * mSlice;
