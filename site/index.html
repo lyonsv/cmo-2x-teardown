@@ -34,7 +34,7 @@
         <li>Marketing capacity increased</li>
         <li>Business outcomes improved</li>
       </ol>
-      <p>The page tests that ambition. At default inputs the model gives <span data-fig="econ-metric-org_after_platform">1.42x</span> <a class="chip c-s" href="#asm-adoption-rate">Speculative</a> across the whole organisation, counting the agency spend that output needs and a small platform team, and <span data-fig="econ-metric-portfolio_after_platform">1.72x</span> on the delegated portfolio of workflows. Those are model results, not observations, and not a claim that 2x is achieved. Outcomes are never claimed to double. The falsifier: the claim is false if campaign-markets launched per quarter double but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
+      <p>The page tests that ambition. At default inputs the model gives <span data-fig="econ-metric-org_after_platform">1.42x</span> <a class="chip c-s" href="#asm-adoption-rate">Speculative</a> across the whole organisation, counting the agency spend that output needs and a small platform team, and <span data-fig="econ-metric-portfolio_after_platform">1.72x</span> on the delegated portfolio of workflows. Those are model results, not observations, and not a claim that 2x is achieved. Outcomes are never claimed to double. The falsifier: the claim is false if useful work per marketing FTE-equivalent doubles but holdout-measured conversion and CAC do not improve, or first-pass compliance falls, within 2–3 quarters.</p>
       <dl class="six-answers">
         <dt>What we're building</dt>
         <dd>Software that takes a workflow from objective to live work, with checks. <a href="#build">What needs to be built</a></dd>
@@ -141,11 +141,11 @@
     <div id="s01" class="subsection">
       <h3 id="s01-h">Claim &amp; measurement</h3>
       <details class="maths"><summary>The launch-rate measure from the first edition</summary>
-      <p>The headline metric counts <b>campaign-markets launched per quarter</b>. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. In the first-edition scenario it is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
+      <p>The first edition's headline metric counted <b>campaign-markets launched per quarter</b>; it is now the operational unit of the first workflow, not the definition of 2x. One campaign launched in one market counts as one, so the same campaign launched in six markets counts six. It is a launch rate, a year's launches divided by four, not a count of campaigns running at once, which would depend on how long each campaign runs. In the first-edition scenario it is an organisation total within a flat total marketing budget and flat headcount <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>, with no per-head denominator. Briefs that never go live never count.</p>
       <p>The factory behind it derives many variants for each campaign-market. Those variants are internal throughput, counted in the <a href="#s05">worked campaign</a> and <a href="#s07">review-capacity</a> sections, not the claim. The number is always shown beside brief-to-live time and cost per approved asset.</p>
       </details>
       <div class="metric-trio">
-        <div><span class="lbl">Campaign-markets launched per quarter</span><span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span></div>
+        <div><span class="lbl">Campaign-markets launched per quarter (first-edition scenario, the first workflow's unit)</span><span data-fig="cm-base">50</span> <a class="chip c-m" href="#asm-markets">Modelled</a> to <span data-fig="cm-scaled">100</span></div>
         <div><span class="lbl">Brief-to-live time</span><span data-fig="btl-base">11.8 days</span> <a class="chip c-m" href="#asm-build-days">Modelled</a> to <span data-fig="btl-scaled">7.5 days</span></div>
         <div><span class="lbl">Cost per approved asset</span><span data-fig="cpa-base">$152.18</span> <a class="chip c-m" href="#asm-variant-cost">Modelled</a> to <span data-fig="cpa-scaled">$106.38</span></div>
       </div>
@@ -195,12 +195,12 @@
       </div>
     <div class="callout">
       <span class="lbl">What 2x does not mean</span>
-      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets launched per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.</p>
-      <p>Flat marketing headcount is assumed, not tested <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>. The model checks reviewer capacity only, not whether marketers can make the extra master concepts and run the extra launches.</p>
+      <p>It does not mean twice as many assets generated, twice the budget, or half the team. It means twice the useful work completed per marketing FTE-equivalent, the primary metric defined in <a href="#define-2x">What we mean by 2x</a>, with quality guardrails that hold and outcomes measured on their own. For the first workflow the operational unit is campaign-markets launched per quarter, and extra crops, sizes or locales of the same campaign-market do not count.</p>
+      <p>In the first-edition launch-rate scenario, flat marketing headcount is assumed, not tested <a class="chip c-s" href="#asm-flat-marketing-headcount">Speculative</a>. That scenario checks reviewer capacity only, not whether marketers can make the extra master concepts and run the extra launches.</p>
     </div>
     <div class="callout">
       <span class="lbl">Falsifier</span>
-      <p>If campaign-markets launched per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.</p>
+      <p>If useful work per marketing FTE-equivalent doubles but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org. For the first workflow the same test applies to campaign-markets launched per quarter.</p>
     </div>
     </div>
     <div id="s02" class="subsection">
@@ -1249,7 +1249,7 @@
               <div class="field">
                 <div class="field-head"><label for="in-marketers">Marketing FTE</label></div>
                 <div class="control"><input id="in-marketers" name="marketers" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="hint-marketers" value="120"><span class="unit">FTE</span></div>
-                <p class="hint" id="hint-marketers">Default 120. Changes the one-off change cost and the headcount scenario; the headline has no per-head denominator. Register row: <a href="#asm-marketing-fte">asm-marketing-fte</a>.</p>
+                <p class="hint" id="hint-marketers">Default 120. Changes the one-off change cost and the headcount scenario here; in the economics section it is the core of the primary metric's denominator. Register row: <a href="#asm-marketing-fte">asm-marketing-fte</a>.</p>
               </div>
               <div class="field">
                 <div class="field-head"><label for="in-reviewers">Reviewer FTE</label></div>
@@ -3540,7 +3540,7 @@
               <td><span data-fig="asm-marketing-fte">~120</span></td>
               <td><span class="chip c-m">Modelled</span></td>
               <td><span class="ev">illustrative</span></td>
-              <td>A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE feeds only the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).</td>
+              <td>A modelled team size for the subject organisation; there is no published source. It is the core of the denominator of the primary metric (useful work per marketing FTE-equivalent, with agency FTE-equivalents added), and in the calculator it also sets the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).</td>
             </tr>
             <tr id="asm-campaigns">
               <th scope="row" class="id">asm-campaigns</th>

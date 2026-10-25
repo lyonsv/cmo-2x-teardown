@@ -205,7 +205,7 @@ test('form: six groups, twelve fields in order with label, input, unit, chip and
     // inputs also feed the scenario table (change cost, required and freed FTE).
     assert.ok(!/\bonly\b/.test(hint[1]), `${f.key} hint makes an "only" claim`);
     if (f.key === 'reviewers') assert.match(hint[1], /utilisation, brief-to-live time, break-even, the capacity floor and the headcount scenario, but not production cost\./);
-    if (f.key === 'marketers') assert.match(hint[1], /the one-off change cost and the headcount scenario; the headline has no per-head denominator\./);
+    if (f.key === 'marketers') assert.match(hint[1], /the one-off change cost and the headcount scenario here; in the economics section it is the core of the primary metric's denominator\./);
     assert.equal(FIELDS.filter((x) => x.key === f.key).length, 1);
   });
   assert.deepEqual(groups.map((g) => (g[2].match(/<div class="field">/g) || []).length), [3, 0, 3, 4, 2, 0]);

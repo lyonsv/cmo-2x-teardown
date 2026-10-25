@@ -952,7 +952,7 @@ export const assumptions = {
   'asm-budget-share': a('asm-budget-share', 'Marketing budget as a share of revenue', 'context', null, 0.078, 'share of revenue', '7.8%',
     'Set equal to the Gartner 2026 average; the subject org is an average respondent, not a benchmark.'),
   'asm-marketing-fte': a('asm-marketing-fte', 'Marketing headcount', 'input', 'marketing_fte', 120, 'FTE', '~120',
-    'A modelled team size for the subject organisation; there is no published source. The headline has no per-head denominator: marketing FTE feeds only the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).'),
+    'A modelled team size for the subject organisation; there is no published source. It is the core of the denominator of the primary metric (useful work per marketing FTE-equivalent, with agency FTE-equivalents added), and in the calculator it also sets the one-off change cost in the headcount scenarios. Holding it flat is an assumption, not a modelled result (see asm-flat-marketing-headcount).'),
   'asm-campaigns': a('asm-campaigns', 'Campaigns per year', 'input', 'campaigns_per_year', 40, 'campaigns', '~40',
     'A modelled campaign cadence; there is no published source.'),
   'asm-concepts-per-campaign': a('asm-concepts-per-campaign', 'Unique concepts per campaign', 'input', 'concepts_per_campaign', 25, 'concepts', '25',

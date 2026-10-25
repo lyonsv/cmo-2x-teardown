@@ -76,8 +76,8 @@ function keyFor(error) {
   return null;
 }
 
-// Marketing FTE is not a compute() input (the headline has no per-head
-// denominator), but it feeds the one-off change cost, so the model checks it
+// Marketing FTE is not a compute() input (it is the primary metric's denominator
+// in the economics engine, not in this slice model), but it feeds the one-off change cost, so the model checks it
 // here and keys the error to the field (WR-03).
 function marketerErrors(values) {
   const m = values.marketers;

@@ -726,8 +726,10 @@ test('numeric gate: no ungraded numerals anywhere on the page', () => {
 
 // ---- Plan 01-04: section 01 ----
 
-const FALSIFIER = 'If campaign-markets launched per quarter double but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
-const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice as many campaign-markets launched per quarter, within a flat total marketing budget and flat headcount, with outcomes that hold. Extra crops, sizes or locales of the same campaign-market do not count toward 2x.';
+// Code review CR-05: one definition of 2x on the page, the primary metric; campaign-markets
+// stay the first workflow's operational unit.
+const FALSIFIER = 'If useful work per marketing FTE-equivalent doubles but holdout-measured conversion/CAC does not improve, or first-pass compliance falls, within 2–3 quarters, the 2x claim is false for that org.';
+const NOT_MEAN = 'It does not mean twice as many assets generated, twice the budget, or half the team. It means twice the useful work completed per marketing FTE-equivalent';
 
 test('s01 holds both callouts verbatim and the front matter does not duplicate them', () => {
   const s = sectionHtml('s01');
@@ -737,6 +739,15 @@ test('s01 holds both callouts verbatim and the front matter does not duplicate t
   assert.ok(s.includes(FALSIFIER));
   assert.equal(html.split('the 2x claim is false for that org.').length - 1, 1);
   assert.equal(html.split('What 2x does not mean').length - 1, 1);
+});
+
+test('CR-05: outside the first-edition folds, 2x is never defined as campaign-markets doubling', () => {
+  const visible = strip(html.replace(/<details class="maths">[\s\S]*?<\/details>/g, ' '));
+  assert.ok(!/It means twice as many campaign-markets/.test(visible));
+  assert.ok(!/If campaign-markets launched per quarter double/.test(visible));
+  assert.ok(!/headline has no per-head denominator/.test(visible));
+  assert.ok(!/headline has no per-head denominator/.test(assumptions['asm-marketing-fte'].basis));
+  assert.match(sectionHtml('answer'), /useful work per marketing FTE-equivalent doubles but holdout-measured/);
 });
 
 test('s01 flat headcount is a linked Speculative assumption, not a modelled result (WR-02)', () => {
@@ -759,7 +770,7 @@ test('s01 metric trio carries the campaign-market claim and its companions', () 
   for (const id of ['cm-base', 'cm-scaled', 'btl-base', 'btl-scaled', 'cpa-base', 'cpa-scaled']) {
     assert.ok(m[0].includes(`data-fig="${id}"`), id);
   }
-  for (const l of ['Campaign-markets launched per quarter', 'Brief-to-live time', 'Cost per approved asset']) {
+  for (const l of ["Campaign-markets launched per quarter (first-edition scenario, the first workflow's unit)", 'Brief-to-live time', 'Cost per approved asset']) {
     assert.ok(m[0].includes(`<span class="lbl">${l}</span>`), l);
   }
   // The removed per-head, weighted and variants-per-concept claims are gone everywhere.
