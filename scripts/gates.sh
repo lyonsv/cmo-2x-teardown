@@ -10,11 +10,16 @@ run() { echo "== $*"; "$@"; }
 retry_once() {
   local err
   err=$(mktemp)
-  if "$@" 2> >(tee "$err" >&2); then rm -f "$err"; return 0; fi
-  sleep 1
+  # stderr goes to a file and is echoed after the command exits, so grep never reads a
+  # file an asynchronous tee is still writing (code review IN-08).
+  local rc=0
+  "$@" 2>"$err" || rc=$?
+  cat "$err" >&2
+  if [ "$rc" -eq 0 ]; then rm -f "$err"; return 0; fi
   if grep -qE 'no page target|DevToolsActivePort never appeared' "$err"; then
     echo "-- known CDP flake, retrying once: $*"
     rm -f "$err"
+    sleep 1
     "$@"
   else
     rm -f "$err"
