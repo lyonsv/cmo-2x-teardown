@@ -126,7 +126,7 @@ Plans:
 | 3. Levers, Outcomes, Calculator & Comparison Slice | v1.0 | 12/12 | Complete | 2026-10-24 |
 | 3.1 Headline Metric Reframe | v1.0 | 7/7 | Complete | 2026-10-24 |
 | 4. Adoption, Risk, Evidence & Publish Slice | v1.0 | 9/9 | Complete | 2026-10-24 |
-| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete   | 2026-10-25 |
+| 5. Restructure Scaffold, Evidence Schema & Guards | v2.0 | 5/5 | Complete    | 2026-10-25 |
 | 6. Economics Engine | v2.0 | 0/TBD | Not started | - |
 | 7. Thesis, Intercom Evidence & What Needs to Be Built | v2.0 | 0/TBD | Not started | - |
 | 8. Content Supply Chain & Diagram | v2.0 | 0/TBD | Not started | - |
