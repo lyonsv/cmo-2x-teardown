@@ -164,3 +164,9 @@ test('mutation: a digit in a wide label would be caught', () => {
   const texts = [...bad.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)].map((m) => strip(m[1]));
   assert.ok(texts.some((t) => /\d/.test(t)));
 });
+
+test('wide: agent and person node labels leave inner padding (at most eight characters a line, 07-09)', () => {
+  for (const cls of ['node', 'node node-human', 'node node-human node-fades', 'node node-review']) {
+    for (const g of groups(wide, cls)) for (const l of lines(g)) assert.ok(l.length <= 8, `"${l}" nearly touches its border`);
+  }
+});

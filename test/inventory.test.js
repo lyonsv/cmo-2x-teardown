@@ -65,7 +65,7 @@ test('each v1 section is a section or div that holds its own heading', () => {
     const el = elementById(html, id);
     if (new RegExp(`<h[23] id="${id}-h"`).test(el)) continue;
     // Appendix blocks: the v1 heading id is a span in the host section's h2 (code review WR-04).
-    const host = html.match(new RegExp(`<section id="([a-z-]+)"[^>]*>\\s*<div class="sec-head">.*?<h2 id="[^"]+"><span id="${id}-h">`));
+    const host = html.match(new RegExp(`<section id="([a-z-]+)"[^>]*>\\s*<div class="sec-head">.*?<h2 id="[^"]+">(?:<span class="visually-hidden">[^<]*</span>)?<span id="${id}-h">`));
     assert.ok(host && elementById(html, host[1]).includes(el), id);
   }
 });

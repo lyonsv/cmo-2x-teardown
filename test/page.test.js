@@ -435,7 +435,7 @@ test('fifteen new top-level sections with the fixed snippet', () => {
     const s = elementById(html, id);
     assert.ok(s.startsWith(`<section id="${id}" aria-labelledby="${id}-h">`), id);
     const v1 = APPENDIX_SPANS.find((v) => HOSTED[v].host === id);
-    const inner = v1 ? `<span id="${v1}-h">${title}</span>` : title;
+    const inner = v1 ? `<span class="visually-hidden">Appendix ${num}: </span><span id="${v1}-h">${title}</span>` : title;
     assert.ok(s.includes(`<div class="sec-head"><span class="sec-num">${num}</span><h2 id="${id}-h">${inner}</h2></div>`), id);
   }
 });
@@ -453,7 +453,7 @@ test('every v1 block is one div.subsection with its v1 title, inside its host', 
     assert.ok(el.startsWith(open), id);
     if (APPENDIX_SPANS.includes(id)) {
       assert.ok(!el.includes(`id="${id}-h"`), `${id}: no duplicate heading inside the block`);
-      const span = hostHtml.match(new RegExp(`<h2 id="${host}-h"><span id="${id}-h">([^<]*)</span></h2>`));
+      const span = hostHtml.match(new RegExp(`<h2 id="${host}-h"><span class="visually-hidden">Appendix [A-F]: </span><span id="${id}-h">([^<]*)</span></h2>`));
       assert.ok(span, `${id}-h span in the ${host} h2`);
       assert.equal(decode(span[1]), title);
       assert.ok(!/<h4\b/.test(el), `${id}: appendix headings are h3`);
@@ -1286,7 +1286,7 @@ test('s09 opens with the lead and the localisation block', () => {
   assert.equal(strip(first[1]), 'The factory doubles output; five other levers decide whether the extra output is worth having.');
   assert.ok(s.includes('<h4 id="s09-localisation">Localisation and transcreation</h4>'));
   const { head, rows } = tableByCaption(s, 'Localisation and transcreation: output, outcome and evidence');
-  assert.deepEqual(head, ['Measure', 'Metric', 'Evidence grade']);
+  assert.deepEqual(head, ['Measure', 'Metric', 'Grade']);
   assert.equal(rows.length, 2);
   assert.deepEqual(rows.map((r) => strip(r.match(/<th[^>]*>([\s\S]*?)<\/th>/)[1])), ['Output', 'Outcome']);
   for (const r of rows) {
@@ -1328,7 +1328,7 @@ test('experimentation block: win rates by definition, never averaged, bounded by
   assert.ok(s.includes('<h4 id="s09-experimentation">Experimentation</h4>'));
   const block = leverBlock('s09-experimentation', 's09-insight');
   const mini = tableByCaption(block, 'Experimentation: output, outcome and evidence');
-  assert.deepEqual(mini.head, ['Measure', 'Metric', 'Evidence grade']);
+  assert.deepEqual(mini.head, ['Measure', 'Metric', 'Grade']);
   for (const r of mini.rows) assert.ok(r.includes('<a class="chip c-m" href="#asm-lever-03-evidence">Modelled</a></td>'));
   const t = tableByCaption(block, 'Reported A/B win rates by definition of a win');
   assert.deepEqual(t.head, ['Source', 'What counts as a win', 'Rate', 'Grade']);
@@ -1793,4 +1793,38 @@ test('AEO lever output is per quarter in s09 and s10, matching s01 (v1.0 polish)
     assert.ok(!/answer assets published or refreshed per head/i.test(t), `${id} per head`);
   }
   assert.ok(strip(sectionHtml('s09')).includes('Answer assets published or refreshed per quarter'));
+});
+
+// ---- Plan 07-09: 05-UI-REVIEW follow-ups and spine completeness ----
+test('legend names both axes, labels the evidence key and says they are independent (07-09)', () => {
+  const start = html.indexOf('class="legend"');
+  const legend = html.slice(start, html.indexOf('</div>', start));
+  assert.ok(legend.includes('<h2 class="legend-title">How to read the grades and evidence</h2>'));
+  assert.ok(legend.includes('<p class="steps-h">Evidence: where a figure comes from</p>'));
+  assert.ok(legend.includes('Grade says how far you can check the figure; evidence says what kind of source it is. A benchmark source can still feed a Modelled figure when the page derives from it.'));
+  assert.ok(legend.indexOf('Evidence: where a figure comes from') < legend.indexOf('<dl class="evidence-key">'));
+  assert.ok(legend.includes('The twelve-week pilot is what produces observed data.'));
+});
+
+test('no table header says Evidence grade, and no stub marker or "Detail to follow" text remains (07-09)', () => {
+  assert.equal((html.match(/>Evidence grade</g) || []).length, 0);
+  assert.equal((html.match(/Detail to follow/g) || []).length, 0);
+  assert.equal((html.match(/to-follow/g) || []).length, 0);
+});
+
+test('appendix headings say Appendix to assistive technology, and F supports every chip (07-09)', () => {
+  for (const [letter, id] of [['A', 'appendix-campaign'], ['B', 'appendix-review'], ['C', 'appendix-gate'], ['D', 'appendix-evals'], ['E', 'compare'], ['F', 'register']]) {
+    assert.ok(html.includes(`<h2 id="${id}-h"><span class="visually-hidden">Appendix ${letter}: </span>`), id);
+  }
+  assert.equal((html.match(/Appendix [A-F]: /g) || []).length, 6);
+  assert.ok(html.includes('Supports: every grade chip on the page, from <a href="#opportunity">What 2x means</a> onward, links to its row here.'));
+});
+
+test('TOC labels equal the visible h2 texts of their sections (07-09)', () => {
+  const nav = html.slice(html.indexOf('<nav class="toc"'), html.indexOf('</nav>'));
+  for (const [, id, label] of nav.matchAll(/<a href="#([a-z-]+)"><span class="n">[^<]*<\/span><span>([^<]*)<\/span><\/a>/g)) {
+    const h2 = elementById(html, id).match(/<h2 id="[^"]+">([\s\S]*?)<\/h2>/)[1];
+    const text = decode(h2.replace(/<span class="visually-hidden">[^<]*<\/span>/g, '').replace(/<[^>]*>/g, ''));
+    assert.equal(decode(label), text, id);
+  }
 });

@@ -37,9 +37,11 @@ p { margin: 0 0 var(--s-md); }
 .gaps li { margin: 0 0 var(--s-md); }
 .legend { background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-lg); margin: var(--s-2xl) 0 var(--s-lg); }
 .legend .legend-title { font-size: 17px; font-weight: 600; line-height: 1.6; letter-spacing: 0; margin: 0 0 var(--s-sm); }
-.legend dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); align-items: baseline; }
+.legend dl { margin: 0; display: grid; grid-template-columns: 18ch 1fr; gap: var(--s-sm) var(--s-lg); align-items: baseline; }
 .legend dt, .legend dd { margin: 0; }
 .legend dl + dl { margin-top: var(--s-md); }
+.legend .steps-h { margin: var(--s-md) 0 var(--s-sm); }
+.legend .steps-h + p { margin: 0 0 var(--s-sm); }
 .legend dl + p { margin: var(--s-md) 0 0; }
 .toc { margin: var(--s-2xl) 0; }
 .toc a { display: grid; grid-template-columns: 64px 1fr; column-gap: var(--s-md); align-items: center; min-height: 48px; padding: var(--s-md) 0; border-bottom: 1px solid var(--rule); font: 400 12px/1.6 var(--mono); color: var(--ink); text-decoration: none; }
@@ -49,8 +51,8 @@ p { margin: 0 0 var(--s-md); }
 .metric-trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-lg); }
 .metric-trio > * { border-top: 1px solid var(--ink); padding-top: var(--s-sm); font-weight: 600; }
 .metric-trio .lbl { display: block; font: 400 12px/1.6 var(--mono); color: var(--muted); margin-bottom: var(--s-sm); }
-.later, .to-follow { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
-.appendix-divider { border-top: 2px solid var(--ink); margin-top: var(--s-2xl); padding-top: var(--s-lg); }
+.later { display: inline-block; font: 400 12px/1.6 var(--mono); background: var(--paper-2); border: 1px solid var(--rule); padding: var(--s-sm) var(--s-md); color: var(--muted); }
+.appendix-divider { border-top: 2px solid var(--ink); margin-top: var(--s-2xl); margin-bottom: var(--s-xl); padding-top: var(--s-lg); }
 .appendix-divider p { margin: 0 0 var(--s-md); }
 td.num { font: 400 17px/1.6 var(--mono); }
 td.na { font: 400 17px/1.6 var(--mono); color: var(--muted); }
@@ -61,6 +63,7 @@ figcaption b { text-transform: uppercase; font-weight: 600; }
 section { scroll-margin-top: 16px; }
 .subsection { scroll-margin-top: 16px; }
 .subsection + .subsection { margin-top: var(--s-xl); }
+.subsection > h3:first-child { border-top: 1px solid var(--rule); padding-top: var(--s-md); }
 /* Phase 7 spine: chain position and evidence stop (plan 07-02; same rules as the 07-01 spec) */
 .chain-pos { font: 400 12px/1.6 var(--mono); color: var(--muted); margin: 0 0 var(--s-lg); max-width: none; }
 .chain-pos b { font-weight: 600; color: var(--ink); }
@@ -100,7 +103,19 @@ thead th { border-bottom: 2px solid var(--ink); }
 .register tr { scroll-margin-top: 16px; }
 .register a { overflow-wrap: anywhere; }
 .register tr:target { background: var(--paper-2); box-shadow: inset 3px 0 0 var(--ink); }
-.register [aria-label="Source register table"] table { min-width: 1160px; }
+/* 07-09: fixed columns so Grade and Evidence sit inside the 1032px region at 1440px and the URL column is wide enough to read. Wider than the region: the URL and flag columns scroll. */
+@media screen {
+  .register [aria-label="Source register table"] table { table-layout: fixed; min-width: 1300px; }
+  .register [aria-label="Source register table"] th, .register [aria-label="Source register table"] td { overflow-wrap: anywhere; }
+  .register [aria-label="Source register table"] thead th:nth-child(1) { width: 130px; }
+  .register [aria-label="Source register table"] thead th:nth-child(2) { width: 330px; }
+  .register [aria-label="Source register table"] thead th:nth-child(3) { width: 120px; }
+  .register [aria-label="Source register table"] thead th:nth-child(4) { width: 80px; }
+  .register [aria-label="Source register table"] thead th:nth-child(5) { width: 90px; }
+  .register [aria-label="Source register table"] thead th:nth-child(6) { width: 90px; }
+  .register [aria-label="Source register table"] thead th:nth-child(7) { width: 100px; }
+  .register [aria-label="Source register table"] thead th:nth-child(8) { width: 90px; }
+}
 .ev { font: 400 12px/1.6 var(--mono); color: var(--ink); white-space: nowrap; }
 footer { border-top: 1px solid var(--rule); margin-top: var(--s-2xl); padding-top: var(--s-md); font: 400 12px/1.6 var(--mono); color: var(--muted); }
 svg.fig { display: block; width: 100%; height: auto; }
@@ -278,7 +293,7 @@ ol.proof-steps li + li { margin-top: var(--s-md); }
   /* No href ::after: register link text is already the full URL (IN-05). */
   figure, .fig-grid, table, .callout, .legend, .asat, tr { break-inside: avoid; }
   section { break-inside: auto; }
-  .later, .to-follow { background: none; }
+  .later { background: none; }
   .appendix-divider { border-color: #ccc; break-after: avoid; }
   .table-scroll, .fig-scroll { overflow: visible; }
   .matrix tbody th[scope=row] { position: static; }

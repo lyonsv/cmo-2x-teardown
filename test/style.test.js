@@ -334,3 +334,16 @@ test('.ev is a plain label: no status colour, no background, no border', () => {
   assert.ok(!/var\(--(verified|inferred|low)\)/.test(m[1]), '.ev must not use a status colour');
   assert.ok(!/background|border/.test(m[1]), '.ev must not have a background or border');
 });
+
+// ---- Plan 07-09: 05-UI-REVIEW follow-ups ----
+test('legend grids share a first column, hosted h3s carry a rule, the divider breathes, register columns are fixed (07-09)', () => {
+  assert.match(css, /\.legend dl \{[^}]*grid-template-columns: 18ch 1fr/);
+  assert.match(css, /\.subsection > h3:first-child \{ border-top: 1px solid var\(--rule\); padding-top: var\(--s-md\); \}/);
+  assert.match(css, /\.appendix-divider \{[^}]*margin-bottom: var\(--s-xl\)/);
+  assert.match(css, /\.register \[aria-label="Source register table"\] table \{ table-layout: fixed; min-width: 1300px; \}/);
+  // Grade and Evidence (columns 6 and 7) must end inside the 1032px desktop region.
+  const widths = [...css.matchAll(/thead th:nth-child\((\d)\) \{ width: (\d+)px; \}/g)].map((m) => [Number(m[1]), Number(m[2])]).sort((a, b) => a[0] - b[0]);
+  const upToEvidence = widths.filter(([n]) => n <= 7).reduce((s, [, w]) => s + w, 0);
+  assert.ok(upToEvidence <= 1032, `Evidence ends at ${upToEvidence}px`);
+  assert.ok(!/to-follow/.test(css), 'the .to-follow rule is gone');
+});

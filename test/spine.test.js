@@ -51,3 +51,9 @@ test('spine: the check fires on a missing evidence-stop', () => {
   const bad = elementById(html, 'autonomy').replace('class="evidence-stop"', 'class="x"');
   assert.equal((bad.match(/class="evidence-stop"/g) || []).length, 0);
 });
+
+test('spine: the SPINE list is the nine body sections in page order (07-09)', () => {
+  const order = [...html.matchAll(/<section id="([a-z-]+)"/g)].map((m) => m[1]).filter((id) => id !== 'answer').slice(0, 9);
+  assert.deepEqual(SPINE, ['opportunity', 'autonomy', 'build', 'supply-chain', 'economics', 'outcomes', 'expansion', 'roadmap', 'risks']);
+  assert.deepEqual(order, SPINE);
+});

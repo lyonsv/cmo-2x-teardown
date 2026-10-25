@@ -146,7 +146,7 @@ async function reflow(evalJs, label) {
     const inside = (e) => { if (!e) return false; const b = e.getBoundingClientRect(); return b.left >= -0.5 && b.right <= 320.5; };
     return { sw: document.documentElement.scrollWidth, out: [...new Set(out)], scrolls: scrolls.length, unfocusable,
       legal: !document.querySelector('.legal-flag'),
-      clipped: [...document.querySelectorAll('body *')].filter((e) => { const cs = getComputedStyle(e); return cs.overflow === 'hidden' && cs.display !== 'none' && e.scrollHeight > e.clientHeight + 1 && e.clientHeight > 0; }).map((e) => e.tagName.toLowerCase() + '.' + e.className) };
+      clipped: [...document.querySelectorAll('body *')].filter((e) => { const cs = getComputedStyle(e); return !e.classList.contains('visually-hidden') && cs.overflow === 'hidden' && cs.display !== 'none' && e.scrollHeight > e.clientHeight + 1 && e.clientHeight > 0; }).map((e) => e.tagName.toLowerCase() + '.' + e.className) };
   })()`);
   test(`${label} no horizontal scroll`, r.sw <= 320, `scrollWidth ${r.sw}`);
   test(`${label} overflow only in scroll regions`, r.out.length === 0, `${r.scrolls} scroll regions, none else overflow`, r.out.slice(0, 8).join('; '));
