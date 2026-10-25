@@ -985,9 +985,9 @@ evidence('asm-telemetry-metrics', 'Telemetry metrics', 'Modelled', 'Recommended 
     `A service-level target this page chose, not a measurement: the modelled brief-to-live time at 2x with the page defaults (build time plus one review touch, including queue wait and rework, ${formatValue(btl, 'days1')}), rounded up. The model gives an average, so a ceiling on the oldest brief is harder to meet than the model shows; read it as the least a 2x programme must achieve, not a forecast. Replace it with your own service level. No published benchmark.`);
 }
 assumptions['asm-adoption-design'] = { ...a('asm-adoption-design', 'Adoption stages, first moves and guardrails', 'context', null, null, null, "Author's design",
-  "The adoption stages, first moves and guardrails in section 13 are the author's design, not a measured pathway. No adoption rates are stated because none were found."), grade: 'Speculative' };
+  "The adoption stages, first moves and guardrails in section 08 are the author's design, not a measured pathway. No adoption rates are stated because none were found."), grade: 'Speculative' };
 assumptions['asm-risk-likelihood'] = { ...a('asm-risk-likelihood', 'Risk likelihood words', 'context', null, null, null, "Author's judgement",
-  "The likelihood words in the risk register are the author's judgement from the incidents and sources cited in section 14, not measured rates."), grade: 'Speculative' };
+  "The likelihood words in the risk register are the author's judgement from the incidents and sources cited in section 09, not measured rates."), grade: 'Speculative' };
 
 // ---- Plan 03-03: operations lever, statutory-damages illustration ----
 // The statute ranges are Benchmark (primary law). The incident rate is an invented,

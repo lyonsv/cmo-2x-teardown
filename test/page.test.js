@@ -408,6 +408,24 @@ test('heading counts: 16 h2 and 15 h3 hosted headings', () => {
   assert.equal((html.match(/<h3\b/g) || []).length, MEASURED_H3);
 });
 
+// Visible ordinal labels on links to v1 blocks must name the block's new location.
+test('cross-reference labels match the new section numbering', () => {
+  const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11 };
+  const display = (id) => SECTIONS.find((x) => x.id === HOSTED[id].host).num;
+  let checked = 0;
+  for (const [, id, text] of html.matchAll(/<a href="#(s\d\d)">([^<]*)<\/a>/g)) {
+    const app = text.match(/^Appendix ([A-F])$/);
+    const ord = text.match(/^section (\w+)$/i);
+    if (app) { assert.equal(app[1], display(id), `${text} -> ${id}`); checked++; }
+    else if (ord) {
+      const n = NUM[ord[1].toLowerCase()] ?? Number(ord[1]);
+      assert.equal(String(n).padStart(2, '0'), display(id), `${text} -> ${id}`);
+      checked++;
+    }
+  }
+  assert.ok(checked >= 20, `only ${checked} labelled links checked`);
+});
+
 // Every section is now filled; the later note must not appear anywhere.
 test('no section carries the later note', () => {
   assert.ok(!html.includes('class="later"'));
@@ -1385,13 +1403,13 @@ test('s13 adoption and Backlog 0', () => {
     // WR-06: every stage, including Steady state, is the author's design.
     assert.ok(r.includes('<a class="chip c-s" href="#asm-adoption-design">Speculative</a>'), r);
   }
-  assert.ok(s.includes('<a href="#s11">section 11</a>'));
+  assert.ok(s.includes('<a href="#s11">section 5</a>'));
   assert.ok(/<h3>What stays human<\/h3>\s*(<p>[\s\S]*?<\/p>\s*)?<ul>/.test(s));
   const t = strip(s);
   assert.ok(!t.includes('Intercom'));
   assert.ok(!VENDOR_RE.test(t));
   assert.ok(!/does not have|does not exist/.test(t));
-  assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 11 .'));
+  assert.ok(t.includes('Replace the service level with your own; the rest of your numbers go in section 5 .'));
   // IN-07: no ungraded illustrative quantity in the role-shift paragraph.
   assert.ok(t.includes('A designer who once produced every resize by hand now sets the rules'));
   assert.ok(!/\bforty resizes\b/.test(t));
