@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { economics as economicsViaCalc, compute } from '../site/js/calc.js';
-import { economics, validateEngine, workflowState, WORKFLOW_IDS, checkLedger, sumLedger } from '../site/js/workflows.js';
+import { economics, validateEngine, workflowState, WORKFLOW_IDS, checkLedger, sumLedger, sensitivity } from '../site/js/workflows.js';
 
 const near = (actual, expected, tol = 1e-6) => assert.ok(Math.abs(actual - expected) <= tol, `expected ${actual} to be within ${tol} of ${expected}`);
 
@@ -423,6 +423,103 @@ test('ledger: counted_in values, paid media and scope mixing', () => {
   assert.equal(sumLedger(r.ledger).ok, false);
   assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'portfolio'), 'portfolio').ok, true);
   assert.equal(sumLedger(r.ledger.filter((l) => l.scope === 'slice'), 'portfolio').ok, false);
+});
+
+// ---------------------------------------------------------------- Task 3: primary metric and sensitivity
+
+test('primary metric at defaults: org-wide, portfolio, B, C, pooled hours', () => {
+  const m = run().metric;
+  near(m.I0, 172800, 1e-6);
+  near(m.D0, 200, 1e-9);
+  near(m.A.org_before_platform, 1.648, 1e-3);
+  near(m.A.org_after_platform, 1.6, 1e-3);
+  near(m.A.portfolio_before_platform, 2.182, 1e-3);
+  near(m.A.portfolio_after_platform, 1.989, 1e-3);
+  near(m.B.org, 1.342, 1e-3);
+  near(m.B.D, 148.98, 0.01);
+  near(m.C.org, 1.323, 1e-3);
+  near(m.C.I, 294400, 1e-6);
+  near(m.C.D, 257.5, 1e-9);
+  near(m.pooled_hours_multiple, 1.4706, 1e-4);
+  near(m.max_uniform_multiplier, 1.0, 1e-3);
+  for (const [id, v] of Object.entries(M_A)) near(m.A.per_workflow[id], v, 1e-4);
+  assert.match(m.definition, /W5 review excluded/);
+});
+
+test('W5 is not in the numerator: reviewer headcount leaves I0 unchanged', () => {
+  const ec = makeEc();
+  ec.inputs.reviewer_fte = 20;
+  near(run(ec).metric.I0, 172800, 1e-6);
+});
+
+const SENS = {
+  base: { org: 1.6, A: -2133647, B: 7451190, C: 15523156, rem: 39.02 },
+  adoption: { low: { org: 1.187, A: -1996000, B: 2549000, C: 7228000, rem: 18.11 } },
+  escape: { low: { A: -2058000, B: 7485000, C: 15591000 }, high: { A: -2437000, B: 7315000, C: 15250000 } },
+  inference: { low: { A: -2125000, B: 7456000, C: 15532000 }, high: { A: -2203000, B: 7413000, C: 15449000 } },
+  review_overhead: {
+    low: { org: 1.761, A: -2047000, B: 8391000, C: 16633000, rem: 44.51 },
+    high: { org: 1.372, A: -2322000, B: 5392000, C: 12781000, rem: 26.84 },
+  },
+};
+
+test('sensitivity rows: order, shape and one-sided adoption', () => {
+  const s = sensitivity(makeEc());
+  assert.equal(s.ok, true);
+  assert.deepEqual(s.rows.map((r) => r.id), ['adoption', 'escape', 'inference', 'review_overhead']);
+  for (const r of s.rows) {
+    for (const k of ['org_A_after', 'net_A', 'net_B', 'net_C', 'removable_B']) assert.ok(k in r.base, k);
+  }
+  assert.equal(s.rows[0].high, null);
+  assert.ok(s.rows[0].low);
+});
+
+test('sensitivity goldens (multiples +-0.002, dollars +-2,000, FTE +-0.02)', () => {
+  const s = sensitivity(makeEc());
+  const b = s.rows[0].base;
+  near(b.org_A_after, SENS.base.org, 0.002);
+  near(b.net_A, SENS.base.A, 2000);
+  near(b.net_B, SENS.base.B, 2000);
+  near(b.net_C, SENS.base.C, 2000);
+  near(b.removable_B, SENS.base.rem, 0.02);
+  for (const row of s.rows) {
+    for (const side of ['low', 'high']) {
+      const want = SENS[row.id][side];
+      if (!want) continue;
+      const got = row[side];
+      near(got.net_A, want.A, 2000);
+      near(got.net_B, want.B, 2000);
+      near(got.net_C, want.C, 2000);
+      near(got.org_A_after, want.org ?? SENS.base.org, 0.002);
+      near(got.removable_B, want.rem ?? SENS.base.rem, 0.02);
+    }
+  }
+});
+
+test('sensitivity ranking: adoption > review overhead > escape > inference', () => {
+  assert.deepEqual(sensitivity(makeEc()).ranking, ['adoption', 'review_overhead', 'escape', 'inference']);
+});
+
+test('sensitivity never mutates ec', () => {
+  const ec = makeEc();
+  const before = structuredClone(ec);
+  sensitivity(ec);
+  assert.deepEqual(ec, before);
+});
+
+test('sensitivity fails closed on a bad context', () => {
+  const ec = makeEc();
+  ec.engine.adoption = 2;
+  assert.equal(sensitivity(ec).ok, false);
+});
+
+test('levers: identity at 1 and review overhead trades against the net reduction', () => {
+  const a = run();
+  const b = run(makeEc(), { inference: 1, escape: 1, review_overhead: 1 });
+  assert.deepEqual(a.scenarios.B.net, b.scenarios.B.net);
+  const k2 = run(makeEc(), { review_overhead: 2 });
+  near(k2.workflows.W1.r_eff, 0.2, 1e-9);
+  assert.ok(k2.scenarios.B.net < a.scenarios.B.net);
 });
 
 test('every ledger row carries counted_in and scope and ids are unique', () => {

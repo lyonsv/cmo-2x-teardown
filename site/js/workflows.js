@@ -661,6 +661,49 @@ function buildLedger(x, sc, funding) {
   return out;
 }
 
+// ---------------------------------------------------------------- primary metric
+
+const METRIC_DEFINITION = 'useful work = completed units x frozen baseline in-house standard hours; W5 review excluded as a gate; denominator = in-house FTE + agency FTE-equivalents (+ platform team in agent-enabled states)';
+
+function buildMetric(x, sc, rollup, maxMult) {
+  const { rows, engine, ec, a } = x;
+  const ph = engine.productive_hours;
+  const eq = engine.agency_cost_per_fte_equiv;
+  const pf = engine.platform_team.fte;
+  const oosHours = engine.out_of_scope_fte * ph;
+  const oosUplift = oosHours / (1 - engine.out_of_scope_uplift * a);
+  const I0 = rows.reduce((t, r) => t + r.H0, 0) + oosHours;
+  const D0 = ec.inputs.marketing_fte + totalAgency(rows) / eq;
+  const IA = rows.reduce((t, r) => t + r.H0 * r.m_A, 0) + oosUplift;
+  const portfolio = rows.filter((r) => engine.portfolio.includes(r.w.id));
+  const I0p = portfolio.reduce((t, r) => t + r.H0, 0);
+  const IAp = portfolio.reduce((t, r) => t + r.H0 * r.m_A, 0);
+  const Dp = portfolio.reduce((t, r) => t + r.w.fte + r.w.agency / eq, 0);
+  const ratio = (n, d) => (d > 0 ? n / d : null);
+  const B = sc.B;
+  const D_B = D0 - B.labour.removable_fte - B.agency.saving / eq + pf;
+  const C = sc.C;
+  const demand = C.output.per_workflow;
+  const I_C = rows.reduce((t, r) => t + r.H0 * demand[r.w.id], 0) + oosHours;
+  const D_C = D0 + C.labour.hires_with + (C.agency.scenario - C.agency.today) / eq + pf;
+  const pooledBase = ec.inputs.marketing_fte * ph;
+  return {
+    I0, D0,
+    A: {
+      org_before_platform: ratio(IA, I0),
+      org_after_platform: ratio(IA / (D0 + pf), I0 / D0),
+      portfolio_before_platform: ratio(IAp, I0p),
+      portfolio_after_platform: Dp > 0 && I0p > 0 ? (IAp / (Dp + pf)) / (I0p / Dp) : null,
+      per_workflow: Object.fromEntries(rows.map((r) => [r.w.id, r.m_A])),
+    },
+    B: { org: ratio(D0, D_B), D: D_B },
+    C: { org: ratio(I_C / D_C, I0 / D0), I: I_C, D: D_C },
+    pooled_hours_multiple: ratio(pooledBase, pooledBase - rollup.released_hours - oosHours * engine.out_of_scope_uplift * a),
+    max_uniform_multiplier: maxMult.uniform.value,
+    definition: METRIC_DEFINITION,
+  };
+}
+
 // ---------------------------------------------------------------- entry point
 
 export function economics(ec, levers) {
@@ -693,9 +736,60 @@ export function economics(ec, levers) {
     };
     out.ledger = ledger;
     out.funding = funding;
+    out.metric = buildMetric(x, scenarios, out.rollup, out.max_multipliers);
     if (!allFinite(out)) return { ok: false, errors: [{ field: null, message: 'inputs produce a value outside the representable range' }] };
     return out;
   } catch (err) {
     return { ok: false, errors: [{ field: null, message: `engine failure: ${err && err.message ? err.message : 'unknown'}` }] };
   }
+}
+
+// ---------------------------------------------------------------- sensitivity
+
+// Pure re-runs of economics() with one parameter moved; ec is copied, never mutated.
+// Adoption is one-sided (the default is 1.0, so only a low case exists). Removable
+// FTE steps at the min_removable_fte threshold: a pool below it drops out whole
+// (for example W8 at adoption 0.5), so some bars are jumpy by design.
+const SENSITIVITY_MOVES = [
+  { id: 'adoption', label: 'Adoption (share of the programme effect realised)', low: { adoption: 0.5 }, high: null },
+  { id: 'escape', label: 'Escape rate', low: { escape: 0.5 }, high: { escape: 3 } },
+  { id: 'inference', label: 'Inference price', low: { inference: 0.5 }, high: { inference: 5 } },
+  { id: 'review_overhead', label: 'Review overhead', low: { review_overhead: 0.5 }, high: { review_overhead: 2 } },
+];
+
+function cell(r) {
+  if (!r || !r.ok) return null;
+  return {
+    org_A_after: r.metric.A.org_after_platform,
+    net_A: r.scenarios.A.net,
+    net_B: r.scenarios.B.net,
+    net_C: r.scenarios.C.net,
+    removable_B: r.scenarios.B.labour.removable_fte,
+  };
+}
+
+export function sensitivity(ec) {
+  const errors = validateEngine(ec);
+  if (errors.length) return { ok: false, errors };
+  const baseRun = economics(ec);
+  if (!baseRun.ok) return baseRun;
+  const base = cell(baseRun);
+  const rows = SENSITIVITY_MOVES.map((mv) => {
+    const run = (move) => {
+      if (!move) return null;
+      if ('adoption' in move) {
+        const copy = { ...ec, engine: { ...ec.engine, adoption: move.adoption } };
+        return cell(economics(copy));
+      }
+      const name = Object.keys(move)[0];
+      return cell(economics(ec, { [name]: move[name] }));
+    };
+    return { id: mv.id, label: mv.label, low: run(mv.low), base, high: run(mv.high) };
+  });
+  const swing = (row) => Math.max(
+    row.low ? Math.abs(row.low.net_B - base.net_B) : 0,
+    row.high ? Math.abs(row.high.net_B - base.net_B) : 0,
+  );
+  const ranking = rows.map((r) => r.id).sort((p, q) => swing(rows.find((r) => r.id === q)) - swing(rows.find((r) => r.id === p)));
+  return { ok: true, rows, ranking };
 }
