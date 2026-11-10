@@ -2,6 +2,8 @@
 
 A single static page that sets out what doubling a marketing organisation's output would take. It is a forward-looking, evidence-graded projection, not a retrospective: every number carries a grade and links to the source or assumption behind it.
 
+**Live page:** https://lyonsv.github.io/cmo-2x-teardown/
+
 ## Layout
 
 - `site/` is the published folder: `index.html`, `assets/style.css`, `js/data.js`, `js/calc.js` and `.nojekyll`.
