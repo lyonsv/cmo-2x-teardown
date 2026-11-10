@@ -1,11 +1,13 @@
 ---
-gsd_state_version: 1.0
+gsd_state_version: "1.0"
 milestone: v2.0
-milestone_name: Autonomous Marketing Operations
 status: Awaiting next milestone
 stopped_at: Completed 07-07-PLAN.md
-last_updated: "2026-10-25T17:23:29.675Z"
-last_activity: 2026-10-25 — Milestone v2.0 completed and archived
+last_updated: "2026-11-10T16:59:31.279Z"
+last_activity: 2026-10-25
+last_activity_desc: Milestone v2.0 completed and archived
+state_head: 71ea77e67c24266d1bfb819107d504ee8642cba7
+milestone_name: Autonomous Marketing Operations
 progress:
   total_phases: 3
   completed_phases: 3
@@ -154,6 +156,7 @@ Resume file: None
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 261024-s14 | Remove COI disclosure and Getty-specific content (author request) | 2026-10-24 | af3922e | [261024-s14](./quick/261024-s14-remove-conflict-of-interest-disclosure-a/) |
+| 2 | Add live GitHub Pages link to README | 2026-11-10 | 71ea77e | — |
 
 ## Operator Next Steps
 
